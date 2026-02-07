@@ -8,14 +8,12 @@ import datetime as dt
 
 # Local Modules
 from email_utils import send_failure_email
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
 
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 
@@ -142,7 +140,8 @@ def check_all_teams_minimum_innings():
         print(f"Starting minimum innings check at {dt.datetime.now()}")
         
         # Get team names from team_dict if available
-        team_dict_df = get_mongo_data(MONGO_DB, 'team_dict', '')
+        storage = DynamoStorageManager(region='us-west-2')
+        team_dict_df = storage.get_live_data('team_dict')
         team_name_mapping = {}
         if not team_dict_df.empty:
             team_dict_df['Team_Number'] = team_dict_df['Team_Number'].astype(str)
@@ -231,9 +230,9 @@ def main():
         
         if not results_df.empty:
             # Save to database
-            clear_mongo(MONGO_DB, 'minimum_innings_check')
-            write_mongo(MONGO_DB, results_df, 'minimum_innings_check')
-            print(f"\nMinimum innings check complete - {len(results_df)} teams checked and saved to MongoDB")
+            storage = DynamoStorageManager(region='us-west-2')
+            storage.write_live_data('minimum_innings_check', results_df)
+            print(f"\nMinimum innings check complete - {len(results_df)} teams checked and saved to DynamoDB")
             
             # Send email notification if any teams are below minimum
             teams_below_minimum = results_df[results_df['Minimum_IP_Met'] == False]

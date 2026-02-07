@@ -14,12 +14,10 @@ urllib3==1.26.18
 lxml==4.9.3
 
 # Database
-pymongo==4.2.0
-dnspython==2.4.2
+boto3>=1.28.0
 
 # Environment & Configuration
 python-dotenv==1.0.0
-certifi==2022.9.24
 setuptools==58.1.0
 
 # Email functionality (built-in modules, no extra packages needed)

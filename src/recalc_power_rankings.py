@@ -4,29 +4,26 @@ import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
 from functools import reduce
-from pymongo import MongoClient
-import certifi
-import os,sys
+import os, sys
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 from yahoo_utils import *
 from categories_dict import Low_Categories
 
-
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 
 def get_normalized_ranks(all_time_rank_df):
@@ -96,7 +93,7 @@ def main():
 
             #Generate ranks and running ranks in lieu of running power ranks which started at the beginning of the season
             for weeks in weeks_of_interest:
-                weekly_stats_df = get_mongo_data(MONGO_DB,'weekly_stats','"Week": '+str(weeks))
+                weekly_stats_df = storage.get_weekly_data('weekly_stats', weeks)
 
                 team_rename_dict = {
                     "Bobby's Big Witt": "Mendoza Line",
@@ -135,8 +132,7 @@ def main():
 
             else:
                 pass
-            clear_mongo_query(MONGO_DB,'running_normalized_ranks','"Week":'+str(week))
-            write_mongo(MONGO_DB,normalized_ranks_df,'running_normalized_ranks')
+            storage.append_weekly_data('running_normalized_ranks', week, normalized_ranks_df)
 
     except Exception as e:
         filename = os.path.basename(__file__)

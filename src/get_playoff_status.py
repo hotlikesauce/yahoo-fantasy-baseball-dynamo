@@ -3,9 +3,7 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os
-import certifi
 from dotenv import load_dotenv
 import warnings
 # Ignore the FutureWarning
@@ -13,16 +11,14 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Local Modules
 from email_utils import send_failure_email
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from manager_dict import *
 from datetime_utils import *
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
 
 def calculate_playoff_status(df_standings):
     """
@@ -124,9 +120,9 @@ def get_playoff_status():
 def main():
     try:
         df_playoff_status = get_playoff_status()
-        clear_mongo(MONGO_DB, 'playoff_status')
-        write_mongo(MONGO_DB, df_playoff_status, 'playoff_status')
-        print("Playoff status data successfully written to MongoDB")
+        storage = DynamoStorageManager(region='us-west-2')
+        storage.write_live_data('playoff_status', df_playoff_status)
+        print("Playoff status data successfully written to DynamoDB")
     except Exception as e:
         filename = os.path.basename(__file__)
         error_message = str(e)

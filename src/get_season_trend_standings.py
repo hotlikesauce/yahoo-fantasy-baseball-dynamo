@@ -3,8 +3,6 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-import certifi
-from pymongo import MongoClient
 from datetime import datetime
 import datetime, os, sys
 from dotenv import load_dotenv
@@ -13,22 +11,22 @@ from sklearn.preprocessing import MinMaxScaler
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import set_last_week
 from manager_dict import manager_dict
-from mongo_utils import *
 from yahoo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 #This uses the weekly_results process to get scores week-by-week
 def season_standings():
-    weekly_results_df = get_mongo_data(MONGO_DB,'weekly_results','')
+    weekly_results_df = storage.get_historical_data('weekly_results')
     #weekly_results_df.columns = weekly_results_df.columns[:-1].tolist() + ['Score']
     raw_score_df = pd.DataFrame()
     num_cats = category_size()
@@ -81,8 +79,8 @@ def season_standings():
 def main():
     try:
         standing_season_df = season_standings()
-        clear_mongo_query(MONGO_DB,'standings_season_trend','')
-        write_mongo(MONGO_DB,standing_season_df,'standings_season_trend')
+        for week, week_df in standing_season_df.groupby('Week'):
+            storage.append_weekly_data('standings_season_trend', int(week), week_df)
     except Exception as e:
         filename = os.path.basename(__file__)
         exc_type, exc_obj, exc_tb = sys.exc_info()

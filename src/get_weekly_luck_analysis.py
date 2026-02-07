@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 
 # Local Modules
 from email_utils import send_failure_email
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
-MONGO_DB = os.environ.get('MONGO_DB')
+load_dotenv()
+
+storage = DynamoStorageManager(region='us-west-2')
 
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 
@@ -33,7 +33,7 @@ def get_weekly_luck_analysis(weeks_to_analyze=None):
         print(f"Analyzing luck for weeks: {weeks_to_analyze}")
         
         # Get coefficient data (contains Team_Expected_Wins)
-        coefficient_df = get_mongo_data(MONGO_DB, 'coefficient', '')
+        coefficient_df = storage.get_historical_data('coefficient')
         if coefficient_df.empty:
             print("Error: No coefficient data found")
             return pd.DataFrame()
@@ -57,7 +57,7 @@ def get_weekly_luck_analysis(weeks_to_analyze=None):
         print(f"Coefficient data for weeks {weeks_to_analyze}: {len(coefficient_filtered)} records")
         
         # Get weekly results data (contains actual wins)
-        weekly_results_df = get_mongo_data(MONGO_DB, 'weekly_results', '')
+        weekly_results_df = storage.get_historical_data('weekly_results')
         if weekly_results_df.empty:
             print("Error: No weekly_results data found")
             return pd.DataFrame()
@@ -81,7 +81,7 @@ def get_weekly_luck_analysis(weeks_to_analyze=None):
         print(f"Weekly results data for weeks {weeks_to_analyze}: {len(results_filtered)} records")
         
         # Get team_dict for proper team names
-        team_dict_df = get_mongo_data(MONGO_DB, 'team_dict', '')
+        team_dict_df = storage.get_live_data('team_dict')
         if not team_dict_df.empty:
             team_dict_df['Team_Number'] = team_dict_df['Team_Number'].astype(str)
             team_name_mapping = dict(zip(team_dict_df['Team_Number'], team_dict_df['Team']))
@@ -257,7 +257,7 @@ def get_weekly_luck_analysis(weeks_to_analyze=None):
             luck_df['Upset_Magnitude'] = 0
             luck_df['Extreme_Outlier'] = False
         
-        # Add team names using team_dict from MongoDB (already loaded as team_name_mapping)
+        # Add team names using team_dict (already loaded as team_name_mapping)
         luck_df['Team_Name'] = luck_df['Team_Number'].map(team_name_mapping)
         
         # Get opponent team names if we have opponent data in coefficient table
@@ -451,7 +451,7 @@ def determine_weeks_to_analyze():
             return []
         
         # Get existing data from weekly_luck_analysis table
-        existing_data = get_mongo_data(MONGO_DB, 'weekly_luck_analysis', '')
+        existing_data = storage.get_live_data('weekly_luck_analysis')
         
         if existing_data.empty:
             # No existing data - analyze all weeks from 1 to max_analyzable_week
@@ -487,7 +487,7 @@ def determine_weeks_to_analyze():
 def main():
     try:
         # Determine which weeks need to be analyzed
-        clear_mongo(MONGO_DB, 'weekly_luck_analysis')
+        storage.clear_collection('weekly_luck_analysis')
         weeks_to_analyze = determine_weeks_to_analyze()
         
         if not weeks_to_analyze:
@@ -500,8 +500,8 @@ def main():
         
         if not luck_df.empty:
             # Clear existing data and save new data
-            write_mongo(MONGO_DB, luck_df, 'weekly_luck_analysis')
-            print(f"\nWeekly luck analysis complete - {len(luck_df)} records saved to MongoDB")
+            storage.write_live_data('weekly_luck_analysis', luck_df)
+            print(f"\nWeekly luck analysis complete - {len(luck_df)} records saved to DynamoDB")
             
             # Show what weeks were added
             weeks_added = sorted(luck_df['Week'].unique())

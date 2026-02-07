@@ -2,25 +2,24 @@ import os
 import sys
 import logging
 import traceback
+from datetime import datetime
 import pandas as pd
 import numpy as np
-from pymongo import MongoClient
-import certifi
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 
 # Local modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import get_mongo_data, write_mongo, clear_mongo
+from storage_manager import DynamoStorageManager
 from datetime_utils import set_this_week
 from yahoo_utils import *
 
 # Load environment variables
 load_dotenv()
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 
@@ -116,11 +115,10 @@ def main():
         output_df = week_1_df.copy()
 
         for week in range(1, current_week):
-            week_key = f"Week:{week}"
-            schedule_df = get_mongo_data(MONGO_DB, 'schedule', week_key)
+            schedule_df = storage.get_schedule_data(week=week)
             expected_df = expected_outcome(output_df, schedule_df)
 
-            week_results_df = get_mongo_data(MONGO_DB, 'weekly_results', week_key)
+            week_results_df = storage.get_weekly_data('weekly_results', week)
             output_df = get_new_elo(expected_df, week_results_df)
             running_elo_df = pd.concat([running_elo_df, output_df], ignore_index=True)
 
@@ -129,8 +127,8 @@ def main():
 
         running_elo_df['Team_Number'] = running_elo_df['Team_Number'].astype(int).astype(str).str.replace('\.0', '', regex=True)
 
-        clear_mongo(MONGO_DB, 'Running_ELO')
-        write_mongo(MONGO_DB, running_elo_df, 'Running_ELO')
+        for week, week_df in running_elo_df.groupby('Week'):
+            storage.append_weekly_data('Running_ELO', int(week), week_df)
 
     except Exception as e:
         filename = os.path.basename(__file__)
@@ -140,5 +138,4 @@ def main():
         raise
 
 if __name__ == '__main__':
-    if MONGO_DB == 'YahooFantasyBaseball_2025':
-        main()
+    main()

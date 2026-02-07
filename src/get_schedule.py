@@ -2,7 +2,6 @@ import pandas as pd
 import bs4 as bs
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os, sys
 import numpy as np
 from dotenv import load_dotenv
@@ -13,22 +12,22 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # Local Modules
 from email_utils import send_failure_email
 from datetime_utils import *
-from mongo_utils import *
 from manager_dict import manager_dict
 from yahoo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 def get_schedule(max_week):
     num_teams = league_size()
     this_week = set_this_week()
     
-    # Get team_dict from MongoDB for joining
-    team_dict_df = get_mongo_data(MONGO_DB, 'team_dict', '')
+    # Get team_dict for joining
+    team_dict_df = storage.get_live_data('team_dict')
     if team_dict_df.empty:
         print("Error: team_dict collection is empty. Cannot proceed without team mappings.")
         return
@@ -38,7 +37,7 @@ def get_schedule(max_week):
     print(f"Team mappings loaded: {team_name_to_number}")
 
     # Clear existing schedule data before inserting new data
-    clear_mongo(MONGO_DB, 'schedule')
+    storage.clear_schedule()
 
     for week in range(this_week, 22):
         rows = []
@@ -96,7 +95,7 @@ def get_schedule(max_week):
             print(f"Missing opponent data for week {week}")
             continue
 
-        # Map team names to team numbers using the team_dict from MongoDB
+        # Map team names to team numbers using the team_dict
         schedule_df['Team_Number'] = schedule_df['Team'].map(team_name_to_number)
         schedule_df['Opponent_Team_Number'] = schedule_df['Opponent'].map(team_name_to_number)
         
@@ -112,12 +111,12 @@ def get_schedule(max_week):
         print(f"Final schedule data for week {week}:")
         print(final_schedule_df)
 
-        # Write to MongoDB
-        write_mongo(MONGO_DB, final_schedule_df, 'schedule')
+        # Write to DynamoDB
+        storage.write_schedule_data(week, final_schedule_df)
 
 def main():
     try:
-        df = get_mongo_data(MONGO_DB, 'schedule', '')
+        df = storage.get_schedule_data()
         if not df.empty:
             max_week = df['Week'].max() + 1
             get_schedule(max_week)

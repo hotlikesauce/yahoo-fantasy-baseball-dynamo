@@ -3,7 +3,6 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os, sys
 from dotenv import load_dotenv
 from loguru import logger
@@ -11,19 +10,19 @@ import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import *
 from manager_dict import manager_dict
-from mongo_utils import *
 from yahoo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
 lastWeek = set_last_week()
+
+storage = DynamoStorageManager(region='us-west-2')
 
 def get_all_play(num_teams,leaguedf,most_recent_week):
     thisWeek = set_this_week()
@@ -73,9 +72,8 @@ def get_all_play(num_teams,leaguedf,most_recent_week):
 
             #print(week)
             #print(allPlaydf)
-            clear_mongo_query(MONGO_DB,'week_stats','"Week":'+str(lastWeek))
             df_week_stats = build_team_numbers(allPlaydf)
-            write_mongo(MONGO_DB,df_week_stats,'week_stats')
+            storage.append_weekly_data('week_stats', week, df_week_stats)
             logger.info(f'Week: {week}')
 
             # Calculate implied win statistics - The person with the most Runs in a week has an implied win of 1.0, because they would defeat every other team in that category.
@@ -132,8 +130,7 @@ def get_all_play(num_teams,leaguedf,most_recent_week):
             df = build_opponent_numbers(rankings_df_expanded)
 
             
-            #db name, collection, dataframe
-            write_mongo(MONGO_DB,df,'coefficient')
+            storage.append_weekly_data('coefficient', week, df)
 
             # Reset dfs for new weeks so data isn't aggregated
             del allPlaydf, rankings_df, df
@@ -144,20 +141,13 @@ def main():
     num_teams = league_size()
     leaguedf = league_stats_all_df()
     logger.add("logs/get_all_play.log", rotation="500 MB")
-    for x in range(1,thisWeek):
-        clear_mongo_query(MONGO_DB,'coefficient','"Week":'+str(x))
     try:
-        df = get_mongo_data(MONGO_DB,'coefficient','')
-        if not df.empty: 
+        df = storage.get_historical_data('coefficient')
+        if not df.empty:
             max_week = df['Week'].max()
-            rankings_df = get_all_play(num_teams,leaguedf,max_week)
-            if rankings_df is not None:
-                write_mongo(MONGO_DB,rankings_df,'coefficient')
+            get_all_play(num_teams, leaguedf, max_week)
         else:
-            rankings_df = get_all_play(num_teams,leaguedf,1)
-            print(rankings_df)
-            if rankings_df is not None:
-                write_mongo(MONGO_DB,rankings_df,'coefficient')
+            get_all_play(num_teams, leaguedf, 1)
 
     except Exception as e:
         filename = os.path.basename(__file__)

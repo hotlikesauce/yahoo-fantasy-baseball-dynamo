@@ -3,27 +3,25 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os, sys
-import certifi
 from loguru import logger
 from dotenv import load_dotenv
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import *
 from manager_dict import manager_dict
 from yahoo_utils import *
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 def get_weekly_results(num_teams, max_week):
     # Set week number
@@ -122,7 +120,8 @@ def get_weekly_stats(num_teams, leaguedf, most_recent_week):
     return running_df
 
 def get_running_stats(df):
-    df = df.drop('_id', axis=1)
+    if '_id' in df.columns:
+        df = df.drop('_id', axis=1)
     # Exclude 'Team', 'Week', 'Opponent' columns
     cols_to_sum = [col for col in df.columns if col not in ['Team', 'Week', 'Opponent']]
 
@@ -199,53 +198,55 @@ def main():
     num_teams = league_size()
     leaguedf = league_stats_all_df()
     lastWeek = set_last_week()
-    
+
     # Set this to True to reprocess all weeks with corrected tie scoring
     REPROCESS_ALL_WEEKS = False
-    
+
     try:
         # Aggregate W/L throughout season
-        df = get_mongo_data(MONGO_DB, 'weekly_results', '')
+        df = storage.get_historical_data('weekly_results')
         print(df)
-        
+
         if REPROCESS_ALL_WEEKS:
             print("REPROCESSING ALL WEEKS with corrected tie scoring...")
-            # Clear existing data and reprocess all weeks
-            clear_mongo(MONGO_DB, 'weekly_results')
             weekly_results_df = get_weekly_results(num_teams, 0)
             if weekly_results_df is not None and not weekly_results_df.empty:
                 print("Reprocessed weekly results with tie adjustments:")
                 print(weekly_results_df)
-                write_mongo(MONGO_DB, weekly_results_df, 'weekly_results')
-        elif not df.empty: 
+                for week, week_df in weekly_results_df.groupby('Week'):
+                    storage.append_weekly_data('weekly_results', int(week), week_df)
+        elif not df.empty:
             max_week = df['Week'].max()
             weekly_results_df = get_weekly_results(num_teams, max_week)
             if weekly_results_df is not None and not weekly_results_df.empty:
                 print(weekly_results_df)
-                write_mongo(MONGO_DB, weekly_results_df, 'weekly_results')
+                for week, week_df in weekly_results_df.groupby('Week'):
+                    storage.append_weekly_data('weekly_results', int(week), week_df)
         else:
             weekly_results_df = get_weekly_results(num_teams, 0)
-            if weekly_results_df is not None:
-                write_mongo(MONGO_DB, weekly_results_df, 'weekly_results')
+            if weekly_results_df is not None and not weekly_results_df.empty:
+                for week, week_df in weekly_results_df.groupby('Week'):
+                    storage.append_weekly_data('weekly_results', int(week), week_df)
 
         # Aggregate Stats
-        rank_df = get_mongo_data(MONGO_DB, 'weekly_stats', '')
-        if not rank_df.empty: 
+        rank_df = storage.get_historical_data('weekly_stats')
+        if not rank_df.empty:
             max_week = rank_df['Week'].max()
             weekly_stats_df = get_weekly_stats(num_teams, leaguedf, max_week)
             if weekly_stats_df is not None and not weekly_stats_df.empty:
                 print(weekly_stats_df)
-                write_mongo(MONGO_DB, weekly_stats_df, 'weekly_stats')
+                for week, week_df in weekly_stats_df.groupby('Week'):
+                    storage.append_weekly_data('weekly_stats', int(week), week_df)
         else:
             weekly_stats_df = get_weekly_stats(num_teams, leaguedf, 0)
-            if weekly_stats_df is not None:
-                write_mongo(MONGO_DB, weekly_stats_df, 'weekly_stats')
+            if weekly_stats_df is not None and not weekly_stats_df.empty:
+                for week, week_df in weekly_stats_df.groupby('Week'):
+                    storage.append_weekly_data('weekly_stats', int(week), week_df)
 
         # Generate ranks and running ranks in lieu of running power ranks which started at the beginning of the season
-        weekly_stats_df = get_mongo_data(MONGO_DB, 'weekly_stats', '')
+        weekly_stats_df = storage.get_historical_data('weekly_stats')
         run_stats_df = get_running_stats(weekly_stats_df)
-        clear_mongo(MONGO_DB, 'power_ranks_lite')
-        write_mongo(MONGO_DB, run_stats_df, 'power_ranks_lite')
+        storage.write_live_data('power_ranks_lite', run_stats_df)
 
     except Exception as e:
         filename = os.path.basename(__file__)

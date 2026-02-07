@@ -6,8 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile.weekly
     environment:
-      - MONGO_CLIENT=${MONGO_CLIENT}
-      - MONGO_DB=${MONGO_DB}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-west-2
+      - YAHOO_LEAGUE_ID=${YAHOO_LEAGUE_ID}
     volumes:
       # Only mount logs in production
       - ./logs:/app/logs

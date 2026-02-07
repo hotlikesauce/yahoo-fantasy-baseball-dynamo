@@ -4,27 +4,22 @@ import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
 from functools import reduce
-from pymongo import MongoClient
-import certifi
-import os,sys
+import os, sys
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import *
 from datetime_utils import *
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
 
 
 def get_comprehensive_stats():

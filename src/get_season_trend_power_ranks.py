@@ -6,27 +6,25 @@ import urllib.request
 from urllib.request import urlopen as uReq
 import bs4 as bs
 from functools import reduce
-import certifi
-from pymongo import MongoClient
-import time,datetime,os,sys
+import time, datetime, os, sys
 from dotenv import load_dotenv
 import warnings
 from sklearn.preprocessing import MinMaxScaler
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import set_last_week
 from manager_dict import manager_dict
-from mongo_utils import *
 from yahoo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 
 def get_records():
@@ -222,13 +220,12 @@ def running_normalized_ranks(week_df):
 def main():
     #This is for if the analysis started midseason. If that's the case, we default to the get_weekly_results power rankings
     try:
-        df = get_mongo_data(MONGO_DB,'power_ranks_season_trend','')
-        if not df.empty and df is not None: 
+        df = storage.get_historical_data('power_ranks_season_trend')
+        if not df.empty and df is not None:
             lastWeek = set_last_week()
-            clear_mongo_query(MONGO_DB,'power_ranks_season_trend','"Week":'+str(lastWeek))
             records_df = get_records()
             power_rank_df = get_stats(records_df)
-            write_mongo(MONGO_DB,power_rank_df,'power_ranks_season_trend')
+            storage.append_weekly_data('power_ranks_season_trend', lastWeek, power_rank_df)
         else:
             print('no soup for you')
             pass

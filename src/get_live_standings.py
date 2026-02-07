@@ -3,27 +3,23 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os
-import certifi
 from dotenv import load_dotenv
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules - email utils for failure emails, storage manager for DB writes
 from email_utils import send_failure_email
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from manager_dict import *
 from datetime_utils import *
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
 
 def getCurrentMatchups():
     num_teams = league_size()
@@ -127,9 +123,13 @@ def main():
     try:
         df_currentMatchup = getCurrentMatchups()
         df_liveStandings = getLiveStandings(df_currentMatchup)
-        clear_mongo(MONGO_DB,'live_standings')
-        write_mongo(MONGO_DB,df_liveStandings,'live_standings')
-        mongo_write_team_IDs(MONGO_DB,df_liveStandings)
+
+        # Write to DynamoDB
+        storage = DynamoStorageManager(region='us-west-2')
+        storage.write_live_data('live_standings', df_liveStandings)
+        storage.write_live_data('team_dict', df_liveStandings[['Team', 'Team_Number']])  # Team dictionary
+
+        print("✅ Successfully wrote live standings to DynamoDB")
     except Exception as e:
         filename = os.path.basename(__file__)
         error_message = str(e)

@@ -4,27 +4,26 @@ import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
 from functools import reduce
-from pymongo import MongoClient
-import certifi
-import os,sys
+from datetime import datetime
+import os, sys
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 
 def get_records():
@@ -240,35 +239,27 @@ def main():
     try:
         records_df = get_records()
         power_rank_df = get_stats(records_df)
-        clear_mongo(MONGO_DB,'Power_Ranks')
-        clear_mongo(MONGO_DB,'power_ranks')
-        write_mongo(MONGO_DB,power_rank_df,'Power_Ranks')
-        write_mongo(MONGO_DB,power_rank_df,'power_ranks')
-        print('Wrote out Power Ranks Stats to both mongo dbs')
-
-        power_rank_df = get_mongo_data(MONGO_DB,'Power_Ranks','')
-        #power_rank_season_df = get_mongo_data(MONGO_DB,'power_ranks_season_trend',empty_dict)
-        #schedule_df = get_mongo_data(MONGO_DB,'schedule',empty_dict)
+        storage.write_live_data('Power_Ranks', power_rank_df)
+        storage.write_live_data('power_ranks', power_rank_df)
+        print('Wrote out Power Ranks Stats')
 
         lastWeek = set_last_week()
         normalized_ranks_df = get_normalized_ranks(power_rank_df)
-        clear_mongo(MONGO_DB,'normalized_ranks')
-        write_mongo(MONGO_DB,normalized_ranks_df,'normalized_ranks')
+        storage.write_live_data('normalized_ranks', normalized_ranks_df)
         print(f'Write Normalized Ranks')
-        clear_mongo_query(MONGO_DB,'running_normalized_ranks','"Week":'+str(lastWeek))
-        normalized_ranks_df['Week'] = lastWeek
-        write_mongo(MONGO_DB,normalized_ranks_df,'running_normalized_ranks')
 
-        clear_mongo_query(MONGO_DB,'power_ranks_season_trend','"Week":'+str(lastWeek))
-        write_mongo(MONGO_DB,power_rank_df,'power_ranks_season_trend')
+        normalized_ranks_df['Week'] = lastWeek
+        storage.append_weekly_data('running_normalized_ranks', lastWeek, normalized_ranks_df)
+
+        storage.append_weekly_data('power_ranks_season_trend', lastWeek, power_rank_df)
         print(f'Write Season Trend Power Ranks')
 
-        clear_mongo_query('Summertime_Sadness_All_Time','all_time_ranks_normalized','"Year":2025')
-        df_2025 = get_mongo_data('YahooFantasyBaseball_2025','normalized_ranks','')
-        df_2025['Manager'] = df_2025['Team_Number'].astype(str).map(manager_dict)
-        df_2025['Year'] = 2025
-        print(df_2025)
-        write_mongo('Summertime_Sadness_All_Time',df_2025,'all_time_ranks_normalized')
+        current_year = datetime.now().year
+        df_current = storage.get_live_data('normalized_ranks')
+        df_current['Manager'] = df_current['Team_Number'].astype(str).map(manager_dict)
+        df_current['Year'] = current_year
+        print(df_current)
+        storage.write_all_time_data(current_year, df_current)
 
     except Exception as e:
         filename = os.path.basename(__file__)

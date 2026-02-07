@@ -12,8 +12,7 @@ from categories_dict import *
 
 from dotenv import load_dotenv 
 
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
 
 # --- First definition of url_requests (using urllib) ---

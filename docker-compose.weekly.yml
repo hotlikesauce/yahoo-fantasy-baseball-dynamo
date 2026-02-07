@@ -5,6 +5,10 @@ services:
       dockerfile: Dockerfile.weekly
     env_file:
       - src/.env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-west-2
     volumes:
       # Mount logs directory to persist logs
       - ./logs:/app/logs
@@ -20,24 +24,6 @@ services:
         limits:
           memory: 1G
           cpus: '0.5'
-
-  # Optional: MongoDB for local testing
-  mongo:
-    image: mongo:6.0
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=YahooFantasyBaseball_2025
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - fantasy-network
-    restart: unless-stopped
-
-volumes:
-  mongo_data:
 
 networks:
   fantasy-network:

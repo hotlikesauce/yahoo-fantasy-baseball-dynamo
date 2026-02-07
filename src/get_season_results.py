@@ -3,7 +3,6 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os, sys
 from dotenv import load_dotenv
 from loguru import logger
@@ -11,18 +10,18 @@ import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import *
 from manager_dict import manager_dict
-from mongo_utils import *
 from yahoo_utils import *
+from storage_manager import DynamoStorageManager
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 
 
@@ -85,7 +84,7 @@ def get_seasons_best(df,table):
     result_df = build_team_numbers(result_df)
 
     print(result_df)
-    write_mongo(MONGO_DB,result_df,str(table))
+    storage.write_live_data(str(table), result_df)
     result_df = []
 
 def main():
@@ -94,14 +93,12 @@ def main():
     leaguedf = league_stats_all_df()
     logger.add("logs/get_all_play.log", rotation="500 MB")
     try:
-        df = get_mongo_data(MONGO_DB,'week_stats','')
+        df = storage.get_historical_data('week_stats')
         print(df)
         long_weeks_df = df[df['Week'].isin([1, 15])]
         regular_weeks_df = df[~df['Week'].isin([1, 15])]
-        clear_mongo(MONGO_DB,'seasons_best_long')
-        clear_mongo(MONGO_DB,'seasons_best_regular')
-        get_seasons_best(long_weeks_df,'seasons_best_long')
-        get_seasons_best(regular_weeks_df,'seasons_best_regular')
+        get_seasons_best(long_weeks_df, 'seasons_best_long')
+        get_seasons_best(regular_weeks_df, 'seasons_best_regular')
         
 
     except Exception as e:

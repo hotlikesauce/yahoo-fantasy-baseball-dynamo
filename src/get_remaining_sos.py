@@ -4,26 +4,24 @@ import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
 from functools import reduce
-from pymongo import MongoClient
-import certifi
 import numpy as np
 import os, logging, traceback, sys
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 
 logging.basicConfig(filename='error.log', level=logging.ERROR)
 # Custom function to convert values in the 'Week' column
@@ -102,7 +100,7 @@ def get_remaining_sos(avg_opponent_power=None):
             return pd.DataFrame()
         
         # Get schedule data
-        schedule_df = get_mongo_data(MONGO_DB, 'schedule', '')
+        schedule_df = storage.get_schedule_data()
         if schedule_df.empty:
             print("Error: No schedule data found")
             return pd.DataFrame()
@@ -129,13 +127,13 @@ def get_remaining_sos(avg_opponent_power=None):
         
         # Get power rankings data - try normalized first, fallback to regular
         try:
-            power_ranks_df = get_mongo_data(MONGO_DB, 'normalized_ranks', '')
+            power_ranks_df = storage.get_live_data('normalized_ranks')
             if power_ranks_df.empty:
                 print("Warning: No normalized ranks found, trying regular power rankings")
-                power_ranks_df = get_mongo_data(MONGO_DB, 'power_ranks', '')
+                power_ranks_df = storage.get_live_data('power_ranks')
         except Exception as e:
             print(f"Warning: Error getting normalized ranks: {e}")
-            power_ranks_df = get_mongo_data(MONGO_DB, 'power_ranks', '')
+            power_ranks_df = storage.get_live_data('power_ranks')
             
         if power_ranks_df.empty:
             print("Error: No power ranking data found")
@@ -184,7 +182,7 @@ def get_remaining_sos(avg_opponent_power=None):
         print(merged_df[['Team_Number', 'Opponent_Team_Number', 'Week', 'Score_Sum']].head(10))
         
         # Get team_dict for proper team names in debugging
-        team_dict_df = get_mongo_data(MONGO_DB, 'team_dict', '')
+        team_dict_df = storage.get_live_data('team_dict')
         if not team_dict_df.empty:
             print(f"\nTeam_dict data:")
             print(f"Team_dict shape: {team_dict_df.shape}")
@@ -350,14 +348,14 @@ def get_remaining_sos(avg_opponent_power=None):
         if len(sos_summary) != 12:
             print(f"Warning: Expected 12 teams, found {len(sos_summary)}")
         
-        # Select final columns for MongoDB
+        # Select final columns
         final_columns = ['Team_Number', 'Team_Name', 'Total_Opponent_Power', 
                         'Avg_Opponent_Power', 'SOS_Percentile', 'SOS_Rank', 
                         'Games_Remaining', 'Schedule_Difficulty']
         
         sos_final = sos_summary[final_columns].copy()
         
-        # Cast Team_Number as string for MongoDB storage
+        # Cast Team_Number as string for DynamoDB storage
         sos_final['Team_Number'] = sos_final['Team_Number'].astype(str)
         
         # Display results
@@ -392,9 +390,8 @@ def main():
         
         if not sos_df.empty:
             # Save to database
-            clear_mongo(MONGO_DB, 'remaining_sos')
-            write_mongo(MONGO_DB, sos_df, 'remaining_sos')
-            print(f"\nRemaining SOS analysis complete - {len(sos_df)} teams saved to MongoDB")
+            storage.write_live_data('remaining_sos', sos_df)
+            print(f"\nRemaining SOS analysis complete - {len(sos_df)} teams saved to DynamoDB")
         else:
             print("No SOS data to save")
         

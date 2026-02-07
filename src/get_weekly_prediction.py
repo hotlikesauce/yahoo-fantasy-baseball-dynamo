@@ -3,26 +3,24 @@ import bs4 as bs
 import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
-from pymongo import MongoClient
 import time, datetime, os, sys
-import certifi
 from dotenv import load_dotenv
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from datetime_utils import set_this_week
 from manager_dict import manager_dict
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from yahoo_utils import *
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
+load_dotenv()
 YAHOO_LEAGUE_ID = os.environ.get('YAHOO_LEAGUE_ID')
-MONGO_DB = os.environ.get('MONGO_DB')
+
+storage = DynamoStorageManager(region='us-west-2')
 this_week = set_this_week()
 
 
@@ -126,7 +124,8 @@ def get_matchups(matchups_df):
     manager_dict_df = pd.DataFrame(manager_dict.items(), columns=columns)
 
     matchups_df = matchups_df.drop_duplicates(subset=['Week', 'Team_Number', 'Opponent_Team_Number'])
-    matchups_df = matchups_df.drop('_id', axis=1)
+    if '_id' in matchups_df.columns:
+        matchups_df = matchups_df.drop('_id', axis=1)
     
     return matchups_df
 
@@ -208,38 +207,21 @@ def get_records(last_four_weeks_stats_df):
 
 
 def main():
-    data = get_mongo_data(MONGO_DB, 'coefficient', '')
-    matchup_data = get_mongo_data(MONGO_DB, 'schedule', '')
+    data = storage.get_historical_data('coefficient')
+    matchup_data = storage.get_schedule_data()
     try:
         this_week = set_this_week()
         # Get coefficient of last 4 weeks
         last_four_weeks_coefficient_df = last_four_weeks_coefficient(data)
         print(last_four_weeks_coefficient_df)
-        clear_mongo(MONGO_DB, 'Coefficient_Last_Four')
-        write_mongo(MONGO_DB, last_four_weeks_coefficient_df, 'Coefficient_Last_Four')
+        storage.write_live_data('Coefficient_Last_Four', last_four_weeks_coefficient_df)
 
         this_week = set_this_week()
         # Get coefficient of last 2 weeks
         last_two_weeks_coefficient_df = last_two_weeks_coefficient(data)
         print(last_two_weeks_coefficient_df)
-        clear_mongo(MONGO_DB, 'Coefficient_Last_Two')
-        write_mongo(MONGO_DB, last_two_weeks_coefficient_df, 'Coefficient_Last_Two')
+        storage.write_live_data('Coefficient_Last_Two', last_two_weeks_coefficient_df)
         
-        # # Get matchups/schedule and last 4 weeks avg stats
-        # matchups_df = get_matchups(matchup_data)
-        # last_four_weeks_avg = last_four_weeks(matchups_df)
-        # print(last_four_weeks_avg)
-        
-        # # Compare based on matchups
-        # predictions_df = predict_matchups(last_four_weeks_avg)
-        # clear_mongo(MONGO_DB, 'Weekly_Predictions_Stats')
-        # write_mongo(MONGO_DB, predictions_df, 'Weekly_Predictions_Stats')
-
-        # # Get stats and predicted records
-        # records_df = get_records(predictions_df)
-        # clear_mongo(MONGO_DB, 'Weekly_Predictions_Records')
-        # write_mongo(MONGO_DB, records_df, 'Weekly_Predictions_Records')
-
     except Exception as e:
         filename = os.path.basename(__file__)
         exc_type, exc_obj, exc_tb = sys.exc_info()

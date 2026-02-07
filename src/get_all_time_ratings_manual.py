@@ -4,27 +4,26 @@ import urllib
 import urllib.request
 from urllib.request import urlopen as uReq
 from functools import reduce
-from pymongo import MongoClient
-import certifi
-import os,sys
+from datetime import datetime
+import os, sys
 from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 import warnings
 # Ignore the FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Local Modules - email utils for failure emails, mongo utils to 
+# Local Modules
 from email_utils import send_failure_email
 from manager_dict import manager_dict
-from mongo_utils import *
+from storage_manager import DynamoStorageManager
 from datetime_utils import *
 from yahoo_utils import *
 from categories_dict import Low_Categories
 
 # Load obfuscated strings from .env file
-load_dotenv()    
-MONGO_CLIENT = os.environ.get('MONGO_CLIENT')
-MONGO_DB = 'Summertime_Sadness_All_Time'
+load_dotenv()
+
+storage = DynamoStorageManager(region='us-west-2')
 
 #league_tuples_all = [('2019','14350'),('2018','885'),('2017','22458'),('2016','10284')]
 #league_tuples = ('2023','23893'),('2022','11602'),('2021','23999')
@@ -157,12 +156,11 @@ def get_normalized_ranks(all_time_rank_df):
 
 def main():
     try:
-        #clear_mongo('Summertime_Sadness_All_Time','all_time_ranks_normalized')
-        for year in range(2024,2025):
-            #clear_mongo_query('Summertime_Sadness_All_Time','all_time_ranks_normalized','"Week"'+str(year))
+        current_year = datetime.now().year
+        for year in range(current_year, current_year+1):
             all_time_rank_df = get_stats(year)
             normalized_ranks_df = get_normalized_ranks(all_time_rank_df)
-            write_mongo(MONGO_DB,normalized_ranks_df,'all_time_ranks_normalized')
+            storage.write_all_time_data(year, normalized_ranks_df)
             print(f'Write Normalized Ranks')
                     
             
