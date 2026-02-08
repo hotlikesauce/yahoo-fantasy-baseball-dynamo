@@ -1,0 +1,355 @@
+import boto3, json, sys, io
+from collections import Counter
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+table = dynamodb.Table('FantasyBaseball-AllTimeRankings')
+
+# ============================================================
+# 1. Pull all champion data
+# ============================================================
+champs = []
+r = table.scan(FilterExpression='attribute_exists(Champion)')
+champs.extend(r['Items'])
+while 'LastEvaluatedKey' in r:
+    r = table.scan(FilterExpression='attribute_exists(Champion)', ExclusiveStartKey=r['LastEvaluatedKey'])
+    champs.extend(r['Items'])
+champs.sort(key=lambda x: x['Year'])
+
+current_champ = champs[-1] if champs else None
+print(f"Current champion: {current_champ['Team']} ({current_champ.get('Manager','?')}) - {current_champ['Year']}")
+
+# Title counts
+titles = Counter(c.get('Manager', '?') for c in champs)
+title_leader = titles.most_common(1)[0]
+title_list = titles.most_common()
+
+# ============================================================
+# 2. Pull top seasons (all-time best scores)
+# ============================================================
+all_items = []
+r = table.scan()
+all_items.extend(r['Items'])
+while 'LastEvaluatedKey' in r:
+    r = table.scan(ExclusiveStartKey=r['LastEvaluatedKey'])
+    all_items.extend(r['Items'])
+
+# Filter to items with Score_Sum
+scored = [i for i in all_items if 'Score_Sum' in i]
+scored.sort(key=lambda x: float(x['Score_Sum']), reverse=True)
+top_season = scored[0] if scored else None
+
+# Unique years and managers
+all_years = sorted(set(i['Year'] for i in all_items))
+all_managers = sorted(set(i.get('Manager', '?') for i in all_items if i.get('Manager', '?') != '?'))
+
+print(f"Top season: {top_season['Team']} ({top_season['Year']}) - {float(top_season['Score_Sum']):.0f}")
+print(f"Years: {all_years[0]}-{all_years[-1]} ({len(all_years)} seasons)")
+print(f"Managers: {len(all_managers)}")
+
+# ============================================================
+# 3. Recent champions (last 5)
+# ============================================================
+recent_champs = champs[-5:]
+recent_champs_html = ""
+for c in reversed(recent_champs):
+    score = c.get('Score_Sum', c.get('Score', ''))
+    try:
+        score = f"{float(score):.0f}"
+    except (ValueError, TypeError):
+        score = "N/A"
+    recent_champs_html += f'<div class="champ-row"><span class="champ-year">{c["Year"]}</span><span class="champ-name">{c["Team"]}</span><span class="champ-mgr">{c.get("Manager","?")}</span></div>'
+
+# ============================================================
+# 4. Title leaderboard
+# ============================================================
+title_board_html = ""
+for mgr, count in title_list[:6]:
+    bar_width = int(count / title_list[0][1] * 100)
+    title_board_html += f'<div class="title-row"><span class="title-name">{mgr}</span><div class="title-bar-bg"><div class="title-bar" style="width:{bar_width}%">{count}</div></div></div>'
+
+# ============================================================
+# 5. Generate HTML
+# ============================================================
+html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Summertime Sadness Fantasy Baseball</title>
+<style>
+  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+  body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }}
+  .container {{ max-width: 1400px; margin: 0 auto; padding: 24px; }}
+
+  .hero {{
+    text-align: center;
+    padding: 60px 24px 48px;
+    position: relative;
+  }}
+  .hero h1 {{
+    font-size: 3em;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }}
+  .hero p {{
+    color: #64748b;
+    font-size: 1.15em;
+  }}
+  .hero .est {{
+    color: #475569;
+    font-size: 0.85em;
+    margin-top: 4px;
+  }}
+
+  .stats-grid {{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+  }}
+  .stat-card {{
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #334155;
+    transition: border-color 0.2s, transform 0.2s;
+  }}
+  .stat-card:hover {{
+    border-color: #475569;
+    transform: translateY(-2px);
+  }}
+  .stat-card .label {{
+    color: #64748b;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }}
+  .stat-card .value {{
+    font-size: 1.8em;
+    font-weight: 700;
+  }}
+  .stat-card .sub {{
+    color: #94a3b8;
+    font-size: 0.9em;
+    margin-top: 4px;
+  }}
+  .gold {{ color: #fbbf24; }}
+  .blue {{ color: #3b82f6; }}
+  .green {{ color: #22c55e; }}
+  .purple {{ color: #a78bfa; }}
+  .cyan {{ color: #22d3ee; }}
+
+  h2 {{
+    color: #38bdf8;
+    font-size: 1.3em;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 8px;
+    margin: 40px 0 16px;
+  }}
+
+  .two-col {{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }}
+  @media (max-width: 768px) {{
+    .two-col {{ grid-template-columns: 1fr; }}
+  }}
+
+  .panel {{
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #334155;
+  }}
+  .panel h3 {{
+    color: #e2e8f0;
+    font-size: 1.05em;
+    margin-bottom: 16px;
+  }}
+
+  .champ-row {{
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #1e293b;
+    gap: 12px;
+  }}
+  .champ-row:last-child {{ border-bottom: none; }}
+  .champ-year {{
+    color: #a78bfa;
+    font-weight: 700;
+    font-size: 0.95em;
+    min-width: 40px;
+  }}
+  .champ-name {{
+    color: #e2e8f0;
+    flex: 1;
+    font-size: 0.95em;
+  }}
+  .champ-mgr {{
+    color: #64748b;
+    font-size: 0.85em;
+  }}
+
+  .title-row {{
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    gap: 12px;
+  }}
+  .title-name {{
+    min-width: 80px;
+    color: #e2e8f0;
+    font-size: 0.95em;
+    font-weight: 500;
+  }}
+  .title-bar-bg {{
+    flex: 1;
+    background: #0f172a;
+    border-radius: 6px;
+    height: 28px;
+    overflow: hidden;
+  }}
+  .title-bar {{
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: white;
+    min-width: 30px;
+  }}
+
+  .nav-cards {{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+  }}
+  .nav-card {{
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 28px;
+    border: 1px solid #334155;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+    display: block;
+  }}
+  .nav-card:hover {{
+    border-color: #3b82f6;
+    transform: translateY(-3px);
+  }}
+  .nav-card h3 {{
+    color: #e2e8f0;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }}
+  .nav-card p {{
+    color: #94a3b8;
+    font-size: 0.9em;
+    line-height: 1.5;
+  }}
+  .nav-card .arrow {{
+    color: #3b82f6;
+    font-size: 0.85em;
+    margin-top: 12px;
+    display: block;
+  }}
+
+  .coming-soon {{
+    text-align: center;
+    padding: 40px;
+    color: #475569;
+    font-size: 0.95em;
+  }}
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+
+<div class="hero">
+  <h1>Summertime Sadness</h1>
+  <p>Fantasy Baseball Analytics</p>
+  <p class="est">Est. 2007 &middot; {len(all_years)} Seasons &middot; {len(all_managers)} Managers</p>
+</div>
+
+<div class="container">
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="label">2025 Champion</div>
+    <div class="value gold">{current_champ['Team'] if current_champ else 'TBD'}</div>
+    <div class="sub">{current_champ.get('Manager','?') if current_champ else ''} &middot; {len([c for c in champs if c.get('Manager') == current_champ.get('Manager')])} career titles</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Most Titles</div>
+    <div class="value blue">{title_leader[0]} ({title_leader[1]})</div>
+    <div class="sub">{', '.join(f'{m} ({c})' for m, c in title_list[1:4])}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">All-Time Best Season</div>
+    <div class="value green">{float(top_season['Score_Sum']):.0f}</div>
+    <div class="sub">{top_season['Team']} ({top_season['Year']})</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">League History</div>
+    <div class="value purple">{len(all_years)} Seasons</div>
+    <div class="sub">{all_years[0]}-{all_years[-1]} &middot; {len(champs)} champions crowned</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="panel">
+    <h3>Recent Champions</h3>
+    {recent_champs_html}
+  </div>
+  <div class="panel">
+    <h3>Title Leaders</h3>
+    {title_board_html}
+  </div>
+</div>
+
+<h2>Explore</h2>
+<div class="nav-cards">
+  <a href="all_time_rankings.html" class="nav-card">
+    <h3>All-Time Records</h3>
+    <p>Top 20 greatest seasons, champions by year, career averages, and the complete historical record from 2007-2025.</p>
+    <span class="arrow">View records &rarr;</span>
+  </a>
+  <a href="season_trends_2025.html" class="nav-card">
+    <h3>2025 Season Trends</h3>
+    <p>Week-over-week power scores and power rankings for every team. Toggle between score and rank views.</p>
+    <span class="arrow">View trends &rarr;</span>
+  </a>
+  <a href="luck_analysis_2025.html" class="nav-card">
+    <h3>2025 Luck & Matchup Analysis</h3>
+    <p>Luck coefficients, all-play records, xWins, schedule strength, what-if standings, best/worst matchups, and weekly dominators.</p>
+    <span class="arrow">View analysis &rarr;</span>
+  </a>
+  <div class="nav-card" style="cursor: default; opacity: 0.5;">
+    <h3>Weekly Recaps</h3>
+    <p>AI-generated weekly summaries with highlights, upsets, and storylines. Coming soon.</p>
+    <span class="arrow" style="color: #475569;">Coming soon</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>"""
+
+with open(r'c:\Users\taylor.ward\Documents\yahoo-fantasy-baseball-dynamo\docs\index.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+
+print(f'\nGenerated docs/index.html')

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Summertime Sadness - 2026 Draft Capital</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 2em; margin-bottom: 4px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  h2 { text-align: center; color: #64748b; font-size: 1.1em; margin-bottom: 24px; }
+  h3 { color: #38bdf8; margin: 32px 0 12px; font-size: 1.3em; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+  .section-desc { color: #94a3b8; font-size: 0.9em; margin-bottom: 16px; }
+  .chart-box { background: #1e293b; border-radius: 12px; padding: 24px; margin-bottom: 24px; position: relative; height: 450px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  th { text-align: left; padding: 10px 8px; border-bottom: 2px solid #334155; color: #94a3b8; font-size: 0.8em; text-transform: uppercase; }
+  td { padding: 6px 8px; border-bottom: 1px solid #1e293b; font-size: 0.9em; }
+  tr:hover td { background: #1e293b; }
+  .rank { color: #64748b; font-weight: 600; width: 36px; }
+
+  /* Grid cells */
+  .grid-table { overflow-x: auto; margin-bottom: 24px; }
+  .grid-table table { min-width: 900px; }
+  .grid-table th { font-size: 0.72em; padding: 8px 4px; text-align: center; min-width: 32px; }
+  .grid-table th:first-child { text-align: left; min-width: 180px; }
+  .grid-table th.keeper { color: #475569; font-style: italic; }
+  .grid-table td { text-align: center; padding: 6px 4px; font-size: 0.85em; font-weight: 600; }
+  .team-cell { text-align: left !important; white-space: nowrap; font-weight: 500 !important; }
+  .cell-zero { background: #ef444422; color: #ef4444; }
+  .cell-one { color: #64748b; }
+  .cell-two { background: #4ade8018; color: #4ade80; }
+  .cell-three { background: #22c55e44; color: #4ade80; font-weight: 800; text-shadow: 0 0 6px #22c55e66; }
+  .total-cell { font-weight: 700; color: #e2e8f0; }
+  .capital-cell { font-weight: 700; color: #34d399; }
+  .pos { color: #22c55e; font-weight: 700; }
+  .neg { color: #ef4444; font-weight: 700; }
+  .even { color: #64748b; }
+  .notes { font-size: 0.82em; }
+  .note-extra { color: #22c55e; }
+  .note-missing { color: #ef4444; opacity: 0.7; }
+
+  th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 14px; }
+  th.sortable:hover { color: #e2e8f0; }
+  th.sortable::after { content: '\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }
+  th.sortable.asc::after { content: '\2191'; opacity: 0.8; }
+  th.sortable.desc::after { content: '\2193'; opacity: 0.8; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<h2>2026 Draft Capital</h2>
+
+<h3>Draft Capital Rankings</h3>
+<p class="section-desc">Picks are weighted exponentially &mdash; early rounds are worth significantly more. Round 1 = 103 pts, Round 3 = 89, Round 7 = 64, Round 15 = 23, Round 22 = 1. Standard team (no trades) = 960 pts.</p>
+<div class="chart-box">
+<canvas id="capitalChart"></canvas>
+</div>
+
+<h3>Draft Capital Summary</h3>
+<table>
+<tr><th class="sortable" data-type="num">#</th><th class="sortable" data-type="str">Team</th><th class="sortable" data-type="num">Capital</th><th class="sortable" data-type="num">vs Std</th><th class="sortable" data-type="num">Total Picks</th><th class="sortable" data-type="num">Bonus R1-10</th><th class="sortable" data-type="num">Rounds Empty</th><th>Notable</th></tr>
+<tr><td class="rank">1</td><td><span style="color:#ef4444">&#9679;</span> Dan Doodletard</td><td class="capital-cell">1347</td><td class="pos">+387</td><td>22</td><td>7</td><td>8</td><td class="notes"><span class="note-extra">4x R6, 2x R7, 4x R9</span> <span class="note-missing">No R15</span></td></tr><tr><td class="rank">2</td><td><span style="color:#f97316">&#9679;</span> Serafini Hit Squad</td><td class="capital-cell">1219</td><td class="pos">+259</td><td>22</td><td>5</td><td>5</td><td class="notes"><span class="note-extra">2x R5, 2x R7, 2x R8, 3x R9</span></td></tr><tr><td class="rank">3</td><td><span style="color:#eab308">&#9679;</span> SQUEEZE AGS</td><td class="capital-cell">1137</td><td class="pos">+177</td><td>22</td><td>2</td><td>3</td><td class="notes"><span class="note-extra">3x R3</span> <span class="note-missing">No R15</span></td></tr><tr><td class="rank">4</td><td><span style="color:#22c55e">&#9679;</span> OG9️⃣</td><td class="capital-cell">971</td><td class="pos">+11</td><td>22</td><td>1</td><td>1</td><td class="notes"><span class="note-extra">2x R10</span> <span class="note-missing">No R12</span></td></tr><tr><td class="rank">5</td><td><span style="color:#14b8a6">&#9679;</span> Getting Plowed Again.</td><td class="capital-cell">960</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">6</td><td><span style="color:#3b82f6">&#9679;</span> Hatfield Hurlers</td><td class="capital-cell">960</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">7</td><td><span style="color:#8b5cf6">&#9679;</span> Ian Cumsler</td><td class="capital-cell">960</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">8</td><td><span style="color:#ec4899">&#9679;</span> ¯\\_(ツ)_/¯</td><td class="capital-cell">900</td><td class="neg">-60</td><td>22</td><td>0</td><td>2</td><td class="notes"> <span class="note-missing">No R9, R10</span></td></tr><tr><td class="rank">9</td><td><span style="color:#06b6d4">&#9679;</span> Moniebol 🐳</td><td class="capital-cell">865</td><td class="neg">-95</td><td>22</td><td>0</td><td>4</td><td class="notes"> <span class="note-missing">No R9, R11, R13</span></td></tr><tr><td class="rank">10</td><td><span style="color:#f59e0b">&#9679;</span> The Rosterbation Station</td><td class="capital-cell">826</td><td class="neg">-134</td><td>22</td><td>0</td><td>3</td><td class="notes"><span class="note-extra">3x R16</span> <span class="note-missing">No R6, R8, R9</span></td></tr><tr><td class="rank">11</td><td><span style="color:#10b981">&#9679;</span> WEMBY SZN</td><td class="capital-cell">702</td><td class="neg">-258</td><td>22</td><td>0</td><td>5</td><td class="notes"><span class="note-extra">3x R18</span> <span class="note-missing">No R3, R6, R7, R9, R12</span></td></tr><tr><td class="rank">12</td><td><span style="color:#a855f7">&#9679;</span> Floppy Salami Time</td><td class="capital-cell">673</td><td class="neg">-287</td><td>22</td><td>0</td><td>5</td><td class="notes"> <span class="note-missing">No R3, R5, R6, R7, R9</span></td></tr>
+</table>
+
+<h3>Pick Grid</h3>
+<p class="section-desc">Number of picks each team holds per round. R1-R2 are keeper rounds (not tradeable) &mdash; R3 is effectively the first available draft pick. <span class="cell-zero" style="padding:2px 6px; border-radius:4px;">0 = traded away</span> &nbsp; <span style="color:#64748b">1 = standard</span> &nbsp; <span class="cell-two" style="padding:2px 6px; border-radius:4px;">2 = extra</span> &nbsp; <span class="cell-three" style="padding:2px 6px; border-radius:4px;">3+ = stockpiled</span></p>
+<div class="grid-table">
+<table>
+<tr><th>Team</th><th class="keeper">R1</th><th class="keeper">R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th>R11</th><th>R12</th><th>R13</th><th>R14</th><th>R15</th><th>R16</th><th>R17</th><th>R18</th><th>R19</th><th>R20</th><th>R21</th><th>R22</th><th>Total</th><th>Capital</th><th>+/-</th></tr>
+<tr><td class="team-cell"><span style="color:#ef4444">&#9679;</span> Dan Doodletard</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-three">4</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-three">4</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="total-cell">22</td><td class="capital-cell">1347</td><td class="pos">+387</td></tr><tr><td class="team-cell"><span style="color:#f97316">&#9679;</span> Serafini Hit Squad</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-two">2</td><td class="cell-three">3</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="total-cell">22</td><td class="capital-cell">1219</td><td class="pos">+259</td></tr><tr><td class="team-cell"><span style="color:#eab308">&#9679;</span> SQUEEZE AGS</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-three">3</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1137</td><td class="pos">+177</td></tr><tr><td class="team-cell"><span style="color:#22c55e">&#9679;</span> OG9️⃣</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">971</td><td class="pos">+11</td></tr><tr><td class="team-cell"><span style="color:#14b8a6">&#9679;</span> Getting Plowed Again.</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">960</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#3b82f6">&#9679;</span> Hatfield Hurlers</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">960</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#8b5cf6">&#9679;</span> Ian Cumsler</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">960</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#ec4899">&#9679;</span> ¯\\_(ツ)_/¯</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">900</td><td class="neg">-60</td></tr><tr><td class="team-cell"><span style="color:#06b6d4">&#9679;</span> Moniebol 🐳</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-two">2</td><td class="total-cell">22</td><td class="capital-cell">865</td><td class="neg">-95</td></tr><tr><td class="team-cell"><span style="color:#f59e0b">&#9679;</span> The Rosterbation Station</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-three">3</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">826</td><td class="neg">-134</td></tr><tr><td class="team-cell"><span style="color:#10b981">&#9679;</span> WEMBY SZN</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-three">3</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">702</td><td class="neg">-258</td></tr><tr><td class="team-cell"><span style="color:#a855f7">&#9679;</span> Floppy Salami Time</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="total-cell">22</td><td class="capital-cell">673</td><td class="neg">-287</td></tr>
+</table>
+</div>
+
+</div>
+<script>
+new Chart(document.getElementById('capitalChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ["Dan Doodletard", "Serafini Hit Squad", "SQUEEZE AGS", "OG9\ufe0f\u20e3", "Getting Plowed Again.", "Hatfield Hurlers", "Ian Cumsler", "\u00af\\\\_(\u30c4)_/\u00af", "Moniebol \ud83d\udc33", "The Rosterbation Station", "WEMBY SZN", "Floppy Salami Time"],
+    datasets: [{
+      label: 'Draft Capital',
+      data: [1347, 1219, 1137, 971, 960, 960, 960, 900, 865, 826, 702, 673],
+      backgroundColor: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#f59e0b", "#10b981", "#a855f7"],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    layout: { padding: { top: 20, right: 20 } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
+        borderColor: '#475569', borderWidth: 1,
+        callbacks: {
+          label: ctx => {
+            const val = ctx.parsed.x;
+            const diff = val - 960;
+            const sign = diff > 0 ? '+' : '';
+            return 'Capital: ' + val + ' (' + sign + diff + ' vs standard)';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#94a3b8' },
+        grid: { color: '#334155' },
+        title: { display: true, text: 'Draft Capital Points', color: '#64748b' }
+      },
+      y: {
+        ticks: { color: '#e2e8f0', font: { size: 11 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+// Reference line at standard capital
+const capitalChart = Chart.getChart('capitalChart');
+const origDraw = capitalChart.draw.bind(capitalChart);
+capitalChart.draw = function() {
+  origDraw();
+  const ctx = this.ctx;
+  const xScale = this.scales.x;
+  const yScale = this.scales.y;
+  const x = xScale.getPixelForValue(960);
+  ctx.save();
+  ctx.strokeStyle = '#94a3b866';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(x, yScale.top);
+  ctx.lineTo(x, yScale.bottom);
+  ctx.stroke();
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px Segoe UI';
+  ctx.textAlign = 'center';
+  ctx.fillText('Standard (960)', x, yScale.top - 6);
+  ctx.restore();
+};
+capitalChart.draw();
+
+// Sortable tables
+document.querySelectorAll('th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const tbl = th.closest('table');
+    const idx = Array.from(th.parentElement.children).indexOf(th);
+    const rows = Array.from(tbl.querySelectorAll('tr')).slice(1);
+    const type = th.dataset.type || 'str';
+    const isAsc = th.classList.contains('asc');
+    th.parentElement.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+    th.classList.add(isAsc ? 'desc' : 'asc');
+    const getVal = (row, i) => {
+      const text = row.children[i].textContent.trim();
+      if (type === 'num') return parseFloat(text.replace(/[+#]/g, '')) || 0;
+      return text.toLowerCase();
+    };
+    rows.sort((a, b) => {
+      const va = getVal(a, idx), vb = getVal(b, idx);
+      const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+      return isAsc ? -cmp : cmp;
+    });
+    const tbody = tbl.querySelector('tbody') || tbl;
+    rows.forEach(r => tbody.appendChild(r));
+  });
+});
+</script>
+</body>
+</html>

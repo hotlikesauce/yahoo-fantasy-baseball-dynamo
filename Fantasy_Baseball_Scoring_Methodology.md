@@ -143,7 +143,7 @@ Team A has the 3rd-best statistical performance but is ranked 7th in the league.
 - **Python pandas**: Data manipulation and analysis
 - **scikit-learn MinMaxScaler**: Normalization calculations
 - **BeautifulSoup**: Web scraping for live data
-- **MongoDB**: Data storage and historical tracking
+- **AWS DynamoDB**: Data storage and historical tracking
 
 ### Output Format
 - **CSV Export**: Comprehensive spreadsheet with all metrics

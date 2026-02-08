@@ -36,7 +36,7 @@ class DynamoStorageManager:
     """
     DynamoDB storage manager for Yahoo Fantasy Baseball.
 
-    Uses 5 DynamoDB tables to replace the 19 MongoDB collections.
+    Uses 5 DynamoDB tables for all data storage.
     """
 
     LIVE_DATA_TYPES = {

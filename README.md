@@ -3,9 +3,9 @@
 
 ## Description
 
-This python web scraping project will help you aggregate your Yahoo Fantasy Baseball League stats and create datasets for power rankings, ELO calculations, season trends, and live standings. Additionally, it will create an expected wins dataset to give you an idea of an All-Play record on a week-by-week basis. This project has been created to write to a MongoDB but can be edited to use any database technology you would like.
+This python web scraping project will help you aggregate your Yahoo Fantasy Baseball League stats and create datasets for power rankings, ELO calculations, season trends, and live standings. Additionally, it will create an expected wins dataset to give you an idea of an All-Play record on a week-by-week basis. Data is stored in AWS DynamoDB.
 
-Technologies Used: Python, MongoDB
+Technologies Used: Python, AWS DynamoDB
 
 ## Table of Contents
 
@@ -21,16 +21,14 @@ Technologies Used: Python, MongoDB
 - Create a .env file with the following variables to help with obfuscation of passwords and emails
   - GMAIL = 'Your Email'<br>
   - GMAIL_PASSWORD = 'Your App Password From Gmail'<br>
-  - MONGO_CLIENT = 'Your mongodb client string'
   - YAHOO_LEAGUE_ID = 'Your Yahoo Leage ID string (https://baseball.fantasysports.yahoo.com/b1/#####/)'
-  - MONGO_DB = 'Your MongoDB Name'
 
 - The way it's currently set up, you will need to manipulate your gmail account to allow for third party apps to send emails on your behalf for failure notifications
 
 ## Usage
 
 ### Local Usage
-- Run the Live Standings script every hour as a scheduled task to push data to MongoDB
+- Run the Live Standings script every hour as a scheduled task to push data to DynamoDB
 ```bash
 python get_live_standings.py
 ```
@@ -74,14 +72,7 @@ This creates two Lambda functions:
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ### Data Visualization
-- Use MongoDB Charts with your data for live-updating dashboards
-  - [Live Standings](https://charts.mongodb.com/charts-pc-kmmrs/public/dashboards/9356d15c-ebdd-4ac3-a061-858c0a3b5026)
-  
-  - ![live](https://github.com/hotlikesauce/YahooFantasyBaseball_2023/assets/46724986/152959ea-8c2e-4ae6-82b3-079a53222f2b)
- 
-  - [Stat Analysis](https://charts.mongodb.com/charts-pc-kmmrs/public/dashboards/47923ebc-cab2-4670-96a0-cbb87193490a)
-
-  - ![demo](https://github.com/hotlikesauce/YahooFantasyBaseball_2023/assets/46724986/5d4fcfeb-33ee-4dad-88d6-18de16486e26)
+- Data is stored in AWS DynamoDB and can be visualized with your preferred dashboarding tool
 
 ## Contributing
 
