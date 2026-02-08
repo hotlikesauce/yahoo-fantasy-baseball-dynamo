@@ -8,6 +8,24 @@
   body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }
   .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
 
+  .year20-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    font-weight: 900;
+    font-size: 1.4em;
+    letter-spacing: 0.12em;
+    padding: 10px 32px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.3), 0 0 60px rgba(251, 191, 36, 0.1);
+    animation: glow20 3s ease-in-out infinite alternate;
+  }
+  @keyframes glow20 {
+    from { box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 0 40px rgba(251, 191, 36, 0.1); }
+    to { box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), 0 0 60px rgba(251, 191, 36, 0.15); }
+  }
+
   .hero {
     text-align: center;
     padding: 60px 24px 48px;
@@ -206,9 +224,10 @@
 <script src="nav.js"></script>
 
 <div class="hero">
+  <div class="year20-badge">YEAR 20</div>
   <h1>Summertime Sadness</h1>
   <p>Fantasy Baseball Analytics</p>
-  <p class="est">Est. 2007 &middot; 19 Seasons &middot; 27 Managers</p>
+  <p class="est">Est. 2007 &middot; Entering Our 20th Year &middot; 27 Managers</p>
 </div>
 
 <div class="container">
@@ -227,12 +246,12 @@
   <div class="stat-card">
     <div class="label">All-Time Best Season</div>
     <div class="value green">1168</div>
-    <div class="sub">¯\_(ツ)_/¯🏆 (2024)</div>
+    <div class="sub">¯\_(ツ)_/¯ &middot; Mike (2024)</div>
   </div>
   <div class="stat-card">
     <div class="label">League History</div>
-    <div class="value purple">19 Seasons</div>
-    <div class="sub">2007-2025 &middot; 19 champions crowned</div>
+    <div class="value purple">20th Year</div>
+    <div class="sub">Est. 2007 &middot; 19 champions crowned</div>
   </div>
 </div>
 
@@ -243,7 +262,7 @@
   </div>
   <div class="panel">
     <h3>Title Leaders</h3>
-    <div class="title-row"><span class="title-name">Mike</span><div class="title-bar-bg"><div class="title-bar" style="width:100%">4</div></div></div><div class="title-row"><span class="title-name">Kevin</span><div class="title-bar-bg"><div class="title-bar" style="width:75%">3</div></div></div><div class="title-row"><span class="title-name">Stephen</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Matt</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Taylor</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Andrew D</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div>
+    <div class="title-row"><span class="title-name">Mike</span><div class="title-bar-bg"><div class="title-bar" style="width:100%">4</div></div></div><div class="title-row"><span class="title-name">Kevin</span><div class="title-bar-bg"><div class="title-bar" style="width:75%">3</div></div></div><div class="title-row"><span class="title-name">Stephen</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Matt</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Taylor</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Josh</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div><div class="title-row"><span class="title-name">Andrew D</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div>
   </div>
 </div>
 

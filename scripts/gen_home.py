@@ -82,6 +82,24 @@ html = f"""<!DOCTYPE html>
   body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }}
   .container {{ max-width: 1400px; margin: 0 auto; padding: 24px; }}
 
+  .year20-badge {{
+    display: inline-block;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #0f172a;
+    font-weight: 900;
+    font-size: 1.4em;
+    letter-spacing: 0.12em;
+    padding: 10px 32px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.3), 0 0 60px rgba(251, 191, 36, 0.1);
+    animation: glow20 3s ease-in-out infinite alternate;
+  }}
+  @keyframes glow20 {{
+    from {{ box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 0 40px rgba(251, 191, 36, 0.1); }}
+    to {{ box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), 0 0 60px rgba(251, 191, 36, 0.15); }}
+  }}
+
   .hero {{
     text-align: center;
     padding: 60px 24px 48px;
@@ -280,9 +298,10 @@ html = f"""<!DOCTYPE html>
 <script src="nav.js"></script>
 
 <div class="hero">
+  <div class="year20-badge">YEAR 20</div>
   <h1>Summertime Sadness</h1>
   <p>Fantasy Baseball Analytics</p>
-  <p class="est">Est. 2007 &middot; {len(all_years)} Seasons &middot; {len(all_managers)} Managers</p>
+  <p class="est">Est. 2007 &middot; Entering Our 20th Year &middot; {len(all_managers)} Managers</p>
 </div>
 
 <div class="container">
@@ -301,12 +320,12 @@ html = f"""<!DOCTYPE html>
   <div class="stat-card">
     <div class="label">All-Time Best Season</div>
     <div class="value green">{float(top_season['Score_Sum']):.0f}</div>
-    <div class="sub">{top_season['Team']} ({top_season['Year']})</div>
+    <div class="sub">{top_season['Team'].replace('🏆','').strip()} &middot; {top_season.get('Manager','?')} ({top_season['Year']})</div>
   </div>
   <div class="stat-card">
     <div class="label">League History</div>
-    <div class="value purple">{len(all_years)} Seasons</div>
-    <div class="sub">{all_years[0]}-{all_years[-1]} &middot; {len(champs)} champions crowned</div>
+    <div class="value purple">20th Year</div>
+    <div class="sub">Est. 2007 &middot; {len(champs)} champions crowned</div>
   </div>
 </div>
 
