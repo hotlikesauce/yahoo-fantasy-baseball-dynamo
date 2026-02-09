@@ -140,6 +140,9 @@
             <a href="all_time_rankings.html" class="ss-nav-link${isActive('all_time_rankings.html')}">All-Time Records</a>
           </li>
           <li class="ss-nav-item">
+            <a href="h2h_records.html" class="ss-nav-link${isActive('h2h_records.html')}">H2H Records</a>
+          </li>
+          <li class="ss-nav-item">
             <a class="ss-nav-link has-dropdown${isActive('draft_picks_2026.html') ? ' active' : ''}">2026 Season</a>
             <div class="ss-dropdown">
               <a href="draft_picks_2026.html" class="${isActive('draft_picks_2026.html').trim()}">Draft Capital</a>

@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Summertime Sadness - H2H Records</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+    h2 { font-size: 1.7em; margin-bottom: 6px; }
+    h3 { color: #22d3ee; font-size: 1.15em; margin: 40px 0 10px; }
+    .section-desc { color: #94a3b8; font-size: 0.92em; margin-bottom: 18px; line-height: 1.5; }
+    .subtitle { color: #94a3b8; font-size: 0.95em; margin-bottom: 24px; }
+
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-bar label { color: #94a3b8; font-size: 0.9em; }
+    .filter-btn {
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { color: #e2e8f0; border-color: #475569; }
+    .filter-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+    .matrix-wrap { overflow-x: auto; margin-bottom: 40px; }
+    .matrix { border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }
+    .matrix th, .matrix td { padding: 7px 10px; text-align: center; border: 1px solid #1e293b; }
+    .matrix th { background: #0f172a; color: #94a3b8; font-weight: 600; position: sticky; top: 0; }
+    .matrix th.team-col { text-align: left; min-width: 100px; }
+    .matrix td.team-cell { text-align: left; font-weight: 600; color: #e2e8f0; background: #0f172a; position: sticky; left: 0; z-index: 1; }
+    .matrix td.self { background: #1e293b; color: #334155; }
+    .matrix td.winning { background: #22c55e15; color: #4ade80; }
+    .matrix td.losing { background: #ef444415; color: #f87171; }
+    .matrix td.even { background: #eab30815; color: #fbbf24; }
+    .matrix td.none { color: #475569; }
+    .matrix .record-line { font-size: 0.95em; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    th { background: #1e293b; color: #94a3b8; font-weight: 600; text-align: left;
+         padding: 10px 14px; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.03em; }
+    td { padding: 10px 14px; border-bottom: 1px solid #1e293b; font-size: 0.92em; }
+    tr:hover { background: #1e293b55; }
+    .rank { color: #64748b; width: 40px; }
+    .score { color: #34d399; font-weight: 600; }
+    .hot-val { color: #4ade80; font-weight: 600; }
+    .close-margin { color: #fbbf24; font-weight: 600; }
+
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { color: #e2e8f0; }
+    .sortable::after { content: ' \2195'; font-size: 0.8em; }
+    .sortable.asc::after { content: ' \2191'; }
+    .sortable.desc::after { content: ' \2193'; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
+    .card h3 { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <script src="nav.js"></script>
+
+  <div class="container">
+    <h2>&#x1F91C;&#x1F91B; Manager vs Manager H2H Records</h2>
+    <p class="subtitle">Head-to-head matchup records across all seasons (2023&ndash;2025) &bull; Identified by manager, not team name</p>
+
+    <h3>All-Time H2H Matrix</h3>
+    <p class="section-desc">Win-Loss-Tie record for each matchup. Rows = your record against the column opponent. Green = winning record, red = losing, yellow = even. Hover manager name for current team name.</p>
+
+    <div class="filter-bar">
+      <label>Filter by season:</label>
+      <button class="filter-btn active" data-year="alltime">All-Time</button>
+      <button class="filter-btn" data-year="2025">2025</button>
+      <button class="filter-btn" data-year="2024">2024</button>
+      <button class="filter-btn" data-year="2023">2023</button>
+    </div>
+
+    <div class="matrix-wrap">
+      <table class="matrix" id="h2hMatrix">
+        <thead id="matrixHead"></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F4A5; Most Dominant Performances</h3>
+        <p class="section-desc">Biggest single-week blowouts</p>
+        <table>
+          <tr>
+            <th>#</th>
+            <th class="sortable" data-type="num">Year</th>
+            <th>Week</th>
+            <th>Winner</th>
+            <th>Score</th>
+            <th>Loser</th>
+            <th class="sortable" data-type="num">Margin</th>
+          </tr>
+          <tr>
+      <td class="rank">1</td>
+      <td>2023</td>
+      <td>Wk 2</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">12.0 - 0.0</td>
+      <td>Ian Cumsler</td>
+      <td class="hot-val">+12.0</td>
+    </tr><tr>
+      <td class="rank">2</td>
+      <td>2024</td>
+      <td>Wk 11</td>
+      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
+      <td class="score">12.0 - 0.0</td>
+      <td>Hatfield Hurlers</td>
+      <td class="hot-val">+12.0</td>
+    </tr><tr>
+      <td class="rank">3</td>
+      <td>2024</td>
+      <td>Wk 15</td>
+      <td>Grand Salami Time</td>
+      <td class="score">12.0 - 0.0</td>
+      <td>OGglass-z13</td>
+      <td class="hot-val">+12.0</td>
+    </tr><tr>
+      <td class="rank">4</td>
+      <td>2024</td>
+      <td>Wk 19</td>
+      <td>¯\_(ツ)_/¯🏆</td>
+      <td class="score">12.0 - 0.0</td>
+      <td>Moniebol (FREE DURAN)🐳</td>
+      <td class="hot-val">+12.0</td>
+    </tr><tr>
+      <td class="rank">5</td>
+      <td>2025</td>
+      <td>Wk 19</td>
+      <td>Moniebol 🐳</td>
+      <td class="score">12.0 - 0.0</td>
+      <td>Ian Cumsler</td>
+      <td class="hot-val">+12.0</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>2025</td>
+      <td>Wk 5</td>
+      <td>Moniebol 🐳 (5thwheelSZN)</td>
+      <td class="score">11.5 - 0.5</td>
+      <td>Historical Greatness</td>
+      <td class="hot-val">+11.0</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>2025</td>
+      <td>Wk 7</td>
+      <td>Moniebol 🐳 (5thwheelSZN)</td>
+      <td class="score">11.5 - 0.5</td>
+      <td>Hatfield Hurlers</td>
+      <td class="hot-val">+11.0</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>2025</td>
+      <td>Wk 20</td>
+      <td>Tegridy</td>
+      <td class="score">11.5 - 0.5</td>
+      <td>Serafini Hit Squad</td>
+      <td class="hot-val">+11.0</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>2023</td>
+      <td>Wk 7</td>
+      <td>Ian Cumsler</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>Camp RFK</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>2023</td>
+      <td>Wk 17</td>
+      <td>Bry Bry’s Bible Bonkers</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>FIRE SALE EVERYTHING MUST GO</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>2023</td>
+      <td>Wk 20</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>Camp Lejeune</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">12</td>
+      <td>2023</td>
+      <td>Wk 20</td>
+      <td>Moniebol 🐳 (DEFCON 2)</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>How to lose a game in 10 days</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">13</td>
+      <td>2024</td>
+      <td>Wk 4</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>Moniebol White Sux🐳</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">14</td>
+      <td>2024</td>
+      <td>Wk 5</td>
+      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>Ready to Plow</td>
+      <td class="hot-val">+10.0</td>
+    </tr><tr>
+      <td class="rank">15</td>
+      <td>2024</td>
+      <td>Wk 7</td>
+      <td>Sexual Harassment Pandas</td>
+      <td class="score">11.0 - 1.0</td>
+      <td>Ready to Plow</td>
+      <td class="hot-val">+10.0</td>
+    </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>&#x1F3AF; Closest Matchups</h3>
+        <p class="section-desc">Tightest wins (non-tie)</p>
+        <table>
+          <tr>
+            <th>#</th>
+            <th class="sortable" data-type="num">Year</th>
+            <th>Week</th>
+            <th>Winner</th>
+            <th>Score</th>
+            <th>Loser</th>
+            <th class="sortable" data-type="num">Margin</th>
+          </tr>
+          <tr>
+      <td class="rank">1</td>
+      <td>2023</td>
+      <td>Wk 1</td>
+      <td>[z-ro] Haters Got Me Wrong</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>The Rosterbation Station</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">2</td>
+      <td>2023</td>
+      <td>Wk 2</td>
+      <td>Camp RFK</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>The Slobberknockers</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">3</td>
+      <td>2023</td>
+      <td>Wk 2</td>
+      <td>Vinnie Pepperonis</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Sliding Nowhere</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">4</td>
+      <td>2023</td>
+      <td>Wk 3</td>
+      <td>Welp. Shit.</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>¯\_(ツ)_/¯</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">5</td>
+      <td>2023</td>
+      <td>Wk 12</td>
+      <td>The Slobberknockers</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Vinnie Pepperonis</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>2023</td>
+      <td>Wk 12</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>[z-ro] Haters Got Me Wrong</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>2023</td>
+      <td>Wk 14</td>
+      <td>The Slobberknockers</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Moniebol 🐳 (DEFCON BACK ON)</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>2023</td>
+      <td>Wk 14</td>
+      <td>[z-ro] Haters Got Me Wrong</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>scoopski potatoes</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>2023</td>
+      <td>Wk 18</td>
+      <td>Ian Cumsler</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Camp Lejeune</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>2023</td>
+      <td>Wk 21</td>
+      <td>Camp Lejeune</td>
+      <td class="score">5.0 - 4.0</td>
+      <td>McLainBang</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>2023</td>
+      <td>Wk 21</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Moniebol 🐳 (DEFCON 2)</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">12</td>
+      <td>2024</td>
+      <td>Wk 2</td>
+      <td>The Rosterbation Station</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Eternal O'Hoppe-timists</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">13</td>
+      <td>2024</td>
+      <td>Wk 5</td>
+      <td>Sexual Harassment Pandas</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>The Rosterbation Station</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">14</td>
+      <td>2024</td>
+      <td>Wk 5</td>
+      <td>Moniebol White Sux🐳</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>CAPTAIN AHAB 🗡️🐳</td>
+      <td class="close-margin">1.0</td>
+    </tr><tr>
+      <td class="rank">15</td>
+      <td>2024</td>
+      <td>Wk 6</td>
+      <td>Ready to Plow</td>
+      <td class="score">6.0 - 5.0</td>
+      <td>Moniebol White Sux🐳</td>
+      <td class="close-margin">1.0</td>
+    </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:32px">
+      <h3>&#x1F91D; Dead Even (Ties)</h3>
+      <p class="section-desc">Matchups that ended in a perfect tie</p>
+      <table>
+        <tr><th>#</th><th>Year</th><th>Week</th><th>Team A</th><th>Score</th><th>Team B</th></tr>
+        <tr>
+      <td class="rank">1</td>
+      <td>2023</td>
+      <td>Wk 3</td>
+      <td>Ian Cumsler</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Heimlich Maneuver</td>
+    </tr><tr>
+      <td class="rank">2</td>
+      <td>2023</td>
+      <td>Wk 4</td>
+      <td>Camp RFK</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Moniebol 🐳 (DEFCON BACK ON)</td>
+    </tr><tr>
+      <td class="rank">3</td>
+      <td>2023</td>
+      <td>Wk 7</td>
+      <td>Vinnie Pepperonis</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>¯\_(ツ)_/¯</td>
+    </tr><tr>
+      <td class="rank">4</td>
+      <td>2023</td>
+      <td>Wk 9</td>
+      <td>The Slobberknockers</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Heimlich Maneuver</td>
+    </tr><tr>
+      <td class="rank">5</td>
+      <td>2023</td>
+      <td>Wk 12</td>
+      <td>¯\_(ツ)_/¯</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Heimlich Maneuver</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>2023</td>
+      <td>Wk 19</td>
+      <td>WanderingAroundTheMiddleSchool</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>scoopski potatoes</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>2023</td>
+      <td>Wk 20</td>
+      <td>scoopski potatoes</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Bry Bry’s Bible Bonkers</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>2024</td>
+      <td>Wk 3</td>
+      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>The Rosterbation Station</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>2024</td>
+      <td>Wk 4</td>
+      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>CAPTAIN AHAB 🗡️🐳🇮🇳</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>2024</td>
+      <td>Wk 6</td>
+      <td>WHAT THE FUCK</td>
+      <td class="score">6.0 - 6.0</td>
+      <td>Hatfield Hurlers</td>
+    </tr>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>&#x1F451; Most Lopsided Rivalries</h3>
+        <p class="section-desc">Manager pairs with the most one-sided all-time records</p>
+        <table>
+          <tr>
+            <th>#</th>
+            <th>Dominant</th>
+            <th>Opponent</th>
+            <th>Record</th>
+            <th class="sortable" data-type="num">Win%</th>
+            <th class="sortable" data-type="num">Games</th>
+          </tr>
+          <tr>
+      <td class="rank">1</td>
+      <td>Kevin</td>
+      <td>Austin</td>
+      <td class="score">6-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">2</td>
+      <td>Austin</td>
+      <td>Tom</td>
+      <td class="score">6-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">3</td>
+      <td>Josh</td>
+      <td>Matt</td>
+      <td class="score">6-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">4</td>
+      <td>Bobby</td>
+      <td>Kyle</td>
+      <td class="score">5-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>5</td>
+    </tr><tr>
+      <td class="rank">5</td>
+      <td>Drew</td>
+      <td>Kyle</td>
+      <td class="score">5-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>5</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>Mikey</td>
+      <td>Kyle</td>
+      <td class="score">5-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>5</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>Taylor</td>
+      <td>Austin</td>
+      <td class="score">4-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>4</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>Bobby</td>
+      <td>Matt</td>
+      <td class="score">3-0-1</td>
+      <td class="hot-val">88%</td>
+      <td>4</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>Bobby</td>
+      <td>Austin</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>Mike</td>
+      <td>Bobby</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>Kevin</td>
+      <td>Brian</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">12</td>
+      <td>Brian</td>
+      <td>Kyle</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">13</td>
+      <td>Matt</td>
+      <td>Brian</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">14</td>
+      <td>Kevin</td>
+      <td>Drew</td>
+      <td class="score">5-1-0</td>
+      <td class="hot-val">83%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">15</td>
+      <td>Austin</td>
+      <td>Matt</td>
+      <td class="score">4-1-0</td>
+      <td class="hot-val">80%</td>
+      <td>5</td>
+    </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>&#x2696;&#xFE0F; Most Even Rivalries</h3>
+        <p class="section-desc">Closest all-time records (min 3 matchups)</p>
+        <table>
+          <tr>
+            <th>#</th>
+            <th>Manager A</th>
+            <th>Manager B</th>
+            <th>Record</th>
+            <th class="sortable" data-type="num">Win%</th>
+            <th class="sortable" data-type="num">Games</th>
+          </tr>
+          <tr>
+      <td class="rank">1</td>
+      <td>Austin</td>
+      <td>Kyle</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">2</td>
+      <td>Bobby</td>
+      <td>Josh</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">3</td>
+      <td>Brian</td>
+      <td>Drew</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">4</td>
+      <td>Drew</td>
+      <td>Josh</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">5</td>
+      <td>Drew</td>
+      <td>Matt</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>Josh</td>
+      <td>Kevin</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>Josh</td>
+      <td>Kyle</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>Kevin</td>
+      <td>Matt</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>Kevin</td>
+      <td>Mikey</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>Matt</td>
+      <td>Tom</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>Mike</td>
+      <td>Taylor</td>
+      <td class="score">2-2-1</td>
+      <td class="close-margin">50%</td>
+      <td>5</td>
+    </tr><tr>
+      <td class="rank">12</td>
+      <td>Matt</td>
+      <td>Mike</td>
+      <td class="score">2-2-0</td>
+      <td class="close-margin">50%</td>
+      <td>4</td>
+    </tr><tr>
+      <td class="rank">13</td>
+      <td>Bobby</td>
+      <td>Kevin</td>
+      <td class="score">2-3-1</td>
+      <td class="close-margin">42%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">14</td>
+      <td>Bobby</td>
+      <td>Tom</td>
+      <td class="score">2-3-1</td>
+      <td class="close-margin">42%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">15</td>
+      <td>Austin</td>
+      <td>Brian</td>
+      <td class="score">3-2-1</td>
+      <td class="close-margin">58%</td>
+      <td>6</td>
+    </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const teams = [{"id": 0, "mgr": "Austin", "team": "Moniebol \ud83d\udc33", "color": "#ef4444"}, {"id": 1, "mgr": "Bobby", "team": "Tegridy", "color": "#f97316"}, {"id": 2, "mgr": "Brian", "team": "Getting Plowed Again.", "color": "#eab308"}, {"id": 3, "mgr": "Drew", "team": "Hatfield Hurlers", "color": "#22c55e"}, {"id": 4, "mgr": "Josh", "team": "Grand Salami Time", "color": "#14b8a6"}, {"id": 5, "mgr": "Kevin", "team": "The Rosterbation Station", "color": "#3b82f6"}, {"id": 6, "mgr": "Kyle", "team": "Football Szn", "color": "#8b5cf6"}, {"id": 7, "mgr": "Matt", "team": "OG9\ufe0f\u20e3", "color": "#ec4899"}, {"id": 8, "mgr": "Mikey", "team": "@DoodlesAnalytics", "color": "#06b6d4"}, {"id": 9, "mgr": "Mike", "team": "\u00af\\\\_(\u30c4)_/\u00af", "color": "#f59e0b"}, {"id": 10, "mgr": "Taylor", "team": "Serafini Hit Squad", "color": "#10b981"}, {"id": 11, "mgr": "Tom", "team": "Ian Cumsler", "color": "#a855f7"}];
+    const yearNames = {"2023": {"0": "Moniebol \ud83d\udc33 (DEFCON 2)", "1": "[ABN] Rain", "2": "Camp RFK", "3": "TAX THE MONIEBOL", "4": "Vinnie Pepperonis", "5": "The Rosterbation Station", "6": "The Slobberknockers", "7": "Movin\u2019 On Up", "8": "scoopski potatoes", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "Heimlich Maneuver", "11": "Ian Cumsler"}, "2024": {"0": "Moniebol (100gb goal)\ud83d\udc33", "1": "Hmmm", "2": "Ready to Plow", "3": "Hatfield Hurlers", "4": "Grand Salami Time", "5": "The Rosterbation Station", "6": "BTHO notre dame", "7": "OGglass-z13", "8": "#RyderSources", "9": "\u00af\\\\_(\u30c4)_/\u00af\ud83c\udfc6", "10": "\u00af\\\\_(\u30c4)_/\u00af \u2620\ufe0f", "11": "Ian Cumsler"}, "2025": {"0": "Moniebol \ud83d\udc33", "1": "Tegridy", "2": "Getting Plowed Again.", "3": "Hatfield Hurlers", "4": "Grand Salami Time", "5": "The Rosterbation Station", "6": "Football Szn", "7": "OG9\ufe0f\u20e3", "8": "@DoodlesAnalytics", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "Serafini Hit Squad", "11": "Ian Cumsler"}};
+
+    const D={};
+['alltime','2023','2024','2025'].forEach(k=>D[k]={});
+for(let k in D) D[k][0]={};
+for(let k in D) D[k][1]={};
+for(let k in D) D[k][2]={};
+for(let k in D) D[k][3]={};
+for(let k in D) D[k][4]={};
+for(let k in D) D[k][5]={};
+for(let k in D) D[k][6]={};
+for(let k in D) D[k][7]={};
+for(let k in D) D[k][8]={};
+for(let k in D) D[k][9]={};
+for(let k in D) D[k][10]={};
+for(let k in D) D[k][11]={};
+let m=D['alltime'];
+m[0][0]={w:"-",l:"-",t:"-",c:'self'};
+m[0][1]={w:1,l:5,t:0,c:'losing'};
+m[0][2]={w:3,l:2,t:1,c:'winning'};
+m[0][3]={w:4,l:2,t:0,c:'winning'};
+m[0][4]={w:3,l:2,t:0,c:'winning'};
+m[0][5]={w:0,l:6,t:0,c:'losing'};
+m[0][6]={w:3,l:3,t:0,c:'even'};
+m[0][7]={w:4,l:1,t:0,c:'winning'};
+m[0][8]={w:2,l:3,t:0,c:'losing'};
+m[0][9]={w:1,l:4,t:1,c:'losing'};
+m[0][10]={w:0,l:4,t:0,c:'losing'};
+m[0][11]={w:6,l:0,t:0,c:'winning'};
+m[1][0]={w:5,l:1,t:0,c:'winning'};
+m[1][1]={w:"-",l:"-",t:"-",c:'self'};
+m[1][2]={w:4,l:1,t:0,c:'winning'};
+m[1][3]={w:1,l:3,t:2,c:'losing'};
+m[1][4]={w:3,l:3,t:0,c:'even'};
+m[1][5]={w:2,l:3,t:1,c:'losing'};
+m[1][6]={w:5,l:0,t:0,c:'winning'};
+m[1][7]={w:3,l:0,t:1,c:'winning'};
+m[1][8]={w:2,l:4,t:0,c:'losing'};
+m[1][9]={w:1,l:5,t:0,c:'losing'};
+m[1][10]={w:4,l:2,t:0,c:'winning'};
+m[1][11]={w:2,l:3,t:1,c:'losing'};
+m[2][0]={w:2,l:3,t:1,c:'losing'};
+m[2][1]={w:1,l:4,t:0,c:'losing'};
+m[2][2]={w:"-",l:"-",t:"-",c:'self'};
+m[2][3]={w:3,l:3,t:0,c:'even'};
+m[2][4]={w:1,l:3,t:0,c:'losing'};
+m[2][5]={w:1,l:5,t:0,c:'losing'};
+m[2][6]={w:5,l:1,t:0,c:'winning'};
+m[2][7]={w:1,l:5,t:0,c:'losing'};
+m[2][8]={w:1,l:3,t:0,c:'losing'};
+m[2][9]={w:2,l:4,t:0,c:'losing'};
+m[2][10]={w:3,l:2,t:0,c:'winning'};
+m[2][11]={w:2,l:4,t:0,c:'losing'};
+m[3][0]={w:2,l:4,t:0,c:'losing'};
+m[3][1]={w:3,l:1,t:2,c:'winning'};
+m[3][2]={w:4,l:3,t:0,c:'winning'};
+m[3][3]={w:"-",l:"-",t:"-",c:'self'};
+m[3][4]={w:3,l:3,t:0,c:'even'};
+m[3][5]={w:1,l:5,t:0,c:'losing'};
+m[3][6]={w:5,l:0,t:0,c:'winning'};
+m[3][7]={w:3,l:3,t:0,c:'even'};
+m[3][8]={w:1,l:2,t:2,c:'losing'};
+m[3][9]={w:2,l:3,t:0,c:'losing'};
+m[3][10]={w:2,l:4,t:0,c:'losing'};
+m[3][11]={w:4,l:2,t:0,c:'winning'};
+m[4][0]={w:2,l:4,t:0,c:'losing'};
+m[4][1]={w:3,l:3,t:0,c:'even'};
+m[4][2]={w:3,l:1,t:0,c:'winning'};
+m[4][3]={w:3,l:3,t:0,c:'even'};
+m[4][4]={w:"-",l:"-",t:"-",c:'self'};
+m[4][5]={w:3,l:3,t:0,c:'even'};
+m[4][6]={w:3,l:3,t:0,c:'even'};
+m[4][7]={w:6,l:0,t:0,c:'winning'};
+m[4][8]={w:3,l:1,t:2,c:'winning'};
+m[4][9]={w:3,l:2,t:1,c:'winning'};
+m[4][10]={w:1,l:3,t:1,c:'losing'};
+m[4][11]={w:2,l:1,t:2,c:'winning'};
+m[5][0]={w:5,l:0,t:0,c:'winning'};
+m[5][1]={w:3,l:1,t:1,c:'winning'};
+m[5][2]={w:5,l:1,t:0,c:'winning'};
+m[5][3]={w:5,l:1,t:0,c:'winning'};
+m[5][4]={w:3,l:3,t:0,c:'even'};
+m[5][5]={w:"-",l:"-",t:"-",c:'self'};
+m[5][6]={w:3,l:2,t:0,c:'winning'};
+m[5][7]={w:3,l:3,t:0,c:'even'};
+m[5][8]={w:3,l:3,t:0,c:'even'};
+m[5][9]={w:2,l:1,t:1,c:'winning'};
+m[5][10]={w:4,l:1,t:1,c:'winning'};
+m[5][11]={w:4,l:1,t:0,c:'winning'};
+m[6][0]={w:3,l:3,t:0,c:'even'};
+m[6][1]={w:0,l:5,t:0,c:'losing'};
+m[6][2]={w:1,l:5,t:0,c:'losing'};
+m[6][3]={w:0,l:5,t:0,c:'losing'};
+m[6][4]={w:3,l:3,t:0,c:'even'};
+m[6][5]={w:2,l:3,t:0,c:'losing'};
+m[6][6]={w:"-",l:"-",t:"-",c:'self'};
+m[6][7]={w:2,l:3,t:0,c:'losing'};
+m[6][8]={w:0,l:5,t:0,c:'losing'};
+m[6][9]={w:1,l:4,t:1,c:'losing'};
+m[6][10]={w:1,l:4,t:1,c:'losing'};
+m[6][11]={w:1,l:4,t:0,c:'losing'};
+m[7][0]={w:1,l:4,t:0,c:'losing'};
+m[7][1]={w:0,l:3,t:1,c:'losing'};
+m[7][2]={w:5,l:1,t:0,c:'winning'};
+m[7][3]={w:3,l:3,t:0,c:'even'};
+m[7][4]={w:0,l:6,t:0,c:'losing'};
+m[7][5]={w:3,l:3,t:0,c:'even'};
+m[7][6]={w:3,l:2,t:0,c:'winning'};
+m[7][7]={w:"-",l:"-",t:"-",c:'self'};
+m[7][8]={w:3,l:2,t:1,c:'winning'};
+m[7][9]={w:2,l:2,t:0,c:'even'};
+m[7][10]={w:3,l:2,t:1,c:'winning'};
+m[7][11]={w:3,l:3,t:0,c:'even'};
+m[8][0]={w:4,l:2,t:0,c:'winning'};
+m[8][1]={w:4,l:2,t:0,c:'winning'};
+m[8][2]={w:3,l:1,t:0,c:'winning'};
+m[8][3]={w:2,l:1,t:2,c:'winning'};
+m[8][4]={w:1,l:3,t:2,c:'losing'};
+m[8][5]={w:3,l:3,t:0,c:'even'};
+m[8][6]={w:5,l:0,t:0,c:'winning'};
+m[8][7]={w:2,l:3,t:1,c:'losing'};
+m[8][8]={w:"-",l:"-",t:"-",c:'self'};
+m[8][9]={w:2,l:4,t:0,c:'losing'};
+m[8][10]={w:3,l:2,t:1,c:'winning'};
+m[8][11]={w:4,l:1,t:0,c:'winning'};
+m[9][0]={w:4,l:1,t:1,c:'winning'};
+m[9][1]={w:5,l:1,t:0,c:'winning'};
+m[9][2]={w:4,l:2,t:0,c:'winning'};
+m[9][3]={w:3,l:2,t:0,c:'winning'};
+m[9][4]={w:2,l:3,t:1,c:'losing'};
+m[9][5]={w:1,l:2,t:1,c:'losing'};
+m[9][6]={w:4,l:1,t:1,c:'winning'};
+m[9][7]={w:2,l:2,t:0,c:'even'};
+m[9][8]={w:4,l:2,t:0,c:'winning'};
+m[9][9]={w:"-",l:"-",t:"-",c:'self'};
+m[9][10]={w:2,l:2,t:1,c:'even'};
+m[9][11]={w:4,l:2,t:0,c:'winning'};
+m[10][0]={w:4,l:0,t:0,c:'winning'};
+m[10][1]={w:2,l:4,t:0,c:'losing'};
+m[10][2]={w:2,l:4,t:0,c:'losing'};
+m[10][3]={w:4,l:2,t:0,c:'winning'};
+m[10][4]={w:3,l:1,t:1,c:'winning'};
+m[10][5]={w:1,l:4,t:1,c:'losing'};
+m[10][6]={w:4,l:1,t:1,c:'winning'};
+m[10][7]={w:2,l:3,t:1,c:'losing'};
+m[10][8]={w:2,l:3,t:1,c:'losing'};
+m[10][9]={w:2,l:3,t:1,c:'losing'};
+m[10][10]={w:"-",l:"-",t:"-",c:'self'};
+m[10][11]={w:4,l:1,t:1,c:'winning'};
+m[11][0]={w:0,l:6,t:0,c:'losing'};
+m[11][1]={w:2,l:2,t:1,c:'even'};
+m[11][2]={w:4,l:2,t:0,c:'winning'};
+m[11][3]={w:2,l:4,t:0,c:'losing'};
+m[11][4]={w:1,l:2,t:2,c:'losing'};
+m[11][5]={w:2,l:4,t:0,c:'losing'};
+m[11][6]={w:4,l:1,t:0,c:'winning'};
+m[11][7]={w:3,l:3,t:0,c:'even'};
+m[11][8]={w:1,l:4,t:0,c:'losing'};
+m[11][9]={w:2,l:4,t:0,c:'losing'};
+m[11][10]={w:1,l:4,t:1,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m=D['2023'];
+m[0][0]={w:"-",l:"-",t:"-",c:'self'};
+m[0][1]={w:0,l:2,t:0,c:'losing'};
+m[0][2]={w:1,l:0,t:1,c:'winning'};
+m[0][3]={w:2,l:0,t:0,c:'winning'};
+m[0][4]={w:2,l:0,t:0,c:'winning'};
+m[0][5]={w:0,l:2,t:0,c:'losing'};
+m[0][6]={w:1,l:1,t:0,c:'even'};
+m[0][7]={w:2,l:0,t:0,c:'winning'};
+m[0][8]={w:1,l:1,t:0,c:'even'};
+m[0][9]={w:1,l:0,t:1,c:'winning'};
+m[0][10]={w:0,l:1,t:0,c:'losing'};
+m[0][11]={w:2,l:0,t:0,c:'winning'};
+m[1][0]={w:2,l:0,t:0,c:'winning'};
+m[1][1]={w:"-",l:"-",t:"-",c:'self'};
+m[1][2]={w:2,l:0,t:0,c:'winning'};
+m[1][3]={w:0,l:1,t:1,c:'losing'};
+m[1][4]={w:1,l:1,t:0,c:'even'};
+m[1][5]={w:1,l:1,t:0,c:'even'};
+m[1][6]={w:2,l:0,t:0,c:'winning'};
+m[1][7]={w:1,l:0,t:0,c:'winning'};
+m[1][8]={w:1,l:1,t:0,c:'even'};
+m[1][9]={w:1,l:1,t:0,c:'even'};
+m[1][10]={w:1,l:1,t:0,c:'even'};
+m[1][11]={w:0,l:2,t:0,c:'losing'};
+m[2][0]={w:0,l:1,t:1,c:'losing'};
+m[2][1]={w:0,l:2,t:0,c:'losing'};
+m[2][2]={w:"-",l:"-",t:"-",c:'self'};
+m[2][3]={w:1,l:1,t:0,c:'even'};
+m[2][4]={w:0,l:2,t:0,c:'losing'};
+m[2][5]={w:0,l:2,t:0,c:'losing'};
+m[2][6]={w:2,l:0,t:0,c:'winning'};
+m[2][7]={w:0,l:2,t:0,c:'losing'};
+m[2][8]={w:0,l:1,t:0,c:'losing'};
+m[2][9]={w:2,l:0,t:0,c:'winning'};
+m[2][10]={w:0,l:1,t:0,c:'losing'};
+m[2][11]={w:0,l:2,t:0,c:'losing'};
+m[3][0]={w:0,l:2,t:0,c:'losing'};
+m[3][1]={w:1,l:0,t:1,c:'winning'};
+m[3][2]={w:2,l:1,t:0,c:'winning'};
+m[3][3]={w:"-",l:"-",t:"-",c:'self'};
+m[3][4]={w:1,l:1,t:0,c:'even'};
+m[3][5]={w:0,l:2,t:0,c:'losing'};
+m[3][6]={w:1,l:0,t:0,c:'winning'};
+m[3][7]={w:1,l:1,t:0,c:'even'};
+m[3][8]={w:0,l:1,t:1,c:'losing'};
+m[3][9]={w:1,l:1,t:0,c:'even'};
+m[3][10]={w:1,l:1,t:0,c:'even'};
+m[3][11]={w:0,l:2,t:0,c:'losing'};
+m[4][0]={w:0,l:2,t:0,c:'losing'};
+m[4][1]={w:1,l:1,t:0,c:'even'};
+m[4][2]={w:2,l:0,t:0,c:'winning'};
+m[4][3]={w:1,l:1,t:0,c:'even'};
+m[4][4]={w:"-",l:"-",t:"-",c:'self'};
+m[4][5]={w:1,l:1,t:0,c:'even'};
+m[4][6]={w:0,l:2,t:0,c:'losing'};
+m[4][7]={w:2,l:0,t:0,c:'winning'};
+m[4][8]={w:1,l:0,t:1,c:'winning'};
+m[4][9]={w:1,l:0,t:1,c:'winning'};
+m[4][10]={w:0,l:2,t:0,c:'losing'};
+m[4][11]={w:0,l:1,t:0,c:'losing'};
+m[5][0]={w:1,l:0,t:0,c:'winning'};
+m[5][1]={w:1,l:1,t:0,c:'even'};
+m[5][2]={w:2,l:0,t:0,c:'winning'};
+m[5][3]={w:2,l:0,t:0,c:'winning'};
+m[5][4]={w:1,l:1,t:0,c:'even'};
+m[5][5]={w:"-",l:"-",t:"-",c:'self'};
+m[5][6]={w:1,l:1,t:0,c:'even'};
+m[5][7]={w:2,l:0,t:0,c:'winning'};
+m[5][8]={w:2,l:0,t:0,c:'winning'};
+m[5][9]={w:1,l:0,t:0,c:'winning'};
+m[5][10]={w:1,l:1,t:0,c:'even'};
+m[5][11]={w:1,l:1,t:0,c:'even'};
+m[6][0]={w:1,l:1,t:0,c:'even'};
+m[6][1]={w:0,l:2,t:0,c:'losing'};
+m[6][2]={w:0,l:2,t:0,c:'losing'};
+m[6][3]={w:0,l:1,t:0,c:'losing'};
+m[6][4]={w:2,l:0,t:0,c:'winning'};
+m[6][5]={w:1,l:1,t:0,c:'even'};
+m[6][6]={w:"-",l:"-",t:"-",c:'self'};
+m[6][7]={w:0,l:2,t:0,c:'losing'};
+m[6][8]={w:0,l:1,t:0,c:'losing'};
+m[6][9]={w:0,l:2,t:0,c:'losing'};
+m[6][10]={w:0,l:1,t:1,c:'losing'};
+m[6][11]={w:1,l:1,t:0,c:'even'};
+m[7][0]={w:0,l:2,t:0,c:'losing'};
+m[7][1]={w:0,l:1,t:0,c:'losing'};
+m[7][2]={w:2,l:0,t:0,c:'winning'};
+m[7][3]={w:1,l:1,t:0,c:'even'};
+m[7][4]={w:0,l:2,t:0,c:'losing'};
+m[7][5]={w:0,l:2,t:0,c:'losing'};
+m[7][6]={w:2,l:0,t:0,c:'winning'};
+m[7][7]={w:"-",l:"-",t:"-",c:'self'};
+m[7][8]={w:1,l:0,t:1,c:'winning'};
+m[7][9]={w:0,l:1,t:0,c:'losing'};
+m[7][10]={w:2,l:0,t:0,c:'winning'};
+m[7][11]={w:0,l:2,t:0,c:'losing'};
+m[8][0]={w:1,l:1,t:0,c:'even'};
+m[8][1]={w:1,l:1,t:0,c:'even'};
+m[8][2]={w:1,l:0,t:0,c:'winning'};
+m[8][3]={w:1,l:0,t:1,c:'winning'};
+m[8][4]={w:0,l:1,t:1,c:'losing'};
+m[8][5]={w:0,l:2,t:0,c:'losing'};
+m[8][6]={w:1,l:0,t:0,c:'winning'};
+m[8][7]={w:0,l:1,t:1,c:'losing'};
+m[8][8]={w:"-",l:"-",t:"-",c:'self'};
+m[8][9]={w:2,l:0,t:0,c:'winning'};
+m[8][10]={w:1,l:1,t:0,c:'even'};
+m[8][11]={w:2,l:0,t:0,c:'winning'};
+m[9][0]={w:0,l:1,t:1,c:'losing'};
+m[9][1]={w:1,l:1,t:0,c:'even'};
+m[9][2]={w:0,l:2,t:0,c:'losing'};
+m[9][3]={w:1,l:1,t:0,c:'even'};
+m[9][4]={w:0,l:1,t:1,c:'losing'};
+m[9][5]={w:0,l:1,t:0,c:'losing'};
+m[9][6]={w:2,l:0,t:0,c:'winning'};
+m[9][7]={w:1,l:0,t:0,c:'winning'};
+m[9][8]={w:0,l:2,t:0,c:'losing'};
+m[9][9]={w:"-",l:"-",t:"-",c:'self'};
+m[9][10]={w:0,l:1,t:1,c:'losing'};
+m[9][11]={w:1,l:1,t:0,c:'even'};
+m[10][0]={w:1,l:0,t:0,c:'winning'};
+m[10][1]={w:1,l:1,t:0,c:'even'};
+m[10][2]={w:1,l:1,t:0,c:'even'};
+m[10][3]={w:1,l:1,t:0,c:'even'};
+m[10][4]={w:2,l:0,t:0,c:'winning'};
+m[10][5]={w:1,l:1,t:0,c:'even'};
+m[10][6]={w:1,l:0,t:1,c:'winning'};
+m[10][7]={w:0,l:2,t:0,c:'losing'};
+m[10][8]={w:1,l:1,t:0,c:'even'};
+m[10][9]={w:1,l:0,t:1,c:'winning'};
+m[10][10]={w:"-",l:"-",t:"-",c:'self'};
+m[10][11]={w:1,l:0,t:1,c:'winning'};
+m[11][0]={w:0,l:2,t:0,c:'losing'};
+m[11][1]={w:1,l:0,t:0,c:'winning'};
+m[11][2]={w:2,l:0,t:0,c:'winning'};
+m[11][3]={w:2,l:0,t:0,c:'winning'};
+m[11][4]={w:1,l:0,t:0,c:'winning'};
+m[11][5]={w:1,l:1,t:0,c:'even'};
+m[11][6]={w:1,l:1,t:0,c:'even'};
+m[11][7]={w:2,l:0,t:0,c:'winning'};
+m[11][8]={w:0,l:2,t:0,c:'losing'};
+m[11][9]={w:1,l:1,t:0,c:'even'};
+m[11][10]={w:0,l:1,t:1,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m=D['2024'];
+m[0][0]={w:"-",l:"-",t:"-",c:'self'};
+m[0][1]={w:0,l:2,t:0,c:'losing'};
+m[0][2]={w:0,l:2,t:0,c:'losing'};
+m[0][3]={w:0,l:2,t:0,c:'losing'};
+m[0][4]={w:0,l:2,t:0,c:'losing'};
+m[0][5]={w:0,l:2,t:0,c:'losing'};
+m[0][6]={w:1,l:1,t:0,c:'even'};
+m[0][7]={w:1,l:0,t:0,c:'winning'};
+m[0][8]={w:0,l:1,t:0,c:'losing'};
+m[0][9]={w:0,l:2,t:0,c:'losing'};
+m[0][10]={w:0,l:2,t:0,c:'losing'};
+m[0][11]={w:2,l:0,t:0,c:'winning'};
+m[1][0]={w:2,l:0,t:0,c:'winning'};
+m[1][1]={w:"-",l:"-",t:"-",c:'self'};
+m[1][2]={w:0,l:1,t:0,c:'losing'};
+m[1][3]={w:1,l:0,t:1,c:'winning'};
+m[1][4]={w:1,l:1,t:0,c:'even'};
+m[1][5]={w:0,l:2,t:0,c:'losing'};
+m[1][6]={w:1,l:0,t:0,c:'winning'};
+m[1][7]={w:1,l:0,t:1,c:'winning'};
+m[1][8]={w:1,l:1,t:0,c:'even'};
+m[1][9]={w:0,l:2,t:0,c:'losing'};
+m[1][10]={w:1,l:1,t:0,c:'even'};
+m[1][11]={w:1,l:1,t:0,c:'even'};
+m[2][0]={w:2,l:0,t:0,c:'winning'};
+m[2][1]={w:1,l:0,t:0,c:'winning'};
+m[2][2]={w:"-",l:"-",t:"-",c:'self'};
+m[2][3]={w:1,l:1,t:0,c:'even'};
+m[2][4]={w:0,l:1,t:0,c:'losing'};
+m[2][5]={w:1,l:1,t:0,c:'even'};
+m[2][6]={w:2,l:0,t:0,c:'winning'};
+m[2][7]={w:1,l:1,t:0,c:'even'};
+m[2][8]={w:0,l:2,t:0,c:'losing'};
+m[2][9]={w:0,l:2,t:0,c:'losing'};
+m[2][10]={w:2,l:0,t:0,c:'winning'};
+m[2][11]={w:0,l:2,t:0,c:'losing'};
+m[3][0]={w:2,l:0,t:0,c:'winning'};
+m[3][1]={w:0,l:1,t:1,c:'losing'};
+m[3][2]={w:1,l:1,t:0,c:'even'};
+m[3][3]={w:"-",l:"-",t:"-",c:'self'};
+m[3][4]={w:2,l:0,t:0,c:'winning'};
+m[3][5]={w:1,l:1,t:0,c:'even'};
+m[3][6]={w:2,l:0,t:0,c:'winning'};
+m[3][7]={w:0,l:2,t:0,c:'losing'};
+m[3][8]={w:1,l:1,t:0,c:'even'};
+m[3][9]={w:0,l:1,t:0,c:'losing'};
+m[3][10]={w:0,l:2,t:0,c:'losing'};
+m[3][11]={w:2,l:0,t:0,c:'winning'};
+m[4][0]={w:2,l:0,t:0,c:'winning'};
+m[4][1]={w:1,l:1,t:0,c:'even'};
+m[4][2]={w:1,l:0,t:0,c:'winning'};
+m[4][3]={w:0,l:2,t:0,c:'losing'};
+m[4][4]={w:"-",l:"-",t:"-",c:'self'};
+m[4][5]={w:1,l:1,t:0,c:'even'};
+m[4][6]={w:1,l:1,t:0,c:'even'};
+m[4][7]={w:2,l:0,t:0,c:'winning'};
+m[4][8]={w:2,l:0,t:0,c:'winning'};
+m[4][9]={w:0,l:2,t:0,c:'losing'};
+m[4][10]={w:1,l:0,t:0,c:'winning'};
+m[4][11]={w:1,l:0,t:1,c:'winning'};
+m[5][0]={w:2,l:0,t:0,c:'winning'};
+m[5][1]={w:2,l:0,t:0,c:'winning'};
+m[5][2]={w:1,l:1,t:0,c:'even'};
+m[5][3]={w:1,l:1,t:0,c:'even'};
+m[5][4]={w:1,l:1,t:0,c:'even'};
+m[5][5]={w:"-",l:"-",t:"-",c:'self'};
+m[5][6]={w:0,l:1,t:0,c:'losing'};
+m[5][7]={w:1,l:1,t:0,c:'even'};
+m[5][8]={w:0,l:2,t:0,c:'losing'};
+m[5][9]={w:0,l:1,t:1,c:'losing'};
+m[5][10]={w:1,l:0,t:1,c:'winning'};
+m[5][11]={w:1,l:0,t:0,c:'winning'};
+m[6][0]={w:1,l:1,t:0,c:'even'};
+m[6][1]={w:0,l:1,t:0,c:'losing'};
+m[6][2]={w:0,l:2,t:0,c:'losing'};
+m[6][3]={w:0,l:2,t:0,c:'losing'};
+m[6][4]={w:1,l:1,t:0,c:'even'};
+m[6][5]={w:1,l:0,t:0,c:'winning'};
+m[6][6]={w:"-",l:"-",t:"-",c:'self'};
+m[6][7]={w:2,l:0,t:0,c:'winning'};
+m[6][8]={w:0,l:2,t:0,c:'losing'};
+m[6][9]={w:0,l:1,t:1,c:'losing'};
+m[6][10]={w:0,l:2,t:0,c:'losing'};
+m[6][11]={w:0,l:2,t:0,c:'losing'};
+m[7][0]={w:0,l:1,t:0,c:'losing'};
+m[7][1]={w:0,l:1,t:1,c:'losing'};
+m[7][2]={w:1,l:1,t:0,c:'even'};
+m[7][3]={w:2,l:0,t:0,c:'winning'};
+m[7][4]={w:0,l:2,t:0,c:'losing'};
+m[7][5]={w:1,l:1,t:0,c:'even'};
+m[7][6]={w:0,l:2,t:0,c:'losing'};
+m[7][7]={w:"-",l:"-",t:"-",c:'self'};
+m[7][8]={w:2,l:0,t:0,c:'winning'};
+m[7][9]={w:0,l:1,t:0,c:'losing'};
+m[7][10]={w:0,l:2,t:0,c:'losing'};
+m[7][11]={w:1,l:1,t:0,c:'even'};
+m[8][0]={w:2,l:0,t:0,c:'winning'};
+m[8][1]={w:1,l:1,t:0,c:'even'};
+m[8][2]={w:2,l:0,t:0,c:'winning'};
+m[8][3]={w:1,l:1,t:0,c:'even'};
+m[8][4]={w:0,l:2,t:0,c:'losing'};
+m[8][5]={w:2,l:0,t:0,c:'winning'};
+m[8][6]={w:2,l:0,t:0,c:'winning'};
+m[8][7]={w:0,l:2,t:0,c:'losing'};
+m[8][8]={w:"-",l:"-",t:"-",c:'self'};
+m[8][9]={w:0,l:2,t:0,c:'losing'};
+m[8][10]={w:0,l:1,t:1,c:'losing'};
+m[8][11]={w:1,l:0,t:0,c:'winning'};
+m[9][0]={w:2,l:0,t:0,c:'winning'};
+m[9][1]={w:2,l:0,t:0,c:'winning'};
+m[9][2]={w:2,l:0,t:0,c:'winning'};
+m[9][3]={w:1,l:0,t:0,c:'winning'};
+m[9][4]={w:2,l:0,t:0,c:'winning'};
+m[9][5]={w:1,l:0,t:1,c:'winning'};
+m[9][6]={w:1,l:0,t:1,c:'winning'};
+m[9][7]={w:1,l:0,t:0,c:'winning'};
+m[9][8]={w:2,l:0,t:0,c:'winning'};
+m[9][9]={w:"-",l:"-",t:"-",c:'self'};
+m[9][10]={w:1,l:1,t:0,c:'even'};
+m[9][11]={w:1,l:1,t:0,c:'even'};
+m[10][0]={w:2,l:0,t:0,c:'winning'};
+m[10][1]={w:1,l:1,t:0,c:'even'};
+m[10][2]={w:0,l:2,t:0,c:'losing'};
+m[10][3]={w:2,l:0,t:0,c:'winning'};
+m[10][4]={w:0,l:1,t:0,c:'losing'};
+m[10][5]={w:0,l:1,t:1,c:'losing'};
+m[10][6]={w:2,l:0,t:0,c:'winning'};
+m[10][7]={w:2,l:0,t:0,c:'winning'};
+m[10][8]={w:1,l:0,t:1,c:'winning'};
+m[10][9]={w:1,l:1,t:0,c:'even'};
+m[10][10]={w:"-",l:"-",t:"-",c:'self'};
+m[10][11]={w:1,l:1,t:0,c:'even'};
+m[11][0]={w:0,l:2,t:0,c:'losing'};
+m[11][1]={w:1,l:1,t:0,c:'even'};
+m[11][2]={w:2,l:0,t:0,c:'winning'};
+m[11][3]={w:0,l:2,t:0,c:'losing'};
+m[11][4]={w:0,l:1,t:1,c:'losing'};
+m[11][5]={w:1,l:1,t:0,c:'even'};
+m[11][6]={w:2,l:0,t:0,c:'winning'};
+m[11][7]={w:1,l:1,t:0,c:'even'};
+m[11][8]={w:0,l:1,t:0,c:'losing'};
+m[11][9]={w:1,l:1,t:0,c:'even'};
+m[11][10]={w:1,l:1,t:0,c:'even'};
+m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m=D['2025'];
+m[0][0]={w:"-",l:"-",t:"-",c:'self'};
+m[0][1]={w:1,l:1,t:0,c:'even'};
+m[0][2]={w:2,l:0,t:0,c:'winning'};
+m[0][3]={w:2,l:0,t:0,c:'winning'};
+m[0][4]={w:1,l:0,t:0,c:'winning'};
+m[0][5]={w:0,l:2,t:0,c:'losing'};
+m[0][6]={w:1,l:1,t:0,c:'even'};
+m[0][7]={w:1,l:1,t:0,c:'even'};
+m[0][8]={w:1,l:1,t:0,c:'even'};
+m[0][9]={w:0,l:2,t:0,c:'losing'};
+m[0][10]={w:0,l:1,t:0,c:'losing'};
+m[0][11]={w:2,l:0,t:0,c:'winning'};
+m[1][0]={w:1,l:1,t:0,c:'even'};
+m[1][1]={w:"-",l:"-",t:"-",c:'self'};
+m[1][2]={w:2,l:0,t:0,c:'winning'};
+m[1][3]={w:0,l:2,t:0,c:'losing'};
+m[1][4]={w:1,l:1,t:0,c:'even'};
+m[1][5]={w:1,l:0,t:1,c:'winning'};
+m[1][6]={w:2,l:0,t:0,c:'winning'};
+m[1][7]={w:1,l:0,t:0,c:'winning'};
+m[1][8]={w:0,l:2,t:0,c:'losing'};
+m[1][9]={w:0,l:2,t:0,c:'losing'};
+m[1][10]={w:2,l:0,t:0,c:'winning'};
+m[1][11]={w:1,l:0,t:1,c:'winning'};
+m[2][0]={w:0,l:2,t:0,c:'losing'};
+m[2][1]={w:0,l:2,t:0,c:'losing'};
+m[2][2]={w:"-",l:"-",t:"-",c:'self'};
+m[2][3]={w:1,l:1,t:0,c:'even'};
+m[2][4]={w:1,l:0,t:0,c:'winning'};
+m[2][5]={w:0,l:2,t:0,c:'losing'};
+m[2][6]={w:1,l:1,t:0,c:'even'};
+m[2][7]={w:0,l:2,t:0,c:'losing'};
+m[2][8]={w:1,l:0,t:0,c:'winning'};
+m[2][9]={w:0,l:2,t:0,c:'losing'};
+m[2][10]={w:1,l:1,t:0,c:'even'};
+m[2][11]={w:2,l:0,t:0,c:'winning'};
+m[3][0]={w:0,l:2,t:0,c:'losing'};
+m[3][1]={w:2,l:0,t:0,c:'winning'};
+m[3][2]={w:1,l:1,t:0,c:'even'};
+m[3][3]={w:"-",l:"-",t:"-",c:'self'};
+m[3][4]={w:0,l:2,t:0,c:'losing'};
+m[3][5]={w:0,l:2,t:0,c:'losing'};
+m[3][6]={w:2,l:0,t:0,c:'winning'};
+m[3][7]={w:2,l:0,t:0,c:'winning'};
+m[3][8]={w:0,l:0,t:1,c:'even'};
+m[3][9]={w:1,l:1,t:0,c:'even'};
+m[3][10]={w:1,l:1,t:0,c:'even'};
+m[3][11]={w:2,l:0,t:0,c:'winning'};
+m[4][0]={w:0,l:2,t:0,c:'losing'};
+m[4][1]={w:1,l:1,t:0,c:'even'};
+m[4][2]={w:0,l:1,t:0,c:'losing'};
+m[4][3]={w:2,l:0,t:0,c:'winning'};
+m[4][4]={w:"-",l:"-",t:"-",c:'self'};
+m[4][5]={w:1,l:1,t:0,c:'even'};
+m[4][6]={w:2,l:0,t:0,c:'winning'};
+m[4][7]={w:2,l:0,t:0,c:'winning'};
+m[4][8]={w:0,l:1,t:1,c:'losing'};
+m[4][9]={w:2,l:0,t:0,c:'winning'};
+m[4][10]={w:0,l:1,t:1,c:'losing'};
+m[4][11]={w:1,l:0,t:1,c:'winning'};
+m[5][0]={w:2,l:0,t:0,c:'winning'};
+m[5][1]={w:0,l:0,t:1,c:'even'};
+m[5][2]={w:2,l:0,t:0,c:'winning'};
+m[5][3]={w:2,l:0,t:0,c:'winning'};
+m[5][4]={w:1,l:1,t:0,c:'even'};
+m[5][5]={w:"-",l:"-",t:"-",c:'self'};
+m[5][6]={w:2,l:0,t:0,c:'winning'};
+m[5][7]={w:0,l:2,t:0,c:'losing'};
+m[5][8]={w:1,l:1,t:0,c:'even'};
+m[5][9]={w:1,l:0,t:0,c:'winning'};
+m[5][10]={w:2,l:0,t:0,c:'winning'};
+m[5][11]={w:2,l:0,t:0,c:'winning'};
+m[6][0]={w:1,l:1,t:0,c:'even'};
+m[6][1]={w:0,l:2,t:0,c:'losing'};
+m[6][2]={w:1,l:1,t:0,c:'even'};
+m[6][3]={w:0,l:2,t:0,c:'losing'};
+m[6][4]={w:0,l:2,t:0,c:'losing'};
+m[6][5]={w:0,l:2,t:0,c:'losing'};
+m[6][6]={w:"-",l:"-",t:"-",c:'self'};
+m[6][7]={w:0,l:1,t:0,c:'losing'};
+m[6][8]={w:0,l:2,t:0,c:'losing'};
+m[6][9]={w:1,l:1,t:0,c:'even'};
+m[6][10]={w:1,l:1,t:0,c:'even'};
+m[6][11]={w:0,l:1,t:0,c:'losing'};
+m[7][0]={w:1,l:1,t:0,c:'even'};
+m[7][1]={w:0,l:1,t:0,c:'losing'};
+m[7][2]={w:2,l:0,t:0,c:'winning'};
+m[7][3]={w:0,l:2,t:0,c:'losing'};
+m[7][4]={w:0,l:2,t:0,c:'losing'};
+m[7][5]={w:2,l:0,t:0,c:'winning'};
+m[7][6]={w:1,l:0,t:0,c:'winning'};
+m[7][7]={w:"-",l:"-",t:"-",c:'self'};
+m[7][8]={w:0,l:2,t:0,c:'losing'};
+m[7][9]={w:2,l:0,t:0,c:'winning'};
+m[7][10]={w:1,l:0,t:1,c:'winning'};
+m[7][11]={w:2,l:0,t:0,c:'winning'};
+m[8][0]={w:1,l:1,t:0,c:'even'};
+m[8][1]={w:2,l:0,t:0,c:'winning'};
+m[8][2]={w:0,l:1,t:0,c:'losing'};
+m[8][3]={w:0,l:0,t:1,c:'even'};
+m[8][4]={w:1,l:0,t:1,c:'winning'};
+m[8][5]={w:1,l:1,t:0,c:'even'};
+m[8][6]={w:2,l:0,t:0,c:'winning'};
+m[8][7]={w:2,l:0,t:0,c:'winning'};
+m[8][8]={w:"-",l:"-",t:"-",c:'self'};
+m[8][9]={w:0,l:2,t:0,c:'losing'};
+m[8][10]={w:2,l:0,t:0,c:'winning'};
+m[8][11]={w:1,l:1,t:0,c:'even'};
+m[9][0]={w:2,l:0,t:0,c:'winning'};
+m[9][1]={w:2,l:0,t:0,c:'winning'};
+m[9][2]={w:2,l:0,t:0,c:'winning'};
+m[9][3]={w:1,l:1,t:0,c:'even'};
+m[9][4]={w:0,l:2,t:0,c:'losing'};
+m[9][5]={w:0,l:1,t:0,c:'losing'};
+m[9][6]={w:1,l:1,t:0,c:'even'};
+m[9][7]={w:0,l:2,t:0,c:'losing'};
+m[9][8]={w:2,l:0,t:0,c:'winning'};
+m[9][9]={w:"-",l:"-",t:"-",c:'self'};
+m[9][10]={w:1,l:0,t:0,c:'winning'};
+m[9][11]={w:2,l:0,t:0,c:'winning'};
+m[10][0]={w:1,l:0,t:0,c:'winning'};
+m[10][1]={w:0,l:2,t:0,c:'losing'};
+m[10][2]={w:1,l:1,t:0,c:'even'};
+m[10][3]={w:1,l:1,t:0,c:'even'};
+m[10][4]={w:1,l:0,t:1,c:'winning'};
+m[10][5]={w:0,l:2,t:0,c:'losing'};
+m[10][6]={w:1,l:1,t:0,c:'even'};
+m[10][7]={w:0,l:1,t:1,c:'losing'};
+m[10][8]={w:0,l:2,t:0,c:'losing'};
+m[10][9]={w:0,l:2,t:0,c:'losing'};
+m[10][10]={w:"-",l:"-",t:"-",c:'self'};
+m[10][11]={w:2,l:0,t:0,c:'winning'};
+m[11][0]={w:0,l:2,t:0,c:'losing'};
+m[11][1]={w:0,l:1,t:1,c:'losing'};
+m[11][2]={w:0,l:2,t:0,c:'losing'};
+m[11][3]={w:0,l:2,t:0,c:'losing'};
+m[11][4]={w:0,l:1,t:1,c:'losing'};
+m[11][5]={w:0,l:2,t:0,c:'losing'};
+m[11][6]={w:1,l:0,t:0,c:'winning'};
+m[11][7]={w:0,l:2,t:0,c:'losing'};
+m[11][8]={w:1,l:1,t:0,c:'even'};
+m[11][9]={w:0,l:2,t:0,c:'losing'};
+m[11][10]={w:0,l:2,t:0,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+
+    function renderMatrix(yearKey) {
+      const m = D[yearKey];
+      const head = document.getElementById('matrixHead');
+      const body = document.getElementById('matrixBody');
+      const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
+
+      let hdr = '<tr><th class="team-col">Manager</th>';
+      for (const t of teams) {
+        const teamName = names ? names[t.id] : t.team;
+        hdr += `<th title="${teamName}">${t.mgr}</th>`;
+      }
+      hdr += '<th style="border-left:2px solid #3b82f6">Total</th></tr>';
+      head.innerHTML = hdr;
+
+      let rows = '';
+      for (const tA of teams) {
+        const teamName = names ? names[tA.id] : tA.team;
+        rows += `<tr><td class="team-cell" title="${teamName}"><span style="color:${tA.color}">&#9679;</span> ${tA.mgr}</td>`;
+        let tw = 0, tl = 0, tt = 0;
+        for (const tB of teams) {
+          const cell = m[tA.id][tB.id];
+          if (tA.id === tB.id) {
+            rows += '<td class="self">&mdash;</td>';
+          } else if (cell.w === 0 && cell.l === 0 && cell.t === 0) {
+            rows += '<td class="none">0-0</td>';
+          } else {
+            tw += cell.w; tl += cell.l; tt += cell.t;
+            let display = `${cell.w}-${cell.l}`;
+            if (cell.t > 0) display += `-${cell.t}`;
+            rows += `<td class="${cell.c}"><span class="record-line">${display}</span></td>`;
+          }
+        }
+        const total = tw + tl + tt;
+        const pct = total > 0 ? ((tw + tt * 0.5) / total * 100).toFixed(0) : '0';
+        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tw}-${tl}${tt > 0 ? '-' + tt : ''} <span style="color:#64748b;font-weight:400">(${pct}%)</span></td>`;
+        rows += '</tr>';
+      }
+      body.innerHTML = rows;
+    }
+
+    renderMatrix('alltime');
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMatrix(btn.dataset.year);
+      });
+    });
+
+    document.querySelectorAll('.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const table = th.closest('table');
+        const idx = Array.from(th.parentNode.children).indexOf(th);
+        const tbody = table.querySelector('tbody') || table;
+        const headerRow = th.parentNode;
+        const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r !== headerRow);
+        const type = th.dataset.type || 'str';
+        const asc = th.classList.contains('asc');
+        rows.sort((a, b) => {
+          let va = a.children[idx]?.textContent.trim() || '';
+          let vb = b.children[idx]?.textContent.trim() || '';
+          if (type === 'num') {
+            va = parseFloat(va.replace(/[^\d.\-]/g, '')) || 0;
+            vb = parseFloat(vb.replace(/[^\d.\-]/g, '')) || 0;
+          }
+          if (va < vb) return asc ? 1 : -1;
+          if (va > vb) return asc ? -1 : 1;
+          return 0;
+        });
+        th.parentNode.querySelectorAll('.sortable').forEach(s => s.classList.remove('asc', 'desc'));
+        th.classList.add(asc ? 'desc' : 'asc');
+        rows.forEach(r => tbody.appendChild(r));
+      });
+    });
+  </script>
+</body>
+</html>
