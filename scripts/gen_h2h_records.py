@@ -33,47 +33,47 @@ COLORS = [
 ]
 
 # Canonical manager list (sorted alphabetically for stable ordering)
-MANAGERS = ['Austin', 'Bobby', 'Brian', 'Drew', 'Josh', 'Kevin', 'Kyle', 'Matt', 'Mikey', 'Mike', 'Taylor', 'Tom']
+MANAGERS = ['Austin', 'Bryant', 'Eric', 'Greg', 'James', 'Josh', 'Kevin', 'Kurtis', 'Mark', 'Mike', 'Mikey', 'Taylor']
 
 # (year, tn_string) -> manager name
-# Determined from team name keywords + elimination
+# Confirmed with league commissioner
 YEAR_TN_TO_MANAGER = {
     # 2023
     (2023, '1'): 'Taylor',   # Heimlich Maneuver, Blackout Rage Gallen, McLainBang
     (2023, '2'): 'Austin',   # Moniebol 🐳
-    (2023, '3'): 'Josh',     # Vinnie Pepperonis
-    (2023, '4'): 'Drew',     # TAX THE MONIEBOL, Bry Bry's Bible Bonkers (by elimination)
-    (2023, '5'): 'Bobby',    # [ABN] Rain, [z-ro], Mo City Don
-    (2023, '6'): 'Kyle',     # The Slobberknockers, Dollar General
-    (2023, '7'): 'Tom',      # Ian Cumsler
-    (2023, '8'): 'Matt',     # Movin' On Up, FIRE SALE
-    (2023, '9'): 'Brian',    # Camp RFK, Camp Bichette
+    (2023, '3'): 'Kurtis',   # Vinnie Pepperonis
+    (2023, '4'): 'Bryant',   # TAX THE MONIEBOL, Bry Bry's Bible Bonkers
+    (2023, '5'): 'Greg',     # [ABN] Rain, [z-ro], Mo City Don
+    (2023, '6'): 'Josh',     # The Slobberknockers, Dollar General
+    (2023, '7'): 'Eric',     # Ian Cumsler
+    (2023, '8'): 'Mark',     # Movin' On Up, FIRE SALE
+    (2023, '9'): 'James',    # Camp RFK, Camp Bichette
     (2023, '10'): 'Kevin',   # The Rosterbation Station
     (2023, '11'): 'Mikey',   # scoopski potatoes, ACES 4 DAAAAAYS
     (2023, '12'): 'Mike',    # ¯\_(ツ)_/¯, Canned Tuna
     # 2024
     (2024, '1'): 'Taylor',   # Pfaadt Tatis, Girthy Bohmer, O'Hoppe-timists
-    (2024, '2'): 'Bobby',    # FUCK TAYLOR HAMM, #JTimeFakeNews
-    (2024, '3'): 'Mikey',    # #RyderSources, Sexual Harassment Pandas, Whale Tails
-    (2024, '4'): 'Drew',     # Hatfield Hurlers
-    (2024, '5'): 'Tom',      # Ian Cumsler
-    (2024, '6'): 'Matt',     # OGglass-z13, OGnewnew4uu
+    (2024, '2'): 'James',    # FUCK TAYLOR HAMM, #JTimeFakeNews
+    (2024, '3'): 'Bryant',   # #RyderSources, Sexual Harassment Pandas, Whale Tails
+    (2024, '4'): 'Mark',     # Hatfield Hurlers
+    (2024, '5'): 'Eric',     # Ian Cumsler
+    (2024, '6'): 'Greg',     # OGglass-z13, OGnewnew4uu
     (2024, '7'): 'Austin',   # Moniebol
-    (2024, '8'): 'Kyle',     # BTHO, CAPTAIN AHAB, basketball season
+    (2024, '8'): 'Mikey',    # BTHO, CAPTAIN AHAB, basketball season
     (2024, '9'): 'Josh',     # Grand Salami Time
     (2024, '10'): 'Kevin',   # The Rosterbation Station
-    (2024, '11'): 'Brian',   # Ready to Plow
+    (2024, '11'): 'Kurtis',  # Ready to Plow
     (2024, '12'): 'Mike',    # ¯\_(ツ)_/¯🏆, I believe Ohtani
     # 2025
     (2025, '1'): 'Taylor',   # Serafini Hit Squad
-    (2025, '2'): 'Bobby',    # Tegridy
+    (2025, '2'): 'James',    # Tegridy
     (2025, '3'): 'Josh',     # Grand Salami Time
-    (2025, '4'): 'Drew',     # Hatfield Hurlers
-    (2025, '5'): 'Tom',      # Ian Cumsler
-    (2025, '6'): 'Kyle',     # Football Szn
+    (2025, '4'): 'Mark',     # Hatfield Hurlers
+    (2025, '5'): 'Eric',     # Ian Cumsler
+    (2025, '6'): 'Bryant',   # Football Szn
     (2025, '7'): 'Austin',   # Moniebol 🐳
-    (2025, '8'): 'Matt',     # OG9️⃣
-    (2025, '9'): 'Brian',    # Getting Plowed Again.
+    (2025, '8'): 'Greg',     # OG9️⃣
+    (2025, '9'): 'Kurtis',   # Getting Plowed Again.
     (2025, '10'): 'Kevin',   # The Rosterbation Station
     (2025, '11'): 'Mike',    # ¯\_(ツ)_/¯
     (2025, '12'): 'Mikey',   # @DoodlesAnalytics

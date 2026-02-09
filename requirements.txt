@@ -16,6 +16,9 @@ lxml==4.9.3
 # Database
 boto3>=1.28.0
 
+# Yahoo Fantasy API
+yfpy>=16.0.0
+
 # Environment & Configuration
 python-dotenv==1.0.0
 setuptools==58.1.0
