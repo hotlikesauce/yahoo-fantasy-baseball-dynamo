@@ -10,4 +10,6 @@ week5_Recalc.py
 manager_dict.py
 *.key
 .claude/
+docs/data/
+yahoo_oauth_token.json
 nul

@@ -143,8 +143,9 @@
             <a href="h2h_records.html" class="ss-nav-link${isActive('h2h_records.html')}">H2H Records</a>
           </li>
           <li class="ss-nav-item">
-            <a class="ss-nav-link has-dropdown${isActive('draft_picks_2026.html') ? ' active' : ''}">2026 Season</a>
+            <a class="ss-nav-link has-dropdown${['draft_picks_2026.html','trade_analyzer.html'].includes(path) ? ' active' : ''}">2026 Season</a>
             <div class="ss-dropdown">
+              <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
               <a href="draft_picks_2026.html" class="${isActive('draft_picks_2026.html').trim()}">Draft Capital</a>
               <div class="ss-divider"></div>
               <a class="disabled">Season Trends - Coming Soon</a>

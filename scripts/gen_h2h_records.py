@@ -25,59 +25,14 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('FantasyBaseball-HistoricalSeasons')
 
+from team_config import MANAGERS, YEAR_TN_TO_MANAGER
+
 YEARS = [2023, 2024, 2025]
 
 COLORS = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
     '#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7',
 ]
-
-# Canonical manager list (sorted alphabetically for stable ordering)
-MANAGERS = ['Austin', 'Bryant', 'Eric', 'Greg', 'James', 'Josh', 'Kevin', 'Kurtis', 'Mark', 'Mike', 'Mikey', 'Taylor']
-
-# (year, tn_string) -> manager name
-# Confirmed with league commissioner
-YEAR_TN_TO_MANAGER = {
-    # 2023
-    (2023, '1'): 'Taylor',   # Heimlich Maneuver, Blackout Rage Gallen, McLainBang
-    (2023, '2'): 'Austin',   # Moniebol 🐳
-    (2023, '3'): 'Kurtis',   # Vinnie Pepperonis
-    (2023, '4'): 'Bryant',   # TAX THE MONIEBOL, Bry Bry's Bible Bonkers
-    (2023, '5'): 'Greg',     # [ABN] Rain, [z-ro], Mo City Don
-    (2023, '6'): 'Josh',     # The Slobberknockers, Dollar General
-    (2023, '7'): 'Eric',     # Ian Cumsler
-    (2023, '8'): 'Mark',     # Movin' On Up, FIRE SALE
-    (2023, '9'): 'James',    # Camp RFK, Camp Bichette
-    (2023, '10'): 'Kevin',   # The Rosterbation Station
-    (2023, '11'): 'Mikey',   # scoopski potatoes, ACES 4 DAAAAAYS
-    (2023, '12'): 'Mike',    # ¯\_(ツ)_/¯, Canned Tuna
-    # 2024
-    (2024, '1'): 'Taylor',   # Pfaadt Tatis, Girthy Bohmer, O'Hoppe-timists
-    (2024, '2'): 'James',    # FUCK TAYLOR HAMM, #JTimeFakeNews
-    (2024, '3'): 'Bryant',   # #RyderSources, Sexual Harassment Pandas, Whale Tails
-    (2024, '4'): 'Mark',     # Hatfield Hurlers
-    (2024, '5'): 'Eric',     # Ian Cumsler
-    (2024, '6'): 'Greg',     # OGglass-z13, OGnewnew4uu
-    (2024, '7'): 'Austin',   # Moniebol
-    (2024, '8'): 'Mikey',    # BTHO, CAPTAIN AHAB, basketball season
-    (2024, '9'): 'Josh',     # Grand Salami Time
-    (2024, '10'): 'Kevin',   # The Rosterbation Station
-    (2024, '11'): 'Kurtis',  # Ready to Plow
-    (2024, '12'): 'Mike',    # ¯\_(ツ)_/¯🏆, I believe Ohtani
-    # 2025
-    (2025, '1'): 'Taylor',   # Serafini Hit Squad
-    (2025, '2'): 'James',    # Tegridy
-    (2025, '3'): 'Josh',     # Grand Salami Time
-    (2025, '4'): 'Mark',     # Hatfield Hurlers
-    (2025, '5'): 'Eric',     # Ian Cumsler
-    (2025, '6'): 'Bryant',   # Football Szn
-    (2025, '7'): 'Austin',   # Moniebol 🐳
-    (2025, '8'): 'Greg',     # OG9️⃣
-    (2025, '9'): 'Kurtis',   # Getting Plowed Again.
-    (2025, '10'): 'Kevin',   # The Rosterbation Station
-    (2025, '11'): 'Mike',    # ¯\_(ツ)_/¯
-    (2025, '12'): 'Mikey',   # @DoodlesAnalytics
-}
 
 MGR_IDX = {name: i for i, name in enumerate(MANAGERS)}
 NUM_MGRS = len(MANAGERS)
@@ -276,10 +231,6 @@ for i in range(NUM_MGRS):
 lopsided = sorted(rivalries, key=lambda r: (-r['imbalance'], -r['total']))
 even_rivalries = sorted(rivalries, key=lambda r: (r['imbalance'], -r['total']))
 
-blowouts = sorted(all_matchups, key=lambda m: -m['margin'])[:15]
-closest = sorted([m for m in all_matchups if not m['is_tie']], key=lambda m: m['margin'])[:15]
-ties = sorted([m for m in all_matchups if m['is_tie']], key=lambda m: -m['w_score'])[:10]
-
 print(f"\nTotal unique matchups: {len(all_matchups)}")
 print(f"Rivalries: {len(rivalries)}")
 
@@ -349,41 +300,6 @@ for y in YEARS:
 year_names_js = json.dumps(year_names)
 
 # Table rows
-blowout_rows = ''
-for i, m in enumerate(blowouts):
-    blowout_rows += f'''<tr>
-      <td class="rank">{i+1}</td>
-      <td>{m['year']}</td>
-      <td>Wk {m['week']}</td>
-      <td>{m['winner']}</td>
-      <td class="score">{m['w_score']:.1f} - {m['l_score']:.1f}</td>
-      <td>{m['loser']}</td>
-      <td class="hot-val">+{m['margin']:.1f}</td>
-    </tr>'''
-
-closest_rows = ''
-for i, m in enumerate(closest):
-    closest_rows += f'''<tr>
-      <td class="rank">{i+1}</td>
-      <td>{m['year']}</td>
-      <td>Wk {m['week']}</td>
-      <td>{m['winner']}</td>
-      <td class="score">{m['w_score']:.1f} - {m['l_score']:.1f}</td>
-      <td>{m['loser']}</td>
-      <td class="close-margin">{m['margin']:.1f}</td>
-    </tr>'''
-
-tie_rows = ''
-for i, m in enumerate(ties):
-    tie_rows += f'''<tr>
-      <td class="rank">{i+1}</td>
-      <td>{m['year']}</td>
-      <td>Wk {m['week']}</td>
-      <td>{m['team_a']}</td>
-      <td class="score">{m['score_a']:.1f} - {m['score_b']:.1f}</td>
-      <td>{m['team_b']}</td>
-    </tr>'''
-
 lopsided_rows = ''
 for i, r in enumerate(lopsided[:15]):
     if r['win_pct'] >= 0.5:
@@ -488,6 +404,12 @@ html = f'''<!DOCTYPE html>
       <button class="filter-btn" data-year="2025">2025</button>
       <button class="filter-btn" data-year="2024">2024</button>
       <button class="filter-btn" data-year="2023">2023</button>
+      <label style="margin-left:20px">Sort:</label>
+      <select id="sortSelect" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:6px 12px;border-radius:6px;font-size:0.88em;cursor:pointer">
+        <option value="alpha">Manager Name</option>
+        <option value="winpct">Win % (Best First)</option>
+        <option value="wins">Total Wins</option>
+      </select>
     </div>
 
     <div class="matrix-wrap">
@@ -496,50 +418,6 @@ html = f'''<!DOCTYPE html>
         <tbody id="matrixBody"></tbody>
       </table>
     </div>
-
-    <div class="two-col">
-      <div class="card">
-        <h3>&#x1F4A5; Most Dominant Performances</h3>
-        <p class="section-desc">Biggest single-week blowouts</p>
-        <table>
-          <tr>
-            <th>#</th>
-            <th class="sortable" data-type="num">Year</th>
-            <th>Week</th>
-            <th>Winner</th>
-            <th>Score</th>
-            <th>Loser</th>
-            <th class="sortable" data-type="num">Margin</th>
-          </tr>
-          {blowout_rows}
-        </table>
-      </div>
-      <div class="card">
-        <h3>&#x1F3AF; Closest Matchups</h3>
-        <p class="section-desc">Tightest wins (non-tie)</p>
-        <table>
-          <tr>
-            <th>#</th>
-            <th class="sortable" data-type="num">Year</th>
-            <th>Week</th>
-            <th>Winner</th>
-            <th>Score</th>
-            <th>Loser</th>
-            <th class="sortable" data-type="num">Margin</th>
-          </tr>
-          {closest_rows}
-        </table>
-      </div>
-    </div>
-
-    {f"""<div class="card" style="margin-bottom:32px">
-      <h3>&#x1F91D; Dead Even (Ties)</h3>
-      <p class="section-desc">Matchups that ended in a perfect tie</p>
-      <table>
-        <tr><th>#</th><th>Year</th><th>Week</th><th>Team A</th><th>Score</th><th>Team B</th></tr>
-        {tie_rows}
-      </table>
-    </div>""" if ties else ""}
 
     <div class="two-col">
       <div class="card">
@@ -581,14 +459,41 @@ html = f'''<!DOCTYPE html>
 
     {full_matrix_js()}
 
+    let currentYear = 'alltime';
+
     function renderMatrix(yearKey) {{
+      currentYear = yearKey;
       const m = D[yearKey];
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
+      const sortBy = document.getElementById('sortSelect').value;
+
+      const teamData = teams.map(t => {{
+        let tw = 0, tl = 0, tt = 0;
+        for (const tB of teams) {{
+          if (t.id === tB.id) continue;
+          const cell = m[t.id][tB.id];
+          if (cell.w !== '-' && !(cell.w === 0 && cell.l === 0 && cell.t === 0)) {{
+            tw += cell.w; tl += cell.l; tt += cell.t;
+          }}
+        }}
+        const total = tw + tl + tt;
+        const pct = total > 0 ? (tw + tt * 0.5) / total : 0;
+        return {{ ...t, tw, tl, tt, total, pct }};
+      }});
+
+      let sorted;
+      if (sortBy === 'winpct') {{
+        sorted = [...teamData].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+      }} else if (sortBy === 'wins') {{
+        sorted = [...teamData].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+      }} else {{
+        sorted = teamData;
+      }}
 
       let hdr = '<tr><th class="team-col">Manager</th>';
-      for (const t of teams) {{
+      for (const t of sorted) {{
         const teamName = names ? names[t.id] : t.team;
         hdr += `<th title="${{teamName}}">${{t.mgr}}</th>`;
       }}
@@ -596,26 +501,22 @@ html = f'''<!DOCTYPE html>
       head.innerHTML = hdr;
 
       let rows = '';
-      for (const tA of teams) {{
+      for (const tA of sorted) {{
         const teamName = names ? names[tA.id] : tA.team;
         rows += `<tr><td class="team-cell" title="${{teamName}}"><span style="color:${{tA.color}}">&#9679;</span> ${{tA.mgr}}</td>`;
-        let tw = 0, tl = 0, tt = 0;
-        for (const tB of teams) {{
+        for (const tB of sorted) {{
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {{
             rows += '<td class="self">&mdash;</td>';
           }} else if (cell.w === 0 && cell.l === 0 && cell.t === 0) {{
             rows += '<td class="none">0-0</td>';
           }} else {{
-            tw += cell.w; tl += cell.l; tt += cell.t;
             let display = `${{cell.w}}-${{cell.l}}`;
             if (cell.t > 0) display += `-${{cell.t}}`;
             rows += `<td class="${{cell.c}}"><span class="record-line">${{display}}</span></td>`;
           }}
         }}
-        const total = tw + tl + tt;
-        const pct = total > 0 ? ((tw + tt * 0.5) / total * 100).toFixed(0) : '0';
-        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{tw}}-${{tl}}${{tt > 0 ? '-' + tt : ''}} <span style="color:#64748b;font-weight:400">(${{pct}}%)</span></td>`;
+        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{tA.tw}}-${{tA.tl}}${{tA.tt > 0 ? '-' + tA.tt : ''}} <span style="color:#64748b;font-weight:400">(${{(tA.pct * 100).toFixed(0)}}%)</span></td>`;
         rows += '</tr>';
       }}
       body.innerHTML = rows;
@@ -629,6 +530,10 @@ html = f'''<!DOCTYPE html>
         btn.classList.add('active');
         renderMatrix(btn.dataset.year);
       }});
+    }});
+
+    document.getElementById('sortSelect').addEventListener('change', () => {{
+      renderMatrix(currentYear);
     }});
 
     document.querySelectorAll('.sortable').forEach(th => {{

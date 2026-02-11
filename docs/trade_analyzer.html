@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Analyzer - Summertime Sadness</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f172a; color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  h1 {
+    font-size: 1.8em; font-weight: 700; margin-bottom: 8px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { color: #64748b; font-size: 0.9em; margin-bottom: 24px; }
+  .no-data-banner {
+    background: #1e293b; border: 1px solid #f59e0b; border-radius: 12px;
+    padding: 24px; text-align: center; margin-bottom: 24px;
+  }
+  .no-data-banner h2 { color: #f59e0b; margin-bottom: 8px; }
+  .no-data-banner p { color: #94a3b8; }
+
+  /* Trade builder */
+  .trade-builder {
+    display: grid; grid-template-columns: 1fr 60px 1fr;
+    gap: 0; margin-bottom: 24px;
+  }
+  .trade-side {
+    background: #1e293b; border-radius: 12px; padding: 20px;
+    border: 1px solid #334155;
+  }
+  .trade-arrow {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2em; color: #3b82f6;
+  }
+  .trade-side h3 {
+    font-size: 1em; color: #94a3b8; margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  }
+  .team-select {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    background: #0f172a; border: 1px solid #334155; color: #e2e8f0;
+    font-size: 0.95em; margin-bottom: 16px; cursor: pointer;
+  }
+  .team-select:focus { outline: none; border-color: #3b82f6; }
+
+  /* Player list */
+  .player-list { max-height: 500px; overflow-y: auto; }
+  .player-row {
+    display: grid; grid-template-columns: 28px 1fr 60px 70px;
+    align-items: center; padding: 8px 10px; border-radius: 6px;
+    gap: 8px; cursor: pointer; transition: background 0.1s;
+  }
+  .player-row:hover { background: #334155; }
+  .player-row.selected { background: #1e3a5f; border: 1px solid #3b82f6; }
+  .player-row input[type="checkbox"] { cursor: pointer; }
+  .player-name { font-size: 0.88em; }
+  .player-name .pos { color: #64748b; font-size: 0.85em; }
+  .player-value {
+    text-align: right; font-weight: 600; font-size: 0.85em;
+  }
+  .player-value.positive { color: #22c55e; }
+  .player-value.negative { color: #ef4444; }
+  .player-stats-mini { color: #64748b; font-size: 0.78em; text-align: right; }
+
+  .section-label {
+    font-size: 0.78em; text-transform: uppercase; color: #64748b;
+    letter-spacing: 0.05em; margin: 12px 0 6px; padding-bottom: 4px;
+    border-bottom: 1px solid #334155;
+  }
+
+  /* Draft picks */
+  .draft-picks { margin-top: 12px; }
+  .pick-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 6px; cursor: pointer;
+    transition: background 0.1s;
+  }
+  .pick-row:hover { background: #334155; }
+  .pick-round { font-size: 0.88em; }
+  .pick-value-label { color: #64748b; font-size: 0.78em; margin-left: auto; }
+
+  /* Analyze button */
+  .analyze-btn {
+    display: block; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none; border-radius: 10px; color: white;
+    font-size: 1.05em; font-weight: 600; cursor: pointer;
+    margin-bottom: 24px; transition: opacity 0.15s;
+  }
+  .analyze-btn:hover { opacity: 0.9; }
+  .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Results */
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .summary-card {
+    background: #1e293b; border-radius: 12px; padding: 24px;
+    border: 1px solid #334155; margin-bottom: 24px;
+  }
+  .summary-card h2 {
+    font-size: 1.1em; margin-bottom: 16px; color: #e2e8f0;
+  }
+
+  /* Value bar */
+  .value-comparison {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px;
+    align-items: center; margin-bottom: 16px;
+  }
+  .value-side { text-align: center; }
+  .value-side .team-label { font-size: 0.85em; color: #94a3b8; margin-bottom: 4px; }
+  .value-side .value-num {
+    font-size: 2em; font-weight: 700;
+  }
+  .value-side .value-num.positive { color: #22c55e; }
+  .value-side .value-num.negative { color: #ef4444; }
+  .value-side .value-num.neutral { color: #94a3b8; }
+  .vs-label { color: #64748b; font-size: 1.2em; font-weight: 700; }
+
+  .verdict {
+    text-align: center; padding: 12px; border-radius: 8px;
+    font-weight: 600; font-size: 1em;
+  }
+  .verdict.fair { background: #14532d33; color: #22c55e; border: 1px solid #22c55e44; }
+  .verdict.lopsided { background: #7f1d1d33; color: #ef4444; border: 1px solid #ef444444; }
+  .verdict.slight { background: #78350f33; color: #f59e0b; border: 1px solid #f59e0b44; }
+
+  /* Category impact table */
+  .cat-impact-table {
+    width: 100%; border-collapse: collapse; font-size: 0.88em;
+  }
+  .cat-impact-table th {
+    text-align: left; padding: 8px 12px; color: #64748b;
+    border-bottom: 1px solid #334155; font-weight: 600;
+    text-transform: uppercase; font-size: 0.85em;
+  }
+  .cat-impact-table td {
+    padding: 8px 12px; border-bottom: 1px solid #1e293b;
+  }
+  .cat-impact-table tr:hover td { background: #1e293b; }
+  .cat-improve { color: #22c55e; }
+  .cat-worsen { color: #ef4444; }
+  .cat-neutral { color: #94a3b8; }
+  .rank-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.85em; font-weight: 600;
+  }
+  .rank-up { background: #14532d; color: #22c55e; }
+  .rank-down { background: #7f1d1d; color: #ef4444; }
+  .rank-same { background: #334155; color: #94a3b8; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #1e293b; }
+  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    .trade-builder { grid-template-columns: 1fr; }
+    .trade-arrow { transform: rotate(90deg); padding: 12px 0; }
+  }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<div class="container">
+  <h1>Trade Analyzer</h1>
+  <p class="subtitle">Evaluate trades with player values, category impact, and draft pick analysis</p>
+
+  <div id="no-data-banner" class="no-data-banner" style="display:none">
+    <h2>No Roster Data Available</h2>
+    <p>The 2026 season hasn't started yet. Run <code>python scripts/fetch_trade_data.py</code> once the season begins to pull live roster data.</p>
+    <p style="margin-top:8px; font-size:0.85em">Team names and draft picks are available for planning.</p>
+  </div>
+
+  <div class="trade-builder">
+    <div class="trade-side" id="side-a">
+      <h3>Team A Sends</h3>
+      <select class="team-select" id="team-a-select">
+        <option value="">Select a team...</option>
+      </select>
+      <div id="roster-a" class="player-list"></div>
+      <div class="section-label">Draft Picks</div>
+      <div id="picks-a" class="draft-picks"></div>
+    </div>
+    <div class="trade-arrow">&harr;</div>
+    <div class="trade-side" id="side-b">
+      <h3>Team B Sends</h3>
+      <select class="team-select" id="team-b-select">
+        <option value="">Select a team...</option>
+      </select>
+      <div id="roster-b" class="player-list"></div>
+      <div class="section-label">Draft Picks</div>
+      <div id="picks-b" class="draft-picks"></div>
+    </div>
+  </div>
+
+  <button class="analyze-btn" id="analyze-btn" disabled>Analyze Trade</button>
+
+  <div class="results" id="results">
+    <div class="summary-card">
+      <h2>Trade Summary</h2>
+      <div class="value-comparison">
+        <div class="value-side">
+          <div class="team-label" id="summary-team-a-label"></div>
+          <div class="value-num" id="summary-value-a"></div>
+          <div style="color:#64748b;font-size:0.85em" id="summary-detail-a"></div>
+        </div>
+        <div class="vs-label">VS</div>
+        <div class="value-side">
+          <div class="team-label" id="summary-team-b-label"></div>
+          <div class="value-num" id="summary-value-b"></div>
+          <div style="color:#64748b;font-size:0.85em" id="summary-detail-b"></div>
+        </div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+
+    <div class="summary-card" id="cat-impact-card">
+      <h2>Category Impact</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div>
+          <h3 style="font-size:0.9em;color:#94a3b8;margin-bottom:12px" id="cat-team-a-label"></h3>
+          <table class="cat-impact-table" id="cat-table-a">
+            <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Change</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:0.9em;color:#94a3b8;margin-bottom:12px" id="cat-team-b-label"></h3>
+          <table class="cat-impact-table" id="cat-table-b">
+            <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Change</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+(function() {
+  // Draft pick value formula (matches gen_draft_picks.py)
+  const TOTAL_ROUNDS = 22;
+  function pickValue(round) {
+    return Math.round(Math.pow(TOTAL_ROUNDS + 1 - round, 1.5));
+  }
+
+  // Available draft rounds for pick trading (2027 picks)
+  const DRAFT_ROUNDS = Array.from({length: TOTAL_ROUNDS}, (_, i) => i + 1);
+
+  let DATA = null;
+
+  // Load data
+  fetch('data/trade_data.json')
+    .then(r => r.json())
+    .then(data => {
+      DATA = data;
+      init();
+    })
+    .catch(err => {
+      console.error('Failed to load trade data:', err);
+      document.getElementById('no-data-banner').style.display = 'block';
+      document.getElementById('no-data-banner').innerHTML =
+        '<h2>Data Not Found</h2><p>Run <code>python scripts/fetch_trade_data.py</code> to generate trade data.</p>';
+    });
+
+  function init() {
+    const teams = DATA.teams;
+    const hasRosters = teams.some(t => t.players && t.players.length > 0);
+
+    if (!hasRosters) {
+      document.getElementById('no-data-banner').style.display = 'block';
+    }
+
+    // Populate team dropdowns
+    const selA = document.getElementById('team-a-select');
+    const selB = document.getElementById('team-b-select');
+
+    teams.forEach(t => {
+      const label = `${t.manager} - ${t.name}`;
+      selA.innerHTML += `<option value="${t.team_id}">${label}</option>`;
+      selB.innerHTML += `<option value="${t.team_id}">${label}</option>`;
+    });
+
+    selA.addEventListener('change', () => renderSide('a'));
+    selB.addEventListener('change', () => renderSide('b'));
+    document.getElementById('analyze-btn').addEventListener('click', analyzeTrade);
+  }
+
+  function getTeam(teamId) {
+    return DATA.teams.find(t => t.team_id === parseInt(teamId));
+  }
+
+  function renderSide(side) {
+    const sel = document.getElementById(`team-${side}-select`);
+    const teamId = sel.value;
+    const rosterDiv = document.getElementById(`roster-${side}`);
+    const picksDiv = document.getElementById(`picks-${side}`);
+
+    if (!teamId) {
+      rosterDiv.innerHTML = '';
+      picksDiv.innerHTML = '';
+      updateAnalyzeBtn();
+      return;
+    }
+
+    const team = getTeam(teamId);
+    if (!team) return;
+
+    // Render players
+    if (team.players && team.players.length > 0) {
+      rosterDiv.innerHTML = team.players.map((p, i) => {
+        const valClass = p.value > 0 ? 'positive' : p.value < 0 ? 'negative' : '';
+        const posStr = p.display_position || p.positions?.join('/') || 'Util';
+        // Show a couple key stats
+        const stats = p.stats || {};
+        let miniStats = '';
+        if (posStr.match(/SP|RP|P/)) {
+          const era = stats['ERA'] !== undefined ? `ERA ${stats['ERA']}` : '';
+          const qs = stats['QS'] !== undefined ? `QS ${stats['QS']}` : '';
+          miniStats = [era, qs].filter(Boolean).join(' ');
+        } else {
+          const hr = stats['HR'] !== undefined ? `${stats['HR']} HR` : '';
+          const rbi = stats['RBI'] !== undefined ? `${stats['RBI']} RBI` : '';
+          miniStats = [hr, rbi].filter(Boolean).join(' ');
+        }
+        return `
+          <div class="player-row" data-side="${side}" data-idx="${i}" onclick="togglePlayer(this)">
+            <input type="checkbox" data-side="${side}" data-idx="${i}">
+            <div class="player-name">${p.name} <span class="pos">${posStr}</span></div>
+            <div class="player-value ${valClass}">${p.value > 0 ? '+' : ''}${p.value?.toFixed(1) || '0.0'}</div>
+            <div class="player-stats-mini">${miniStats}</div>
+          </div>`;
+      }).join('');
+    } else {
+      rosterDiv.innerHTML = '<div style="color:#64748b;padding:16px;text-align:center;font-size:0.9em">No roster data yet</div>';
+    }
+
+    // Render draft picks (2027)
+    picksDiv.innerHTML = DRAFT_ROUNDS.map(r => {
+      const val = pickValue(r);
+      return `
+        <div class="pick-row" onclick="togglePick(this)" data-side="${side}" data-round="${r}">
+          <input type="checkbox" data-side="${side}" data-round="${r}">
+          <span class="pick-round">Round ${r}</span>
+          <span class="pick-value-label">${val} pts</span>
+        </div>`;
+    }).join('');
+
+    updateAnalyzeBtn();
+  }
+
+  // Toggle functions (need to be global)
+  window.togglePlayer = function(row) {
+    const cb = row.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    row.classList.toggle('selected', cb.checked);
+    updateAnalyzeBtn();
+  };
+
+  window.togglePick = function(row) {
+    const cb = row.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    row.classList.toggle('selected', cb.checked);
+    updateAnalyzeBtn();
+  };
+
+  function updateAnalyzeBtn() {
+    const selA = document.getElementById('team-a-select').value;
+    const selB = document.getElementById('team-b-select').value;
+    const hasSelections = getSelectedPlayers('a').length + getSelectedPicks('a').length > 0 ||
+                         getSelectedPlayers('b').length + getSelectedPicks('b').length > 0;
+    document.getElementById('analyze-btn').disabled = !(selA && selB && selA !== selB && hasSelections);
+  }
+
+  function getSelectedPlayers(side) {
+    const cbs = document.querySelectorAll(`#roster-${side} input[type="checkbox"]:checked`);
+    const team = getTeam(document.getElementById(`team-${side}-select`).value);
+    if (!team) return [];
+    return Array.from(cbs).map(cb => team.players[parseInt(cb.dataset.idx)]).filter(Boolean);
+  }
+
+  function getSelectedPicks(side) {
+    const cbs = document.querySelectorAll(`#picks-${side} input[type="checkbox"]:checked`);
+    return Array.from(cbs).map(cb => parseInt(cb.dataset.round));
+  }
+
+  function analyzeTrade() {
+    const teamA = getTeam(document.getElementById('team-a-select').value);
+    const teamB = getTeam(document.getElementById('team-b-select').value);
+    if (!teamA || !teamB) return;
+
+    const playersA = getSelectedPlayers('a'); // Team A sends these
+    const playersB = getSelectedPlayers('b'); // Team B sends these
+    const picksA = getSelectedPicks('a');     // Team A sends these picks
+    const picksB = getSelectedPicks('b');     // Team B sends these picks
+
+    // Calculate player values
+    const playerValA = playersA.reduce((sum, p) => sum + (p.value || 0), 0);
+    const playerValB = playersB.reduce((sum, p) => sum + (p.value || 0), 0);
+
+    // Calculate draft pick values
+    const pickValA = picksA.reduce((sum, r) => sum + pickValue(r), 0);
+    const pickValB = picksB.reduce((sum, r) => sum + pickValue(r), 0);
+
+    // Team A sends playerValA + pickValA, receives playerValB + pickValB
+    const totalSendsA = playerValA + pickValA;
+    const totalSendsB = playerValB + pickValB;
+
+    // Net gain for each team (what they get minus what they give)
+    const netA = totalSendsB - totalSendsA;  // Team A gains
+    const netB = totalSendsA - totalSendsB;  // Team B gains
+
+    // Display summary
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.classList.add('show');
+
+    document.getElementById('summary-team-a-label').textContent = `${teamA.manager} receives`;
+    document.getElementById('summary-team-b-label').textContent = `${teamB.manager} receives`;
+
+    const valAEl = document.getElementById('summary-value-a');
+    const valBEl = document.getElementById('summary-value-b');
+
+    // What Team A receives: players from B + picks from B
+    const aReceivesPlayer = playerValB;
+    const aReceivesPick = pickValB;
+    const bReceivesPlayer = playerValA;
+    const bReceivesPick = pickValA;
+
+    valAEl.textContent = (aReceivesPlayer + aReceivesPick).toFixed(1);
+    valAEl.className = 'value-num ' + (netA > 0 ? 'positive' : netA < 0 ? 'negative' : 'neutral');
+
+    valBEl.textContent = (bReceivesPlayer + bReceivesPick).toFixed(1);
+    valBEl.className = 'value-num ' + (netB > 0 ? 'positive' : netB < 0 ? 'negative' : 'neutral');
+
+    // Detail lines
+    const detailA = [];
+    if (playersB.length) detailA.push(`${aReceivesPlayer.toFixed(1)} player value`);
+    if (picksB.length) detailA.push(`${aReceivesPick} pick pts`);
+    document.getElementById('summary-detail-a').textContent = detailA.join(' + ');
+
+    const detailB = [];
+    if (playersA.length) detailB.push(`${bReceivesPlayer.toFixed(1)} player value`);
+    if (picksA.length) detailB.push(`${bReceivesPick} pick pts`);
+    document.getElementById('summary-detail-b').textContent = detailB.join(' + ');
+
+    // Verdict
+    const diff = Math.abs(netA);
+    const verdictEl = document.getElementById('verdict');
+    const winner = netA > 0 ? teamA.manager : teamB.manager;
+    if (diff < 2) {
+      verdictEl.className = 'verdict fair';
+      verdictEl.textContent = 'Fair trade - roughly even value';
+    } else if (diff < 5) {
+      verdictEl.className = 'verdict slight';
+      verdictEl.textContent = `Slight edge to ${winner} (+${diff.toFixed(1)})`;
+    } else {
+      verdictEl.className = 'verdict lopsided';
+      verdictEl.textContent = `${winner} wins big (+${diff.toFixed(1)})`;
+    }
+
+    // Category impact
+    renderCategoryImpact(teamA, teamB, playersA, playersB);
+
+    // Scroll to results
+    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderCategoryImpact(teamA, teamB, playersA, playersB) {
+    if (!DATA.league.stat_categories) return;
+
+    const cats = DATA.league.stat_categories.filter(c =>
+      !['H/AB', 'IP'].includes(c.name)  // Skip display-only stats
+    );
+
+    document.getElementById('cat-team-a-label').textContent = `${teamA.manager}'s Category Changes`;
+    document.getElementById('cat-team-b-label').textContent = `${teamB.manager}'s Category Changes`;
+
+    // Calculate category contributions of traded players
+    function playerCatTotal(players, catName) {
+      return players.reduce((sum, p) => sum + ((p.stats && p.stats[catName]) || 0), 0);
+    }
+
+    // For Team A: loses playersA stats, gains playersB stats
+    const tbodyA = document.querySelector('#cat-table-a tbody');
+    const tbodyB = document.querySelector('#cat-table-b tbody');
+    tbodyA.innerHTML = '';
+    tbodyB.innerHTML = '';
+
+    cats.forEach(cat => {
+      const cname = cat.name;
+      const beforeA = (teamA.category_totals && teamA.category_totals[cname]) || 0;
+      const beforeB = (teamB.category_totals && teamB.category_totals[cname]) || 0;
+
+      const loseA = playerCatTotal(playersA, cname);
+      const gainA = playerCatTotal(playersB, cname);
+      const afterA = beforeA - loseA + gainA;
+
+      const loseB = playerCatTotal(playersB, cname);
+      const gainB = playerCatTotal(playersA, cname);
+      const afterB = beforeB - loseB + gainB;
+
+      const changeA = afterA - beforeA;
+      const changeB = afterB - beforeB;
+
+      const isLower = !cat.higher_is_better;
+
+      function changeClass(change, isLowerBetter) {
+        if (Math.abs(change) < 0.001) return 'cat-neutral';
+        if (isLowerBetter) return change < 0 ? 'cat-improve' : 'cat-worsen';
+        return change > 0 ? 'cat-improve' : 'cat-worsen';
+      }
+
+      function fmt(v) {
+        if (Math.abs(v) < 10) return v.toFixed(3);
+        return v.toFixed(1);
+      }
+
+      tbodyA.innerHTML += `<tr>
+        <td>${cname}</td>
+        <td>${fmt(beforeA)}</td>
+        <td>${fmt(afterA)}</td>
+        <td class="${changeClass(changeA, isLower)}">${changeA >= 0 ? '+' : ''}${fmt(changeA)}</td>
+      </tr>`;
+
+      tbodyB.innerHTML += `<tr>
+        <td>${cname}</td>
+        <td>${fmt(beforeB)}</td>
+        <td>${fmt(afterB)}</td>
+        <td class="${changeClass(changeB, isLower)}">${changeB >= 0 ? '+' : ''}${fmt(changeB)}</td>
+      </tr>`;
+    });
+
+    document.getElementById('cat-impact-card').style.display =
+      (playersA.length || playersB.length) ? 'block' : 'none';
+  }
+})();
+</script>
+</body>
+</html>

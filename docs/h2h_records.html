@@ -75,366 +75,18 @@
       <button class="filter-btn" data-year="2025">2025</button>
       <button class="filter-btn" data-year="2024">2024</button>
       <button class="filter-btn" data-year="2023">2023</button>
+      <label style="margin-left:20px">Sort:</label>
+      <select id="sortSelect" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:6px 12px;border-radius:6px;font-size:0.88em;cursor:pointer">
+        <option value="alpha">Manager Name</option>
+        <option value="winpct">Win % (Best First)</option>
+        <option value="wins">Total Wins</option>
+      </select>
     </div>
 
     <div class="matrix-wrap">
       <table class="matrix" id="h2hMatrix">
         <thead id="matrixHead"></thead>
         <tbody id="matrixBody"></tbody>
-      </table>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <h3>&#x1F4A5; Most Dominant Performances</h3>
-        <p class="section-desc">Biggest single-week blowouts</p>
-        <table>
-          <tr>
-            <th>#</th>
-            <th class="sortable" data-type="num">Year</th>
-            <th>Week</th>
-            <th>Winner</th>
-            <th>Score</th>
-            <th>Loser</th>
-            <th class="sortable" data-type="num">Margin</th>
-          </tr>
-          <tr>
-      <td class="rank">1</td>
-      <td>2023</td>
-      <td>Wk 2</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">12.0 - 0.0</td>
-      <td>Ian Cumsler</td>
-      <td class="hot-val">+12.0</td>
-    </tr><tr>
-      <td class="rank">2</td>
-      <td>2024</td>
-      <td>Wk 11</td>
-      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
-      <td class="score">12.0 - 0.0</td>
-      <td>Hatfield Hurlers</td>
-      <td class="hot-val">+12.0</td>
-    </tr><tr>
-      <td class="rank">3</td>
-      <td>2024</td>
-      <td>Wk 15</td>
-      <td>Grand Salami Time</td>
-      <td class="score">12.0 - 0.0</td>
-      <td>OGglass-z13</td>
-      <td class="hot-val">+12.0</td>
-    </tr><tr>
-      <td class="rank">4</td>
-      <td>2024</td>
-      <td>Wk 19</td>
-      <td>¯\_(ツ)_/¯🏆</td>
-      <td class="score">12.0 - 0.0</td>
-      <td>Moniebol (FREE DURAN)🐳</td>
-      <td class="hot-val">+12.0</td>
-    </tr><tr>
-      <td class="rank">5</td>
-      <td>2025</td>
-      <td>Wk 19</td>
-      <td>Moniebol 🐳</td>
-      <td class="score">12.0 - 0.0</td>
-      <td>Ian Cumsler</td>
-      <td class="hot-val">+12.0</td>
-    </tr><tr>
-      <td class="rank">6</td>
-      <td>2025</td>
-      <td>Wk 5</td>
-      <td>Moniebol 🐳 (5thwheelSZN)</td>
-      <td class="score">11.5 - 0.5</td>
-      <td>Historical Greatness</td>
-      <td class="hot-val">+11.0</td>
-    </tr><tr>
-      <td class="rank">7</td>
-      <td>2025</td>
-      <td>Wk 7</td>
-      <td>Moniebol 🐳 (5thwheelSZN)</td>
-      <td class="score">11.5 - 0.5</td>
-      <td>Hatfield Hurlers</td>
-      <td class="hot-val">+11.0</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>2025</td>
-      <td>Wk 20</td>
-      <td>Tegridy</td>
-      <td class="score">11.5 - 0.5</td>
-      <td>Serafini Hit Squad</td>
-      <td class="hot-val">+11.0</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>2023</td>
-      <td>Wk 7</td>
-      <td>Ian Cumsler</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>Camp RFK</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>2023</td>
-      <td>Wk 17</td>
-      <td>Bry Bry’s Bible Bonkers</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>FIRE SALE EVERYTHING MUST GO</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">11</td>
-      <td>2023</td>
-      <td>Wk 20</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>Camp Lejeune</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>2023</td>
-      <td>Wk 20</td>
-      <td>Moniebol 🐳 (DEFCON 2)</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>How to lose a game in 10 days</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>2024</td>
-      <td>Wk 4</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>Moniebol White Sux🐳</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">14</td>
-      <td>2024</td>
-      <td>Wk 5</td>
-      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>Ready to Plow</td>
-      <td class="hot-val">+10.0</td>
-    </tr><tr>
-      <td class="rank">15</td>
-      <td>2024</td>
-      <td>Wk 7</td>
-      <td>Sexual Harassment Pandas</td>
-      <td class="score">11.0 - 1.0</td>
-      <td>Ready to Plow</td>
-      <td class="hot-val">+10.0</td>
-    </tr>
-        </table>
-      </div>
-      <div class="card">
-        <h3>&#x1F3AF; Closest Matchups</h3>
-        <p class="section-desc">Tightest wins (non-tie)</p>
-        <table>
-          <tr>
-            <th>#</th>
-            <th class="sortable" data-type="num">Year</th>
-            <th>Week</th>
-            <th>Winner</th>
-            <th>Score</th>
-            <th>Loser</th>
-            <th class="sortable" data-type="num">Margin</th>
-          </tr>
-          <tr>
-      <td class="rank">1</td>
-      <td>2023</td>
-      <td>Wk 1</td>
-      <td>[z-ro] Haters Got Me Wrong</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>The Rosterbation Station</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">2</td>
-      <td>2023</td>
-      <td>Wk 2</td>
-      <td>Camp RFK</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>The Slobberknockers</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">3</td>
-      <td>2023</td>
-      <td>Wk 2</td>
-      <td>Vinnie Pepperonis</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Sliding Nowhere</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">4</td>
-      <td>2023</td>
-      <td>Wk 3</td>
-      <td>Welp. Shit.</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>¯\_(ツ)_/¯</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">5</td>
-      <td>2023</td>
-      <td>Wk 12</td>
-      <td>The Slobberknockers</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Vinnie Pepperonis</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">6</td>
-      <td>2023</td>
-      <td>Wk 12</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>[z-ro] Haters Got Me Wrong</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">7</td>
-      <td>2023</td>
-      <td>Wk 14</td>
-      <td>The Slobberknockers</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Moniebol 🐳 (DEFCON BACK ON)</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>2023</td>
-      <td>Wk 14</td>
-      <td>[z-ro] Haters Got Me Wrong</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>scoopski potatoes</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>2023</td>
-      <td>Wk 18</td>
-      <td>Ian Cumsler</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Camp Lejeune</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>2023</td>
-      <td>Wk 21</td>
-      <td>Camp Lejeune</td>
-      <td class="score">5.0 - 4.0</td>
-      <td>McLainBang</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">11</td>
-      <td>2023</td>
-      <td>Wk 21</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Moniebol 🐳 (DEFCON 2)</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>2024</td>
-      <td>Wk 2</td>
-      <td>The Rosterbation Station</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Eternal O'Hoppe-timists</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>2024</td>
-      <td>Wk 5</td>
-      <td>Sexual Harassment Pandas</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>The Rosterbation Station</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">14</td>
-      <td>2024</td>
-      <td>Wk 5</td>
-      <td>Moniebol White Sux🐳</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>CAPTAIN AHAB 🗡️🐳</td>
-      <td class="close-margin">1.0</td>
-    </tr><tr>
-      <td class="rank">15</td>
-      <td>2024</td>
-      <td>Wk 6</td>
-      <td>Ready to Plow</td>
-      <td class="score">6.0 - 5.0</td>
-      <td>Moniebol White Sux🐳</td>
-      <td class="close-margin">1.0</td>
-    </tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:32px">
-      <h3>&#x1F91D; Dead Even (Ties)</h3>
-      <p class="section-desc">Matchups that ended in a perfect tie</p>
-      <table>
-        <tr><th>#</th><th>Year</th><th>Week</th><th>Team A</th><th>Score</th><th>Team B</th></tr>
-        <tr>
-      <td class="rank">1</td>
-      <td>2023</td>
-      <td>Wk 3</td>
-      <td>Ian Cumsler</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Heimlich Maneuver</td>
-    </tr><tr>
-      <td class="rank">2</td>
-      <td>2023</td>
-      <td>Wk 4</td>
-      <td>Camp RFK</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Moniebol 🐳 (DEFCON BACK ON)</td>
-    </tr><tr>
-      <td class="rank">3</td>
-      <td>2023</td>
-      <td>Wk 7</td>
-      <td>Vinnie Pepperonis</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>¯\_(ツ)_/¯</td>
-    </tr><tr>
-      <td class="rank">4</td>
-      <td>2023</td>
-      <td>Wk 9</td>
-      <td>The Slobberknockers</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Heimlich Maneuver</td>
-    </tr><tr>
-      <td class="rank">5</td>
-      <td>2023</td>
-      <td>Wk 12</td>
-      <td>¯\_(ツ)_/¯</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Heimlich Maneuver</td>
-    </tr><tr>
-      <td class="rank">6</td>
-      <td>2023</td>
-      <td>Wk 19</td>
-      <td>WanderingAroundTheMiddleSchool</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>scoopski potatoes</td>
-    </tr><tr>
-      <td class="rank">7</td>
-      <td>2023</td>
-      <td>Wk 20</td>
-      <td>scoopski potatoes</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Bry Bry’s Bible Bonkers</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>2024</td>
-      <td>Wk 3</td>
-      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>The Rosterbation Station</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>2024</td>
-      <td>Wk 4</td>
-      <td>I believe Ohtani ¯\_(ツ)_/¯</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>CAPTAIN AHAB 🗡️🐳🇮🇳</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>2024</td>
-      <td>Wk 6</td>
-      <td>WHAT THE FUCK</td>
-      <td class="score">6.0 - 6.0</td>
-      <td>Hatfield Hurlers</td>
-    </tr>
       </table>
     </div>
 
@@ -1281,14 +933,42 @@ m[11][9]={w:0,l:2,t:0,c:'losing'};
 m[11][10]={w:0,l:2,t:0,c:'losing'};
 m[11][11]={w:"-",l:"-",t:"-",c:'self'};
 
+    let currentYear = 'alltime';
+
     function renderMatrix(yearKey) {
+      currentYear = yearKey;
       const m = D[yearKey];
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
+      const sortBy = document.getElementById('sortSelect').value;
+
+      // Pre-compute totals for sorting
+      const teamData = teams.map(t => {
+        let tw = 0, tl = 0, tt = 0;
+        for (const tB of teams) {
+          if (t.id === tB.id) continue;
+          const cell = m[t.id][tB.id];
+          if (cell.w !== '-' && !(cell.w === 0 && cell.l === 0 && cell.t === 0)) {
+            tw += cell.w; tl += cell.l; tt += cell.t;
+          }
+        }
+        const total = tw + tl + tt;
+        const pct = total > 0 ? (tw + tt * 0.5) / total : 0;
+        return { ...t, tw, tl, tt, total, pct };
+      });
+
+      let sorted;
+      if (sortBy === 'winpct') {
+        sorted = [...teamData].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+      } else if (sortBy === 'wins') {
+        sorted = [...teamData].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+      } else {
+        sorted = teamData;
+      }
 
       let hdr = '<tr><th class="team-col">Manager</th>';
-      for (const t of teams) {
+      for (const t of sorted) {
         const teamName = names ? names[t.id] : t.team;
         hdr += `<th title="${teamName}">${t.mgr}</th>`;
       }
@@ -1296,26 +976,22 @@ m[11][11]={w:"-",l:"-",t:"-",c:'self'};
       head.innerHTML = hdr;
 
       let rows = '';
-      for (const tA of teams) {
+      for (const tA of sorted) {
         const teamName = names ? names[tA.id] : tA.team;
         rows += `<tr><td class="team-cell" title="${teamName}"><span style="color:${tA.color}">&#9679;</span> ${tA.mgr}</td>`;
-        let tw = 0, tl = 0, tt = 0;
-        for (const tB of teams) {
+        for (const tB of sorted) {
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {
             rows += '<td class="self">&mdash;</td>';
           } else if (cell.w === 0 && cell.l === 0 && cell.t === 0) {
             rows += '<td class="none">0-0</td>';
           } else {
-            tw += cell.w; tl += cell.l; tt += cell.t;
             let display = `${cell.w}-${cell.l}`;
             if (cell.t > 0) display += `-${cell.t}`;
             rows += `<td class="${cell.c}"><span class="record-line">${display}</span></td>`;
           }
         }
-        const total = tw + tl + tt;
-        const pct = total > 0 ? ((tw + tt * 0.5) / total * 100).toFixed(0) : '0';
-        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tw}-${tl}${tt > 0 ? '-' + tt : ''} <span style="color:#64748b;font-weight:400">(${pct}%)</span></td>`;
+        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tA.tw}-${tA.tl}${tA.tt > 0 ? '-' + tA.tt : ''} <span style="color:#64748b;font-weight:400">(${(tA.pct * 100).toFixed(0)}%)</span></td>`;
         rows += '</tr>';
       }
       body.innerHTML = rows;
@@ -1329,6 +1005,10 @@ m[11][11]={w:"-",l:"-",t:"-",c:'self'};
         btn.classList.add('active');
         renderMatrix(btn.dataset.year);
       });
+    });
+
+    document.getElementById('sortSelect').addEventListener('change', () => {
+      renderMatrix(currentYear);
     });
 
     document.querySelectorAll('.sortable').forEach(th => {
