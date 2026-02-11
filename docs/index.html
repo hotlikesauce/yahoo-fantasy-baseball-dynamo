@@ -149,7 +149,8 @@
     gap: 12px;
   }
   .title-name {
-    min-width: 80px;
+    width: 90px;
+    flex-shrink: 0;
     color: #e2e8f0;
     font-size: 0.95em;
     font-weight: 500;
@@ -205,8 +206,9 @@
   }
   .standings-table td:not(:first-child) { text-align: center; color: #94a3b8; }
   .standings-table tr:hover { background: #1e293b55; }
-  .standings-table .mgr-name { font-weight: 600; color: #e2e8f0; }
-  .standings-table .team-name { color: #64748b; font-size: 0.85em; margin-left: 8px; }
+  .standings-table .team-name { font-weight: 700; color: #e2e8f0; }
+  .standings-table .mgr-link { color: #64748b; font-size: 0.85em; margin-left: 8px; text-decoration: none; }
+  .standings-table .mgr-link:hover { color: #3b82f6; text-decoration: underline; }
   .standings-table .rank-num { color: #64748b; font-weight: 500; width: 30px; }
 </style>
 </head>
@@ -231,7 +233,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th style="text-align:left">Manager</th>
+            <th style="text-align:left">Team</th>
             <th>W</th>
             <th>L</th>
             <th>T</th>
@@ -239,18 +241,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td class="rank-num">1</td><td><span class="mgr-name">Austin</span><span class="team-name">Moniebol</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">2</td><td><span class="mgr-name">Bryant</span><span class="team-name">Dan Doodletard</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">3</td><td><span class="mgr-name">Eric</span><span class="team-name">Ian Cumsler</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">4</td><td><span class="mgr-name">Greg</span><span class="team-name">OG9</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">5</td><td><span class="mgr-name">James</span><span class="team-name">WEMBY SZN</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">6</td><td><span class="mgr-name">Josh</span><span class="team-name">Floppy Salami Time</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">7</td><td><span class="mgr-name">Kevin</span><span class="team-name">The Rosterbation Station</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">8</td><td><span class="mgr-name">Kurtis</span><span class="team-name">Getting Plowed Again.</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">9</td><td><span class="mgr-name">Mark</span><span class="team-name">Hatfield Hurlers</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">10</td><td><span class="mgr-name">Mike</span><span class="team-name">&#xaf;\_(&#x30c4;)_/&#xaf;</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">11</td><td><span class="mgr-name">Mikey</span><span class="team-name">SQUEEZE AGS</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
-          <tr><td class="rank-num">12</td><td><span class="mgr-name">Taylor</span><span class="team-name">Serafini Hit Squad</span></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">2</td><td><span class="team-name">Dan Doodletard</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">4</td><td><span class="team-name">OG9</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">10</td><td><span class="team-name">&#xaf;\_(&#x30c4;)_/&#xaf;</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
+          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>0</td><td>0</td><td>0</td><td>.000</td></tr>
         </tbody>
       </table>
       <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Season hasn't started yet &mdash; standings update once matchups begin</p>
@@ -263,24 +265,24 @@
         <thead>
           <tr>
             <th>#</th>
-            <th style="text-align:left">Manager</th>
+            <th style="text-align:left">Team</th>
             <th>Score</th>
             <th>Trend</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td class="rank-num">1</td><td><span class="mgr-name">Austin</span><span class="team-name">Moniebol</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">2</td><td><span class="mgr-name">Bryant</span><span class="team-name">Dan Doodletard</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">3</td><td><span class="mgr-name">Eric</span><span class="team-name">Ian Cumsler</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">4</td><td><span class="mgr-name">Greg</span><span class="team-name">OG9</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">5</td><td><span class="mgr-name">James</span><span class="team-name">WEMBY SZN</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">6</td><td><span class="mgr-name">Josh</span><span class="team-name">Floppy Salami Time</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">7</td><td><span class="mgr-name">Kevin</span><span class="team-name">The Rosterbation Station</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">8</td><td><span class="mgr-name">Kurtis</span><span class="team-name">Getting Plowed Again.</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">9</td><td><span class="mgr-name">Mark</span><span class="team-name">Hatfield Hurlers</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">10</td><td><span class="mgr-name">Mike</span><span class="team-name">&#xaf;\_(&#x30c4;)_/&#xaf;</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">11</td><td><span class="mgr-name">Mikey</span><span class="team-name">SQUEEZE AGS</span></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">12</td><td><span class="mgr-name">Taylor</span><span class="team-name">Serafini Hit Squad</span></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">2</td><td><span class="team-name">Dan Doodletard</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">4</td><td><span class="team-name">OG9</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">10</td><td><span class="team-name">&#xaf;\_(&#x30c4;)_/&#xaf;</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>&mdash;</td><td>&mdash;</td></tr>
         </tbody>
       </table>
       <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Power rankings begin once the season starts</p>

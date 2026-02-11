@@ -1,91 +1,90 @@
-# yahoo-fantasy-baseball-analyzer
-![yahoofb](https://github.com/hotlikesauce/yahoo-fantasy-baseball-analyzer/assets/46724986/5a63122f-c5c9-4e21-ae7c-dfded8a2c26e)
+# Summertime Sadness Fantasy Baseball
 
-## Description
+Analytics dashboard for the **Summertime Sadness** Yahoo Fantasy Baseball league. Est. 2007, entering Year 20 with 12 active managers.
 
-This python web scraping project will help you aggregate your Yahoo Fantasy Baseball League stats and create datasets for power rankings, ELO calculations, season trends, and live standings. Additionally, it will create an expected wins dataset to give you an idea of an All-Play record on a week-by-week basis. Data is stored in AWS DynamoDB.
+Live site: [hotlikesauce.github.io/yahoo-fantasy-baseball-dynamo](https://hotlikesauce.github.io/yahoo-fantasy-baseball-dynamo/)
 
-Technologies Used: Python, AWS DynamoDB
+## Pages
 
-## Table of Contents
+| Page | Description | Generator |
+|------|-------------|-----------|
+| [Home](docs/index.html) | Dashboard with standings, power rankings, champions, title leaders | `gen_home.py` |
+| [All-Time Records](docs/all_time_rankings.html) | Every manager's finish by year with champion markers | Hand-edited |
+| [H2H Records](docs/h2h_records.html) | Manager vs manager head-to-head records (2023-2025), sortable matrix | `gen_h2h_records.py` |
+| [Manager Profiles](docs/manager_profiles.html) | Career stats, power score charts, season history, H2H breakdowns per manager | `gen_manager_profiles.py` |
+| [Trade Analyzer](docs/trade_analyzer.html) | In-season trade evaluator with roster context and category impact | `fetch_trade_data.py` |
+| [Draft Capital](docs/draft_picks_2026.html) | 2026 draft pick distribution and value visualization | `gen_draft_picks.py` |
+| [Season Trends (2025)](docs/season_trends_2025.html) | Power scores, xWins, batter/pitcher scatter, hot/cold, season bests | `gen_season_trends.py` |
+| [Luck Analysis (2025)](docs/luck_analysis_2025.html) | Luck rankings, all-play H2H, blowouts, closest matchups | `gen_luck_analysis.py` |
+| [Season Trends (2022-2024)](docs/) | Historical season trends from archived data | `gen_historical_trends.py` |
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+## Tech Stack
 
-## Installation
+- **Data**: AWS DynamoDB (live season + historical), MongoDB Atlas (legacy archive)
+- **Site**: Static HTML/CSS/JS hosted on GitHub Pages
+- **Charts**: Chart.js
+- **Scripts**: Python 3, boto3
+- **API**: Yahoo Fantasy Sports API via yfpy (trade analyzer)
 
-- pip install -r requirements.txt to install necessary dependencies
+## DynamoDB Tables
 
-- Create a .env file with the following variables to help with obfuscation of passwords and emails
-  - GMAIL = 'Your Email'<br>
-  - GMAIL_PASSWORD = 'Your App Password From Gmail'<br>
-  - YAHOO_LEAGUE_ID = 'Your Yahoo Leage ID string (https://baseball.fantasysports.yahoo.com/b1/#####/)'
+| Table | Purpose |
+|-------|---------|
+| `FantasyBaseball-AllTimeRankings` | Every manager's finish by year (2007-2025) |
+| `FantasyBaseball-SeasonTrends` | Live 2025 weekly data (power ranks, stats, results) |
+| `FantasyBaseball-HistoricalSeasons` | Archived 2022-2025 weekly data (unified schema) |
+| `FantasyBaseball-TeamInfo` | Current team number to name mappings |
+| `FantasyBaseball-Schedule` | Game schedule data |
 
-- The way it's currently set up, you will need to manipulate your gmail account to allow for third party apps to send emails on your behalf for failure notifications
+## H2H Scoring Categories (12)
 
-## Usage
+Higher is better: R, H, HR, RBI, SB, OPS, K9, QS, SVH
 
-### Local Usage
-- Run the Live Standings script every hour as a scheduled task to push data to DynamoDB
+Lower is better: ERA, WHIP, TB
+
+## Scripts
+
+**Page generators** (run to regenerate static HTML):
 ```bash
-python get_live_standings.py
-```
-- Run the Weekly Updates script every week after weekly scores are calculated
-```bash
-python weekly_updates.py
-```
-- Functions which will be run as a part of the weekly updates
-```bash
-def main():
-    functions = [
-        get_live_standings_main
-        ,get_season_trend_power_ranks_main 
-        ,get_power_rankings_main 
-        ,get_all_play_main 
-        ,get_weekly_results
-        ,get_season_trend_standings_main 
-        ,get_weekly_prediction_main 
-        ,get_elo
-        ,get_season_results
-        ,get_remaining_sos
-    ]
-```
-
-
-### AWS Lambda Deployment (Recommended)
-
-Deploy your scripts to run automatically in the cloud:
-
-```bash
-# Quick setup and deployment
-python setup.py      # Check prerequisites and install dependencies
-python test_lambda.py # Test your functions locally
-python deploy.py     # Deploy to AWS Lambda
+python scripts/gen_home.py
+python scripts/gen_h2h_records.py
+python scripts/gen_manager_profiles.py
+python scripts/gen_season_trends.py          # 2025 (live data)
+python scripts/gen_historical_trends.py 2023 # or 2024, 2022, all
+python scripts/gen_luck_analysis.py
+python scripts/gen_draft_picks.py
 ```
 
-This creates two Lambda functions:
-- **Weekly Updates**: Runs every Sunday at 5am ET
-- **Live Standings**: Runs every 15 minutes continuously
+**Data scripts**:
+```bash
+python scripts/fetch_trade_data.py           # Yahoo API -> trade_data.json
+python scripts/copy_2025_to_historical.py    # Snapshot live -> historical
+python scripts/migrate_mongo_to_dynamo.py    # One-time MongoDB migration
+python scripts/backfill_2023_scores.py       # One-time 2023 score backfill
+```
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+**Config**:
+- `scripts/team_config.py` - Team number to manager mappings by year
+- `docs/nav.js` - Shared navigation bar injected into all pages
 
-### Data Visualization
-- Data is stored in AWS DynamoDB and can be visualized with your preferred dashboarding tool
+## Setup
 
-## Contributing
+```bash
+pip install -r requirements.txt
+```
 
-Please feel free to improve on my code and provide any optimizations you can create. I am always looking for improvements and recommendations on datasets which would be useful to compile.
+AWS credentials must be configured (`aws configure` or env vars) with read access to the DynamoDB tables in `us-west-2`.
+
+For the trade analyzer, create a `.env` with Yahoo OAuth credentials:
+```
+YAHOO_CLIENT_ID=your_consumer_key
+YAHOO_CLIENT_SECRET=your_consumer_secret
+```
+
+## League Members
+
+Austin, Bryant, Eric, Greg, James, Josh, Kevin, Kurtis, Mark, Mike, Mikey, Taylor
 
 ## License
 
 [MIT License](https://choosealicense.com/licenses/mit/)
-
-## Acknowledgments
-
-Thank you to my league Summertime Sadness Fantasy Baseball for the stat ideas, the thousands of Stack Overflow posts I read, and AI tools.
-
-## Contact
-
-Please hit me up with questions or feedback. [My Email](mailto:taylorreeseward@gmail.com)

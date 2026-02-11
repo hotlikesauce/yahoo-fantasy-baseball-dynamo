@@ -8,12 +8,12 @@ dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('FantasyBaseball-SeasonTrends')
 
 # Categories
-HIGH_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'TB', 'K9', 'QS', 'SVH']
-LOW_CATS = ['ERA', 'WHIP']
+HIGH_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'K9', 'QS', 'SVH']
+LOW_CATS = ['ERA', 'WHIP', 'TB']
 ALL_CATS = HIGH_CATS + LOW_CATS
-BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'TB']
+BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
 PITCHER_HIGH = ['K9', 'QS', 'SVH']
-PITCHER_LOW = ['ERA', 'WHIP']
+PITCHER_LOW = ['ERA', 'WHIP', 'TB']
 
 def h2h_result(a, b):
     wa = wb = 0
@@ -167,7 +167,7 @@ for week in range(1, 30):
         if not tn: continue
         weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
-stat_weeks = sorted(weekly_stats.keys())
+stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)  # exclude playoff weeks
 power_weeks = sorted(set(w for d in power_data.values() for w in d))
 print(f"\nLoaded {len(stat_weeks)} stat weeks, {len(power_weeks)} power weeks")
 
@@ -329,7 +329,7 @@ for cat in ALL_CATS:
 
 cat_labels = {
     'R': 'Runs', 'H': 'Hits', 'HR': 'Home Runs', 'RBI': 'RBI', 'SB': 'Stolen Bases',
-    'OPS': 'OPS', 'TB': 'Total Bases', 'K9': 'K/9', 'QS': 'Quality Starts',
+    'OPS': 'OPS', 'TB': 'Total Bases Allowed (Lowest)', 'K9': 'K/9', 'QS': 'Quality Starts',
     'SVH': 'Saves+Holds', 'ERA': 'ERA (Lowest)', 'WHIP': 'WHIP (Lowest)',
 }
 best_rows = ""
@@ -418,7 +418,7 @@ html = f"""<!DOCTYPE html>
 </div>
 
 <h3>Batter vs Pitcher Performance</h3>
-<p class="section-desc">Each team's batting win rate (x-axis) vs pitching win rate (y-axis) from all-play H2H. Batting = R, H, HR, RBI, SB, OPS, TB. Pitching = K/9, QS, SVH, ERA, WHIP. Top-right = elite at both. Dashed lines at 50%.</p>
+<p class="section-desc">Each team's batting win rate (x-axis) vs pitching win rate (y-axis) from all-play H2H. Batting = R, H, HR, RBI, SB, OPS. Pitching = K/9, QS, SVH, ERA, WHIP, TB. Top-right = elite at both. Dashed lines at 50%.</p>
 <div class="chart-box">
 <canvas id="scatterChart"></canvas>
 </div>

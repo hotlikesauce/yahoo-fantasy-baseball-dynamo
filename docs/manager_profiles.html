@@ -467,6 +467,15 @@
     });
 
     buildGrid();
+
+    // Auto-select manager from URL hash (e.g. #Greg)
+    if (window.location.hash) {
+      const hashMgr = decodeURIComponent(window.location.hash.slice(1));
+      if (DATA.profiles[hashMgr]) {
+        selectManager(hashMgr);
+        document.getElementById('profileSection').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   </script>
 </body>
 </html>

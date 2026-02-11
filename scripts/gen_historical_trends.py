@@ -187,7 +187,7 @@ def generate_year(year):
             if stats:
                 weekly_stats[week][tn] = stats
 
-    stat_weeks = sorted(weekly_stats.keys())
+    stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)  # exclude playoff weeks
     print(f"  Stat weeks: {stat_weeks[0] if stat_weeks else 'N/A'}-{stat_weeks[-1] if stat_weeks else 'N/A'}")
 
     # ================================================================
