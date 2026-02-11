@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Summertime Sadness - Manager Profiles</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+    h2 { font-size: 1.7em; margin-bottom: 6px; }
+    .subtitle { color: #94a3b8; font-size: 0.95em; margin-bottom: 24px; }
+    h3 { color: #22d3ee; font-size: 1.15em; margin: 32px 0 10px; }
+
+    .mgr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .mgr-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 16px 14px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .mgr-card:hover { border-color: #475569; transform: translateY(-2px); }
+    .mgr-card.active { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59,130,246,0.15); }
+    .mgr-card .mgr-name { font-size: 1.1em; font-weight: 700; margin-bottom: 4px; }
+    .mgr-card .mgr-titles { color: #fbbf24; font-size: 0.9em; min-height: 20px; }
+    .mgr-card .mgr-sub { color: #64748b; font-size: 0.78em; margin-top: 4px; }
+
+    .hist-toggle {
+      color: #64748b; font-size: 0.85em; cursor: pointer;
+      margin-bottom: 16px; display: inline-block;
+    }
+    .hist-toggle:hover { color: #94a3b8; }
+
+    #profile { display: none; }
+    #profile.visible { display: block; }
+
+    .profile-header {
+      display: flex; align-items: center; gap: 20px;
+      margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .profile-name {
+      font-size: 2.2em; font-weight: 800;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .trophy-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .trophy {
+      display: inline-flex; flex-direction: column; align-items: center;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0f172a; font-weight: 800; font-size: 0.75em;
+      padding: 6px 12px; border-radius: 8px;
+      box-shadow: 0 0 12px rgba(251,191,36,0.3);
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: #1e293b; border-radius: 10px; padding: 18px;
+      border: 1px solid #334155; text-align: center;
+    }
+    .stat-card .label { color: #64748b; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.6em; font-weight: 700; }
+    .stat-card .sub { color: #94a3b8; font-size: 0.82em; margin-top: 3px; }
+    .gold { color: #fbbf24; }
+    .blue { color: #3b82f6; }
+    .green { color: #22c55e; }
+    .purple { color: #a78bfa; }
+    .cyan { color: #22d3ee; }
+    .red { color: #f87171; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+    th { background: #1e293b; color: #94a3b8; font-weight: 600; text-align: left;
+         padding: 10px 14px; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.03em; }
+    td { padding: 10px 14px; border-bottom: 1px solid #1e293b; font-size: 0.92em; }
+    tr:hover { background: #1e293b55; }
+    .champ-marker { color: #fbbf24; }
+
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { color: #e2e8f0; }
+    .sortable::after { content: ' \2195'; font-size: 0.8em; }
+    .sortable.asc::after { content: ' \2191'; }
+    .sortable.desc::after { content: ' \2193'; }
+
+    .winning { color: #4ade80; }
+    .losing { color: #f87171; }
+    .even-rec { color: #fbbf24; }
+
+    .section {
+      background: #1e293b; border-radius: 12px; padding: 20px 24px;
+      border: 1px solid #334155; margin-bottom: 24px;
+    }
+    .section h3 { margin-top: 0; }
+
+    .h2h-year-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .h2h-yr-btn {
+      background: #0f172a; color: #94a3b8; border: 1px solid #334155;
+      padding: 4px 14px; border-radius: 6px; cursor: pointer; font-size: 0.82em;
+    }
+    .h2h-yr-btn:hover { color: #e2e8f0; border-color: #475569; }
+    .h2h-yr-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+    @media (max-width: 768px) {
+      .profile-header { flex-direction: column; align-items: flex-start; }
+      .stat-cards { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <div id="nav"></div>
+  <script src="nav.js"></script>
+
+  <div class="container">
+    <h2>Manager Profiles</h2>
+    <p class="subtitle">Career stats, season history, and head-to-head records for every manager in league history</p>
+
+    <h3 style="margin-top:16px">Select a Manager</h3>
+    <div class="mgr-grid" id="mgrGrid"></div>
+    <div class="hist-toggle" id="histToggle" style="display:none"></div>
+    <div class="mgr-grid" id="histGrid" style="display:none"></div>
+
+    <div id="profile">
+      <div class="profile-header">
+        <span class="profile-name" id="profileName"></span>
+        <div class="trophy-row" id="trophyRow"></div>
+      </div>
+
+      <div class="stat-cards" id="statCards"></div>
+
+      <div class="section">
+        <h3>Power Score Over Time</h3>
+        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">End-of-season power score by year (higher is better, max 1200)</p>
+        <div style="height:300px;position:relative">
+          <canvas id="scoreChart"></canvas>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Season History</h3>
+        <div class="table-wrap">
+          <table id="seasonTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-col="year" data-type="str">Year</th>
+                <th>Team Name</th>
+                <th class="sortable" data-col="score" data-type="num">Power Score</th>
+                <th class="sortable" data-col="rank" data-type="num">Finish</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="seasonBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section" id="h2hSection">
+        <h3>Head-to-Head Records</h3>
+        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">Record against each opponent (2023&ndash;2025 H2H data available)</p>
+        <div class="h2h-year-filter" id="h2hFilter"></div>
+        <div class="table-wrap">
+          <table id="h2hTable">
+            <thead>
+              <tr>
+                <th>Opponent</th>
+                <th class="sortable" data-col="record" data-type="str">Record</th>
+                <th class="sortable" data-col="winpct" data-type="num">Win %</th>
+                <th class="sortable" data-col="wins" data-type="num">Wins</th>
+                <th class="sortable" data-col="losses" data-type="num">Losses</th>
+                <th class="sortable" data-col="games" data-type="num">Games</th>
+              </tr>
+            </thead>
+            <tbody id="h2hBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DATA = {"currentManagers": ["Austin", "Bryant", "Eric", "Greg", "James", "Josh", "Kevin", "Kurtis", "Mark", "Mike", "Mikey", "Taylor"], "historicalManagers": ["Andrew D", "Cameron", "Craig", "David", "Delia", "Grayson", "Jeremy", "Jong", "Kegan", "Matt", "Messer", "Michael", "Nate", "Stephen", "Zach"], "profiles": {"Andrew D": {"seasons": [{"year": "2007", "team": "green hat", "score": 774.9, "rank": 3, "of": 8, "champ": true}], "titles": [{"year": "2007", "team": "green hat"}], "isCurrent": false, "h2h": {}}, "Austin": {"seasons": [{"year": "2025", "team": "Moniebol 🐳", "score": 857.5, "rank": 2, "of": 12, "champ": false}, {"year": "2024", "team": "Moniebol (100gb goal)🐳", "score": 264.2, "rank": 11, "of": 12, "champ": false}, {"year": "2023", "team": "Moniebol 🐳 (WE DID IT JOE!)", "score": 1003.8, "rank": 1, "of": 12, "champ": true}, {"year": "2022", "team": "$CCL. We're cruise people now.", "score": 309.4, "rank": 12, "of": 12, "champ": false}, {"year": "2021", "team": "Moni3bol*", "score": 724.1, "rank": 3, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Austin", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Moniebol not champ", "score": 869.5, "rank": 2, "of": 12, "champ": false}, {"year": "2018", "team": "Don't Use Excel Kids", "score": 298.4, "rank": 11, "of": 12, "champ": false}, {"year": "2017", "team": "Uncle J's Real Hands", "score": 421.0, "rank": 10, "of": 12, "champ": false}], "titles": [{"year": "2023", "team": "Moniebol 🐳 (WE DID IT JOE!)"}], "isCurrent": true, "h2h": {"alltime": {"Bryant": {"w": 3, "l": 2, "t": 0}, "Eric": {"w": 6, "l": 0, "t": 0}, "Greg": {"w": 2, "l": 3, "t": 0}, "James": {"w": 2, "l": 3, "t": 1}, "Josh": {"w": 2, "l": 3, "t": 0}, "Kevin": {"w": 0, "l": 6, "t": 0}, "Kurtis": {"w": 4, "l": 2, "t": 0}, "Mark": {"w": 4, "l": 2, "t": 0}, "Mike": {"w": 1, "l": 4, "t": 1}, "Mikey": {"w": 3, "l": 3, "t": 0}, "Taylor": {"w": 0, "l": 4, "t": 0}}, "2023": {"Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 1, "l": 0, "t": 1}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 0, "t": 1}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 0}}, "2024": {"Bryant": {"w": 0, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 1, "l": 0, "t": 0}, "James": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 2, "t": 0}}, "2025": {"Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 0}}}}, "Bryant": {"seasons": [{"year": "2025", "team": "Tegridy", "score": 609.2, "rank": 8, "of": 12, "champ": false}, {"year": "2024", "team": "Hmmm", "score": 482.5, "rank": 8, "of": 12, "champ": false}, {"year": "2023", "team": "Bry Bry’s Bible Bonkers", "score": 569.3, "rank": 8, "of": 12, "champ": false}, {"year": "2022", "team": "Football szn 2023 focus", "score": 354.1, "rank": 10, "of": 12, "champ": false}, {"year": "2021", "team": "Rickie Flower", "score": 683.9, "rank": 4, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Bryant", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Dan Doodletard", "score": 605.1, "rank": 7, "of": 12, "champ": false}, {"year": "2018", "team": "Dan Doodletard", "score": 694.0, "rank": 5, "of": 12, "champ": false}, {"year": "2017", "team": "Dan Doodletard", "score": 647.6, "rank": 4, "of": 12, "champ": false}], "titles": [], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 3, "l": 3, "t": 0}, "Eric": {"w": 1, "l": 3, "t": 0}, "Greg": {"w": 1, "l": 3, "t": 1}, "James": {"w": 3, "l": 4, "t": 0}, "Josh": {"w": 1, "l": 4, "t": 0}, "Kevin": {"w": 2, "l": 4, "t": 0}, "Kurtis": {"w": 4, "l": 2, "t": 0}, "Mark": {"w": 2, "l": 4, "t": 0}, "Mike": {"w": 2, "l": 4, "t": 0}, "Mikey": {"w": 2, "l": 3, "t": 1}, "Taylor": {"w": 2, "l": 3, "t": 1}}, "2023": {"Austin": {"w": 0, "l": 2, "t": 0}, "Eric": {"w": 0, "l": 2, "t": 0}, "Greg": {"w": 1, "l": 0, "t": 1}, "James": {"w": 2, "l": 1, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 0, "l": 1, "t": 1}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 2, "l": 0, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 1}}, "2025": {"Austin": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 0, "l": 1, "t": 0}, "Greg": {"w": 0, "l": 1, "t": 0}, "James": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}}}, "Cameron": {"seasons": [{"year": "2010", "team": "Latter Day Taints", "score": 253.2, "rank": 8, "of": 8, "champ": false}, {"year": "2009", "team": "Bang On My Jong", "score": 550.1, "rank": 5, "of": 8, "champ": false}, {"year": "2008", "team": "trescinco", "score": 422.7, "rank": 7, "of": 8, "champ": false}, {"year": "2007", "team": "Alaskan Fire Dragon", "score": 47.8, "rank": 8, "of": 8, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Craig": {"seasons": [{"year": "2021", "team": "BallSachs", "score": 568.3, "rank": 7, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Craig", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "BallSachs", "score": 581.3, "rank": 8, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "David": {"seasons": [{"year": "2023", "team": "How to lose a game in 10 days", "score": 438.7, "rank": 10, "of": 12, "champ": false}, {"year": "2022", "team": "SHITTING IN BRYANT’S MOUTH", "score": 486.8, "rank": 7, "of": 12, "champ": false}, {"year": "2021", "team": "Midas Well", "score": 405.4, "rank": 11, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - David", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Midas Trades", "score": 315.8, "rank": 11, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Delia": {"seasons": [{"year": "2015", "team": "Philly Fernetics", "score": 773.3, "rank": 2, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Eric": {"seasons": [{"year": "2025", "team": "Ian Cumsler", "score": 329.3, "rank": 11, "of": 12, "champ": false}, {"year": "2024", "team": "Ian Cumsler", "score": 454.8, "rank": 9, "of": 12, "champ": false}, {"year": "2023", "team": "Ian Cumsler", "score": 617.4, "rank": 7, "of": 12, "champ": false}, {"year": "2022", "team": "Ian Cumsler", "score": 481.8, "rank": 8, "of": 12, "champ": false}, {"year": "2021", "team": "Ian Cumsler", "score": 489.7, "rank": 8, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Eric", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Ian Cumsler", "score": 942.7, "rank": 1, "of": 12, "champ": false}, {"year": "2018", "team": "Ian Cumsler", "score": 637.7, "rank": 7, "of": 12, "champ": false}, {"year": "2017", "team": "Ian Cumsler", "score": 663.1, "rank": 3, "of": 12, "champ": false}, {"year": "2016", "team": "Hill Dog Clinton", "score": 857.6, "rank": 1, "of": 12, "champ": false}, {"year": "2015", "team": "Sex4Roids", "score": 607.7, "rank": 6, "of": 12, "champ": true}, {"year": "2014", "team": "Sex4Roids", "score": 503.3, "rank": 9, "of": 9, "champ": false}, {"year": "2013", "team": "Sex4Roids", "score": 823.3, "rank": 3, "of": 8, "champ": false}, {"year": "2012", "team": "Sex4Roids", "score": 592.3, "rank": 5, "of": 8, "champ": false}, {"year": "2011", "team": "Sex4Roids", "score": 424.3, "rank": 7, "of": 8, "champ": false}, {"year": "2010", "team": "Sex4Roids", "score": 898.5, "rank": 3, "of": 8, "champ": false}, {"year": "2009", "team": "Sex4Roids", "score": 714.4, "rank": 3, "of": 8, "champ": false}, {"year": "2008", "team": "LastYearWasAFluke", "score": 565.2, "rank": 5, "of": 8, "champ": false}, {"year": "2007", "team": "EricChoKOREAAAAAAAAA", "score": 612.7, "rank": 5, "of": 8, "champ": false}], "titles": [{"year": "2015", "team": "Sex4Roids"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 0, "l": 6, "t": 0}, "Bryant": {"w": 3, "l": 1, "t": 0}, "Greg": {"w": 2, "l": 3, "t": 0}, "James": {"w": 3, "l": 2, "t": 1}, "Josh": {"w": 1, "l": 3, "t": 2}, "Kevin": {"w": 2, "l": 4, "t": 0}, "Kurtis": {"w": 3, "l": 2, "t": 0}, "Mark": {"w": 2, "l": 4, "t": 0}, "Mike": {"w": 2, "l": 4, "t": 0}, "Mikey": {"w": 3, "l": 3, "t": 0}, "Taylor": {"w": 1, "l": 4, "t": 1}}, "2023": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 1, "l": 0, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 0, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 1}}, "2024": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 0, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Josh": {"w": 0, "l": 1, "t": 1}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2025": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 1, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 0, "l": 1, "t": 1}, "Josh": {"w": 0, "l": 1, "t": 1}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 2, "t": 0}}}}, "Grayson": {"seasons": [{"year": "2012", "team": "esteban 2.0", "score": 350.8, "rank": 7, "of": 8, "champ": false}, {"year": "2011", "team": "esteban 2.0", "score": 520.6, "rank": 5, "of": 8, "champ": false}, {"year": "2010", "team": "Team Kočička", "score": 709.2, "rank": 7, "of": 8, "champ": false}, {"year": "2009", "team": "Hits From The Jong", "score": 432.0, "rank": 6, "of": 8, "champ": false}, {"year": "2008", "team": "Jongalong", "score": 472.7, "rank": 6, "of": 8, "champ": false}, {"year": "2007", "team": "El Magnifico", "score": 651.1, "rank": 4, "of": 8, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Greg": {"seasons": [{"year": "2025", "team": "Football Szn", "score": 329.2, "rank": 12, "of": 12, "champ": false}, {"year": "2024", "team": "OGglass-z13", "score": 150.5, "rank": 12, "of": 12, "champ": false}, {"year": "2023", "team": "kitchen sink", "score": 692.1, "rank": 4, "of": 12, "champ": false}, {"year": "2022", "team": "Former 2A High School Athlete", "score": 311.1, "rank": 11, "of": 12, "champ": false}, {"year": "2021", "team": "OGoneMoretime", "score": 305.3, "rank": 12, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Greg", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "OGdarkDays", "score": 319.7, "rank": 10, "of": 12, "champ": false}, {"year": "2018", "team": "OGbeginnerSpace", "score": 351.5, "rank": 10, "of": 12, "champ": false}, {"year": "2017", "team": "OGdarkDays", "score": 644.9, "rank": 5, "of": 12, "champ": false}, {"year": "2016", "team": "OGmonaVegas", "score": 315.9, "rank": 11, "of": 12, "champ": false}, {"year": "2015", "team": "OGmysteryCloud", "score": 401.5, "rank": 11, "of": 12, "champ": false}, {"year": "2014", "team": "OGhungryGhost", "score": 869.0, "rank": 2, "of": 9, "champ": false}, {"year": "2013", "team": "OGqualityTime", "score": 700.9, "rank": 6, "of": 8, "champ": false}], "titles": [], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 3, "l": 2, "t": 0}, "Bryant": {"w": 3, "l": 1, "t": 1}, "Eric": {"w": 3, "l": 3, "t": 0}, "James": {"w": 2, "l": 2, "t": 1}, "Josh": {"w": 2, "l": 4, "t": 0}, "Kevin": {"w": 4, "l": 2, "t": 0}, "Kurtis": {"w": 4, "l": 2, "t": 0}, "Mark": {"w": 3, "l": 2, "t": 0}, "Mike": {"w": 3, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 5, "t": 0}, "Taylor": {"w": 2, "l": 3, "t": 1}}, "2023": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 0, "l": 1, "t": 1}, "Eric": {"w": 0, "l": 2, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 0, "l": 1, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "James": {"w": 0, "l": 1, "t": 1}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 0, "l": 1, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 0, "l": 2, "t": 0}}, "2025": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 1, "l": 0, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "James": {"w": 0, "l": 1, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 2, "l": 0, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 2, "l": 0, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 1, "l": 0, "t": 1}}}}, "James": {"seasons": [{"year": "2025", "team": "Grand Salami Time", "score": 821.1, "rank": 5, "of": 12, "champ": false}, {"year": "2024", "team": "#RyderSources", "score": 510.6, "rank": 6, "of": 12, "champ": false}, {"year": "2023", "team": "Camp Lejeune", "score": 371.8, "rank": 12, "of": 12, "champ": false}, {"year": "2022", "team": "The Bryant Special", "score": 702.8, "rank": 5, "of": 12, "champ": false}, {"year": "2021", "team": "Football Szn", "score": 421.9, "rank": 10, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Jamie", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Crown Shots", "score": 625.2, "rank": 6, "of": 12, "champ": false}, {"year": "2018", "team": "MUH ROADS", "score": 474.5, "rank": 9, "of": 12, "champ": false}, {"year": "2017", "team": "Freddie FreeDeezNuts", "score": 300.0, "rank": 12, "of": 12, "champ": false}, {"year": "2016", "team": "Privatize That Pussy", "score": 475.3, "rank": 10, "of": 12, "champ": false}, {"year": "2015", "team": "Jackie's Cotton Gin", "score": 707.3, "rank": 4, "of": 12, "champ": false}, {"year": "2014", "team": "RIP Jose Lima", "score": 940.8, "rank": 1, "of": 9, "champ": false}, {"year": "2013", "team": "Hangin With Irabu", "score": 823.9, "rank": 1, "of": 8, "champ": false}, {"year": "2012", "team": "Negro League Gassers", "score": 614.5, "rank": 4, "of": 8, "champ": false}, {"year": "2011", "team": "Roll Tide", "score": 871.1, "rank": 2, "of": 8, "champ": true}], "titles": [{"year": "2011", "team": "Roll Tide"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 3, "l": 2, "t": 1}, "Bryant": {"w": 4, "l": 2, "t": 0}, "Eric": {"w": 2, "l": 3, "t": 1}, "Greg": {"w": 2, "l": 2, "t": 1}, "Josh": {"w": 4, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 4, "t": 1}, "Kurtis": {"w": 2, "l": 3, "t": 0}, "Mark": {"w": 1, "l": 4, "t": 1}, "Mike": {"w": 2, "l": 4, "t": 0}, "Mikey": {"w": 1, "l": 3, "t": 0}, "Taylor": {"w": 3, "l": 2, "t": 0}}, "2023": {"Austin": {"w": 0, "l": 1, "t": 1}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 0, "l": 2, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 2, "l": 0, "t": 0}, "Mikey": {"w": 0, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 0, "t": 1}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 0, "t": 1}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2025": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 1}, "Greg": {"w": 1, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 0, "t": 1}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 2, "l": 0, "t": 0}}}}, "Jeremy": {"seasons": [{"year": "2012", "team": "AsLongAsIBeatStephen", "score": 147.3, "rank": 8, "of": 8, "champ": false}, {"year": "2011", "team": "AsLongAsIBeatStephen", "score": 674.3, "rank": 3, "of": 8, "champ": false}, {"year": "2010", "team": "Scooter Boy", "score": 861.3, "rank": 5, "of": 8, "champ": false}, {"year": "2009", "team": "You Have Been Jonged", "score": 137.7, "rank": 8, "of": 8, "champ": false}, {"year": "2008", "team": "The Mr. Seven Lakes", "score": 590.2, "rank": 4, "of": 8, "champ": false}, {"year": "2007", "team": "POWER Ranger", "score": 396.5, "rank": 7, "of": 8, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Jong": {"seasons": [{"year": "2012", "team": "lick my lincecum", "score": 512.0, "rank": 6, "of": 8, "champ": false}, {"year": "2011", "team": "craig jonggio", "score": 541.8, "rank": 4, "of": 8, "champ": false}, {"year": "2010", "team": "just jong being jong", "score": 875.3, "rank": 4, "of": 8, "champ": false}, {"year": "2009", "team": "cheech and jong", "score": 430.3, "rank": 7, "of": 8, "champ": false}, {"year": "2008", "team": "El Jongnifico", "score": 955.2, "rank": 1, "of": 8, "champ": false}, {"year": "2007", "team": "jongalong", "score": 815.0, "rank": 2, "of": 8, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Josh": {"seasons": [{"year": "2025", "team": "Getting Plowed Again.", "score": 569.9, "rank": 10, "of": 12, "champ": false}, {"year": "2024", "team": "Grand Salami Time", "score": 678.5, "rank": 4, "of": 12, "champ": true}, {"year": "2023", "team": "The Dollar General", "score": 421.0, "rank": 11, "of": 12, "champ": false}, {"year": "2022", "team": "Grand Salami Time", "score": 815.8, "rank": 3, "of": 12, "champ": false}], "titles": [{"year": "2024", "team": "Grand Salami Time"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 3, "l": 3, "t": 0}, "Bryant": {"w": 4, "l": 1, "t": 0}, "Eric": {"w": 3, "l": 1, "t": 2}, "Greg": {"w": 4, "l": 2, "t": 0}, "James": {"w": 2, "l": 4, "t": 0}, "Kevin": {"w": 3, "l": 3, "t": 0}, "Kurtis": {"w": 3, "l": 1, "t": 0}, "Mark": {"w": 2, "l": 4, "t": 0}, "Mike": {"w": 2, "l": 4, "t": 0}, "Mikey": {"w": 1, "l": 3, "t": 1}, "Taylor": {"w": 1, "l": 2, "t": 2}}, "2023": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 0, "l": 1, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 0, "l": 1, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 1}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 1}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 1, "l": 0, "t": 0}}, "2025": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 1}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 0, "l": 1, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 2, "l": 0, "t": 0}, "Mikey": {"w": 0, "l": 1, "t": 1}, "Taylor": {"w": 0, "l": 1, "t": 1}}}}, "Kegan": {"seasons": [{"year": "2016", "team": "see ya next year", "score": 605.7, "rank": 6, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Kevin": {"seasons": [{"year": "2025", "team": "The Rosterbation Station", "score": 957.7, "rank": 1, "of": 12, "champ": false}, {"year": "2024", "team": "The Rosterbation Station", "score": 622.5, "rank": 5, "of": 12, "champ": false}, {"year": "2023", "team": "The Rosterbation Station", "score": 867.6, "rank": 2, "of": 12, "champ": false}, {"year": "2022", "team": "The Rosterbation Station", "score": 942.4, "rank": 1, "of": 12, "champ": true}, {"year": "2021", "team": "Yelich My Balls", "score": 602.2, "rank": 6, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Kevin", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Goldschmidt’s List", "score": 804.1, "rank": 4, "of": 12, "champ": true}, {"year": "2018", "team": "Goldschmidt’s List", "score": 1002.7, "rank": 1, "of": 12, "champ": true}, {"year": "2017", "team": "FrozenRope of Semien", "score": 420.4, "rank": 11, "of": 12, "champ": false}, {"year": "2016", "team": "Balls Deep", "score": 542.6, "rank": 9, "of": 12, "champ": false}, {"year": "2015", "team": "Ragonk", "score": 894.2, "rank": 1, "of": 12, "champ": false}], "titles": [{"year": "2018", "team": "Goldschmidt’s List"}, {"year": "2019", "team": "Goldschmidt’s List"}, {"year": "2022", "team": "The Rosterbation Station"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 5, "l": 0, "t": 0}, "Bryant": {"w": 4, "l": 2, "t": 0}, "Eric": {"w": 4, "l": 1, "t": 0}, "Greg": {"w": 2, "l": 4, "t": 0}, "James": {"w": 4, "l": 0, "t": 1}, "Josh": {"w": 3, "l": 3, "t": 0}, "Kurtis": {"w": 4, "l": 2, "t": 0}, "Mark": {"w": 5, "l": 1, "t": 0}, "Mike": {"w": 2, "l": 1, "t": 1}, "Mikey": {"w": 3, "l": 2, "t": 0}, "Taylor": {"w": 4, "l": 1, "t": 1}}, "2023": {"Austin": {"w": 1, "l": 0, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 0, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 0, "l": 2, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 1, "t": 1}, "Mikey": {"w": 0, "l": 1, "t": 0}, "Taylor": {"w": 1, "l": 0, "t": 1}}, "2025": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 0, "l": 0, "t": 1}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 0, "t": 0}, "Mikey": {"w": 1, "l": 1, "t": 0}, "Taylor": {"w": 2, "l": 0, "t": 0}}}}, "Kurtis": {"seasons": [{"year": "2024", "team": "Ready to Plow", "score": 494.4, "rank": 7, "of": 12, "champ": false}, {"year": "2023", "team": "WanderingAroundTheMiddleSchool", "score": 633.0, "rank": 5, "of": 12, "champ": false}, {"year": "2022", "team": "Dookie Butts", "score": 360.2, "rank": 9, "of": 12, "champ": false}, {"year": "2021", "team": "Dookie Butts", "score": 604.0, "rank": 5, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Kurtis", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "Dookie Butts", "score": 520.3, "rank": 9, "of": 12, "champ": false}, {"year": "2018", "team": "Dookie Butts", "score": 796.3, "rank": 3, "of": 12, "champ": false}, {"year": "2017", "team": "Jerry Gallo is Dead", "score": 778.4, "rank": 1, "of": 12, "champ": false}, {"year": "2016", "team": "RIP", "score": 788.8, "rank": 3, "of": 12, "champ": false}, {"year": "2015", "team": "AgentBleezer", "score": 582.6, "rank": 7, "of": 12, "champ": false}], "titles": [], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 2, "l": 4, "t": 0}, "Bryant": {"w": 2, "l": 4, "t": 0}, "Eric": {"w": 2, "l": 3, "t": 0}, "Greg": {"w": 2, "l": 4, "t": 0}, "James": {"w": 3, "l": 2, "t": 0}, "Josh": {"w": 1, "l": 3, "t": 0}, "Kevin": {"w": 2, "l": 4, "t": 0}, "Mark": {"w": 4, "l": 2, "t": 0}, "Mike": {"w": 1, "l": 4, "t": 1}, "Mikey": {"w": 4, "l": 0, "t": 1}, "Taylor": {"w": 3, "l": 3, "t": 0}}, "2023": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 0, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 0, "t": 1}, "Mikey": {"w": 1, "l": 0, "t": 1}, "Taylor": {"w": 0, "l": 2, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 0, "l": 2, "t": 0}, "Eric": {"w": 0, "l": 2, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 1, "l": 0, "t": 0}, "Josh": {"w": 0, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 2, "l": 0, "t": 0}}, "2025": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 1, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}}}, "Mark": {"seasons": [{"year": "2025", "team": "Hatfield Hurlers", "score": 838.2, "rank": 4, "of": 12, "champ": false}, {"year": "2024", "team": "Hatfield Hurlers", "score": 687.9, "rank": 2, "of": 12, "champ": false}], "titles": [], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 2, "l": 4, "t": 0}, "Bryant": {"w": 4, "l": 2, "t": 0}, "Eric": {"w": 4, "l": 2, "t": 0}, "Greg": {"w": 2, "l": 3, "t": 0}, "James": {"w": 4, "l": 1, "t": 1}, "Josh": {"w": 4, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 5, "t": 0}, "Kurtis": {"w": 2, "l": 4, "t": 0}, "Mike": {"w": 1, "l": 3, "t": 0}, "Mikey": {"w": 3, "l": 0, "t": 2}, "Taylor": {"w": 3, "l": 3, "t": 0}}, "2023": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 0, "l": 2, "t": 0}, "Greg": {"w": 0, "l": 1, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 1, "t": 0}, "Mikey": {"w": 1, "l": 0, "t": 1}, "Taylor": {"w": 2, "l": 0, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 0, "l": 1, "t": 1}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 1, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 0, "l": 2, "t": 0}}, "2025": {"Austin": {"w": 0, "l": 2, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 0, "l": 0, "t": 1}, "Taylor": {"w": 1, "l": 1, "t": 0}}}}, "Matt": {"seasons": [{"year": "2014", "team": "Viva La Lima", "score": 593.5, "rank": 6, "of": 9, "champ": false}, {"year": "2013", "team": "Viva La Lima", "score": 720.2, "rank": 5, "of": 8, "champ": false}, {"year": "2012", "team": "Viva La Lima", "score": 706.0, "rank": 3, "of": 8, "champ": true}, {"year": "2011", "team": "Viva The Lima", "score": 465.4, "rank": 6, "of": 8, "champ": false}, {"year": "2010", "team": "Long Live Lima", "score": 976.1, "rank": 1, "of": 8, "champ": true}, {"year": "2009", "team": "It's Still Lima Time", "score": 553.5, "rank": 4, "of": 8, "champ": false}, {"year": "2008", "team": "Its Lima Time---", "score": 641.4, "rank": 3, "of": 8, "champ": false}], "titles": [{"year": "2010", "team": "Long Live Lima"}, {"year": "2012", "team": "Viva La Lima"}], "isCurrent": false, "h2h": {}}, "Messer": {"seasons": [{"year": "2018", "team": "Peenvin Shnozzsburb", "score": 274.4, "rank": 12, "of": 12, "champ": false}, {"year": "2017", "team": "Jose Autista", "score": 614.6, "rank": 8, "of": 12, "champ": false}, {"year": "2016", "team": "Nolan Hairy-Dongo", "score": 712.8, "rank": 4, "of": 12, "champ": false}, {"year": "2015", "team": "Jayson Girth", "score": 263.5, "rank": 12, "of": 12, "champ": false}, {"year": "2014", "team": "Peein' Desmond", "score": 581.2, "rank": 7, "of": 9, "champ": false}, {"year": "2013", "team": "Peein' Desmond", "score": 346.6, "rank": 7, "of": 8, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Michael": {"seasons": [{"year": "2016", "team": "Maui AAA Triggerfish", "score": 173.4, "rank": 12, "of": 12, "champ": false}, {"year": "2015", "team": "Maui AAA Triggerfish", "score": 627.7, "rank": 5, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Mike": {"seasons": [{"year": "2025", "team": "¯\\_(ツ)_/¯", "score": 848.6, "rank": 3, "of": 12, "champ": true}, {"year": "2024", "team": "¯\\_(ツ)_/¯", "score": 1168.1, "rank": 1, "of": 12, "champ": false}, {"year": "2023", "team": "¯\\_(ツ)_/¯", "score": 549.5, "rank": 9, "of": 12, "champ": false}, {"year": "2022", "team": "¯\\_(ツ)_/¯", "score": 939.0, "rank": 2, "of": 12, "champ": false}, {"year": "2021", "team": "¯\\_(ツ)_/¯", "score": 981.7, "rank": 1, "of": 12, "champ": true}, {"year": "2020", "team": "2020 - Mike", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "¯\\_(ツ)_/¯", "score": 666.3, "rank": 5, "of": 12, "champ": false}, {"year": "2018", "team": "RIP David Wright", "score": 710.7, "rank": 4, "of": 12, "champ": false}, {"year": "2017", "team": "Tebow Time", "score": 618.8, "rank": 7, "of": 12, "champ": false}, {"year": "2016", "team": "Wright Power", "score": 676.2, "rank": 5, "of": 12, "champ": false}, {"year": "2015", "team": "Wright Power", "score": 727.3, "rank": 3, "of": 12, "champ": false}, {"year": "2014", "team": "Wright Power", "score": 813.2, "rank": 3, "of": 9, "champ": true}, {"year": "2013", "team": "Wright Power", "score": 823.7, "rank": 2, "of": 8, "champ": true}], "titles": [{"year": "2013", "team": "Wright Power"}, {"year": "2014", "team": "Wright Power"}, {"year": "2021", "team": "¯\\_(ツ)_/¯"}, {"year": "2025", "team": "¯\\_(ツ)_/¯"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 4, "l": 1, "t": 1}, "Bryant": {"w": 4, "l": 2, "t": 0}, "Eric": {"w": 4, "l": 2, "t": 0}, "Greg": {"w": 2, "l": 3, "t": 0}, "James": {"w": 4, "l": 2, "t": 0}, "Josh": {"w": 4, "l": 2, "t": 0}, "Kevin": {"w": 1, "l": 2, "t": 1}, "Kurtis": {"w": 4, "l": 1, "t": 1}, "Mark": {"w": 3, "l": 1, "t": 0}, "Mikey": {"w": 3, "l": 2, "t": 1}, "Taylor": {"w": 2, "l": 2, "t": 1}}, "2023": {"Austin": {"w": 0, "l": 1, "t": 1}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 1, "t": 0}, "Kurtis": {"w": 0, "l": 1, "t": 1}, "Mark": {"w": 1, "l": 0, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 0, "l": 1, "t": 1}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 1, "l": 0, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 2, "l": 0, "t": 0}, "Kevin": {"w": 1, "l": 0, "t": 1}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 1, "l": 0, "t": 0}, "Mikey": {"w": 1, "l": 0, "t": 1}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2025": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 2, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 0, "l": 2, "t": 0}, "Kevin": {"w": 0, "l": 1, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 0, "t": 0}}}}, "Mikey": {"seasons": [{"year": "2025", "team": "@DoodlesAnalytics", "score": 771.8, "rank": 6, "of": 12, "champ": false}, {"year": "2025", "team": "OG9️⃣", "score": 628.5, "rank": 7, "of": 12, "champ": false}, {"year": "2024", "team": "BTHO notre dame", "score": 442.8, "rank": 10, "of": 12, "champ": false}, {"year": "2023", "team": "scoopski potatoes", "score": 618.9, "rank": 6, "of": 12, "champ": false}, {"year": "2022", "team": "THERE’S A BILLION OF THEM", "score": 768.6, "rank": 4, "of": 12, "champ": false}, {"year": "2021", "team": "NEVER A DOUBT", "score": 822.1, "rank": 2, "of": 12, "champ": false}, {"year": "2020", "team": "2020 - Mikey", "score": null, "rank": null, "of": 12, "champ": false}, {"year": "2019", "team": "#BTHOarkansas", "score": 307.8, "rank": 12, "of": 12, "champ": false}, {"year": "2018", "team": "BACK TO BACK CHAMPS", "score": 690.3, "rank": 6, "of": 12, "champ": false}, {"year": "2017", "team": "WE WANT BAMA", "score": 571.9, "rank": 9, "of": 12, "champ": true}, {"year": "2016", "team": "Lyla's Sweet Pussy", "score": 598.5, "rank": 7, "of": 12, "champ": false}, {"year": "2015", "team": "Chief's Fig Newtons", "score": 579.3, "rank": 9, "of": 12, "champ": false}, {"year": "2014", "team": "FleetwoodMacSexPants", "score": 539.0, "rank": 8, "of": 9, "champ": false}], "titles": [{"year": "2017", "team": "WE WANT BAMA"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 3, "l": 3, "t": 0}, "Bryant": {"w": 3, "l": 2, "t": 1}, "Eric": {"w": 3, "l": 3, "t": 0}, "Greg": {"w": 5, "l": 1, "t": 0}, "James": {"w": 3, "l": 1, "t": 0}, "Josh": {"w": 3, "l": 1, "t": 1}, "Kevin": {"w": 2, "l": 3, "t": 0}, "Kurtis": {"w": 0, "l": 4, "t": 1}, "Mark": {"w": 0, "l": 3, "t": 2}, "Mike": {"w": 2, "l": 3, "t": 1}, "Taylor": {"w": 3, "l": 3, "t": 0}}, "2023": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 1, "l": 0, "t": 1}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 1, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 0}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 0, "l": 1, "t": 1}, "Mark": {"w": 0, "l": 1, "t": 1}, "Mike": {"w": 2, "l": 0, "t": 0}, "Taylor": {"w": 1, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 0, "l": 2, "t": 0}, "Eric": {"w": 0, "l": 2, "t": 0}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 0, "l": 1, "t": 0}, "Josh": {"w": 1, "l": 1, "t": 0}, "Kevin": {"w": 1, "l": 0, "t": 0}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 0, "l": 1, "t": 1}, "Taylor": {"w": 0, "l": 2, "t": 0}}, "2025": {"Austin": {"w": 1, "l": 1, "t": 0}, "Bryant": {"w": 2, "l": 0, "t": 0}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 2, "l": 0, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 1}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 0, "l": 1, "t": 0}, "Mark": {"w": 0, "l": 0, "t": 1}, "Mike": {"w": 0, "l": 2, "t": 0}, "Taylor": {"w": 2, "l": 0, "t": 0}}}}, "Nate": {"seasons": [{"year": "2018", "team": "Dr. Poospittle", "score": 614.9, "rank": 8, "of": 12, "champ": false}, {"year": "2017", "team": "A Grandal Bumfarter", "score": 667.5, "rank": 2, "of": 12, "champ": false}, {"year": "2016", "team": "Giancarlo Rae Jepsen", "score": 568.3, "rank": 8, "of": 12, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}, "Stephen": {"seasons": [{"year": "2013", "team": "esteban", "score": 253.6, "rank": 8, "of": 8, "champ": false}, {"year": "2012", "team": "esteban", "score": 777.9, "rank": 2, "of": 8, "champ": false}, {"year": "2011", "team": "esteban", "score": 1013.3, "rank": 1, "of": 8, "champ": false}, {"year": "2010", "team": "esteban", "score": 923.8, "rank": 2, "of": 8, "champ": false}, {"year": "2009", "team": "esteban", "score": 1013.9, "rank": 1, "of": 8, "champ": true}, {"year": "2008", "team": "esteban", "score": 784.9, "rank": 2, "of": 8, "champ": true}, {"year": "2007", "team": "esteban", "score": 1002.0, "rank": 1, "of": 8, "champ": false}], "titles": [{"year": "2008", "team": "esteban"}, {"year": "2009", "team": "esteban"}], "isCurrent": false, "h2h": {}}, "Taylor": {"seasons": [{"year": "2025", "team": "Serafini Hit Squad", "score": 590.8, "rank": 9, "of": 12, "champ": false}, {"year": "2024", "team": "¯\\_(ツ)_/¯ ☠️", "score": 683.5, "rank": 3, "of": 12, "champ": false}, {"year": "2023", "team": "💀🥔🍟⚰️", "score": 769.2, "rank": 3, "of": 12, "champ": false}, {"year": "2022", "team": "Mike Trout", "score": 542.3, "rank": 6, "of": 12, "champ": false}, {"year": "2021", "team": "Hold The Line", "score": 486.7, "rank": 9, "of": 12, "champ": false}, {"year": "2020", "team": "2020 Champion", "score": null, "rank": null, "of": 12, "champ": true}, {"year": "2019", "team": "I❤Yordan plz tradeMe", "score": 858.6, "rank": 3, "of": 12, "champ": false}, {"year": "2018", "team": "Haderade", "score": 824.4, "rank": 2, "of": 12, "champ": false}, {"year": "2017", "team": "16 and Bregnant", "score": 629.7, "rank": 6, "of": 12, "champ": false}, {"year": "2016", "team": "Carlos Cumspraya", "score": 806.4, "rank": 2, "of": 12, "champ": true}, {"year": "2015", "team": "Cargo Fuck Yourself", "score": 547.5, "rank": 10, "of": 12, "champ": false}, {"year": "2014", "team": "Aroldis & Smoke Dis", "score": 723.5, "rank": 4, "of": 9, "champ": false}, {"year": "2013", "team": "Aroldis & Smoke Dis", "score": 804.1, "rank": 4, "of": 8, "champ": false}, {"year": "2012", "team": "Cory Lidle Hi Flyers", "score": 856.4, "rank": 1, "of": 8, "champ": false}, {"year": "2011", "team": "estebaño", "score": 412.6, "rank": 8, "of": 8, "champ": false}, {"year": "2010", "team": "_________________", "score": 840.0, "rank": 6, "of": 8, "champ": false}, {"year": "2009", "team": "long jong", "score": 718.0, "rank": 2, "of": 8, "champ": false}, {"year": "2008", "team": "Jongle Fever", "score": 196.6, "rank": 8, "of": 8, "champ": false}, {"year": "2007", "team": "the amazing acie law", "score": 570.2, "rank": 6, "of": 8, "champ": false}], "titles": [{"year": "2016", "team": "Carlos Cumspraya"}, {"year": "2020", "team": "2020 Champion"}], "isCurrent": true, "h2h": {"alltime": {"Austin": {"w": 4, "l": 0, "t": 0}, "Bryant": {"w": 3, "l": 2, "t": 1}, "Eric": {"w": 4, "l": 1, "t": 1}, "Greg": {"w": 3, "l": 2, "t": 1}, "James": {"w": 2, "l": 4, "t": 0}, "Josh": {"w": 2, "l": 1, "t": 2}, "Kevin": {"w": 1, "l": 4, "t": 1}, "Kurtis": {"w": 3, "l": 3, "t": 0}, "Mark": {"w": 3, "l": 3, "t": 0}, "Mike": {"w": 2, "l": 3, "t": 1}, "Mikey": {"w": 3, "l": 3, "t": 0}}, "2023": {"Austin": {"w": 1, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 1, "l": 0, "t": 1}, "Greg": {"w": 1, "l": 1, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 1}, "Kevin": {"w": 1, "l": 1, "t": 0}, "Kurtis": {"w": 2, "l": 0, "t": 0}, "Mark": {"w": 0, "l": 2, "t": 0}, "Mike": {"w": 1, "l": 0, "t": 1}, "Mikey": {"w": 1, "l": 1, "t": 0}}, "2024": {"Austin": {"w": 2, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 0, "t": 1}, "Eric": {"w": 1, "l": 1, "t": 0}, "Greg": {"w": 2, "l": 0, "t": 0}, "James": {"w": 1, "l": 1, "t": 0}, "Josh": {"w": 0, "l": 1, "t": 0}, "Kevin": {"w": 0, "l": 1, "t": 1}, "Kurtis": {"w": 0, "l": 2, "t": 0}, "Mark": {"w": 2, "l": 0, "t": 0}, "Mike": {"w": 1, "l": 1, "t": 0}, "Mikey": {"w": 2, "l": 0, "t": 0}}, "2025": {"Austin": {"w": 1, "l": 0, "t": 0}, "Bryant": {"w": 1, "l": 1, "t": 0}, "Eric": {"w": 2, "l": 0, "t": 0}, "Greg": {"w": 0, "l": 1, "t": 1}, "James": {"w": 0, "l": 2, "t": 0}, "Josh": {"w": 1, "l": 0, "t": 1}, "Kevin": {"w": 0, "l": 2, "t": 0}, "Kurtis": {"w": 1, "l": 1, "t": 0}, "Mark": {"w": 1, "l": 1, "t": 0}, "Mike": {"w": 0, "l": 2, "t": 0}, "Mikey": {"w": 0, "l": 2, "t": 0}}}}, "Zach": {"seasons": [{"year": "2015", "team": "Wood Wang Johnson", "score": 580.3, "rank": 8, "of": 12, "champ": false}, {"year": "2014", "team": "Swartz Balls", "score": 623.7, "rank": 5, "of": 9, "champ": false}], "titles": [], "isCurrent": false, "h2h": {}}}};
+
+    let selectedManager = null;
+    let h2hYear = 'alltime';
+
+    function buildGrid() {
+      const grid = document.getElementById('mgrGrid');
+      grid.innerHTML = '';
+      for (const mgr of DATA.currentManagers) {
+        const p = DATA.profiles[mgr];
+        const titles = p.titles.length;
+        const seasons = p.seasons.length;
+        const card = document.createElement('div');
+        card.className = 'mgr-card';
+        card.dataset.mgr = mgr;
+        card.innerHTML = `
+          <div class="mgr-name">${mgr}</div>
+          <div class="mgr-titles">${titles > 0 ? '🏆'.repeat(titles) : '&mdash;'}</div>
+          <div class="mgr-sub">${seasons} season${seasons !== 1 ? 's' : ''}</div>
+        `;
+        card.addEventListener('click', () => selectManager(mgr));
+        grid.appendChild(card);
+      }
+
+      if (DATA.historicalManagers.length > 0) {
+        const toggle = document.getElementById('histToggle');
+        toggle.style.display = 'inline-block';
+        toggle.textContent = '\u25B6 Show ' + DATA.historicalManagers.length + ' historical managers';
+        let open = false;
+        toggle.addEventListener('click', () => {
+          open = !open;
+          const hg = document.getElementById('histGrid');
+          hg.style.display = open ? 'grid' : 'none';
+          toggle.textContent = open
+            ? '\u25BC Hide historical managers'
+            : '\u25B6 Show ' + DATA.historicalManagers.length + ' historical managers';
+        });
+
+        const histGrid = document.getElementById('histGrid');
+        for (const mgr of DATA.historicalManagers) {
+          const p = DATA.profiles[mgr];
+          if (!p) continue;
+          const titles = p.titles.length;
+          const seasons = p.seasons.length;
+          const card = document.createElement('div');
+          card.className = 'mgr-card';
+          card.dataset.mgr = mgr;
+          card.innerHTML = `
+            <div class="mgr-name">${mgr}</div>
+            <div class="mgr-titles">${titles > 0 ? '🏆'.repeat(titles) : '&mdash;'}</div>
+            <div class="mgr-sub">${seasons} season${seasons !== 1 ? 's' : ''}</div>
+          `;
+          card.addEventListener('click', () => selectManager(mgr));
+          histGrid.appendChild(card);
+        }
+      }
+    }
+
+    function selectManager(mgr) {
+      selectedManager = mgr;
+      h2hYear = 'alltime';
+
+      document.querySelectorAll('.mgr-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.mgr-card[data-mgr="' + mgr + '"]').forEach(c => c.classList.add('active'));
+
+      renderProfile();
+      document.getElementById('profile').classList.add('visible');
+      document.getElementById('profile').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderProfile() {
+      const mgr = selectedManager;
+      const p = DATA.profiles[mgr];
+      if (!p) return;
+
+      document.getElementById('profileName').textContent = mgr;
+
+      // Trophies
+      const tr = document.getElementById('trophyRow');
+      tr.innerHTML = p.titles.map(t => '<div class="trophy">🏆 ' + t.year + '</div>').join('');
+
+      // Compute stats
+      const scored = p.seasons.filter(s => s.score !== null);
+      const avgScore = scored.length > 0 ? scored.reduce((a, s) => a + s.score, 0) / scored.length : null;
+      const avgRank = scored.length > 0 ? scored.reduce((a, s) => a + s.rank, 0) / scored.length : null;
+      const bestSeason = scored.length > 0 ? scored.reduce((a, s) => s.score > a.score ? s : a) : null;
+
+      // H2H overall
+      let totalW = 0, totalL = 0, totalT = 0;
+      const h2hAll = p.h2h.alltime || {};
+      for (const opp in h2hAll) {
+        totalW += h2hAll[opp].w;
+        totalL += h2hAll[opp].l;
+        totalT += h2hAll[opp].t;
+      }
+      const totalGames = totalW + totalL + totalT;
+      const h2hPct = totalGames > 0 ? ((totalW + totalT * 0.5) / totalGames * 100).toFixed(0) : null;
+
+      const cards = document.getElementById('statCards');
+      cards.innerHTML =
+        '<div class="stat-card"><div class="label">Seasons</div><div class="value blue">' + p.seasons.length + '</div><div class="sub">' + scored.length + ' scored</div></div>' +
+        '<div class="stat-card"><div class="label">Titles</div><div class="value gold">' + p.titles.length + '</div><div class="sub">' + (p.titles.map(t => t.year).join(', ') || 'None yet') + '</div></div>' +
+        '<div class="stat-card"><div class="label">Avg Power Score</div><div class="value green">' + (avgScore !== null ? avgScore.toFixed(0) : 'N/A') + '</div><div class="sub">' + scored.length + ' seasons</div></div>' +
+        '<div class="stat-card"><div class="label">Avg Finish</div><div class="value purple">' + (avgRank !== null ? avgRank.toFixed(1) : 'N/A') + '</div><div class="sub">Lower is better</div></div>' +
+        '<div class="stat-card"><div class="label">Best Season</div><div class="value cyan">' + (bestSeason ? bestSeason.score.toFixed(0) : 'N/A') + '</div><div class="sub">' + (bestSeason ? bestSeason.year + ' (#' + bestSeason.rank + ')' : '') + '</div></div>' +
+        '<div class="stat-card"><div class="label">H2H Win %</div><div class="value ' + (h2hPct !== null && h2hPct >= 50 ? 'green' : 'red') + '">' + (h2hPct !== null ? h2hPct + '%' : 'N/A') + '</div><div class="sub">' + totalW + '-' + totalL + (totalT > 0 ? '-' + totalT : '') + ' (' + totalGames + ' games)</div></div>';
+
+      renderScoreChart();
+      renderSeasonTable();
+
+      const h2hSection = document.getElementById('h2hSection');
+      if (Object.keys(p.h2h).length === 0) {
+        h2hSection.style.display = 'none';
+      } else {
+        h2hSection.style.display = 'block';
+        renderH2HFilter();
+        renderH2HTable();
+      }
+    }
+
+    let scoreChartInstance = null;
+    function renderScoreChart() {
+      const p = DATA.profiles[selectedManager];
+      const scored = p.seasons.filter(s => s.score !== null).slice().sort((a, b) => a.year.localeCompare(b.year));
+      if (scored.length < 2) {
+        document.getElementById('scoreChart').parentElement.parentElement.style.display = 'none';
+        return;
+      }
+      document.getElementById('scoreChart').parentElement.parentElement.style.display = 'block';
+
+      const labels = scored.map(s => s.year);
+      const values = scored.map(s => s.score);
+      const champYears = new Set(p.titles.map(t => t.year));
+      const pointColors = scored.map(s => champYears.has(s.year) ? '#fbbf24' : '#3b82f6');
+      const pointRadii = scored.map(s => champYears.has(s.year) ? 7 : 4);
+
+      if (scoreChartInstance) scoreChartInstance.destroy();
+
+      const ctx = document.getElementById('scoreChart').getContext('2d');
+      scoreChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Power Score',
+            data: values,
+            borderColor: '#3b82f6',
+            backgroundColor: '#3b82f622',
+            borderWidth: 2.5,
+            pointBackgroundColor: pointColors,
+            pointBorderColor: pointColors,
+            pointRadius: pointRadii,
+            pointHoverRadius: 8,
+            tension: 0.3,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const s = scored[ctx.dataIndex];
+                  let label = 'Score: ' + s.score.toFixed(0) + ' (#' + s.rank + '/' + s.of + ')';
+                  if (champYears.has(s.year)) label += ' 🏆';
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', font: { size: 11 } },
+              grid: { color: '#1e293b' }
+            },
+            y: {
+              min: 0,
+              max: 1200,
+              ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 200 },
+              grid: { color: '#1e293b' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderSeasonTable() {
+      const p = DATA.profiles[selectedManager];
+      const body = document.getElementById('seasonBody');
+      body.innerHTML = p.seasons.map(s =>
+        '<tr>' +
+        '<td>' + s.year + '</td>' +
+        '<td>' + s.team + '</td>' +
+        '<td>' + (s.score !== null ? s.score.toFixed(1) : '<span style="color:#475569">N/A</span>') + '</td>' +
+        '<td>' + (s.rank !== null ? s.rank + ' / ' + s.of : '<span style="color:#475569">N/A</span>') + '</td>' +
+        '<td>' + (s.champ ? '<span class="champ-marker">🏆 Champion</span>' : '') + '</td>' +
+        '</tr>'
+      ).join('');
+    }
+
+    function renderH2HFilter() {
+      const p = DATA.profiles[selectedManager];
+      const filter = document.getElementById('h2hFilter');
+      const years = ['alltime'].concat(Object.keys(p.h2h).filter(k => k !== 'alltime').sort().reverse());
+      filter.innerHTML = years.map(y => {
+        const label = y === 'alltime' ? 'All-Time' : y;
+        const cls = y === h2hYear ? 'h2h-yr-btn active' : 'h2h-yr-btn';
+        return '<button class="' + cls + '" data-yr="' + y + '">' + label + '</button>';
+      }).join('');
+
+      filter.querySelectorAll('.h2h-yr-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          h2hYear = btn.dataset.yr;
+          filter.querySelectorAll('.h2h-yr-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderH2HTable();
+        });
+      });
+    }
+
+    function renderH2HTable() {
+      const p = DATA.profiles[selectedManager];
+      const records = p.h2h[h2hYear] || {};
+      const body = document.getElementById('h2hBody');
+
+      const rows = [];
+      for (const opp of DATA.currentManagers) {
+        if (opp === selectedManager) continue;
+        const rec = records[opp] || { w: 0, l: 0, t: 0 };
+        const total = rec.w + rec.l + rec.t;
+        const pct = total > 0 ? (rec.w + rec.t * 0.5) / total : 0;
+        const cls = total === 0 ? '' : (rec.w > rec.l ? 'winning' : (rec.w < rec.l ? 'losing' : 'even-rec'));
+        rows.push({ opp: opp, w: rec.w, l: rec.l, t: rec.t, total: total, pct: pct, cls: cls });
+      }
+
+      body.innerHTML = rows.map(r => {
+        let record = r.w + '-' + r.l;
+        if (r.t > 0) record += '-' + r.t;
+        return '<tr>' +
+          '<td>' + r.opp + '</td>' +
+          '<td class="' + r.cls + '" style="font-weight:600">' + (r.total > 0 ? record : '<span style="color:#475569">0-0</span>') + '</td>' +
+          '<td>' + (r.total > 0 ? (r.pct * 100).toFixed(0) + '%' : '<span style="color:#475569">&mdash;</span>') + '</td>' +
+          '<td>' + r.w + '</td>' +
+          '<td>' + r.l + '</td>' +
+          '<td>' + r.total + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    // Sortable table headers
+    document.querySelectorAll('.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const table = th.closest('table');
+        const idx = Array.from(th.parentNode.children).indexOf(th);
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const type = th.dataset.type || 'str';
+        const asc = th.classList.contains('asc');
+        rows.sort((a, b) => {
+          let va = a.children[idx] ? a.children[idx].textContent.trim() : '';
+          let vb = b.children[idx] ? b.children[idx].textContent.trim() : '';
+          if (type === 'num') {
+            va = parseFloat(va.replace(/[^\d.\-]/g, '')) || 0;
+            vb = parseFloat(vb.replace(/[^\d.\-]/g, '')) || 0;
+          }
+          if (va < vb) return asc ? 1 : -1;
+          if (va > vb) return asc ? -1 : 1;
+          return 0;
+        });
+        th.parentNode.querySelectorAll('.sortable').forEach(s => s.classList.remove('asc', 'desc'));
+        th.classList.add(asc ? 'desc' : 'asc');
+        rows.forEach(r => tbody.appendChild(r));
+      });
+    });
+
+    buildGrid();
+  </script>
+</body>
+</html>
