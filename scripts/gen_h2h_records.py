@@ -168,10 +168,8 @@ for year in YEARS:
             score += ties * 0.5
             opp_score += ties * 0.5
 
-        # 2025 had 21 regular-season weeks; 2023-2024 only have complete
-        # data through week 20 (week 21+ incomplete, causes symmetry mismatches)
-        max_week = 21 if year == 2025 else 20
-        if week > max_week:
+        # All years had 21 regular-season weeks; exclude playoff weeks (22+)
+        if week > 21:
             continue
 
         mgr_a = YEAR_TN_TO_MANAGER.get((year, tn))
@@ -245,21 +243,24 @@ if errors == 0:
 rivalries = []
 for i in range(NUM_MGRS):
     for j in range(i + 1, NUM_MGRS):
-        rec = h2h_alltime.get((i, j), {'w': 0, 'l': 0, 't': 0})
-        total = rec['w'] + rec['l'] + rec['t']
+        rec_ij = h2h_alltime.get((i, j), new_rec())
+        rec_ji = h2h_alltime.get((j, i), new_rec())
+        total = rec_ij['w'] + rec_ij['l'] + rec_ij['t']
         if total == 0:
             continue
-        win_pct = (rec['w'] + rec['t'] * 0.5) / total
+        win_pct = (rec_ij['w'] + rec_ij['t'] * 0.5) / total
+        # Cumulative category scores from A's perspective
+        sf_a = rec_ij['sf']  # categories A won against B
+        sa_a = rec_ij['sa']  # categories B won against A
         rivalries.append({
             'i': i, 'j': j,
             'name_a': ALL_H2H_MANAGERS[i], 'name_b': ALL_H2H_MANAGERS[j],
-            'w': rec['w'], 'l': rec['l'], 't': rec['t'],
+            'w': rec_ij['w'], 'l': rec_ij['l'], 't': rec_ij['t'],
             'total': total, 'win_pct': win_pct,
             'imbalance': abs(win_pct - 0.5),
+            'sf': round(sf_a, 1), 'sa': round(sa_a, 1),
+            'g': rec_ij['g'],
         })
-
-lopsided = sorted(rivalries, key=lambda r: (-r['imbalance'], -r['total']))
-even_rivalries = sorted(rivalries, key=lambda r: (r['imbalance'], -r['total']))
 
 print(f"\nTotal unique matchups: {len(all_matchups)}")
 print(f"Rivalries: {len(rivalries)}")
@@ -332,33 +333,14 @@ for y in YEARS:
     year_names[str(y)] = names
 year_names_js = json.dumps(year_names)
 
-# Table rows
-lopsided_rows = ''
-for i, r in enumerate(lopsided[:15]):
-    if r['win_pct'] >= 0.5:
-        dom, opp, rec, pct = r['name_a'], r['name_b'], f"{r['w']}-{r['l']}-{r['t']}", r['win_pct']
-    else:
-        dom, opp, rec, pct = r['name_b'], r['name_a'], f"{r['l']}-{r['w']}-{r['t']}", 1 - r['win_pct']
-    lopsided_rows += f'''<tr>
-      <td class="rank">{i+1}</td>
-      <td>{dom}</td>
-      <td>{opp}</td>
-      <td class="score">{rec}</td>
-      <td class="hot-val">{pct:.0%}</td>
-      <td>{r['total']}</td>
-    </tr>'''
-
-even_filtered = [r for r in even_rivalries if r['total'] >= 3]
-even_rows = ''
-for i, r in enumerate(even_filtered[:15]):
-    even_rows += f'''<tr>
-      <td class="rank">{i+1}</td>
-      <td>{r['name_a']}</td>
-      <td>{r['name_b']}</td>
-      <td class="score">{r['w']}-{r['l']}-{r['t']}</td>
-      <td class="close-margin">{r['win_pct']:.0%}</td>
-      <td>{r['total']}</td>
-    </tr>'''
+# Rivalry data as JS
+rivalries_js = json.dumps([{
+    'a': r['name_a'], 'b': r['name_b'],
+    'w': r['w'], 'l': r['l'], 't': r['t'],
+    'total': r['total'], 'pct': round(r['win_pct'], 4),
+    'imb': round(r['imbalance'], 4),
+    'sf': r['sf'], 'sa': r['sa'], 'g': r['g'],
+} for r in rivalries])
 
 html = f'''<!DOCTYPE html>
 <html lang="en">
@@ -391,6 +373,17 @@ html = f'''<!DOCTYPE html>
     }}
     .view-btn:hover {{ color: #e2e8f0; border-color: #475569; }}
     .view-btn.active {{ background: #8b5cf6; color: #fff; border-color: #8b5cf6; }}
+
+    .rivalry-view-btn {{
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
+      transition: all 0.15s;
+    }}
+    .rivalry-view-btn:hover {{ color: #e2e8f0; border-color: #475569; }}
+    .rivalry-view-btn.active {{ background: #8b5cf6; color: #fff; border-color: #8b5cf6; }}
+
+    .mgr-link {{ color: inherit; text-decoration: none; }}
+    .mgr-link:hover {{ text-decoration: underline; color: #38bdf8; }}
 
     .matrix-wrap {{ overflow-x: auto; margin-bottom: 40px; }}
     .matrix {{ border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }}
@@ -445,12 +438,7 @@ html = f'''<!DOCTYPE html>
       <button class="filter-btn" data-year="2025">2025</button>
       <button class="filter-btn" data-year="2024">2024</button>
       <button class="filter-btn" data-year="2023">2023</button>
-      <label style="margin-left:20px">Sort:</label>
-      <select id="sortSelect" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:6px 12px;border-radius:6px;font-size:0.88em;cursor:pointer">
-        <option value="alpha">Manager Name</option>
-        <option value="winpct">Win % (Best First)</option>
-        <option value="wins">Total Wins</option>
-      </select>
+      <span style="color:#475569;font-size:0.82em;margin-left:16px">Click Manager or Total header to sort</span>
     </div>
     <div class="filter-bar">
       <label>View:</label>
@@ -466,35 +454,28 @@ html = f'''<!DOCTYPE html>
       </table>
     </div>
 
+    <div class="filter-bar">
+      <label>Rivalry view:</label>
+      <button class="rivalry-view-btn active" data-rview="cumulative">Cumulative Scores</button>
+      <button class="rivalry-view-btn" data-rview="record">Record (W-L)</button>
+      <button class="rivalry-view-btn" data-rview="average">Average Scores</button>
+    </div>
+
     <div class="two-col">
       <div class="card">
         <h3>&#x1F451; Most Lopsided Rivalries</h3>
         <p class="section-desc">Manager pairs with the most one-sided all-time records</p>
         <table>
-          <tr>
-            <th>#</th>
-            <th>Dominant</th>
-            <th>Opponent</th>
-            <th>Record</th>
-            <th class="sortable" data-type="num">Win%</th>
-            <th class="sortable" data-type="num">Games</th>
-          </tr>
-          {lopsided_rows}
+          <thead id="lopsidedHead"></thead>
+          <tbody id="lopsidedBody"></tbody>
         </table>
       </div>
       <div class="card">
         <h3>&#x2696;&#xFE0F; Most Even Rivalries</h3>
         <p class="section-desc">Closest all-time records (min 3 matchups)</p>
         <table>
-          <tr>
-            <th>#</th>
-            <th>Manager A</th>
-            <th>Manager B</th>
-            <th>Record</th>
-            <th class="sortable" data-type="num">Win%</th>
-            <th class="sortable" data-type="num">Games</th>
-          </tr>
-          {even_rows}
+          <thead id="evenHead"></thead>
+          <tbody id="evenBody"></tbody>
         </table>
       </div>
     </div>
@@ -508,6 +489,113 @@ html = f'''<!DOCTYPE html>
 
     let currentYear = 'alltime';
     let currentView = 'record';
+    let matrixSort = 'alpha';  // 'alpha' | 'total_desc' | 'total_asc' | 'vs_ID_desc' | 'vs_ID_asc'
+
+    const rivalries = {rivalries_js};
+    let rivalryView = 'cumulative';
+
+    function mgrLink(name) {{
+      return `<a href="manager_profiles.html#${{encodeURIComponent(name)}}" class="mgr-link">${{name}}</a>`;
+    }}
+
+    function renderRivalries() {{
+      const view = rivalryView;
+
+      // Sort helpers
+      function cumDiff(r) {{ return Math.abs(r.sf - r.sa); }}
+      function avgDiff(r) {{ return r.g > 0 ? Math.abs(r.sf - r.sa) / r.g : 0; }}
+
+      // Lopsided: biggest gap
+      let lopsided;
+      if (view === 'cumulative') {{
+        lopsided = [...rivalries].sort((a, b) => cumDiff(b) - cumDiff(a) || b.total - a.total);
+      }} else if (view === 'average') {{
+        lopsided = [...rivalries].sort((a, b) => avgDiff(b) - avgDiff(a) || b.total - a.total);
+      }} else {{
+        lopsided = [...rivalries].sort((a, b) => b.imb - a.imb || b.total - a.total);
+      }}
+
+      // Even: smallest gap (min 3 matchups)
+      const eligible = rivalries.filter(r => r.total >= 3);
+      let even;
+      if (view === 'cumulative') {{
+        even = [...eligible].sort((a, b) => cumDiff(a) - cumDiff(b) || b.total - a.total);
+      }} else if (view === 'average') {{
+        even = [...eligible].sort((a, b) => avgDiff(a) - avgDiff(b) || b.total - a.total);
+      }} else {{
+        even = [...eligible].sort((a, b) => a.imb - b.imb || b.total - a.total);
+      }}
+
+      // Column headers
+      let valHeader, metricHeader;
+      if (view === 'cumulative') {{
+        valHeader = 'Score'; metricHeader = 'Diff';
+      }} else if (view === 'average') {{
+        valHeader = 'Avg Score'; metricHeader = 'Avg Diff';
+      }} else {{
+        valHeader = 'Record'; metricHeader = 'Win%';
+      }}
+
+      const headHtml = `<tr><th>#</th><th>Dominant</th><th>Opponent</th><th>${{valHeader}}</th><th>${{metricHeader}}</th><th>Games</th></tr>`;
+      document.getElementById('lopsidedHead').innerHTML = headHtml;
+      document.getElementById('evenHead').innerHTML = headHtml.replace('Dominant', 'Manager A').replace('Opponent', 'Manager B');
+
+      function renderRow(r, idx, isLopsided) {{
+        let dom, opp, valStr, metricStr, metricCls;
+        // Determine dominant side
+        const aWins = r.sf > r.sa || (r.sf === r.sa && r.pct >= 0.5);
+        if (aWins) {{
+          dom = r.a; opp = r.b;
+        }} else {{
+          dom = r.b; opp = r.a;
+        }}
+        const sf = aWins ? r.sf : r.sa;
+        const sa = aWins ? r.sa : r.sf;
+        const w = aWins ? r.w : r.l;
+        const l = aWins ? r.l : r.w;
+        const pct = aWins ? r.pct : 1 - r.pct;
+
+        if (view === 'cumulative') {{
+          const sfStr = sf % 1 === 0 ? sf.toFixed(0) : sf.toFixed(1);
+          const saStr = sa % 1 === 0 ? sa.toFixed(0) : sa.toFixed(1);
+          valStr = `${{sfStr}}-${{saStr}}`;
+          const diff = sf - sa;
+          metricStr = (diff >= 0 ? '+' : '') + (diff % 1 === 0 ? diff.toFixed(0) : diff.toFixed(1));
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        }} else if (view === 'average') {{
+          const avgF = r.g > 0 ? sf / r.g : 0;
+          const avgA = r.g > 0 ? sa / r.g : 0;
+          valStr = `${{avgF.toFixed(1)}}-${{avgA.toFixed(1)}}`;
+          const avgDf = avgF - avgA;
+          metricStr = (avgDf >= 0 ? '+' : '') + avgDf.toFixed(1);
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        }} else {{
+          valStr = `${{w}}-${{l}}${{r.t > 0 ? '-' + r.t : ''}}`;
+          metricStr = (pct * 100).toFixed(0) + '%';
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        }}
+
+        if (!isLopsided) {{
+          dom = r.a; opp = r.b;
+        }}
+
+        return `<tr><td class="rank">${{idx+1}}</td><td>${{mgrLink(dom)}}</td><td>${{mgrLink(opp)}}</td><td class="score">${{valStr}}</td><td class="${{metricCls}}">${{metricStr}}</td><td>${{r.total}}</td></tr>`;
+      }}
+
+      document.getElementById('lopsidedBody').innerHTML = lopsided.slice(0, 15).map((r, i) => renderRow(r, i, true)).join('');
+      document.getElementById('evenBody').innerHTML = even.slice(0, 15).map((r, i) => renderRow(r, i, false)).join('');
+    }}
+
+    renderRivalries();
+
+    document.querySelectorAll('.rivalry-view-btn').forEach(btn => {{
+      btn.addEventListener('click', () => {{
+        document.querySelectorAll('.rivalry-view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        rivalryView = btn.dataset.rview;
+        renderRivalries();
+      }});
+    }});
 
     function renderMatrix(yearKey) {{
       currentYear = yearKey;
@@ -516,7 +604,6 @@ html = f'''<!DOCTYPE html>
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
-      const sortBy = document.getElementById('sortSelect').value;
 
       // Pre-compute totals
       const teamData = teams.map(t => {{
@@ -537,42 +624,59 @@ html = f'''<!DOCTYPE html>
       // Filter out managers with 0 games for year-specific views
       const active = yearKey !== 'alltime' ? teamData.filter(t => t.total > 0) : teamData;
 
-      let sorted;
-      if (sortBy === 'winpct') {{
-        if (view === 'cumulative') {{
-          sorted = [...active].sort((a, b) => (b.tsf - b.tsa) - (a.tsf - a.tsa) || b.tsf - a.tsf);
-        }} else if (view === 'average') {{
-          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
-          sorted = [...active].sort((a, b) => avgDiff(b) - avgDiff(a));
-        }} else {{
-          sorted = [...active].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
-        }}
-      }} else if (sortBy === 'wins') {{
-        if (view === 'cumulative') {{
-          sorted = [...active].sort((a, b) => b.tsf - a.tsf || a.tsa - b.tsa);
-        }} else if (view === 'average') {{
-          const avgF = t => t.tg > 0 ? t.tsf / t.tg : 0;
-          sorted = [...active].sort((a, b) => avgF(b) - avgF(a));
-        }} else {{
-          sorted = [...active].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
-        }}
-      }} else {{
-        sorted = active;
+      // Columns always stay in alphabetical order
+      const cols = [...active];
+
+      // Sort by record vs specific opponent (rows only)
+      function vsSort(tid, dir) {{
+        return (a, b) => {{
+          const ca = m[a.id][tid], cb = m[b.id][tid];
+          const sa = a.id === tid ? -999 : (ca.w !== '-' ? ca.sf - ca.sa : -998);
+          const sb = b.id === tid ? -999 : (cb.w !== '-' ? cb.sf - cb.sa : -998);
+          return dir === 'asc' ? sa - sb : sb - sa;
+        }};
       }}
 
-      let hdr = '<tr><th class="team-col">Manager</th>';
-      for (const t of sorted) {{
-        const teamName = names ? names[t.id] : t.team;
-        hdr += `<th title="${{teamName}}">${{t.mgr}}</th>`;
+      let rows_sorted;
+      const vsMatch = matrixSort.match(/^vs_(\\d+)_(asc|desc)$/);
+      if (vsMatch) {{
+        rows_sorted = [...active].sort(vsSort(parseInt(vsMatch[1]), vsMatch[2]));
+      }} else if (matrixSort === 'total_desc' || matrixSort === 'total_asc') {{
+        const dir = matrixSort === 'total_asc' ? 1 : -1;
+        if (view === 'cumulative') {{
+          rows_sorted = [...active].sort((a, b) => dir * ((a.tsf - a.tsa) - (b.tsf - b.tsa)) || dir * (a.tsf - b.tsf));
+        }} else if (view === 'average') {{
+          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
+          rows_sorted = [...active].sort((a, b) => dir * (avgDiff(a) - avgDiff(b)));
+        }} else {{
+          rows_sorted = [...active].sort((a, b) => dir * (a.pct - b.pct) || dir * (a.tw - b.tw));
+        }}
+      }} else {{
+        rows_sorted = [...active];
       }}
-      hdr += '<th style="border-left:2px solid #3b82f6">Total</th></tr>';
+
+      // Sort indicators
+      function arrow(key) {{
+        if (matrixSort === key || matrixSort === key + '_desc') return ' \\u2193';
+        if (matrixSort === key + '_asc') return ' \\u2191';
+        return '';
+      }}
+
+      let hdr = `<tr><th class="team-col" data-msort="alpha" style="cursor:pointer">Manager${{matrixSort === 'alpha' ? ' \\u2193' : ''}}</th>`;
+      for (const t of cols) {{
+        const teamName = names ? names[t.id] : t.team;
+        const vsKey = 'vs_' + t.id;
+        const a = arrow(vsKey);
+        hdr += `<th title="${{teamName}}" data-msort="${{vsKey}}" style="cursor:pointer">${{t.mgr}}${{a}}</th>`;
+      }}
+      hdr += `<th data-msort="total" style="border-left:2px solid #3b82f6;cursor:pointer">Total${{arrow('total')}}</th></tr>`;
       head.innerHTML = hdr;
 
       let rows = '';
-      for (const tA of sorted) {{
+      for (const tA of rows_sorted) {{
         const teamName = names ? names[tA.id] : tA.team;
         rows += `<tr><td class="team-cell" title="${{teamName}}"><span style="color:${{tA.color}}">&#9679;</span> ${{tA.mgr}}</td>`;
-        for (const tB of sorted) {{
+        for (const tB of cols) {{
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {{
             rows += '<td class="self">&mdash;</td>';
@@ -631,7 +735,18 @@ html = f'''<!DOCTYPE html>
       }});
     }});
 
-    document.getElementById('sortSelect').addEventListener('change', () => {{
+    document.getElementById('h2hMatrix').addEventListener('click', (e) => {{
+      const th = e.target.closest('th[data-msort]');
+      if (!th) return;
+      const key = th.dataset.msort;
+      if (key === 'alpha') {{
+        matrixSort = 'alpha';
+      }} else if (key === 'total') {{
+        matrixSort = matrixSort === 'total_desc' ? 'total_asc' : 'total_desc';
+      }} else {{
+        // vs_ID - toggle desc/asc
+        matrixSort = matrixSort === key + '_desc' ? key + '_asc' : key + '_desc';
+      }}
       renderMatrix(currentYear);
     }});
 

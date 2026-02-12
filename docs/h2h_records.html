@@ -30,6 +30,17 @@
     .view-btn:hover { color: #e2e8f0; border-color: #475569; }
     .view-btn.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
 
+    .rivalry-view-btn {
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
+      transition: all 0.15s;
+    }
+    .rivalry-view-btn:hover { color: #e2e8f0; border-color: #475569; }
+    .rivalry-view-btn.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
+
+    .mgr-link { color: inherit; text-decoration: none; }
+    .mgr-link:hover { text-decoration: underline; color: #38bdf8; }
+
     .matrix-wrap { overflow-x: auto; margin-bottom: 40px; }
     .matrix { border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }
     .matrix th, .matrix td { padding: 7px 10px; text-align: center; border: 1px solid #1e293b; }
@@ -83,12 +94,7 @@
       <button class="filter-btn" data-year="2025">2025</button>
       <button class="filter-btn" data-year="2024">2024</button>
       <button class="filter-btn" data-year="2023">2023</button>
-      <label style="margin-left:20px">Sort:</label>
-      <select id="sortSelect" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;padding:6px 12px;border-radius:6px;font-size:0.88em;cursor:pointer">
-        <option value="alpha">Manager Name</option>
-        <option value="winpct">Win % (Best First)</option>
-        <option value="wins">Total Wins</option>
-      </select>
+      <span style="color:#475569;font-size:0.82em;margin-left:16px">Click Manager or Total header to sort</span>
     </div>
     <div class="filter-bar">
       <label>View:</label>
@@ -104,245 +110,28 @@
       </table>
     </div>
 
+    <div class="filter-bar">
+      <label>Rivalry view:</label>
+      <button class="rivalry-view-btn active" data-rview="cumulative">Cumulative Scores</button>
+      <button class="rivalry-view-btn" data-rview="record">Record (W-L)</button>
+      <button class="rivalry-view-btn" data-rview="average">Average Scores</button>
+    </div>
+
     <div class="two-col">
       <div class="card">
         <h3>&#x1F451; Most Lopsided Rivalries</h3>
         <p class="section-desc">Manager pairs with the most one-sided all-time records</p>
         <table>
-          <tr>
-            <th>#</th>
-            <th>Dominant</th>
-            <th>Opponent</th>
-            <th>Record</th>
-            <th class="sortable" data-type="num">Win%</th>
-            <th class="sortable" data-type="num">Games</th>
-          </tr>
-          <tr>
-      <td class="rank">1</td>
-      <td>Austin</td>
-      <td>Eric</td>
-      <td class="score">6-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">2</td>
-      <td>Kevin</td>
-      <td>Austin</td>
-      <td class="score">5-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>5</td>
-    </tr><tr>
-      <td class="rank">3</td>
-      <td>Taylor</td>
-      <td>Austin</td>
-      <td class="score">4-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">4</td>
-      <td>Mark</td>
-      <td>Eric</td>
-      <td class="score">4-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">5</td>
-      <td>Austin</td>
-      <td>David</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">6</td>
-      <td>Eric</td>
-      <td>David</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">7</td>
-      <td>David</td>
-      <td>James</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>David</td>
-      <td>Josh</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>Kevin</td>
-      <td>David</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>Kurtis</td>
-      <td>David</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">11</td>
-      <td>David</td>
-      <td>Taylor</td>
-      <td class="score">2-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>2</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>Greg</td>
-      <td>David</td>
-      <td class="score">1-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>1</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>Mike</td>
-      <td>David</td>
-      <td class="score">1-0-0</td>
-      <td class="hot-val">100%</td>
-      <td>1</td>
-    </tr><tr>
-      <td class="rank">14</td>
-      <td>Mikey</td>
-      <td>Greg</td>
-      <td class="score">5-1-0</td>
-      <td class="hot-val">83%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">15</td>
-      <td>Mark</td>
-      <td>Mikey</td>
-      <td class="score">2-0-1</td>
-      <td class="hot-val">83%</td>
-      <td>3</td>
-    </tr>
+          <thead id="lopsidedHead"></thead>
+          <tbody id="lopsidedBody"></tbody>
         </table>
       </div>
       <div class="card">
         <h3>&#x2696;&#xFE0F; Most Even Rivalries</h3>
         <p class="section-desc">Closest all-time records (min 3 matchups)</p>
         <table>
-          <tr>
-            <th>#</th>
-            <th>Manager A</th>
-            <th>Manager B</th>
-            <th>Record</th>
-            <th class="sortable" data-type="num">Win%</th>
-            <th class="sortable" data-type="num">Games</th>
-          </tr>
-          <tr>
-      <td class="rank">1</td>
-      <td>Austin</td>
-      <td>Josh</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">2</td>
-      <td>Austin</td>
-      <td>Mikey</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">3</td>
-      <td>Eric</td>
-      <td>Mikey</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">4</td>
-      <td>Josh</td>
-      <td>Kevin</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">5</td>
-      <td>Kurtis</td>
-      <td>Taylor</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">6</td>
-      <td>Mikey</td>
-      <td>Taylor</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">7</td>
-      <td>Greg</td>
-      <td>James</td>
-      <td class="score">2-2-1</td>
-      <td class="close-margin">50%</td>
-      <td>5</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>Austin</td>
-      <td>Mark</td>
-      <td class="score">2-2-0</td>
-      <td class="close-margin">50%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>Greg</td>
-      <td>Mark</td>
-      <td class="score">2-2-0</td>
-      <td class="close-margin">50%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>Josh</td>
-      <td>Mark</td>
-      <td class="score">2-2-0</td>
-      <td class="close-margin">50%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">11</td>
-      <td>Kurtis</td>
-      <td>Mark</td>
-      <td class="score">2-2-0</td>
-      <td class="close-margin">50%</td>
-      <td>4</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>Austin</td>
-      <td>James</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>Bryant</td>
-      <td>Mikey</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">14</td>
-      <td>Bryant</td>
-      <td>Taylor</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">15</td>
-      <td>Greg</td>
-      <td>Taylor</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr>
+          <thead id="evenHead"></thead>
+          <tbody id="evenBody"></tbody>
         </table>
       </div>
     </div>
@@ -373,9 +162,9 @@ m[0][1]={w:3,l:2,t:0,sf:36.5,sa:23.5,g:5,c:'winning'};
 m[0][2]={w:2,l:0,t:0,sf:20.5,sa:3.5,g:2,c:'winning'};
 m[0][3]={w:6,l:0,t:0,sf:59.5,sa:12.5,g:6,c:'winning'};
 m[0][4]={w:2,l:3,t:0,sf:26.5,sa:33.5,g:5,c:'losing'};
-m[0][5]={w:2,l:3,t:1,sf:33.5,sa:38.5,g:6,c:'losing'};
+m[0][5]={w:2,l:4,t:1,sf:34.5,sa:49.5,g:7,c:'losing'};
 m[0][6]={w:3,l:3,t:0,sf:35.0,sa:37.0,g:6,c:'even'};
-m[0][7]={w:0,l:5,t:0,sf:19.5,sa:40.5,g:5,c:'losing'};
+m[0][7]={w:0,l:6,t:0,sf:25.0,sa:47.0,g:6,c:'losing'};
 m[0][8]={w:4,l:2,t:0,sf:44.0,sa:28.0,g:6,c:'winning'};
 m[0][9]={w:2,l:2,t:0,sf:29.0,sa:19.0,g:4,c:'even'};
 m[0][10]={w:1,l:4,t:1,sf:21.5,sa:50.5,g:6,c:'losing'};
@@ -389,10 +178,10 @@ m[1][4]={w:1,l:4,t:1,sf:26.0,sa:46.0,g:6,c:'losing'};
 m[1][5]={w:2,l:4,t:0,sf:30.5,sa:41.5,g:6,c:'losing'};
 m[1][6]={w:1,l:4,t:0,sf:22.0,sa:38.0,g:5,c:'losing'};
 m[1][7]={w:2,l:4,t:0,sf:26.0,sa:46.0,g:6,c:'losing'};
-m[1][8]={w:3,l:2,t:0,sf:34.0,sa:26.0,g:5,c:'winning'};
+m[1][8]={w:4,l:2,t:0,sf:41.0,sa:31.0,g:6,c:'winning'};
 m[1][9]={w:1,l:3,t:0,sf:19.0,sa:29.0,g:4,c:'losing'};
 m[1][10]={w:2,l:4,t:0,sf:24.0,sa:48.0,g:6,c:'losing'};
-m[1][11]={w:2,l:3,t:1,sf:34.0,sa:38.0,g:6,c:'losing'};
+m[1][11]={w:3,l:3,t:1,sf:43.0,sa:41.0,g:7,c:'even'};
 m[1][12]={w:2,l:3,t:1,sf:31.0,sa:41.0,g:6,c:'losing'};
 m[2][0]={w:0,l:2,t:0,sf:3.5,sa:20.5,g:2,c:'losing'};
 m[2][1]={w:1,l:1,t:0,sf:9.5,sa:14.5,g:2,c:'even'};
@@ -404,17 +193,17 @@ m[2][6]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
 m[2][7]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
 m[2][8]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
-m[2][10]={w:0,l:1,t:0,sf:4.0,sa:8.0,g:1,c:'losing'};
+m[2][10]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[2][11]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
 m[2][12]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[3][0]={w:0,l:6,t:0,sf:12.5,sa:59.5,g:6,c:'losing'};
 m[3][1]={w:3,l:1,t:0,sf:29.5,sa:18.5,g:4,c:'winning'};
 m[3][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
-m[3][4]={w:2,l:3,t:0,sf:29.5,sa:30.5,g:5,c:'losing'};
+m[3][4]={w:3,l:3,t:0,sf:37.0,sa:35.0,g:6,c:'even'};
 m[3][5]={w:3,l:2,t:1,sf:39.0,sa:33.0,g:6,c:'winning'};
 m[3][6]={w:1,l:3,t:2,sf:29.0,sa:43.0,g:6,c:'losing'};
-m[3][7]={w:1,l:4,t:0,sf:16.5,sa:43.5,g:5,c:'losing'};
+m[3][7]={w:2,l:4,t:0,sf:25.0,sa:47.0,g:6,c:'losing'};
 m[3][8]={w:3,l:2,t:0,sf:32.0,sa:28.0,g:5,c:'winning'};
 m[3][9]={w:0,l:4,t:0,sf:11.5,sa:36.5,g:4,c:'losing'};
 m[3][10]={w:2,l:4,t:0,sf:29.5,sa:42.5,g:6,c:'losing'};
@@ -423,17 +212,17 @@ m[3][12]={w:1,l:4,t:1,sf:30.0,sa:42.0,g:6,c:'losing'};
 m[4][0]={w:3,l:2,t:0,sf:33.5,sa:26.5,g:5,c:'winning'};
 m[4][1]={w:4,l:1,t:1,sf:46.0,sa:26.0,g:6,c:'winning'};
 m[4][2]={w:1,l:0,t:0,sf:8.5,sa:3.5,g:1,c:'winning'};
-m[4][3]={w:3,l:2,t:0,sf:30.5,sa:29.5,g:5,c:'winning'};
+m[4][3]={w:3,l:3,t:0,sf:35.0,sa:37.0,g:6,c:'even'};
 m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[4][5]={w:2,l:2,t:1,sf:26.0,sa:34.0,g:5,c:'even'};
 m[4][6]={w:2,l:4,t:0,sf:31.5,sa:40.5,g:6,c:'losing'};
 m[4][7]={w:4,l:2,t:0,sf:36.0,sa:36.0,g:6,c:'winning'};
 m[4][8]={w:4,l:2,t:0,sf:43.0,sa:29.0,g:6,c:'winning'};
 m[4][9]={w:2,l:2,t:0,sf:23.5,sa:24.5,g:4,c:'even'};
-m[4][10]={w:3,l:2,t:0,sf:33.0,sa:27.0,g:5,c:'winning'};
+m[4][10]={w:3,l:3,t:0,sf:35.0,sa:37.0,g:6,c:'even'};
 m[4][11]={w:1,l:5,t:0,sf:24.5,sa:47.5,g:6,c:'losing'};
 m[4][12]={w:2,l:3,t:1,sf:36.5,sa:35.5,g:6,c:'losing'};
-m[5][0]={w:3,l:2,t:1,sf:38.5,sa:33.5,g:6,c:'winning'};
+m[5][0]={w:4,l:2,t:1,sf:49.5,sa:34.5,g:7,c:'winning'};
 m[5][1]={w:4,l:2,t:0,sf:41.5,sa:30.5,g:6,c:'winning'};
 m[5][2]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
 m[5][3]={w:2,l:3,t:1,sf:33.0,sa:39.0,g:6,c:'losing'};
@@ -445,7 +234,7 @@ m[5][8]={w:2,l:3,t:0,sf:26.5,sa:33.5,g:5,c:'losing'};
 m[5][9]={w:1,l:2,t:1,sf:19.0,sa:29.0,g:4,c:'losing'};
 m[5][10]={w:2,l:4,t:0,sf:30.0,sa:42.0,g:6,c:'losing'};
 m[5][11]={w:1,l:3,t:0,sf:15.5,sa:32.5,g:4,c:'losing'};
-m[5][12]={w:3,l:2,t:0,sf:38.0,sa:22.0,g:5,c:'winning'};
+m[5][12]={w:4,l:2,t:0,sf:44.5,sa:27.5,g:6,c:'winning'};
 m[6][0]={w:3,l:3,t:0,sf:37.0,sa:35.0,g:6,c:'even'};
 m[6][1]={w:4,l:1,t:0,sf:38.0,sa:22.0,g:5,c:'winning'};
 m[6][2]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
@@ -454,15 +243,15 @@ m[6][4]={w:4,l:2,t:0,sf:40.5,sa:31.5,g:6,c:'winning'};
 m[6][5]={w:2,l:4,t:0,sf:31.0,sa:41.0,g:6,c:'losing'};
 m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[6][7]={w:3,l:3,t:0,sf:36.5,sa:35.5,g:6,c:'even'};
-m[6][8]={w:3,l:1,t:0,sf:27.5,sa:20.5,g:4,c:'winning'};
+m[6][8]={w:4,l:1,t:0,sf:35.0,sa:25.0,g:5,c:'winning'};
 m[6][9]={w:2,l:2,t:0,sf:26.5,sa:21.5,g:4,c:'even'};
 m[6][10]={w:2,l:4,t:0,sf:28.5,sa:43.5,g:6,c:'losing'};
-m[6][11]={w:1,l:3,t:1,sf:29.5,sa:30.5,g:5,c:'losing'};
+m[6][11]={w:1,l:4,t:1,sf:34.5,sa:37.5,g:6,c:'losing'};
 m[6][12]={w:1,l:2,t:2,sf:28.5,sa:31.5,g:5,c:'losing'};
-m[7][0]={w:5,l:0,t:0,sf:40.5,sa:19.5,g:5,c:'winning'};
+m[7][0]={w:6,l:0,t:0,sf:47.0,sa:25.0,g:6,c:'winning'};
 m[7][1]={w:4,l:2,t:0,sf:46.0,sa:26.0,g:6,c:'winning'};
 m[7][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
-m[7][3]={w:4,l:1,t:0,sf:43.5,sa:16.5,g:5,c:'winning'};
+m[7][3]={w:4,l:2,t:0,sf:47.0,sa:25.0,g:6,c:'winning'};
 m[7][4]={w:2,l:4,t:0,sf:36.0,sa:36.0,g:6,c:'losing'};
 m[7][5]={w:4,l:1,t:1,sf:48.0,sa:24.0,g:6,c:'winning'};
 m[7][6]={w:3,l:3,t:0,sf:35.5,sa:36.5,g:6,c:'even'};
@@ -473,12 +262,12 @@ m[7][10]={w:2,l:1,t:1,sf:26.0,sa:22.0,g:4,c:'winning'};
 m[7][11]={w:3,l:2,t:0,sf:34.5,sa:25.5,g:5,c:'winning'};
 m[7][12]={w:4,l:1,t:1,sf:40.5,sa:31.5,g:6,c:'winning'};
 m[8][0]={w:2,l:4,t:0,sf:28.0,sa:44.0,g:6,c:'losing'};
-m[8][1]={w:2,l:3,t:0,sf:26.0,sa:34.0,g:5,c:'losing'};
+m[8][1]={w:2,l:4,t:0,sf:31.0,sa:41.0,g:6,c:'losing'};
 m[8][2]={w:2,l:0,t:0,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[8][3]={w:2,l:3,t:0,sf:28.0,sa:32.0,g:5,c:'losing'};
 m[8][4]={w:2,l:4,t:0,sf:29.0,sa:43.0,g:6,c:'losing'};
 m[8][5]={w:3,l:2,t:0,sf:33.5,sa:26.5,g:5,c:'winning'};
-m[8][6]={w:1,l:3,t:0,sf:20.5,sa:27.5,g:4,c:'losing'};
+m[8][6]={w:1,l:4,t:0,sf:25.0,sa:35.0,g:5,c:'losing'};
 m[8][7]={w:2,l:4,t:0,sf:30.0,sa:42.0,g:6,c:'losing'};
 m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[8][9]={w:2,l:2,t:0,sf:24.0,sa:24.0,g:4,c:'even'};
@@ -497,12 +286,12 @@ m[9][8]={w:2,l:2,t:0,sf:24.0,sa:24.0,g:4,c:'even'};
 m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[9][10]={w:1,l:2,t:0,sf:11.0,sa:25.0,g:3,c:'losing'};
 m[9][11]={w:2,l:0,t:1,sf:23.5,sa:12.5,g:3,c:'winning'};
-m[9][12]={w:1,l:2,t:0,sf:17.0,sa:19.0,g:3,c:'losing'};
+m[9][12]={w:1,l:3,t:0,sf:22.0,sa:26.0,g:4,c:'losing'};
 m[10][0]={w:4,l:1,t:1,sf:50.5,sa:21.5,g:6,c:'winning'};
 m[10][1]={w:4,l:2,t:0,sf:48.0,sa:24.0,g:6,c:'winning'};
-m[10][2]={w:1,l:0,t:0,sf:8.0,sa:4.0,g:1,c:'winning'};
+m[10][2]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[10][3]={w:4,l:2,t:0,sf:42.5,sa:29.5,g:6,c:'winning'};
-m[10][4]={w:2,l:3,t:0,sf:27.0,sa:33.0,g:5,c:'losing'};
+m[10][4]={w:3,l:3,t:0,sf:37.0,sa:35.0,g:6,c:'even'};
 m[10][5]={w:4,l:2,t:0,sf:42.0,sa:30.0,g:6,c:'winning'};
 m[10][6]={w:4,l:2,t:0,sf:43.5,sa:28.5,g:6,c:'winning'};
 m[10][7]={w:1,l:2,t:1,sf:22.0,sa:26.0,g:4,c:'losing'};
@@ -512,12 +301,12 @@ m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[10][11]={w:3,l:2,t:1,sf:46.0,sa:26.0,g:6,c:'winning'};
 m[10][12]={w:3,l:2,t:1,sf:41.5,sa:30.5,g:6,c:'winning'};
 m[11][0]={w:3,l:3,t:0,sf:35.5,sa:36.5,g:6,c:'even'};
-m[11][1]={w:3,l:2,t:1,sf:38.0,sa:34.0,g:6,c:'winning'};
+m[11][1]={w:3,l:3,t:1,sf:41.0,sa:43.0,g:7,c:'even'};
 m[11][2]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
 m[11][3]={w:3,l:3,t:0,sf:37.5,sa:34.5,g:6,c:'even'};
 m[11][4]={w:5,l:1,t:0,sf:47.5,sa:24.5,g:6,c:'winning'};
 m[11][5]={w:3,l:1,t:0,sf:32.5,sa:15.5,g:4,c:'winning'};
-m[11][6]={w:3,l:1,t:1,sf:30.5,sa:29.5,g:5,c:'winning'};
+m[11][6]={w:4,l:1,t:1,sf:37.5,sa:34.5,g:6,c:'winning'};
 m[11][7]={w:2,l:3,t:0,sf:25.5,sa:34.5,g:5,c:'losing'};
 m[11][8]={w:1,l:4,t:1,sf:32.5,sa:39.5,g:6,c:'losing'};
 m[11][9]={w:0,l:2,t:1,sf:12.5,sa:23.5,g:3,c:'losing'};
@@ -529,11 +318,11 @@ m[12][1]={w:3,l:2,t:1,sf:41.0,sa:31.0,g:6,c:'winning'};
 m[12][2]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[12][3]={w:4,l:1,t:1,sf:42.0,sa:30.0,g:6,c:'winning'};
 m[12][4]={w:3,l:2,t:1,sf:35.5,sa:36.5,g:6,c:'winning'};
-m[12][5]={w:2,l:3,t:0,sf:22.0,sa:38.0,g:5,c:'losing'};
+m[12][5]={w:2,l:4,t:0,sf:27.5,sa:44.5,g:6,c:'losing'};
 m[12][6]={w:2,l:1,t:2,sf:31.5,sa:28.5,g:5,c:'winning'};
 m[12][7]={w:1,l:4,t:1,sf:31.5,sa:40.5,g:6,c:'losing'};
 m[12][8]={w:3,l:3,t:0,sf:39.5,sa:32.5,g:6,c:'even'};
-m[12][9]={w:2,l:1,t:0,sf:19.0,sa:17.0,g:3,c:'winning'};
+m[12][9]={w:3,l:1,t:0,sf:26.0,sa:22.0,g:4,c:'winning'};
 m[12][10]={w:2,l:3,t:1,sf:30.5,sa:41.5,g:6,c:'losing'};
 m[12][11]={w:3,l:3,t:0,sf:37.0,sa:35.0,g:6,c:'even'};
 m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
@@ -545,7 +334,7 @@ m[0][3]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[0][4]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
 m[0][5]={w:1,l:0,t:1,sf:14.0,sa:10.0,g:2,c:'winning'};
 m[0][6]={w:1,l:1,t:0,sf:14.5,sa:9.5,g:2,c:'even'};
-m[0][7]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[0][7]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[0][8]={w:2,l:0,t:0,sf:18.5,sa:5.5,g:2,c:'winning'};
 m[0][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[0][10]={w:1,l:0,t:1,sf:14.0,sa:10.0,g:2,c:'winning'};
@@ -559,7 +348,7 @@ m[1][4]={w:1,l:0,t:1,sf:14.0,sa:10.0,g:2,c:'winning'};
 m[1][5]={w:1,l:1,t:0,sf:10.0,sa:14.0,g:2,c:'even'};
 m[1][6]={w:1,l:0,t:0,sf:9.0,sa:3.0,g:1,c:'winning'};
 m[1][7]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
-m[1][8]={w:0,l:1,t:0,sf:4.0,sa:8.0,g:1,c:'losing'};
+m[1][8]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
 m[1][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[1][10]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
 m[1][11]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
@@ -574,14 +363,14 @@ m[2][6]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
 m[2][7]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
 m[2][8]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
-m[2][10]={w:0,l:1,t:0,sf:4.0,sa:8.0,g:1,c:'losing'};
+m[2][10]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[2][11]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
 m[2][12]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[3][0]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
 m[3][1]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
 m[3][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
-m[3][4]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[3][4]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[3][5]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
 m[3][6]={w:1,l:1,t:0,sf:9.0,sa:15.0,g:2,c:'even'};
 m[3][7]={w:1,l:1,t:0,sf:9.5,sa:14.5,g:2,c:'even'};
@@ -593,7 +382,7 @@ m[3][12]={w:0,l:1,t:1,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[4][0]={w:2,l:0,t:0,sf:18.5,sa:5.5,g:2,c:'winning'};
 m[4][1]={w:0,l:1,t:1,sf:10.0,sa:14.0,g:2,c:'losing'};
 m[4][2]={w:1,l:0,t:0,sf:8.5,sa:3.5,g:1,c:'winning'};
-m[4][3]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[4][3]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[4][5]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
 m[4][6]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
@@ -615,7 +404,7 @@ m[5][8]={w:0,l:2,t:0,sf:4.0,sa:20.0,g:2,c:'losing'};
 m[5][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[5][10]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
 m[5][11]={w:0,l:1,t:0,sf:2.5,sa:9.5,g:1,c:'losing'};
-m[5][12]={w:0,l:1,t:0,sf:4.5,sa:7.5,g:1,c:'losing'};
+m[5][12]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
 m[6][0]={w:1,l:1,t:0,sf:9.5,sa:14.5,g:2,c:'even'};
 m[6][1]={w:0,l:1,t:0,sf:3.0,sa:9.0,g:1,c:'losing'};
 m[6][2]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
@@ -627,9 +416,9 @@ m[6][7]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
 m[6][8]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
 m[6][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[6][10]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
-m[6][11]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[6][11]={w:0,l:2,t:0,sf:10.0,sa:14.0,g:2,c:'losing'};
 m[6][12]={w:0,l:1,t:1,sf:10.5,sa:13.5,g:2,c:'losing'};
-m[7][0]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[7][0]={w:2,l:0,t:0,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[7][1]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
 m[7][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[7][3]={w:1,l:1,t:0,sf:14.5,sa:9.5,g:2,c:'even'};
@@ -643,7 +432,7 @@ m[7][10]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
 m[7][11]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
 m[7][12]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
 m[8][0]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
-m[8][1]={w:1,l:0,t:0,sf:8.0,sa:4.0,g:1,c:'winning'};
+m[8][1]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
 m[8][2]={w:2,l:0,t:0,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[8][3]={w:0,l:1,t:0,sf:3.0,sa:9.0,g:1,c:'losing'};
 m[8][4]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
@@ -670,7 +459,7 @@ m[9][11]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[9][12]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[10][0]={w:0,l:1,t:1,sf:10.0,sa:14.0,g:2,c:'losing'};
 m[10][1]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
-m[10][2]={w:1,l:0,t:0,sf:8.0,sa:4.0,g:1,c:'winning'};
+m[10][2]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[10][3]={w:1,l:1,t:0,sf:11.5,sa:12.5,g:2,c:'even'};
 m[10][4]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
 m[10][5]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
@@ -687,7 +476,7 @@ m[11][2]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
 m[11][3]={w:2,l:0,t:0,sf:16.5,sa:7.5,g:2,c:'winning'};
 m[11][4]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
 m[11][5]={w:1,l:0,t:0,sf:9.5,sa:2.5,g:1,c:'winning'};
-m[11][6]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[11][6]={w:2,l:0,t:0,sf:14.0,sa:10.0,g:2,c:'winning'};
 m[11][7]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
 m[11][8]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
 m[11][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
@@ -699,7 +488,7 @@ m[12][1]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
 m[12][2]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[12][3]={w:1,l:0,t:1,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[12][4]={w:1,l:1,t:0,sf:10.0,sa:14.0,g:2,c:'even'};
-m[12][5]={w:1,l:0,t:0,sf:7.5,sa:4.5,g:1,c:'winning'};
+m[12][5]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
 m[12][6]={w:1,l:0,t:1,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[12][7]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
 m[12][8]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
@@ -713,7 +502,7 @@ m[0][1]={w:0,l:1,t:0,sf:2.0,sa:10.0,g:1,c:'losing'};
 m[0][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[0][3]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[0][4]={w:1,l:0,t:0,sf:9.5,sa:2.5,g:1,c:'winning'};
-m[0][5]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[0][5]={w:0,l:3,t:0,sf:10.0,sa:26.0,g:3,c:'losing'};
 m[0][6]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
 m[0][7]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
 m[0][8]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
@@ -732,7 +521,7 @@ m[1][7]={w:2,l:0,t:0,sf:13.5,sa:10.5,g:2,c:'winning'};
 m[1][8]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
 m[1][9]={w:1,l:1,t:0,sf:14.0,sa:10.0,g:2,c:'even'};
 m[1][10]={w:0,l:2,t:0,sf:3.5,sa:20.5,g:2,c:'losing'};
-m[1][11]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[1][11]={w:3,l:0,t:0,sf:27.0,sa:9.0,g:3,c:'winning'};
 m[1][12]={w:0,l:1,t:1,sf:9.0,sa:15.0,g:2,c:'losing'};
 m[2][0]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[2][1]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
@@ -754,7 +543,7 @@ m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[3][4]={w:1,l:1,t:0,sf:16.0,sa:8.0,g:2,c:'even'};
 m[3][5]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
 m[3][6]={w:0,l:1,t:1,sf:10.0,sa:14.0,g:2,c:'losing'};
-m[3][7]={w:0,l:1,t:0,sf:2.0,sa:10.0,g:1,c:'losing'};
+m[3][7]={w:1,l:1,t:0,sf:10.5,sa:13.5,g:2,c:'even'};
 m[3][8]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
 m[3][9]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
 m[3][10]={w:1,l:1,t:0,sf:9.5,sa:14.5,g:2,c:'even'};
@@ -770,10 +559,10 @@ m[4][6]={w:0,l:2,t:0,sf:4.0,sa:20.0,g:2,c:'losing'};
 m[4][7]={w:1,l:1,t:0,sf:8.5,sa:15.5,g:2,c:'even'};
 m[4][8]={w:1,l:1,t:0,sf:15.0,sa:9.0,g:2,c:'even'};
 m[4][9]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
-m[4][10]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[4][10]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
 m[4][11]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
 m[4][12]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
-m[5][0]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[5][0]={w:3,l:0,t:0,sf:26.0,sa:10.0,g:3,c:'winning'};
 m[5][1]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
 m[5][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[5][3]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
@@ -794,7 +583,7 @@ m[6][4]={w:2,l:0,t:0,sf:20.0,sa:4.0,g:2,c:'winning'};
 m[6][5]={w:1,l:1,t:0,sf:8.0,sa:16.0,g:2,c:'even'};
 m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[6][7]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
-m[6][8]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[6][8]={w:2,l:0,t:0,sf:14.5,sa:9.5,g:2,c:'winning'};
 m[6][9]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[6][10]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
 m[6][11]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
@@ -802,7 +591,7 @@ m[6][12]={w:1,l:0,t:0,sf:9.5,sa:2.5,g:1,c:'winning'};
 m[7][0]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
 m[7][1]={w:0,l:2,t:0,sf:10.5,sa:13.5,g:2,c:'losing'};
 m[7][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
-m[7][3]={w:1,l:0,t:0,sf:10.0,sa:2.0,g:1,c:'winning'};
+m[7][3]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
 m[7][4]={w:1,l:1,t:0,sf:15.5,sa:8.5,g:2,c:'even'};
 m[7][5]={w:2,l:0,t:0,sf:16.5,sa:7.5,g:2,c:'winning'};
 m[7][6]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
@@ -818,7 +607,7 @@ m[8][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[8][3]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
 m[8][4]={w:1,l:1,t:0,sf:9.0,sa:15.0,g:2,c:'even'};
 m[8][5]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
-m[8][6]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[8][6]={w:0,l:2,t:0,sf:9.5,sa:14.5,g:2,c:'losing'};
 m[8][7]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
 m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[8][9]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
@@ -837,12 +626,12 @@ m[9][8]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
 m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[9][10]={w:0,l:1,t:0,sf:0.0,sa:12.0,g:1,c:'losing'};
 m[9][11]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
-m[9][12]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[9][12]={w:0,l:2,t:0,sf:10.0,sa:14.0,g:2,c:'losing'};
 m[10][0]={w:2,l:0,t:0,sf:23.0,sa:1.0,g:2,c:'winning'};
 m[10][1]={w:2,l:0,t:0,sf:20.5,sa:3.5,g:2,c:'winning'};
 m[10][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[10][3]={w:1,l:1,t:0,sf:14.5,sa:9.5,g:2,c:'even'};
-m[10][4]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[10][4]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
 m[10][5]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[10][6]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
 m[10][7]={w:1,l:0,t:1,sf:16.0,sa:8.0,g:2,c:'winning'};
@@ -852,7 +641,7 @@ m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m[10][11]={w:1,l:0,t:1,sf:15.0,sa:9.0,g:2,c:'winning'};
 m[10][12]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
 m[11][0]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
-m[11][1]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[11][1]={w:0,l:3,t:0,sf:9.0,sa:27.0,g:3,c:'losing'};
 m[11][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
 m[11][3]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
 m[11][4]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
@@ -873,7 +662,7 @@ m[12][5]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
 m[12][6]={w:0,l:1,t:0,sf:2.5,sa:9.5,g:1,c:'losing'};
 m[12][7]={w:0,l:1,t:1,sf:11.5,sa:12.5,g:2,c:'losing'};
 m[12][8]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
-m[12][9]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[12][9]={w:2,l:0,t:0,sf:14.0,sa:10.0,g:2,c:'winning'};
 m[12][10]={w:1,l:1,t:0,sf:11.5,sa:12.5,g:2,c:'even'};
 m[12][11]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
 m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
@@ -1050,6 +839,113 @@ m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 
     let currentYear = 'alltime';
     let currentView = 'record';
+    let matrixSort = 'alpha';  // 'alpha' | 'total_desc' | 'total_asc' | 'vs_ID_desc' | 'vs_ID_asc'
+
+    const rivalries = [{"a": "Austin", "b": "Bryant", "w": 3, "l": 2, "t": 0, "total": 5, "pct": 0.6, "imb": 0.1, "sf": 36.5, "sa": 23.5, "g": 5}, {"a": "Austin", "b": "David", "w": 2, "l": 0, "t": 0, "total": 2, "pct": 1.0, "imb": 0.5, "sf": 20.5, "sa": 3.5, "g": 2}, {"a": "Austin", "b": "Eric", "w": 6, "l": 0, "t": 0, "total": 6, "pct": 1.0, "imb": 0.5, "sf": 59.5, "sa": 12.5, "g": 6}, {"a": "Austin", "b": "Greg", "w": 2, "l": 3, "t": 0, "total": 5, "pct": 0.4, "imb": 0.1, "sf": 26.5, "sa": 33.5, "g": 5}, {"a": "Austin", "b": "James", "w": 2, "l": 4, "t": 1, "total": 7, "pct": 0.3571, "imb": 0.1429, "sf": 34.5, "sa": 49.5, "g": 7}, {"a": "Austin", "b": "Josh", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 35.0, "sa": 37.0, "g": 6}, {"a": "Austin", "b": "Kevin", "w": 0, "l": 6, "t": 0, "total": 6, "pct": 0.0, "imb": 0.5, "sf": 25.0, "sa": 47.0, "g": 6}, {"a": "Austin", "b": "Kurtis", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 44.0, "sa": 28.0, "g": 6}, {"a": "Austin", "b": "Mark", "w": 2, "l": 2, "t": 0, "total": 4, "pct": 0.5, "imb": 0.0, "sf": 29.0, "sa": 19.0, "g": 4}, {"a": "Austin", "b": "Mike", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 21.5, "sa": 50.5, "g": 6}, {"a": "Austin", "b": "Mikey", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 36.5, "sa": 35.5, "g": 6}, {"a": "Austin", "b": "Taylor", "w": 0, "l": 4, "t": 0, "total": 4, "pct": 0.0, "imb": 0.5, "sf": 13.5, "sa": 34.5, "g": 4}, {"a": "Bryant", "b": "David", "w": 1, "l": 1, "t": 0, "total": 2, "pct": 0.5, "imb": 0.0, "sf": 14.5, "sa": 9.5, "g": 2}, {"a": "Bryant", "b": "Eric", "w": 1, "l": 3, "t": 0, "total": 4, "pct": 0.25, "imb": 0.25, "sf": 18.5, "sa": 29.5, "g": 4}, {"a": "Bryant", "b": "Greg", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 26.0, "sa": 46.0, "g": 6}, {"a": "Bryant", "b": "James", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 30.5, "sa": 41.5, "g": 6}, {"a": "Bryant", "b": "Josh", "w": 1, "l": 4, "t": 0, "total": 5, "pct": 0.2, "imb": 0.3, "sf": 22.0, "sa": 38.0, "g": 5}, {"a": "Bryant", "b": "Kevin", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 26.0, "sa": 46.0, "g": 6}, {"a": "Bryant", "b": "Kurtis", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 41.0, "sa": 31.0, "g": 6}, {"a": "Bryant", "b": "Mark", "w": 1, "l": 3, "t": 0, "total": 4, "pct": 0.25, "imb": 0.25, "sf": 19.0, "sa": 29.0, "g": 4}, {"a": "Bryant", "b": "Mike", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 24.0, "sa": 48.0, "g": 6}, {"a": "Bryant", "b": "Mikey", "w": 3, "l": 3, "t": 1, "total": 7, "pct": 0.5, "imb": 0.0, "sf": 43.0, "sa": 41.0, "g": 7}, {"a": "Bryant", "b": "Taylor", "w": 2, "l": 3, "t": 1, "total": 6, "pct": 0.4167, "imb": 0.0833, "sf": 31.0, "sa": 41.0, "g": 6}, {"a": "David", "b": "Eric", "w": 0, "l": 2, "t": 0, "total": 2, "pct": 0.0, "imb": 0.5, "sf": 5.0, "sa": 19.0, "g": 2}, {"a": "David", "b": "Greg", "w": 0, "l": 1, "t": 0, "total": 1, "pct": 0.0, "imb": 0.5, "sf": 3.5, "sa": 8.5, "g": 1}, {"a": "David", "b": "James", "w": 2, "l": 0, "t": 0, "total": 2, "pct": 1.0, "imb": 0.5, "sf": 15.5, "sa": 8.5, "g": 2}, {"a": "David", "b": "Josh", "w": 2, "l": 0, "t": 0, "total": 2, "pct": 1.0, "imb": 0.5, "sf": 15.5, "sa": 8.5, "g": 2}, {"a": "David", "b": "Kevin", "w": 0, "l": 2, "t": 0, "total": 2, "pct": 0.0, "imb": 0.5, "sf": 5.0, "sa": 19.0, "g": 2}, {"a": "David", "b": "Kurtis", "w": 0, "l": 2, "t": 0, "total": 2, "pct": 0.0, "imb": 0.5, "sf": 10.5, "sa": 13.5, "g": 2}, {"a": "David", "b": "Mike", "w": 0, "l": 2, "t": 0, "total": 2, "pct": 0.0, "imb": 0.5, "sf": 9.5, "sa": 14.5, "g": 2}, {"a": "David", "b": "Mikey", "w": 1, "l": 0, "t": 1, "total": 2, "pct": 0.75, "imb": 0.25, "sf": 13.0, "sa": 11.0, "g": 2}, {"a": "David", "b": "Taylor", "w": 2, "l": 0, "t": 0, "total": 2, "pct": 1.0, "imb": 0.5, "sf": 14.5, "sa": 9.5, "g": 2}, {"a": "Eric", "b": "Greg", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 37.0, "sa": 35.0, "g": 6}, {"a": "Eric", "b": "James", "w": 3, "l": 2, "t": 1, "total": 6, "pct": 0.5833, "imb": 0.0833, "sf": 39.0, "sa": 33.0, "g": 6}, {"a": "Eric", "b": "Josh", "w": 1, "l": 3, "t": 2, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 29.0, "sa": 43.0, "g": 6}, {"a": "Eric", "b": "Kevin", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 25.0, "sa": 47.0, "g": 6}, {"a": "Eric", "b": "Kurtis", "w": 3, "l": 2, "t": 0, "total": 5, "pct": 0.6, "imb": 0.1, "sf": 32.0, "sa": 28.0, "g": 5}, {"a": "Eric", "b": "Mark", "w": 0, "l": 4, "t": 0, "total": 4, "pct": 0.0, "imb": 0.5, "sf": 11.5, "sa": 36.5, "g": 4}, {"a": "Eric", "b": "Mike", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 29.5, "sa": 42.5, "g": 6}, {"a": "Eric", "b": "Mikey", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 34.5, "sa": 37.5, "g": 6}, {"a": "Eric", "b": "Taylor", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 30.0, "sa": 42.0, "g": 6}, {"a": "Greg", "b": "James", "w": 2, "l": 2, "t": 1, "total": 5, "pct": 0.5, "imb": 0.0, "sf": 26.0, "sa": 34.0, "g": 5}, {"a": "Greg", "b": "Josh", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 31.5, "sa": 40.5, "g": 6}, {"a": "Greg", "b": "Kevin", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 36.0, "sa": 36.0, "g": 6}, {"a": "Greg", "b": "Kurtis", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 43.0, "sa": 29.0, "g": 6}, {"a": "Greg", "b": "Mark", "w": 2, "l": 2, "t": 0, "total": 4, "pct": 0.5, "imb": 0.0, "sf": 23.5, "sa": 24.5, "g": 4}, {"a": "Greg", "b": "Mike", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 35.0, "sa": 37.0, "g": 6}, {"a": "Greg", "b": "Mikey", "w": 1, "l": 5, "t": 0, "total": 6, "pct": 0.1667, "imb": 0.3333, "sf": 24.5, "sa": 47.5, "g": 6}, {"a": "Greg", "b": "Taylor", "w": 2, "l": 3, "t": 1, "total": 6, "pct": 0.4167, "imb": 0.0833, "sf": 36.5, "sa": 35.5, "g": 6}, {"a": "James", "b": "Josh", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 41.0, "sa": 31.0, "g": 6}, {"a": "James", "b": "Kevin", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 24.0, "sa": 48.0, "g": 6}, {"a": "James", "b": "Kurtis", "w": 2, "l": 3, "t": 0, "total": 5, "pct": 0.4, "imb": 0.1, "sf": 26.5, "sa": 33.5, "g": 5}, {"a": "James", "b": "Mark", "w": 1, "l": 2, "t": 1, "total": 4, "pct": 0.375, "imb": 0.125, "sf": 19.0, "sa": 29.0, "g": 4}, {"a": "James", "b": "Mike", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 30.0, "sa": 42.0, "g": 6}, {"a": "James", "b": "Mikey", "w": 1, "l": 3, "t": 0, "total": 4, "pct": 0.25, "imb": 0.25, "sf": 15.5, "sa": 32.5, "g": 4}, {"a": "James", "b": "Taylor", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 44.5, "sa": 27.5, "g": 6}, {"a": "Josh", "b": "Kevin", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 36.5, "sa": 35.5, "g": 6}, {"a": "Josh", "b": "Kurtis", "w": 4, "l": 1, "t": 0, "total": 5, "pct": 0.8, "imb": 0.3, "sf": 35.0, "sa": 25.0, "g": 5}, {"a": "Josh", "b": "Mark", "w": 2, "l": 2, "t": 0, "total": 4, "pct": 0.5, "imb": 0.0, "sf": 26.5, "sa": 21.5, "g": 4}, {"a": "Josh", "b": "Mike", "w": 2, "l": 4, "t": 0, "total": 6, "pct": 0.3333, "imb": 0.1667, "sf": 28.5, "sa": 43.5, "g": 6}, {"a": "Josh", "b": "Mikey", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 34.5, "sa": 37.5, "g": 6}, {"a": "Josh", "b": "Taylor", "w": 1, "l": 2, "t": 2, "total": 5, "pct": 0.4, "imb": 0.1, "sf": 28.5, "sa": 31.5, "g": 5}, {"a": "Kevin", "b": "Kurtis", "w": 4, "l": 2, "t": 0, "total": 6, "pct": 0.6667, "imb": 0.1667, "sf": 42.0, "sa": 30.0, "g": 6}, {"a": "Kevin", "b": "Mark", "w": 3, "l": 1, "t": 0, "total": 4, "pct": 0.75, "imb": 0.25, "sf": 31.0, "sa": 17.0, "g": 4}, {"a": "Kevin", "b": "Mike", "w": 2, "l": 1, "t": 1, "total": 4, "pct": 0.625, "imb": 0.125, "sf": 26.0, "sa": 22.0, "g": 4}, {"a": "Kevin", "b": "Mikey", "w": 3, "l": 2, "t": 0, "total": 5, "pct": 0.6, "imb": 0.1, "sf": 34.5, "sa": 25.5, "g": 5}, {"a": "Kevin", "b": "Taylor", "w": 4, "l": 1, "t": 1, "total": 6, "pct": 0.75, "imb": 0.25, "sf": 40.5, "sa": 31.5, "g": 6}, {"a": "Kurtis", "b": "Mark", "w": 2, "l": 2, "t": 0, "total": 4, "pct": 0.5, "imb": 0.0, "sf": 24.0, "sa": 24.0, "g": 4}, {"a": "Kurtis", "b": "Mike", "w": 1, "l": 4, "t": 1, "total": 6, "pct": 0.25, "imb": 0.25, "sf": 23.5, "sa": 48.5, "g": 6}, {"a": "Kurtis", "b": "Mikey", "w": 4, "l": 1, "t": 1, "total": 6, "pct": 0.75, "imb": 0.25, "sf": 39.5, "sa": 32.5, "g": 6}, {"a": "Kurtis", "b": "Taylor", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 32.5, "sa": 39.5, "g": 6}, {"a": "Mark", "b": "Mike", "w": 1, "l": 2, "t": 0, "total": 3, "pct": 0.3333, "imb": 0.1667, "sf": 11.0, "sa": 25.0, "g": 3}, {"a": "Mark", "b": "Mikey", "w": 2, "l": 0, "t": 1, "total": 3, "pct": 0.8333, "imb": 0.3333, "sf": 23.5, "sa": 12.5, "g": 3}, {"a": "Mark", "b": "Taylor", "w": 1, "l": 3, "t": 0, "total": 4, "pct": 0.25, "imb": 0.25, "sf": 22.0, "sa": 26.0, "g": 4}, {"a": "Mike", "b": "Mikey", "w": 3, "l": 2, "t": 1, "total": 6, "pct": 0.5833, "imb": 0.0833, "sf": 46.0, "sa": 26.0, "g": 6}, {"a": "Mike", "b": "Taylor", "w": 3, "l": 2, "t": 1, "total": 6, "pct": 0.5833, "imb": 0.0833, "sf": 41.5, "sa": 30.5, "g": 6}, {"a": "Mikey", "b": "Taylor", "w": 3, "l": 3, "t": 0, "total": 6, "pct": 0.5, "imb": 0.0, "sf": 35.0, "sa": 37.0, "g": 6}];
+    let rivalryView = 'cumulative';
+
+    function mgrLink(name) {
+      return `<a href="manager_profiles.html#${encodeURIComponent(name)}" class="mgr-link">${name}</a>`;
+    }
+
+    function renderRivalries() {
+      const view = rivalryView;
+
+      // Sort helpers
+      function cumDiff(r) { return Math.abs(r.sf - r.sa); }
+      function avgDiff(r) { return r.g > 0 ? Math.abs(r.sf - r.sa) / r.g : 0; }
+
+      // Lopsided: biggest gap
+      let lopsided;
+      if (view === 'cumulative') {
+        lopsided = [...rivalries].sort((a, b) => cumDiff(b) - cumDiff(a) || b.total - a.total);
+      } else if (view === 'average') {
+        lopsided = [...rivalries].sort((a, b) => avgDiff(b) - avgDiff(a) || b.total - a.total);
+      } else {
+        lopsided = [...rivalries].sort((a, b) => b.imb - a.imb || b.total - a.total);
+      }
+
+      // Even: smallest gap (min 3 matchups)
+      const eligible = rivalries.filter(r => r.total >= 3);
+      let even;
+      if (view === 'cumulative') {
+        even = [...eligible].sort((a, b) => cumDiff(a) - cumDiff(b) || b.total - a.total);
+      } else if (view === 'average') {
+        even = [...eligible].sort((a, b) => avgDiff(a) - avgDiff(b) || b.total - a.total);
+      } else {
+        even = [...eligible].sort((a, b) => a.imb - b.imb || b.total - a.total);
+      }
+
+      // Column headers
+      let valHeader, metricHeader;
+      if (view === 'cumulative') {
+        valHeader = 'Score'; metricHeader = 'Diff';
+      } else if (view === 'average') {
+        valHeader = 'Avg Score'; metricHeader = 'Avg Diff';
+      } else {
+        valHeader = 'Record'; metricHeader = 'Win%';
+      }
+
+      const headHtml = `<tr><th>#</th><th>Dominant</th><th>Opponent</th><th>${valHeader}</th><th>${metricHeader}</th><th>Games</th></tr>`;
+      document.getElementById('lopsidedHead').innerHTML = headHtml;
+      document.getElementById('evenHead').innerHTML = headHtml.replace('Dominant', 'Manager A').replace('Opponent', 'Manager B');
+
+      function renderRow(r, idx, isLopsided) {
+        let dom, opp, valStr, metricStr, metricCls;
+        // Determine dominant side
+        const aWins = r.sf > r.sa || (r.sf === r.sa && r.pct >= 0.5);
+        if (aWins) {
+          dom = r.a; opp = r.b;
+        } else {
+          dom = r.b; opp = r.a;
+        }
+        const sf = aWins ? r.sf : r.sa;
+        const sa = aWins ? r.sa : r.sf;
+        const w = aWins ? r.w : r.l;
+        const l = aWins ? r.l : r.w;
+        const pct = aWins ? r.pct : 1 - r.pct;
+
+        if (view === 'cumulative') {
+          const sfStr = sf % 1 === 0 ? sf.toFixed(0) : sf.toFixed(1);
+          const saStr = sa % 1 === 0 ? sa.toFixed(0) : sa.toFixed(1);
+          valStr = `${sfStr}-${saStr}`;
+          const diff = sf - sa;
+          metricStr = (diff >= 0 ? '+' : '') + (diff % 1 === 0 ? diff.toFixed(0) : diff.toFixed(1));
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        } else if (view === 'average') {
+          const avgF = r.g > 0 ? sf / r.g : 0;
+          const avgA = r.g > 0 ? sa / r.g : 0;
+          valStr = `${avgF.toFixed(1)}-${avgA.toFixed(1)}`;
+          const avgDf = avgF - avgA;
+          metricStr = (avgDf >= 0 ? '+' : '') + avgDf.toFixed(1);
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        } else {
+          valStr = `${w}-${l}${r.t > 0 ? '-' + r.t : ''}`;
+          metricStr = (pct * 100).toFixed(0) + '%';
+          metricCls = isLopsided ? 'hot-val' : 'close-margin';
+        }
+
+        if (!isLopsided) {
+          dom = r.a; opp = r.b;
+        }
+
+        return `<tr><td class="rank">${idx+1}</td><td>${mgrLink(dom)}</td><td>${mgrLink(opp)}</td><td class="score">${valStr}</td><td class="${metricCls}">${metricStr}</td><td>${r.total}</td></tr>`;
+      }
+
+      document.getElementById('lopsidedBody').innerHTML = lopsided.slice(0, 15).map((r, i) => renderRow(r, i, true)).join('');
+      document.getElementById('evenBody').innerHTML = even.slice(0, 15).map((r, i) => renderRow(r, i, false)).join('');
+    }
+
+    renderRivalries();
+
+    document.querySelectorAll('.rivalry-view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.rivalry-view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        rivalryView = btn.dataset.rview;
+        renderRivalries();
+      });
+    });
 
     function renderMatrix(yearKey) {
       currentYear = yearKey;
@@ -1058,7 +954,6 @@ m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
-      const sortBy = document.getElementById('sortSelect').value;
 
       // Pre-compute totals
       const teamData = teams.map(t => {
@@ -1079,42 +974,59 @@ m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
       // Filter out managers with 0 games for year-specific views
       const active = yearKey !== 'alltime' ? teamData.filter(t => t.total > 0) : teamData;
 
-      let sorted;
-      if (sortBy === 'winpct') {
-        if (view === 'cumulative') {
-          sorted = [...active].sort((a, b) => (b.tsf - b.tsa) - (a.tsf - a.tsa) || b.tsf - a.tsf);
-        } else if (view === 'average') {
-          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
-          sorted = [...active].sort((a, b) => avgDiff(b) - avgDiff(a));
-        } else {
-          sorted = [...active].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
-        }
-      } else if (sortBy === 'wins') {
-        if (view === 'cumulative') {
-          sorted = [...active].sort((a, b) => b.tsf - a.tsf || a.tsa - b.tsa);
-        } else if (view === 'average') {
-          const avgF = t => t.tg > 0 ? t.tsf / t.tg : 0;
-          sorted = [...active].sort((a, b) => avgF(b) - avgF(a));
-        } else {
-          sorted = [...active].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
-        }
-      } else {
-        sorted = active;
+      // Columns always stay in alphabetical order
+      const cols = [...active];
+
+      // Sort by record vs specific opponent (rows only)
+      function vsSort(tid, dir) {
+        return (a, b) => {
+          const ca = m[a.id][tid], cb = m[b.id][tid];
+          const sa = a.id === tid ? -999 : (ca.w !== '-' ? ca.sf - ca.sa : -998);
+          const sb = b.id === tid ? -999 : (cb.w !== '-' ? cb.sf - cb.sa : -998);
+          return dir === 'asc' ? sa - sb : sb - sa;
+        };
       }
 
-      let hdr = '<tr><th class="team-col">Manager</th>';
-      for (const t of sorted) {
-        const teamName = names ? names[t.id] : t.team;
-        hdr += `<th title="${teamName}">${t.mgr}</th>`;
+      let rows_sorted;
+      const vsMatch = matrixSort.match(/^vs_(\d+)_(asc|desc)$/);
+      if (vsMatch) {
+        rows_sorted = [...active].sort(vsSort(parseInt(vsMatch[1]), vsMatch[2]));
+      } else if (matrixSort === 'total_desc' || matrixSort === 'total_asc') {
+        const dir = matrixSort === 'total_asc' ? 1 : -1;
+        if (view === 'cumulative') {
+          rows_sorted = [...active].sort((a, b) => dir * ((a.tsf - a.tsa) - (b.tsf - b.tsa)) || dir * (a.tsf - b.tsf));
+        } else if (view === 'average') {
+          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
+          rows_sorted = [...active].sort((a, b) => dir * (avgDiff(a) - avgDiff(b)));
+        } else {
+          rows_sorted = [...active].sort((a, b) => dir * (a.pct - b.pct) || dir * (a.tw - b.tw));
+        }
+      } else {
+        rows_sorted = [...active];
       }
-      hdr += '<th style="border-left:2px solid #3b82f6">Total</th></tr>';
+
+      // Sort indicators
+      function arrow(key) {
+        if (matrixSort === key || matrixSort === key + '_desc') return ' \u2193';
+        if (matrixSort === key + '_asc') return ' \u2191';
+        return '';
+      }
+
+      let hdr = `<tr><th class="team-col" data-msort="alpha" style="cursor:pointer">Manager${matrixSort === 'alpha' ? ' \u2193' : ''}</th>`;
+      for (const t of cols) {
+        const teamName = names ? names[t.id] : t.team;
+        const vsKey = 'vs_' + t.id;
+        const a = arrow(vsKey);
+        hdr += `<th title="${teamName}" data-msort="${vsKey}" style="cursor:pointer">${t.mgr}${a}</th>`;
+      }
+      hdr += `<th data-msort="total" style="border-left:2px solid #3b82f6;cursor:pointer">Total${arrow('total')}</th></tr>`;
       head.innerHTML = hdr;
 
       let rows = '';
-      for (const tA of sorted) {
+      for (const tA of rows_sorted) {
         const teamName = names ? names[tA.id] : tA.team;
         rows += `<tr><td class="team-cell" title="${teamName}"><span style="color:${tA.color}">&#9679;</span> ${tA.mgr}</td>`;
-        for (const tB of sorted) {
+        for (const tB of cols) {
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {
             rows += '<td class="self">&mdash;</td>';
@@ -1173,7 +1085,18 @@ m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
       });
     });
 
-    document.getElementById('sortSelect').addEventListener('change', () => {
+    document.getElementById('h2hMatrix').addEventListener('click', (e) => {
+      const th = e.target.closest('th[data-msort]');
+      if (!th) return;
+      const key = th.dataset.msort;
+      if (key === 'alpha') {
+        matrixSort = 'alpha';
+      } else if (key === 'total') {
+        matrixSort = matrixSort === 'total_desc' ? 'total_asc' : 'total_desc';
+      } else {
+        // vs_ID - toggle desc/asc
+        matrixSort = matrixSort === key + '_desc' ? key + '_asc' : key + '_desc';
+      }
       renderMatrix(currentYear);
     });
 
