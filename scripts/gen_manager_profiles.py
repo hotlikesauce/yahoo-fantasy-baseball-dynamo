@@ -222,10 +222,8 @@ for mgr in sorted(all_mgr_names - {'?'}):
     h2h = {}
     if mgr in h2h_alltime:
         h2h['alltime'] = {}
-        for opp in MANAGERS:
-            if opp == mgr:
-                continue
-            rec = h2h_alltime[mgr].get(opp, {'w': 0, 'l': 0, 't': 0})
+        for opp in h2h_alltime[mgr]:
+            rec = h2h_alltime[mgr][opp]
             if rec['w'] + rec['l'] + rec['t'] > 0:
                 h2h['alltime'][opp] = dict(rec)
 
@@ -233,10 +231,8 @@ for mgr in sorted(all_mgr_names - {'?'}):
             yr_key = str(year)
             if mgr in h2h_by_year[year]:
                 yr_data = {}
-                for opp in MANAGERS:
-                    if opp == mgr:
-                        continue
-                    rec = h2h_by_year[year][mgr].get(opp, {'w': 0, 'l': 0, 't': 0})
+                for opp in h2h_by_year[year][mgr]:
+                    rec = h2h_by_year[year][mgr][opp]
                     if rec['w'] + rec['l'] + rec['t'] > 0:
                         yr_data[opp] = dict(rec)
                 if yr_data:

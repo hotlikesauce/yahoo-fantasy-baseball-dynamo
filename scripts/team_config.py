@@ -25,7 +25,7 @@ YEAR_TN_TO_MANAGER = {
     (2023, '5'): 'Greg',     # [ABN] Rain, [z-ro], Mo City Don
     (2023, '6'): 'Josh',     # The Slobberknockers, Dollar General
     (2023, '7'): 'Eric',     # Ian Cumsler
-    (2023, '8'): 'Mark',     # Movin' On Up, FIRE SALE
+    (2023, '8'): 'David',    # Movin' On Up, FIRE SALE
     (2023, '9'): 'James',    # Camp RFK, Camp Bichette
     (2023, '10'): 'Kevin',   # The Rosterbation Station
     (2023, '11'): 'Mikey',   # scoopski potatoes, ACES 4 DAAAAAYS

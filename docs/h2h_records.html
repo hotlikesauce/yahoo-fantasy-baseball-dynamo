@@ -22,6 +22,14 @@
     .filter-btn:hover { color: #e2e8f0; border-color: #475569; }
     .filter-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 
+    .view-btn {
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
+      transition: all 0.15s;
+    }
+    .view-btn:hover { color: #e2e8f0; border-color: #475569; }
+    .view-btn.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
+
     .matrix-wrap { overflow-x: auto; margin-bottom: 40px; }
     .matrix { border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }
     .matrix th, .matrix td { padding: 7px 10px; text-align: center; border: 1px solid #1e293b; }
@@ -82,6 +90,12 @@
         <option value="wins">Total Wins</option>
       </select>
     </div>
+    <div class="filter-bar">
+      <label>View:</label>
+      <button class="view-btn active" data-view="record">Record (W-L)</button>
+      <button class="view-btn" data-view="cumulative">Cumulative Scores</button>
+      <button class="view-btn" data-view="average">Average Scores</button>
+    </div>
 
     <div class="matrix-wrap">
       <table class="matrix" id="h2hMatrix">
@@ -114,9 +128,9 @@
       <td class="rank">2</td>
       <td>Kevin</td>
       <td>Austin</td>
-      <td class="score">6-0-0</td>
+      <td class="score">5-0-0</td>
       <td class="hot-val">100%</td>
-      <td>6</td>
+      <td>5</td>
     </tr><tr>
       <td class="rank">3</td>
       <td>Taylor</td>
@@ -126,88 +140,88 @@
       <td>4</td>
     </tr><tr>
       <td class="rank">4</td>
-      <td>Kurtis</td>
-      <td>Mikey</td>
-      <td class="score">4-0-1</td>
-      <td class="hot-val">90%</td>
-      <td>5</td>
+      <td>Mark</td>
+      <td>Eric</td>
+      <td class="score">4-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>4</td>
     </tr><tr>
       <td class="rank">5</td>
+      <td>Austin</td>
+      <td>David</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">6</td>
+      <td>Eric</td>
+      <td>David</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">7</td>
+      <td>David</td>
+      <td>James</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">8</td>
+      <td>David</td>
+      <td>Josh</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">9</td>
+      <td>Kevin</td>
+      <td>David</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">10</td>
+      <td>Kurtis</td>
+      <td>David</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>David</td>
+      <td>Taylor</td>
+      <td class="score">2-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>2</td>
+    </tr><tr>
+      <td class="rank">12</td>
+      <td>Greg</td>
+      <td>David</td>
+      <td class="score">1-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>1</td>
+    </tr><tr>
+      <td class="rank">13</td>
+      <td>Mike</td>
+      <td>David</td>
+      <td class="score">1-0-0</td>
+      <td class="hot-val">100%</td>
+      <td>1</td>
+    </tr><tr>
+      <td class="rank">14</td>
       <td>Mikey</td>
       <td>Greg</td>
       <td class="score">5-1-0</td>
       <td class="hot-val">83%</td>
       <td>6</td>
     </tr><tr>
-      <td class="rank">6</td>
-      <td>Kevin</td>
-      <td>Mark</td>
-      <td class="score">5-1-0</td>
-      <td class="hot-val">83%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">7</td>
+      <td class="rank">15</td>
       <td>Mark</td>
       <td>Mikey</td>
-      <td class="score">3-0-2</td>
-      <td class="hot-val">80%</td>
-      <td>5</td>
-    </tr><tr>
-      <td class="rank">8</td>
-      <td>Josh</td>
-      <td>Bryant</td>
-      <td class="score">4-1-0</td>
-      <td class="hot-val">80%</td>
-      <td>5</td>
-    </tr><tr>
-      <td class="rank">9</td>
-      <td>Mike</td>
-      <td>Austin</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">10</td>
-      <td>Taylor</td>
-      <td>Eric</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">11</td>
-      <td>Kevin</td>
-      <td>James</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>Mark</td>
-      <td>James</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>Kevin</td>
-      <td>Taylor</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">14</td>
-      <td>Mike</td>
-      <td>Kurtis</td>
-      <td class="score">4-1-1</td>
-      <td class="hot-val">75%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">15</td>
-      <td>Eric</td>
-      <td>Bryant</td>
-      <td class="score">3-1-0</td>
-      <td class="hot-val">75%</td>
-      <td>4</td>
+      <td class="score">2-0-1</td>
+      <td class="hot-val">83%</td>
+      <td>3</td>
     </tr>
         </table>
       </div>
@@ -226,34 +240,34 @@
           <tr>
       <td class="rank">1</td>
       <td>Austin</td>
-      <td>Mikey</td>
+      <td>Josh</td>
       <td class="score">3-3-0</td>
       <td class="close-margin">50%</td>
       <td>6</td>
     </tr><tr>
       <td class="rank">2</td>
-      <td>Eric</td>
+      <td>Austin</td>
       <td>Mikey</td>
       <td class="score">3-3-0</td>
       <td class="close-margin">50%</td>
       <td>6</td>
     </tr><tr>
       <td class="rank">3</td>
+      <td>Eric</td>
+      <td>Mikey</td>
+      <td class="score">3-3-0</td>
+      <td class="close-margin">50%</td>
+      <td>6</td>
+    </tr><tr>
+      <td class="rank">4</td>
       <td>Josh</td>
       <td>Kevin</td>
       <td class="score">3-3-0</td>
       <td class="close-margin">50%</td>
       <td>6</td>
     </tr><tr>
-      <td class="rank">4</td>
-      <td>Kurtis</td>
-      <td>Taylor</td>
-      <td class="score">3-3-0</td>
-      <td class="close-margin">50%</td>
-      <td>6</td>
-    </tr><tr>
       <td class="rank">5</td>
-      <td>Mark</td>
+      <td>Kurtis</td>
       <td>Taylor</td>
       <td class="score">3-3-0</td>
       <td class="close-margin">50%</td>
@@ -274,59 +288,59 @@
       <td>5</td>
     </tr><tr>
       <td class="rank">8</td>
-      <td>Mike</td>
-      <td>Taylor</td>
-      <td class="score">2-2-1</td>
+      <td>Austin</td>
+      <td>Mark</td>
+      <td class="score">2-2-0</td>
       <td class="close-margin">50%</td>
-      <td>5</td>
+      <td>4</td>
     </tr><tr>
       <td class="rank">9</td>
-      <td>Bryant</td>
-      <td>James</td>
-      <td class="score">3-4-0</td>
-      <td class="close-margin">43%</td>
-      <td>7</td>
+      <td>Greg</td>
+      <td>Mark</td>
+      <td class="score">2-2-0</td>
+      <td class="close-margin">50%</td>
+      <td>4</td>
     </tr><tr>
       <td class="rank">10</td>
+      <td>Josh</td>
+      <td>Mark</td>
+      <td class="score">2-2-0</td>
+      <td class="close-margin">50%</td>
+      <td>4</td>
+    </tr><tr>
+      <td class="rank">11</td>
+      <td>Kurtis</td>
+      <td>Mark</td>
+      <td class="score">2-2-0</td>
+      <td class="close-margin">50%</td>
+      <td>4</td>
+    </tr><tr>
+      <td class="rank">12</td>
       <td>Austin</td>
       <td>James</td>
       <td class="score">2-3-1</td>
       <td class="close-margin">42%</td>
       <td>6</td>
     </tr><tr>
-      <td class="rank">11</td>
+      <td class="rank">13</td>
       <td>Bryant</td>
       <td>Mikey</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">12</td>
-      <td>Bryant</td>
-      <td>Taylor</td>
-      <td class="score">2-3-1</td>
-      <td class="close-margin">42%</td>
-      <td>6</td>
-    </tr><tr>
-      <td class="rank">13</td>
-      <td>Greg</td>
-      <td>Taylor</td>
       <td class="score">2-3-1</td>
       <td class="close-margin">42%</td>
       <td>6</td>
     </tr><tr>
       <td class="rank">14</td>
-      <td>Eric</td>
-      <td>James</td>
-      <td class="score">3-2-1</td>
-      <td class="close-margin">58%</td>
+      <td>Bryant</td>
+      <td>Taylor</td>
+      <td class="score">2-3-1</td>
+      <td class="close-margin">42%</td>
       <td>6</td>
     </tr><tr>
       <td class="rank">15</td>
-      <td>Mike</td>
-      <td>Mikey</td>
-      <td class="score">3-2-1</td>
-      <td class="close-margin">58%</td>
+      <td>Greg</td>
+      <td>Taylor</td>
+      <td class="score">2-3-1</td>
+      <td class="close-margin">42%</td>
       <td>6</td>
     </tr>
         </table>
@@ -335,8 +349,8 @@
   </div>
 
   <script>
-    const teams = [{"id": 0, "mgr": "Austin", "team": "Moniebol \ud83d\udc33", "color": "#ef4444"}, {"id": 1, "mgr": "Bryant", "team": "Football Szn", "color": "#f97316"}, {"id": 2, "mgr": "Eric", "team": "Ian Cumsler", "color": "#eab308"}, {"id": 3, "mgr": "Greg", "team": "OG9\ufe0f\u20e3", "color": "#22c55e"}, {"id": 4, "mgr": "James", "team": "Tegridy", "color": "#14b8a6"}, {"id": 5, "mgr": "Josh", "team": "Grand Salami Time", "color": "#3b82f6"}, {"id": 6, "mgr": "Kevin", "team": "The Rosterbation Station", "color": "#8b5cf6"}, {"id": 7, "mgr": "Kurtis", "team": "Getting Plowed Again.", "color": "#ec4899"}, {"id": 8, "mgr": "Mark", "team": "Hatfield Hurlers", "color": "#06b6d4"}, {"id": 9, "mgr": "Mike", "team": "\u00af\\\\_(\u30c4)_/\u00af", "color": "#f59e0b"}, {"id": 10, "mgr": "Mikey", "team": "@DoodlesAnalytics", "color": "#10b981"}, {"id": 11, "mgr": "Taylor", "team": "Serafini Hit Squad", "color": "#a855f7"}];
-    const yearNames = {"2023": {"0": "Moniebol \ud83d\udc33 (DEFCON 2)", "1": "TAX THE MONIEBOL", "2": "Ian Cumsler", "3": "[ABN] Rain", "4": "Camp RFK", "5": "The Slobberknockers", "6": "The Rosterbation Station", "7": "Vinnie Pepperonis", "8": "Movin\u2019 On Up", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "scoopski potatoes", "11": "Heimlich Maneuver"}, "2024": {"0": "Moniebol (100gb goal)\ud83d\udc33", "1": "#RyderSources", "2": "Ian Cumsler", "3": "OGglass-z13", "4": "Hmmm", "5": "Grand Salami Time", "6": "The Rosterbation Station", "7": "Ready to Plow", "8": "Hatfield Hurlers", "9": "\u00af\\\\_(\u30c4)_/\u00af\ud83c\udfc6", "10": "BTHO notre dame", "11": "\u00af\\\\_(\u30c4)_/\u00af \u2620\ufe0f"}, "2025": {"0": "Moniebol \ud83d\udc33", "1": "Football Szn", "2": "Ian Cumsler", "3": "OG9\ufe0f\u20e3", "4": "Tegridy", "5": "Grand Salami Time", "6": "The Rosterbation Station", "7": "Getting Plowed Again.", "8": "Hatfield Hurlers", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "@DoodlesAnalytics", "11": "Serafini Hit Squad"}};
+    const teams = [{"id": 0, "mgr": "Austin", "team": "Moniebol \ud83d\udc33", "color": "#ef4444"}, {"id": 1, "mgr": "Bryant", "team": "Football Szn", "color": "#f97316"}, {"id": 2, "mgr": "David", "team": "David", "color": "#eab308"}, {"id": 3, "mgr": "Eric", "team": "Ian Cumsler", "color": "#22c55e"}, {"id": 4, "mgr": "Greg", "team": "OG9\ufe0f\u20e3", "color": "#14b8a6"}, {"id": 5, "mgr": "James", "team": "Tegridy", "color": "#3b82f6"}, {"id": 6, "mgr": "Josh", "team": "Grand Salami Time", "color": "#8b5cf6"}, {"id": 7, "mgr": "Kevin", "team": "The Rosterbation Station", "color": "#ec4899"}, {"id": 8, "mgr": "Kurtis", "team": "Getting Plowed Again.", "color": "#06b6d4"}, {"id": 9, "mgr": "Mark", "team": "Hatfield Hurlers", "color": "#f59e0b"}, {"id": 10, "mgr": "Mike", "team": "\u00af\\\\_(\u30c4)_/\u00af", "color": "#10b981"}, {"id": 11, "mgr": "Mikey", "team": "@DoodlesAnalytics", "color": "#a855f7"}, {"id": 12, "mgr": "Taylor", "team": "Serafini Hit Squad", "color": "#64748b"}];
+    const yearNames = {"2023": {"0": "Moniebol \ud83d\udc33 (DEFCON 2)", "1": "Bry Bry\u2019s Bible Bonkers", "2": "How to lose a game in 10 days", "3": "Ian Cumsler", "4": "[z-ro] i\u2019d really like to\u2026TY!", "5": "Camp Lejeune", "6": "The Dollar General", "7": "The Rosterbation Station", "8": "WanderingAroundTheMiddleSchool", "9": "Mark", "10": "\u00af\\\\_(\u30c4)_/\u00af", "11": "scoopski potatoes", "12": "McLainBang"}, "2024": {"0": "Moniebol (100gb goal)\ud83d\udc33", "1": "#RyderSources", "2": "David", "3": "Ian Cumsler", "4": "OGglass-z13", "5": "Hmmm", "6": "Grand Salami Time", "7": "The Rosterbation Station", "8": "Ready to Plow", "9": "Hatfield Hurlers", "10": "\u00af\\\\_(\u30c4)_/\u00af\ud83c\udfc6", "11": "BTHO notre dame", "12": "\u00af\\\\_(\u30c4)_/\u00af \u2620\ufe0f"}, "2025": {"0": "Moniebol \ud83d\udc33", "1": "Football Szn", "2": "David", "3": "Ian Cumsler", "4": "OG9\ufe0f\u20e3", "5": "Tegridy", "6": "Grand Salami Time", "7": "The Rosterbation Station", "8": "Getting Plowed Again.", "9": "Hatfield Hurlers", "10": "\u00af\\\\_(\u30c4)_/\u00af", "11": "@DoodlesAnalytics", "12": "Serafini Hit Squad"}};
 
     const D={};
 ['alltime','2023','2024','2025'].forEach(k=>D[k]={});
@@ -352,619 +366,740 @@ for(let k in D) D[k][8]={};
 for(let k in D) D[k][9]={};
 for(let k in D) D[k][10]={};
 for(let k in D) D[k][11]={};
+for(let k in D) D[k][12]={};
 let m=D['alltime'];
-m[0][0]={w:"-",l:"-",t:"-",c:'self'};
-m[0][1]={w:3,l:2,t:0,c:'winning'};
-m[0][2]={w:6,l:0,t:0,c:'winning'};
-m[0][3]={w:2,l:3,t:0,c:'losing'};
-m[0][4]={w:2,l:3,t:1,c:'losing'};
-m[0][5]={w:2,l:3,t:0,c:'losing'};
-m[0][6]={w:0,l:6,t:0,c:'losing'};
-m[0][7]={w:4,l:2,t:0,c:'winning'};
-m[0][8]={w:4,l:2,t:0,c:'winning'};
-m[0][9]={w:1,l:4,t:1,c:'losing'};
-m[0][10]={w:3,l:3,t:0,c:'even'};
-m[0][11]={w:0,l:4,t:0,c:'losing'};
-m[1][0]={w:3,l:3,t:0,c:'even'};
-m[1][1]={w:"-",l:"-",t:"-",c:'self'};
-m[1][2]={w:1,l:3,t:0,c:'losing'};
-m[1][3]={w:1,l:3,t:1,c:'losing'};
-m[1][4]={w:3,l:4,t:0,c:'losing'};
-m[1][5]={w:1,l:4,t:0,c:'losing'};
-m[1][6]={w:2,l:4,t:0,c:'losing'};
-m[1][7]={w:4,l:2,t:0,c:'winning'};
-m[1][8]={w:2,l:4,t:0,c:'losing'};
-m[1][9]={w:2,l:4,t:0,c:'losing'};
-m[1][10]={w:2,l:3,t:1,c:'losing'};
-m[1][11]={w:2,l:3,t:1,c:'losing'};
-m[2][0]={w:0,l:6,t:0,c:'losing'};
-m[2][1]={w:3,l:1,t:0,c:'winning'};
-m[2][2]={w:"-",l:"-",t:"-",c:'self'};
-m[2][3]={w:2,l:3,t:0,c:'losing'};
-m[2][4]={w:3,l:2,t:1,c:'winning'};
-m[2][5]={w:1,l:3,t:2,c:'losing'};
-m[2][6]={w:2,l:4,t:0,c:'losing'};
-m[2][7]={w:3,l:2,t:0,c:'winning'};
-m[2][8]={w:2,l:4,t:0,c:'losing'};
-m[2][9]={w:2,l:4,t:0,c:'losing'};
-m[2][10]={w:3,l:3,t:0,c:'even'};
-m[2][11]={w:1,l:4,t:1,c:'losing'};
-m[3][0]={w:3,l:2,t:0,c:'winning'};
-m[3][1]={w:3,l:1,t:1,c:'winning'};
-m[3][2]={w:3,l:3,t:0,c:'even'};
-m[3][3]={w:"-",l:"-",t:"-",c:'self'};
-m[3][4]={w:2,l:2,t:1,c:'even'};
-m[3][5]={w:2,l:4,t:0,c:'losing'};
-m[3][6]={w:4,l:2,t:0,c:'winning'};
-m[3][7]={w:4,l:2,t:0,c:'winning'};
-m[3][8]={w:3,l:2,t:0,c:'winning'};
-m[3][9]={w:3,l:2,t:0,c:'winning'};
-m[3][10]={w:1,l:5,t:0,c:'losing'};
-m[3][11]={w:2,l:3,t:1,c:'losing'};
-m[4][0]={w:3,l:2,t:1,c:'winning'};
-m[4][1]={w:4,l:2,t:0,c:'winning'};
-m[4][2]={w:2,l:3,t:1,c:'losing'};
-m[4][3]={w:2,l:2,t:1,c:'even'};
-m[4][4]={w:"-",l:"-",t:"-",c:'self'};
-m[4][5]={w:4,l:2,t:0,c:'winning'};
-m[4][6]={w:1,l:4,t:1,c:'losing'};
-m[4][7]={w:2,l:3,t:0,c:'losing'};
-m[4][8]={w:1,l:4,t:1,c:'losing'};
-m[4][9]={w:2,l:4,t:0,c:'losing'};
-m[4][10]={w:1,l:3,t:0,c:'losing'};
-m[4][11]={w:3,l:2,t:0,c:'winning'};
-m[5][0]={w:3,l:3,t:0,c:'even'};
-m[5][1]={w:4,l:1,t:0,c:'winning'};
-m[5][2]={w:3,l:1,t:2,c:'winning'};
-m[5][3]={w:4,l:2,t:0,c:'winning'};
-m[5][4]={w:2,l:4,t:0,c:'losing'};
-m[5][5]={w:"-",l:"-",t:"-",c:'self'};
-m[5][6]={w:3,l:3,t:0,c:'even'};
-m[5][7]={w:3,l:1,t:0,c:'winning'};
-m[5][8]={w:2,l:4,t:0,c:'losing'};
-m[5][9]={w:2,l:4,t:0,c:'losing'};
-m[5][10]={w:1,l:3,t:1,c:'losing'};
-m[5][11]={w:1,l:2,t:2,c:'losing'};
-m[6][0]={w:5,l:0,t:0,c:'winning'};
-m[6][1]={w:4,l:2,t:0,c:'winning'};
-m[6][2]={w:4,l:1,t:0,c:'winning'};
-m[6][3]={w:2,l:4,t:0,c:'losing'};
-m[6][4]={w:4,l:0,t:1,c:'winning'};
-m[6][5]={w:3,l:3,t:0,c:'even'};
-m[6][6]={w:"-",l:"-",t:"-",c:'self'};
-m[6][7]={w:4,l:2,t:0,c:'winning'};
-m[6][8]={w:5,l:1,t:0,c:'winning'};
-m[6][9]={w:2,l:1,t:1,c:'winning'};
-m[6][10]={w:3,l:2,t:0,c:'winning'};
-m[6][11]={w:4,l:1,t:1,c:'winning'};
-m[7][0]={w:2,l:4,t:0,c:'losing'};
-m[7][1]={w:2,l:4,t:0,c:'losing'};
-m[7][2]={w:2,l:3,t:0,c:'losing'};
-m[7][3]={w:2,l:4,t:0,c:'losing'};
-m[7][4]={w:3,l:2,t:0,c:'winning'};
-m[7][5]={w:1,l:3,t:0,c:'losing'};
-m[7][6]={w:2,l:4,t:0,c:'losing'};
-m[7][7]={w:"-",l:"-",t:"-",c:'self'};
-m[7][8]={w:4,l:2,t:0,c:'winning'};
-m[7][9]={w:1,l:4,t:1,c:'losing'};
-m[7][10]={w:4,l:0,t:1,c:'winning'};
-m[7][11]={w:3,l:3,t:0,c:'even'};
-m[8][0]={w:2,l:4,t:0,c:'losing'};
-m[8][1]={w:4,l:2,t:0,c:'winning'};
-m[8][2]={w:4,l:2,t:0,c:'winning'};
-m[8][3]={w:2,l:3,t:0,c:'losing'};
-m[8][4]={w:4,l:1,t:1,c:'winning'};
-m[8][5]={w:4,l:2,t:0,c:'winning'};
-m[8][6]={w:1,l:5,t:0,c:'losing'};
-m[8][7]={w:2,l:4,t:0,c:'losing'};
-m[8][8]={w:"-",l:"-",t:"-",c:'self'};
-m[8][9]={w:1,l:3,t:0,c:'losing'};
-m[8][10]={w:3,l:0,t:2,c:'winning'};
-m[8][11]={w:3,l:3,t:0,c:'even'};
-m[9][0]={w:4,l:1,t:1,c:'winning'};
-m[9][1]={w:4,l:2,t:0,c:'winning'};
-m[9][2]={w:4,l:2,t:0,c:'winning'};
-m[9][3]={w:2,l:3,t:0,c:'losing'};
-m[9][4]={w:4,l:2,t:0,c:'winning'};
-m[9][5]={w:4,l:2,t:0,c:'winning'};
-m[9][6]={w:1,l:2,t:1,c:'losing'};
-m[9][7]={w:4,l:1,t:1,c:'winning'};
-m[9][8]={w:3,l:1,t:0,c:'winning'};
-m[9][9]={w:"-",l:"-",t:"-",c:'self'};
-m[9][10]={w:3,l:2,t:1,c:'winning'};
-m[9][11]={w:2,l:2,t:1,c:'even'};
-m[10][0]={w:3,l:3,t:0,c:'even'};
-m[10][1]={w:3,l:2,t:1,c:'winning'};
-m[10][2]={w:3,l:3,t:0,c:'even'};
-m[10][3]={w:5,l:1,t:0,c:'winning'};
-m[10][4]={w:3,l:1,t:0,c:'winning'};
-m[10][5]={w:3,l:1,t:1,c:'winning'};
-m[10][6]={w:2,l:3,t:0,c:'losing'};
-m[10][7]={w:0,l:4,t:1,c:'losing'};
-m[10][8]={w:0,l:3,t:2,c:'losing'};
-m[10][9]={w:2,l:3,t:1,c:'losing'};
-m[10][10]={w:"-",l:"-",t:"-",c:'self'};
-m[10][11]={w:3,l:3,t:0,c:'even'};
-m[11][0]={w:4,l:0,t:0,c:'winning'};
-m[11][1]={w:3,l:2,t:1,c:'winning'};
-m[11][2]={w:4,l:1,t:1,c:'winning'};
-m[11][3]={w:3,l:2,t:1,c:'winning'};
-m[11][4]={w:2,l:4,t:0,c:'losing'};
-m[11][5]={w:2,l:1,t:2,c:'winning'};
-m[11][6]={w:1,l:4,t:1,c:'losing'};
-m[11][7]={w:3,l:3,t:0,c:'even'};
-m[11][8]={w:3,l:3,t:0,c:'even'};
-m[11][9]={w:2,l:3,t:1,c:'losing'};
-m[11][10]={w:3,l:3,t:0,c:'even'};
-m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m[0][0]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[0][1]={w:3,l:2,t:0,sf:36.0,sa:23.0,g:5,c:'winning'};
+m[0][2]={w:2,l:0,t:0,sf:20.0,sa:3.0,g:2,c:'winning'};
+m[0][3]={w:6,l:0,t:0,sf:58.5,sa:11.5,g:6,c:'winning'};
+m[0][4]={w:2,l:3,t:0,sf:25.5,sa:32.5,g:5,c:'losing'};
+m[0][5]={w:2,l:3,t:1,sf:32.5,sa:37.5,g:6,c:'losing'};
+m[0][6]={w:3,l:3,t:0,sf:34.0,sa:36.0,g:6,c:'even'};
+m[0][7]={w:0,l:5,t:0,sf:18.5,sa:39.5,g:5,c:'losing'};
+m[0][8]={w:4,l:2,t:0,sf:43.0,sa:27.0,g:6,c:'winning'};
+m[0][9]={w:2,l:2,t:0,sf:28.0,sa:18.0,g:4,c:'even'};
+m[0][10]={w:1,l:4,t:1,sf:18.5,sa:47.5,g:6,c:'losing'};
+m[0][11]={w:3,l:3,t:0,sf:35.5,sa:34.5,g:6,c:'even'};
+m[0][12]={w:0,l:4,t:0,sf:13.5,sa:34.5,g:4,c:'losing'};
+m[1][0]={w:2,l:3,t:0,sf:23.0,sa:36.0,g:5,c:'losing'};
+m[1][1]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[1][2]={w:1,l:1,t:0,sf:14.0,sa:9.0,g:2,c:'even'};
+m[1][3]={w:1,l:3,t:0,sf:16.0,sa:27.0,g:4,c:'losing'};
+m[1][4]={w:1,l:4,t:1,sf:24.5,sa:44.5,g:6,c:'losing'};
+m[1][5]={w:2,l:4,t:0,sf:30.0,sa:41.0,g:6,c:'losing'};
+m[1][6]={w:1,l:4,t:0,sf:21.0,sa:37.0,g:5,c:'losing'};
+m[1][7]={w:2,l:4,t:0,sf:24.5,sa:44.5,g:6,c:'losing'};
+m[1][8]={w:3,l:2,t:0,sf:32.0,sa:24.0,g:5,c:'winning'};
+m[1][9]={w:1,l:3,t:0,sf:19.0,sa:29.0,g:4,c:'losing'};
+m[1][10]={w:2,l:4,t:0,sf:22.5,sa:46.5,g:6,c:'losing'};
+m[1][11]={w:2,l:3,t:1,sf:33.0,sa:37.0,g:6,c:'losing'};
+m[1][12]={w:2,l:3,t:1,sf:29.5,sa:39.5,g:6,c:'losing'};
+m[2][0]={w:0,l:2,t:0,sf:3.0,sa:20.0,g:2,c:'losing'};
+m[2][1]={w:1,l:1,t:0,sf:9.0,sa:14.0,g:2,c:'even'};
+m[2][2]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[2][3]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[2][4]={w:0,l:1,t:0,sf:3.0,sa:8.0,g:1,c:'losing'};
+m[2][5]={w:2,l:0,t:0,sf:14.0,sa:7.0,g:2,c:'winning'};
+m[2][6]={w:2,l:0,t:0,sf:14.0,sa:7.0,g:2,c:'winning'};
+m[2][7]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[2][8]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][10]={w:0,l:1,t:0,sf:3.0,sa:7.0,g:1,c:'losing'};
+m[2][11]={w:1,l:0,t:1,sf:12.0,sa:10.0,g:2,c:'winning'};
+m[2][12]={w:2,l:0,t:0,sf:14.0,sa:9.0,g:2,c:'winning'};
+m[3][0]={w:0,l:6,t:0,sf:11.5,sa:58.5,g:6,c:'losing'};
+m[3][1]={w:3,l:1,t:0,sf:27.0,sa:16.0,g:4,c:'winning'};
+m[3][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[3][4]={w:2,l:3,t:0,sf:29.5,sa:30.5,g:5,c:'losing'};
+m[3][5]={w:3,l:2,t:1,sf:36.5,sa:30.5,g:6,c:'winning'};
+m[3][6]={w:1,l:3,t:2,sf:28.0,sa:42.0,g:6,c:'losing'};
+m[3][7]={w:1,l:4,t:0,sf:15.0,sa:42.0,g:5,c:'losing'};
+m[3][8]={w:3,l:2,t:0,sf:32.0,sa:28.0,g:5,c:'winning'};
+m[3][9]={w:0,l:4,t:0,sf:11.0,sa:36.0,g:4,c:'losing'};
+m[3][10]={w:2,l:4,t:0,sf:26.5,sa:39.5,g:6,c:'losing'};
+m[3][11]={w:3,l:3,t:0,sf:32.5,sa:35.5,g:6,c:'even'};
+m[3][12]={w:1,l:4,t:1,sf:28.5,sa:40.5,g:6,c:'losing'};
+m[4][0]={w:3,l:2,t:0,sf:32.5,sa:25.5,g:5,c:'winning'};
+m[4][1]={w:4,l:1,t:1,sf:44.5,sa:24.5,g:6,c:'winning'};
+m[4][2]={w:1,l:0,t:0,sf:8.0,sa:3.0,g:1,c:'winning'};
+m[4][3]={w:3,l:2,t:0,sf:30.5,sa:29.5,g:5,c:'winning'};
+m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[4][5]={w:2,l:2,t:1,sf:26.0,sa:34.0,g:5,c:'even'};
+m[4][6]={w:2,l:4,t:0,sf:30.5,sa:39.5,g:6,c:'losing'};
+m[4][7]={w:4,l:2,t:0,sf:33.5,sa:33.5,g:6,c:'winning'};
+m[4][8]={w:4,l:2,t:0,sf:41.0,sa:27.0,g:6,c:'winning'};
+m[4][9]={w:2,l:2,t:0,sf:22.5,sa:23.5,g:4,c:'even'};
+m[4][10]={w:3,l:2,t:0,sf:31.0,sa:25.0,g:5,c:'winning'};
+m[4][11]={w:1,l:5,t:0,sf:22.5,sa:45.5,g:6,c:'losing'};
+m[4][12]={w:2,l:3,t:1,sf:36.0,sa:35.0,g:6,c:'losing'};
+m[5][0]={w:3,l:2,t:1,sf:37.5,sa:32.5,g:6,c:'winning'};
+m[5][1]={w:4,l:2,t:0,sf:41.0,sa:30.0,g:6,c:'winning'};
+m[5][2]={w:0,l:2,t:0,sf:7.0,sa:14.0,g:2,c:'losing'};
+m[5][3]={w:2,l:3,t:1,sf:30.5,sa:36.5,g:6,c:'losing'};
+m[5][4]={w:2,l:2,t:1,sf:34.0,sa:26.0,g:5,c:'even'};
+m[5][5]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[5][6]={w:4,l:2,t:0,sf:40.5,sa:30.5,g:6,c:'winning'};
+m[5][7]={w:1,l:4,t:1,sf:23.0,sa:47.0,g:6,c:'losing'};
+m[5][8]={w:2,l:3,t:0,sf:24.5,sa:31.5,g:5,c:'losing'};
+m[5][9]={w:1,l:2,t:1,sf:19.0,sa:29.0,g:4,c:'losing'};
+m[5][10]={w:2,l:4,t:0,sf:30.0,sa:42.0,g:6,c:'losing'};
+m[5][11]={w:1,l:3,t:0,sf:14.5,sa:31.5,g:4,c:'losing'};
+m[5][12]={w:3,l:2,t:0,sf:37.5,sa:21.5,g:5,c:'winning'};
+m[6][0]={w:3,l:3,t:0,sf:36.0,sa:34.0,g:6,c:'even'};
+m[6][1]={w:4,l:1,t:0,sf:37.0,sa:21.0,g:5,c:'winning'};
+m[6][2]={w:0,l:2,t:0,sf:7.0,sa:14.0,g:2,c:'losing'};
+m[6][3]={w:3,l:1,t:2,sf:42.0,sa:28.0,g:6,c:'winning'};
+m[6][4]={w:4,l:2,t:0,sf:39.5,sa:30.5,g:6,c:'winning'};
+m[6][5]={w:2,l:4,t:0,sf:30.5,sa:40.5,g:6,c:'losing'};
+m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[6][7]={w:3,l:3,t:0,sf:33.0,sa:32.0,g:6,c:'even'};
+m[6][8]={w:3,l:1,t:0,sf:26.0,sa:19.0,g:4,c:'winning'};
+m[6][9]={w:2,l:2,t:0,sf:26.0,sa:21.0,g:4,c:'even'};
+m[6][10]={w:2,l:4,t:0,sf:26.0,sa:41.0,g:6,c:'losing'};
+m[6][11]={w:1,l:3,t:1,sf:29.0,sa:30.0,g:5,c:'losing'};
+m[6][12]={w:1,l:2,t:2,sf:27.5,sa:30.5,g:5,c:'losing'};
+m[7][0]={w:5,l:0,t:0,sf:39.5,sa:18.5,g:5,c:'winning'};
+m[7][1]={w:4,l:2,t:0,sf:44.5,sa:24.5,g:6,c:'winning'};
+m[7][2]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[7][3]={w:4,l:1,t:0,sf:42.0,sa:15.0,g:5,c:'winning'};
+m[7][4]={w:2,l:4,t:0,sf:33.5,sa:33.5,g:6,c:'losing'};
+m[7][5]={w:4,l:1,t:1,sf:47.0,sa:23.0,g:6,c:'winning'};
+m[7][6]={w:3,l:3,t:0,sf:32.0,sa:33.0,g:6,c:'even'};
+m[7][7]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[7][8]={w:4,l:2,t:0,sf:41.0,sa:29.0,g:6,c:'winning'};
+m[7][9]={w:3,l:1,t:0,sf:30.0,sa:16.0,g:4,c:'winning'};
+m[7][10]={w:2,l:1,t:1,sf:25.0,sa:21.0,g:4,c:'winning'};
+m[7][11]={w:3,l:2,t:0,sf:34.0,sa:25.0,g:5,c:'winning'};
+m[7][12]={w:4,l:1,t:1,sf:39.0,sa:30.0,g:6,c:'winning'};
+m[8][0]={w:2,l:4,t:0,sf:27.0,sa:43.0,g:6,c:'losing'};
+m[8][1]={w:2,l:3,t:0,sf:24.0,sa:32.0,g:5,c:'losing'};
+m[8][2]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[8][3]={w:2,l:3,t:0,sf:28.0,sa:32.0,g:5,c:'losing'};
+m[8][4]={w:2,l:4,t:0,sf:27.0,sa:41.0,g:6,c:'losing'};
+m[8][5]={w:3,l:2,t:0,sf:31.5,sa:24.5,g:5,c:'winning'};
+m[8][6]={w:1,l:3,t:0,sf:19.0,sa:26.0,g:4,c:'losing'};
+m[8][7]={w:2,l:4,t:0,sf:29.0,sa:41.0,g:6,c:'losing'};
+m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[8][9]={w:2,l:2,t:0,sf:23.0,sa:23.0,g:4,c:'even'};
+m[8][10]={w:1,l:4,t:1,sf:23.5,sa:48.5,g:6,c:'losing'};
+m[8][11]={w:4,l:1,t:1,sf:38.0,sa:31.0,g:6,c:'winning'};
+m[8][12]={w:3,l:3,t:0,sf:30.0,sa:37.0,g:6,c:'even'};
+m[9][0]={w:2,l:2,t:0,sf:18.0,sa:28.0,g:4,c:'even'};
+m[9][1]={w:3,l:1,t:0,sf:29.0,sa:19.0,g:4,c:'winning'};
+m[9][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][3]={w:4,l:0,t:0,sf:36.0,sa:11.0,g:4,c:'winning'};
+m[9][4]={w:2,l:2,t:0,sf:23.5,sa:22.5,g:4,c:'even'};
+m[9][5]={w:2,l:1,t:1,sf:29.0,sa:19.0,g:4,c:'winning'};
+m[9][6]={w:2,l:2,t:0,sf:21.0,sa:26.0,g:4,c:'even'};
+m[9][7]={w:1,l:3,t:0,sf:16.0,sa:30.0,g:4,c:'losing'};
+m[9][8]={w:2,l:2,t:0,sf:23.0,sa:23.0,g:4,c:'even'};
+m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[9][10]={w:1,l:2,t:0,sf:11.0,sa:25.0,g:3,c:'losing'};
+m[9][11]={w:2,l:0,t:1,sf:23.0,sa:12.0,g:3,c:'winning'};
+m[9][12]={w:1,l:2,t:0,sf:17.0,sa:19.0,g:3,c:'losing'};
+m[10][0]={w:4,l:1,t:1,sf:47.5,sa:18.5,g:6,c:'winning'};
+m[10][1]={w:4,l:2,t:0,sf:46.5,sa:22.5,g:6,c:'winning'};
+m[10][2]={w:1,l:0,t:0,sf:7.0,sa:3.0,g:1,c:'winning'};
+m[10][3]={w:4,l:2,t:0,sf:39.5,sa:26.5,g:6,c:'winning'};
+m[10][4]={w:2,l:3,t:0,sf:25.0,sa:31.0,g:5,c:'losing'};
+m[10][5]={w:4,l:2,t:0,sf:42.0,sa:30.0,g:6,c:'winning'};
+m[10][6]={w:4,l:2,t:0,sf:41.0,sa:26.0,g:6,c:'winning'};
+m[10][7]={w:1,l:2,t:1,sf:21.0,sa:25.0,g:4,c:'losing'};
+m[10][8]={w:4,l:1,t:1,sf:48.5,sa:23.5,g:6,c:'winning'};
+m[10][9]={w:2,l:1,t:0,sf:25.0,sa:11.0,g:3,c:'winning'};
+m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[10][11]={w:3,l:2,t:1,sf:46.0,sa:26.0,g:6,c:'winning'};
+m[10][12]={w:3,l:2,t:1,sf:40.0,sa:29.0,g:6,c:'winning'};
+m[11][0]={w:3,l:3,t:0,sf:34.5,sa:35.5,g:6,c:'even'};
+m[11][1]={w:3,l:2,t:1,sf:37.0,sa:33.0,g:6,c:'winning'};
+m[11][2]={w:0,l:1,t:1,sf:10.0,sa:12.0,g:2,c:'losing'};
+m[11][3]={w:3,l:3,t:0,sf:35.5,sa:32.5,g:6,c:'even'};
+m[11][4]={w:5,l:1,t:0,sf:45.5,sa:22.5,g:6,c:'winning'};
+m[11][5]={w:3,l:1,t:0,sf:31.5,sa:14.5,g:4,c:'winning'};
+m[11][6]={w:3,l:1,t:1,sf:30.0,sa:29.0,g:5,c:'winning'};
+m[11][7]={w:2,l:3,t:0,sf:25.0,sa:34.0,g:5,c:'losing'};
+m[11][8]={w:1,l:4,t:1,sf:31.0,sa:38.0,g:6,c:'losing'};
+m[11][9]={w:0,l:2,t:1,sf:12.0,sa:23.0,g:3,c:'losing'};
+m[11][10]={w:2,l:3,t:1,sf:26.0,sa:46.0,g:6,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[11][12]={w:3,l:3,t:0,sf:33.0,sa:35.0,g:6,c:'even'};
+m[12][0]={w:4,l:0,t:0,sf:34.5,sa:13.5,g:4,c:'winning'};
+m[12][1]={w:3,l:2,t:1,sf:39.5,sa:29.5,g:6,c:'winning'};
+m[12][2]={w:0,l:2,t:0,sf:9.0,sa:14.0,g:2,c:'losing'};
+m[12][3]={w:4,l:1,t:1,sf:40.5,sa:28.5,g:6,c:'winning'};
+m[12][4]={w:3,l:2,t:1,sf:35.0,sa:36.0,g:6,c:'winning'};
+m[12][5]={w:2,l:3,t:0,sf:21.5,sa:37.5,g:5,c:'losing'};
+m[12][6]={w:2,l:1,t:2,sf:30.5,sa:27.5,g:5,c:'winning'};
+m[12][7]={w:1,l:4,t:1,sf:30.0,sa:39.0,g:6,c:'losing'};
+m[12][8]={w:3,l:3,t:0,sf:37.0,sa:30.0,g:6,c:'even'};
+m[12][9]={w:2,l:1,t:0,sf:19.0,sa:17.0,g:3,c:'winning'};
+m[12][10]={w:2,l:3,t:1,sf:29.0,sa:40.0,g:6,c:'losing'};
+m[12][11]={w:3,l:3,t:0,sf:35.0,sa:33.0,g:6,c:'even'};
+m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m=D['2023'];
-m[0][0]={w:"-",l:"-",t:"-",c:'self'};
-m[0][1]={w:2,l:0,t:0,c:'winning'};
-m[0][2]={w:2,l:0,t:0,c:'winning'};
-m[0][3]={w:0,l:2,t:0,c:'losing'};
-m[0][4]={w:1,l:0,t:1,c:'winning'};
-m[0][5]={w:1,l:1,t:0,c:'even'};
-m[0][6]={w:0,l:2,t:0,c:'losing'};
-m[0][7]={w:2,l:0,t:0,c:'winning'};
-m[0][8]={w:2,l:0,t:0,c:'winning'};
-m[0][9]={w:1,l:0,t:1,c:'winning'};
-m[0][10]={w:1,l:1,t:0,c:'even'};
-m[0][11]={w:0,l:1,t:0,c:'losing'};
-m[1][0]={w:0,l:2,t:0,c:'losing'};
-m[1][1]={w:"-",l:"-",t:"-",c:'self'};
-m[1][2]={w:0,l:2,t:0,c:'losing'};
-m[1][3]={w:1,l:0,t:1,c:'winning'};
-m[1][4]={w:2,l:1,t:0,c:'winning'};
-m[1][5]={w:1,l:0,t:0,c:'winning'};
-m[1][6]={w:0,l:2,t:0,c:'losing'};
-m[1][7]={w:1,l:1,t:0,c:'even'};
-m[1][8]={w:1,l:1,t:0,c:'even'};
-m[1][9]={w:1,l:1,t:0,c:'even'};
-m[1][10]={w:0,l:1,t:1,c:'losing'};
-m[1][11]={w:1,l:1,t:0,c:'even'};
-m[2][0]={w:0,l:2,t:0,c:'losing'};
-m[2][1]={w:2,l:0,t:0,c:'winning'};
-m[2][2]={w:"-",l:"-",t:"-",c:'self'};
-m[2][3]={w:1,l:0,t:0,c:'winning'};
-m[2][4]={w:2,l:0,t:0,c:'winning'};
-m[2][5]={w:1,l:1,t:0,c:'even'};
-m[2][6]={w:1,l:1,t:0,c:'even'};
-m[2][7]={w:1,l:0,t:0,c:'winning'};
-m[2][8]={w:2,l:0,t:0,c:'winning'};
-m[2][9]={w:1,l:1,t:0,c:'even'};
-m[2][10]={w:0,l:2,t:0,c:'losing'};
-m[2][11]={w:0,l:1,t:1,c:'losing'};
-m[3][0]={w:2,l:0,t:0,c:'winning'};
-m[3][1]={w:0,l:1,t:1,c:'losing'};
-m[3][2]={w:0,l:2,t:0,c:'losing'};
-m[3][3]={w:"-",l:"-",t:"-",c:'self'};
-m[3][4]={w:2,l:0,t:0,c:'winning'};
-m[3][5]={w:2,l:0,t:0,c:'winning'};
-m[3][6]={w:1,l:1,t:0,c:'even'};
-m[3][7]={w:1,l:1,t:0,c:'even'};
-m[3][8]={w:1,l:0,t:0,c:'winning'};
-m[3][9]={w:1,l:1,t:0,c:'even'};
-m[3][10]={w:1,l:1,t:0,c:'even'};
-m[3][11]={w:1,l:1,t:0,c:'even'};
-m[4][0]={w:0,l:1,t:1,c:'losing'};
-m[4][1]={w:1,l:1,t:0,c:'even'};
-m[4][2]={w:0,l:2,t:0,c:'losing'};
-m[4][3]={w:0,l:2,t:0,c:'losing'};
-m[4][4]={w:"-",l:"-",t:"-",c:'self'};
-m[4][5]={w:2,l:0,t:0,c:'winning'};
-m[4][6]={w:0,l:2,t:0,c:'losing'};
-m[4][7]={w:0,l:2,t:0,c:'losing'};
-m[4][8]={w:0,l:2,t:0,c:'losing'};
-m[4][9]={w:2,l:0,t:0,c:'winning'};
-m[4][10]={w:0,l:1,t:0,c:'losing'};
-m[4][11]={w:0,l:1,t:0,c:'losing'};
-m[5][0]={w:1,l:1,t:0,c:'even'};
-m[5][1]={w:0,l:1,t:0,c:'losing'};
-m[5][2]={w:1,l:1,t:0,c:'even'};
-m[5][3]={w:0,l:2,t:0,c:'losing'};
-m[5][4]={w:0,l:2,t:0,c:'losing'};
-m[5][5]={w:"-",l:"-",t:"-",c:'self'};
-m[5][6]={w:1,l:1,t:0,c:'even'};
-m[5][7]={w:2,l:0,t:0,c:'winning'};
-m[5][8]={w:0,l:2,t:0,c:'losing'};
-m[5][9]={w:0,l:2,t:0,c:'losing'};
-m[5][10]={w:0,l:1,t:0,c:'losing'};
-m[5][11]={w:0,l:1,t:1,c:'losing'};
-m[6][0]={w:1,l:0,t:0,c:'winning'};
-m[6][1]={w:2,l:0,t:0,c:'winning'};
-m[6][2]={w:1,l:1,t:0,c:'even'};
-m[6][3]={w:1,l:1,t:0,c:'even'};
-m[6][4]={w:2,l:0,t:0,c:'winning'};
-m[6][5]={w:1,l:1,t:0,c:'even'};
-m[6][6]={w:"-",l:"-",t:"-",c:'self'};
-m[6][7]={w:1,l:1,t:0,c:'even'};
-m[6][8]={w:2,l:0,t:0,c:'winning'};
-m[6][9]={w:1,l:0,t:0,c:'winning'};
-m[6][10]={w:2,l:0,t:0,c:'winning'};
-m[6][11]={w:1,l:1,t:0,c:'even'};
-m[7][0]={w:0,l:2,t:0,c:'losing'};
-m[7][1]={w:1,l:1,t:0,c:'even'};
-m[7][2]={w:0,l:1,t:0,c:'losing'};
-m[7][3]={w:1,l:1,t:0,c:'even'};
-m[7][4]={w:2,l:0,t:0,c:'winning'};
-m[7][5]={w:0,l:2,t:0,c:'losing'};
-m[7][6]={w:1,l:1,t:0,c:'even'};
-m[7][7]={w:"-",l:"-",t:"-",c:'self'};
-m[7][8]={w:2,l:0,t:0,c:'winning'};
-m[7][9]={w:1,l:0,t:1,c:'winning'};
-m[7][10]={w:1,l:0,t:1,c:'winning'};
-m[7][11]={w:0,l:2,t:0,c:'losing'};
-m[8][0]={w:0,l:2,t:0,c:'losing'};
-m[8][1]={w:1,l:1,t:0,c:'even'};
-m[8][2]={w:0,l:2,t:0,c:'losing'};
-m[8][3]={w:0,l:1,t:0,c:'losing'};
-m[8][4]={w:2,l:0,t:0,c:'winning'};
-m[8][5]={w:2,l:0,t:0,c:'winning'};
-m[8][6]={w:0,l:2,t:0,c:'losing'};
-m[8][7]={w:0,l:2,t:0,c:'losing'};
-m[8][8]={w:"-",l:"-",t:"-",c:'self'};
-m[8][9]={w:0,l:1,t:0,c:'losing'};
-m[8][10]={w:1,l:0,t:1,c:'winning'};
-m[8][11]={w:2,l:0,t:0,c:'winning'};
-m[9][0]={w:0,l:1,t:1,c:'losing'};
-m[9][1]={w:1,l:1,t:0,c:'even'};
-m[9][2]={w:1,l:1,t:0,c:'even'};
-m[9][3]={w:1,l:1,t:0,c:'even'};
-m[9][4]={w:0,l:2,t:0,c:'losing'};
-m[9][5]={w:2,l:0,t:0,c:'winning'};
-m[9][6]={w:0,l:1,t:0,c:'losing'};
-m[9][7]={w:0,l:1,t:1,c:'losing'};
-m[9][8]={w:1,l:0,t:0,c:'winning'};
-m[9][9]={w:"-",l:"-",t:"-",c:'self'};
-m[9][10]={w:0,l:2,t:0,c:'losing'};
-m[9][11]={w:0,l:1,t:1,c:'losing'};
-m[10][0]={w:1,l:1,t:0,c:'even'};
-m[10][1]={w:1,l:0,t:1,c:'winning'};
-m[10][2]={w:2,l:0,t:0,c:'winning'};
-m[10][3]={w:1,l:1,t:0,c:'even'};
-m[10][4]={w:1,l:0,t:0,c:'winning'};
-m[10][5]={w:1,l:0,t:0,c:'winning'};
-m[10][6]={w:0,l:2,t:0,c:'losing'};
-m[10][7]={w:0,l:1,t:1,c:'losing'};
-m[10][8]={w:0,l:1,t:1,c:'losing'};
-m[10][9]={w:2,l:0,t:0,c:'winning'};
-m[10][10]={w:"-",l:"-",t:"-",c:'self'};
-m[10][11]={w:1,l:1,t:0,c:'even'};
-m[11][0]={w:1,l:0,t:0,c:'winning'};
-m[11][1]={w:1,l:1,t:0,c:'even'};
-m[11][2]={w:1,l:0,t:1,c:'winning'};
-m[11][3]={w:1,l:1,t:0,c:'even'};
-m[11][4]={w:1,l:1,t:0,c:'even'};
-m[11][5]={w:1,l:0,t:1,c:'winning'};
-m[11][6]={w:1,l:1,t:0,c:'even'};
-m[11][7]={w:2,l:0,t:0,c:'winning'};
-m[11][8]={w:0,l:2,t:0,c:'losing'};
-m[11][9]={w:1,l:0,t:1,c:'winning'};
-m[11][10]={w:1,l:1,t:0,c:'even'};
-m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m[0][0]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[0][1]={w:2,l:0,t:0,sf:19.0,sa:4.0,g:2,c:'winning'};
+m[0][2]={w:2,l:0,t:0,sf:20.0,sa:3.0,g:2,c:'winning'};
+m[0][3]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[0][4]={w:0,l:2,t:0,sf:5.0,sa:18.0,g:2,c:'losing'};
+m[0][5]={w:1,l:0,t:1,sf:14.0,sa:10.0,g:2,c:'winning'};
+m[0][6]={w:1,l:1,t:0,sf:14.0,sa:9.0,g:2,c:'even'};
+m[0][7]={w:0,l:1,t:0,sf:4.0,sa:6.0,g:1,c:'losing'};
+m[0][8]={w:2,l:0,t:0,sf:18.0,sa:5.0,g:2,c:'winning'};
+m[0][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[0][10]={w:1,l:0,t:1,sf:12.0,sa:8.0,g:2,c:'winning'};
+m[0][11]={w:1,l:1,t:0,sf:12.0,sa:11.0,g:2,c:'even'};
+m[0][12]={w:0,l:1,t:0,sf:3.0,sa:9.0,g:1,c:'losing'};
+m[1][0]={w:0,l:2,t:0,sf:4.0,sa:19.0,g:2,c:'losing'};
+m[1][1]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[1][2]={w:1,l:1,t:0,sf:14.0,sa:9.0,g:2,c:'even'};
+m[1][3]={w:0,l:2,t:0,sf:4.0,sa:16.0,g:2,c:'losing'};
+m[1][4]={w:1,l:0,t:1,sf:13.0,sa:9.0,g:2,c:'winning'};
+m[1][5]={w:1,l:1,t:0,sf:10.0,sa:14.0,g:2,c:'even'};
+m[1][6]={w:1,l:0,t:0,sf:9.0,sa:3.0,g:1,c:'winning'};
+m[1][7]={w:0,l:2,t:0,sf:7.0,sa:15.0,g:2,c:'losing'};
+m[1][8]={w:0,l:1,t:0,sf:3.0,sa:7.0,g:1,c:'losing'};
+m[1][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[1][10]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[1][11]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
+m[1][12]={w:1,l:1,t:0,sf:11.0,sa:12.0,g:2,c:'even'};
+m[2][0]={w:0,l:2,t:0,sf:3.0,sa:20.0,g:2,c:'losing'};
+m[2][1]={w:1,l:1,t:0,sf:9.0,sa:14.0,g:2,c:'even'};
+m[2][2]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[2][3]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[2][4]={w:0,l:1,t:0,sf:3.0,sa:8.0,g:1,c:'losing'};
+m[2][5]={w:2,l:0,t:0,sf:14.0,sa:7.0,g:2,c:'winning'};
+m[2][6]={w:2,l:0,t:0,sf:14.0,sa:7.0,g:2,c:'winning'};
+m[2][7]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[2][8]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][10]={w:0,l:1,t:0,sf:3.0,sa:7.0,g:1,c:'losing'};
+m[2][11]={w:1,l:0,t:1,sf:12.0,sa:10.0,g:2,c:'winning'};
+m[2][12]={w:2,l:0,t:0,sf:14.0,sa:9.0,g:2,c:'winning'};
+m[3][0]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[3][1]={w:2,l:0,t:0,sf:16.0,sa:4.0,g:2,c:'winning'};
+m[3][2]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[3][4]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[3][5]={w:2,l:0,t:0,sf:17.0,sa:6.0,g:2,c:'winning'};
+m[3][6]={w:1,l:1,t:0,sf:9.0,sa:15.0,g:2,c:'even'};
+m[3][7]={w:1,l:1,t:0,sf:9.0,sa:14.0,g:2,c:'even'};
+m[3][8]={w:1,l:0,t:0,sf:9.0,sa:3.0,g:1,c:'winning'};
+m[3][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[3][10]={w:1,l:1,t:0,sf:11.0,sa:10.0,g:2,c:'even'};
+m[3][11]={w:0,l:2,t:0,sf:6.0,sa:15.0,g:2,c:'losing'};
+m[3][12]={w:0,l:1,t:1,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[4][0]={w:2,l:0,t:0,sf:18.0,sa:5.0,g:2,c:'winning'};
+m[4][1]={w:0,l:1,t:1,sf:9.0,sa:13.0,g:2,c:'losing'};
+m[4][2]={w:1,l:0,t:0,sf:8.0,sa:3.0,g:1,c:'winning'};
+m[4][3]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[4][5]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
+m[4][6]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[4][7]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[4][8]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[4][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[4][10]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[4][11]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[4][12]={w:1,l:1,t:0,sf:14.0,sa:10.0,g:2,c:'even'};
+m[5][0]={w:0,l:1,t:1,sf:10.0,sa:14.0,g:2,c:'losing'};
+m[5][1]={w:1,l:1,t:0,sf:14.0,sa:10.0,g:2,c:'even'};
+m[5][2]={w:0,l:2,t:0,sf:7.0,sa:14.0,g:2,c:'losing'};
+m[5][3]={w:0,l:2,t:0,sf:6.0,sa:17.0,g:2,c:'losing'};
+m[5][4]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
+m[5][5]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[5][6]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[5][7]={w:0,l:2,t:0,sf:3.0,sa:20.0,g:2,c:'losing'};
+m[5][8]={w:0,l:2,t:0,sf:3.0,sa:19.0,g:2,c:'losing'};
+m[5][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[5][10]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
+m[5][11]={w:0,l:1,t:0,sf:2.0,sa:9.0,g:1,c:'losing'};
+m[5][12]={w:0,l:1,t:0,sf:4.0,sa:7.0,g:1,c:'losing'};
+m[6][0]={w:1,l:1,t:0,sf:9.0,sa:14.0,g:2,c:'even'};
+m[6][1]={w:0,l:1,t:0,sf:3.0,sa:9.0,g:1,c:'losing'};
+m[6][2]={w:0,l:2,t:0,sf:7.0,sa:14.0,g:2,c:'losing'};
+m[6][3]={w:1,l:1,t:0,sf:15.0,sa:9.0,g:2,c:'even'};
+m[6][4]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[6][5]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[6][7]={w:1,l:1,t:0,sf:12.0,sa:9.0,g:2,c:'even'};
+m[6][8]={w:2,l:0,t:0,sf:15.0,sa:8.0,g:2,c:'winning'};
+m[6][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[6][10]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[6][11]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[6][12]={w:0,l:1,t:1,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[7][0]={w:1,l:0,t:0,sf:6.0,sa:4.0,g:1,c:'winning'};
+m[7][1]={w:2,l:0,t:0,sf:15.0,sa:7.0,g:2,c:'winning'};
+m[7][2]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[7][3]={w:1,l:1,t:0,sf:14.0,sa:9.0,g:2,c:'even'};
+m[7][4]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[7][5]={w:2,l:0,t:0,sf:20.0,sa:3.0,g:2,c:'winning'};
+m[7][6]={w:1,l:1,t:0,sf:9.0,sa:12.0,g:2,c:'even'};
+m[7][7]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[7][8]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[7][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[7][10]={w:1,l:0,t:0,sf:6.0,sa:4.0,g:1,c:'winning'};
+m[7][11]={w:2,l:0,t:0,sf:17.0,sa:6.0,g:2,c:'winning'};
+m[7][12]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[8][0]={w:0,l:2,t:0,sf:5.0,sa:18.0,g:2,c:'losing'};
+m[8][1]={w:1,l:0,t:0,sf:7.0,sa:3.0,g:1,c:'winning'};
+m[8][2]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[8][3]={w:0,l:1,t:0,sf:3.0,sa:9.0,g:1,c:'losing'};
+m[8][4]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[8][5]={w:2,l:0,t:0,sf:19.0,sa:3.0,g:2,c:'winning'};
+m[8][6]={w:0,l:2,t:0,sf:8.0,sa:15.0,g:2,c:'losing'};
+m[8][7]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[8][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[8][10]={w:1,l:0,t:1,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[8][11]={w:1,l:0,t:1,sf:12.0,sa:10.0,g:2,c:'winning'};
+m[8][12]={w:0,l:2,t:0,sf:8.0,sa:15.0,g:2,c:'losing'};
+m[9][0]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][1]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][3]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][4]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][5]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][6]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][7]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][8]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[9][10]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][11]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][12]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[10][0]={w:0,l:1,t:1,sf:8.0,sa:12.0,g:2,c:'losing'};
+m[10][1]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[10][2]={w:1,l:0,t:0,sf:7.0,sa:3.0,g:1,c:'winning'};
+m[10][3]={w:1,l:1,t:0,sf:10.0,sa:11.0,g:2,c:'even'};
+m[10][4]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[10][5]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
+m[10][6]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[10][7]={w:0,l:1,t:0,sf:4.0,sa:6.0,g:1,c:'losing'};
+m[10][8]={w:0,l:1,t:1,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[10][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[10][11]={w:0,l:2,t:0,sf:10.0,sa:14.0,g:2,c:'losing'};
+m[10][12]={w:0,l:1,t:1,sf:9.0,sa:13.0,g:2,c:'losing'};
+m[11][0]={w:1,l:1,t:0,sf:11.0,sa:12.0,g:2,c:'even'};
+m[11][1]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
+m[11][2]={w:0,l:1,t:1,sf:10.0,sa:12.0,g:2,c:'losing'};
+m[11][3]={w:2,l:0,t:0,sf:15.0,sa:6.0,g:2,c:'winning'};
+m[11][4]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[11][5]={w:1,l:0,t:0,sf:9.0,sa:2.0,g:1,c:'winning'};
+m[11][6]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[11][7]={w:0,l:2,t:0,sf:6.0,sa:17.0,g:2,c:'losing'};
+m[11][8]={w:0,l:1,t:1,sf:10.0,sa:12.0,g:2,c:'losing'};
+m[11][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[11][10]={w:2,l:0,t:0,sf:14.0,sa:10.0,g:2,c:'winning'};
+m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[11][12]={w:1,l:1,t:0,sf:13.0,sa:9.0,g:2,c:'even'};
+m[12][0]={w:1,l:0,t:0,sf:9.0,sa:3.0,g:1,c:'winning'};
+m[12][1]={w:1,l:1,t:0,sf:12.0,sa:11.0,g:2,c:'even'};
+m[12][2]={w:0,l:2,t:0,sf:9.0,sa:14.0,g:2,c:'losing'};
+m[12][3]={w:1,l:0,t:1,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[12][4]={w:1,l:1,t:0,sf:10.0,sa:14.0,g:2,c:'even'};
+m[12][5]={w:1,l:0,t:0,sf:7.0,sa:4.0,g:1,c:'winning'};
+m[12][6]={w:1,l:0,t:1,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[12][7]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[12][8]={w:2,l:0,t:0,sf:15.0,sa:8.0,g:2,c:'winning'};
+m[12][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[12][10]={w:1,l:0,t:1,sf:13.0,sa:9.0,g:2,c:'winning'};
+m[12][11]={w:1,l:1,t:0,sf:9.0,sa:13.0,g:2,c:'even'};
+m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m=D['2024'];
-m[0][0]={w:"-",l:"-",t:"-",c:'self'};
-m[0][1]={w:0,l:1,t:0,c:'losing'};
-m[0][2]={w:2,l:0,t:0,c:'winning'};
-m[0][3]={w:1,l:0,t:0,c:'winning'};
-m[0][4]={w:0,l:2,t:0,c:'losing'};
-m[0][5]={w:0,l:2,t:0,c:'losing'};
-m[0][6]={w:0,l:2,t:0,c:'losing'};
-m[0][7]={w:0,l:2,t:0,c:'losing'};
-m[0][8]={w:0,l:2,t:0,c:'losing'};
-m[0][9]={w:0,l:2,t:0,c:'losing'};
-m[0][10]={w:1,l:1,t:0,c:'even'};
-m[0][11]={w:0,l:2,t:0,c:'losing'};
-m[1][0]={w:2,l:0,t:0,c:'winning'};
-m[1][1]={w:"-",l:"-",t:"-",c:'self'};
-m[1][2]={w:1,l:0,t:0,c:'winning'};
-m[1][3]={w:0,l:2,t:0,c:'losing'};
-m[1][4]={w:1,l:1,t:0,c:'even'};
-m[1][5]={w:0,l:2,t:0,c:'losing'};
-m[1][6]={w:2,l:0,t:0,c:'winning'};
-m[1][7]={w:2,l:0,t:0,c:'winning'};
-m[1][8]={w:1,l:1,t:0,c:'even'};
-m[1][9]={w:0,l:2,t:0,c:'losing'};
-m[1][10]={w:2,l:0,t:0,c:'winning'};
-m[1][11]={w:0,l:1,t:1,c:'losing'};
-m[2][0]={w:0,l:2,t:0,c:'losing'};
-m[2][1]={w:0,l:1,t:0,c:'losing'};
-m[2][2]={w:"-",l:"-",t:"-",c:'self'};
-m[2][3]={w:1,l:1,t:0,c:'even'};
-m[2][4]={w:1,l:1,t:0,c:'even'};
-m[2][5]={w:0,l:1,t:1,c:'losing'};
-m[2][6]={w:1,l:1,t:0,c:'even'};
-m[2][7]={w:2,l:0,t:0,c:'winning'};
-m[2][8]={w:0,l:2,t:0,c:'losing'};
-m[2][9]={w:1,l:1,t:0,c:'even'};
-m[2][10]={w:2,l:0,t:0,c:'winning'};
-m[2][11]={w:1,l:1,t:0,c:'even'};
-m[3][0]={w:0,l:1,t:0,c:'losing'};
-m[3][1]={w:2,l:0,t:0,c:'winning'};
-m[3][2]={w:1,l:1,t:0,c:'even'};
-m[3][3]={w:"-",l:"-",t:"-",c:'self'};
-m[3][4]={w:0,l:1,t:1,c:'losing'};
-m[3][5]={w:0,l:2,t:0,c:'losing'};
-m[3][6]={w:1,l:1,t:0,c:'even'};
-m[3][7]={w:1,l:1,t:0,c:'even'};
-m[3][8]={w:2,l:0,t:0,c:'winning'};
-m[3][9]={w:0,l:1,t:0,c:'losing'};
-m[3][10]={w:0,l:2,t:0,c:'losing'};
-m[3][11]={w:0,l:2,t:0,c:'losing'};
-m[4][0]={w:2,l:0,t:0,c:'winning'};
-m[4][1]={w:1,l:1,t:0,c:'even'};
-m[4][2]={w:1,l:1,t:0,c:'even'};
-m[4][3]={w:1,l:0,t:1,c:'winning'};
-m[4][4]={w:"-",l:"-",t:"-",c:'self'};
-m[4][5]={w:1,l:1,t:0,c:'even'};
-m[4][6]={w:0,l:2,t:0,c:'losing'};
-m[4][7]={w:0,l:1,t:0,c:'losing'};
-m[4][8]={w:1,l:0,t:1,c:'winning'};
-m[4][9]={w:0,l:2,t:0,c:'losing'};
-m[4][10]={w:1,l:0,t:0,c:'winning'};
-m[4][11]={w:1,l:1,t:0,c:'even'};
-m[5][0]={w:2,l:0,t:0,c:'winning'};
-m[5][1]={w:2,l:0,t:0,c:'winning'};
-m[5][2]={w:1,l:0,t:1,c:'winning'};
-m[5][3]={w:2,l:0,t:0,c:'winning'};
-m[5][4]={w:1,l:1,t:0,c:'even'};
-m[5][5]={w:"-",l:"-",t:"-",c:'self'};
-m[5][6]={w:1,l:1,t:0,c:'even'};
-m[5][7]={w:1,l:0,t:0,c:'winning'};
-m[5][8]={w:0,l:2,t:0,c:'losing'};
-m[5][9]={w:0,l:2,t:0,c:'losing'};
-m[5][10]={w:1,l:1,t:0,c:'even'};
-m[5][11]={w:1,l:0,t:0,c:'winning'};
-m[6][0]={w:2,l:0,t:0,c:'winning'};
-m[6][1]={w:0,l:2,t:0,c:'losing'};
-m[6][2]={w:1,l:0,t:0,c:'winning'};
-m[6][3]={w:1,l:1,t:0,c:'even'};
-m[6][4]={w:2,l:0,t:0,c:'winning'};
-m[6][5]={w:1,l:1,t:0,c:'even'};
-m[6][6]={w:"-",l:"-",t:"-",c:'self'};
-m[6][7]={w:1,l:1,t:0,c:'even'};
-m[6][8]={w:1,l:1,t:0,c:'even'};
-m[6][9]={w:0,l:1,t:1,c:'losing'};
-m[6][10]={w:0,l:1,t:0,c:'losing'};
-m[6][11]={w:1,l:0,t:1,c:'winning'};
-m[7][0]={w:2,l:0,t:0,c:'winning'};
-m[7][1]={w:0,l:2,t:0,c:'losing'};
-m[7][2]={w:0,l:2,t:0,c:'losing'};
-m[7][3]={w:1,l:1,t:0,c:'even'};
-m[7][4]={w:1,l:0,t:0,c:'winning'};
-m[7][5]={w:0,l:1,t:0,c:'losing'};
-m[7][6]={w:1,l:1,t:0,c:'even'};
-m[7][7]={w:"-",l:"-",t:"-",c:'self'};
-m[7][8]={w:1,l:1,t:0,c:'even'};
-m[7][9]={w:0,l:2,t:0,c:'losing'};
-m[7][10]={w:2,l:0,t:0,c:'winning'};
-m[7][11]={w:2,l:0,t:0,c:'winning'};
-m[8][0]={w:2,l:0,t:0,c:'winning'};
-m[8][1]={w:1,l:1,t:0,c:'even'};
-m[8][2]={w:2,l:0,t:0,c:'winning'};
-m[8][3]={w:0,l:2,t:0,c:'losing'};
-m[8][4]={w:0,l:1,t:1,c:'losing'};
-m[8][5]={w:2,l:0,t:0,c:'winning'};
-m[8][6]={w:1,l:1,t:0,c:'even'};
-m[8][7]={w:1,l:1,t:0,c:'even'};
-m[8][8]={w:"-",l:"-",t:"-",c:'self'};
-m[8][9]={w:0,l:1,t:0,c:'losing'};
-m[8][10]={w:2,l:0,t:0,c:'winning'};
-m[8][11]={w:0,l:2,t:0,c:'losing'};
-m[9][0]={w:2,l:0,t:0,c:'winning'};
-m[9][1]={w:2,l:0,t:0,c:'winning'};
-m[9][2]={w:1,l:1,t:0,c:'even'};
-m[9][3]={w:1,l:0,t:0,c:'winning'};
-m[9][4]={w:2,l:0,t:0,c:'winning'};
-m[9][5]={w:2,l:0,t:0,c:'winning'};
-m[9][6]={w:1,l:0,t:1,c:'winning'};
-m[9][7]={w:2,l:0,t:0,c:'winning'};
-m[9][8]={w:1,l:0,t:0,c:'winning'};
-m[9][9]={w:"-",l:"-",t:"-",c:'self'};
-m[9][10]={w:1,l:0,t:1,c:'winning'};
-m[9][11]={w:1,l:1,t:0,c:'even'};
-m[10][0]={w:1,l:1,t:0,c:'even'};
-m[10][1]={w:0,l:2,t:0,c:'losing'};
-m[10][2]={w:0,l:2,t:0,c:'losing'};
-m[10][3]={w:2,l:0,t:0,c:'winning'};
-m[10][4]={w:0,l:1,t:0,c:'losing'};
-m[10][5]={w:1,l:1,t:0,c:'even'};
-m[10][6]={w:1,l:0,t:0,c:'winning'};
-m[10][7]={w:0,l:2,t:0,c:'losing'};
-m[10][8]={w:0,l:2,t:0,c:'losing'};
-m[10][9]={w:0,l:1,t:1,c:'losing'};
-m[10][10]={w:"-",l:"-",t:"-",c:'self'};
-m[10][11]={w:0,l:2,t:0,c:'losing'};
-m[11][0]={w:2,l:0,t:0,c:'winning'};
-m[11][1]={w:1,l:0,t:1,c:'winning'};
-m[11][2]={w:1,l:1,t:0,c:'even'};
-m[11][3]={w:2,l:0,t:0,c:'winning'};
-m[11][4]={w:1,l:1,t:0,c:'even'};
-m[11][5]={w:0,l:1,t:0,c:'losing'};
-m[11][6]={w:0,l:1,t:1,c:'losing'};
-m[11][7]={w:0,l:2,t:0,c:'losing'};
-m[11][8]={w:2,l:0,t:0,c:'winning'};
-m[11][9]={w:1,l:1,t:0,c:'even'};
-m[11][10]={w:2,l:0,t:0,c:'winning'};
-m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m[0][0]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[0][1]={w:0,l:1,t:0,sf:2.0,sa:10.0,g:1,c:'losing'};
+m[0][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[0][3]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[0][4]={w:1,l:0,t:0,sf:9.0,sa:2.0,g:1,c:'winning'};
+m[0][5]={w:0,l:2,t:0,sf:8.0,sa:14.0,g:2,c:'losing'};
+m[0][6]={w:0,l:2,t:0,sf:5.0,sa:18.0,g:2,c:'losing'};
+m[0][7]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[0][8]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[0][9]={w:0,l:2,t:0,sf:6.0,sa:16.0,g:2,c:'losing'};
+m[0][10]={w:0,l:2,t:0,sf:0.0,sa:22.0,g:2,c:'losing'};
+m[0][11]={w:1,l:1,t:0,sf:10.0,sa:13.0,g:2,c:'even'};
+m[0][12]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[1][0]={w:1,l:0,t:0,sf:10.0,sa:2.0,g:1,c:'winning'};
+m[1][1]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[1][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[1][3]={w:1,l:0,t:0,sf:10.0,sa:1.0,g:1,c:'winning'};
+m[1][4]={w:0,l:2,t:0,sf:7.0,sa:16.0,g:2,c:'losing'};
+m[1][5]={w:1,l:1,t:0,sf:11.0,sa:12.0,g:2,c:'even'};
+m[1][6]={w:0,l:2,t:0,sf:3.0,sa:19.0,g:2,c:'losing'};
+m[1][7]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[1][8]={w:2,l:0,t:0,sf:17.0,sa:5.0,g:2,c:'winning'};
+m[1][9]={w:1,l:1,t:0,sf:14.0,sa:10.0,g:2,c:'even'};
+m[1][10]={w:0,l:2,t:0,sf:3.0,sa:20.0,g:2,c:'losing'};
+m[1][11]={w:2,l:0,t:0,sf:17.0,sa:5.0,g:2,c:'winning'};
+m[1][12]={w:0,l:1,t:1,sf:8.0,sa:14.0,g:2,c:'losing'};
+m[2][0]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][1]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][2]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[2][3]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][4]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][5]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][6]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][7]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][8]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][10]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][11]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][12]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[3][0]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[3][1]={w:0,l:1,t:0,sf:1.0,sa:10.0,g:1,c:'losing'};
+m[3][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[3][4]={w:1,l:1,t:0,sf:16.0,sa:8.0,g:2,c:'even'};
+m[3][5]={w:1,l:1,t:0,sf:11.0,sa:9.0,g:2,c:'even'};
+m[3][6]={w:0,l:1,t:1,sf:9.0,sa:13.0,g:2,c:'losing'};
+m[3][7]={w:0,l:1,t:0,sf:1.0,sa:9.0,g:1,c:'losing'};
+m[3][8]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
+m[3][9]={w:0,l:2,t:0,sf:6.0,sa:17.0,g:2,c:'losing'};
+m[3][10]={w:1,l:1,t:0,sf:8.0,sa:13.0,g:2,c:'even'};
+m[3][11]={w:2,l:0,t:0,sf:15.0,sa:8.0,g:2,c:'winning'};
+m[3][12]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[4][0]={w:0,l:1,t:0,sf:2.0,sa:9.0,g:1,c:'losing'};
+m[4][1]={w:2,l:0,t:0,sf:16.0,sa:7.0,g:2,c:'winning'};
+m[4][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[4][3]={w:1,l:1,t:0,sf:8.0,sa:16.0,g:2,c:'even'};
+m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[4][5]={w:0,l:1,t:1,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[4][6]={w:0,l:2,t:0,sf:3.0,sa:19.0,g:2,c:'losing'};
+m[4][7]={w:1,l:1,t:0,sf:7.0,sa:14.0,g:2,c:'even'};
+m[4][8]={w:1,l:1,t:0,sf:14.0,sa:8.0,g:2,c:'even'};
+m[4][9]={w:2,l:0,t:0,sf:15.0,sa:7.0,g:2,c:'winning'};
+m[4][10]={w:0,l:1,t:0,sf:4.0,sa:6.0,g:1,c:'losing'};
+m[4][11]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[4][12]={w:0,l:2,t:0,sf:5.0,sa:18.0,g:2,c:'losing'};
+m[5][0]={w:2,l:0,t:0,sf:14.0,sa:8.0,g:2,c:'winning'};
+m[5][1]={w:1,l:1,t:0,sf:12.0,sa:11.0,g:2,c:'even'};
+m[5][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[5][3]={w:1,l:1,t:0,sf:9.0,sa:11.0,g:2,c:'even'};
+m[5][4]={w:1,l:0,t:1,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[5][5]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[5][6]={w:1,l:1,t:0,sf:16.0,sa:8.0,g:2,c:'even'};
+m[5][7]={w:0,l:2,t:0,sf:7.0,sa:16.0,g:2,c:'losing'};
+m[5][8]={w:0,l:1,t:0,sf:4.0,sa:6.0,g:1,c:'losing'};
+m[5][9]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
+m[5][10]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[5][11]={w:1,l:0,t:0,sf:7.0,sa:4.0,g:1,c:'winning'};
+m[5][12]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[6][0]={w:2,l:0,t:0,sf:18.0,sa:5.0,g:2,c:'winning'};
+m[6][1]={w:2,l:0,t:0,sf:19.0,sa:3.0,g:2,c:'winning'};
+m[6][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[6][3]={w:1,l:0,t:1,sf:13.0,sa:9.0,g:2,c:'winning'};
+m[6][4]={w:2,l:0,t:0,sf:19.0,sa:3.0,g:2,c:'winning'};
+m[6][5]={w:1,l:1,t:0,sf:8.0,sa:16.0,g:2,c:'even'};
+m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[6][7]={w:1,l:1,t:0,sf:10.0,sa:10.0,g:2,c:'even'};
+m[6][8]={w:1,l:0,t:0,sf:6.0,sa:4.0,g:1,c:'winning'};
+m[6][9]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[6][10]={w:0,l:2,t:0,sf:5.0,sa:16.0,g:2,c:'losing'};
+m[6][11]={w:1,l:1,t:0,sf:13.0,sa:10.0,g:2,c:'even'};
+m[6][12]={w:1,l:0,t:0,sf:9.0,sa:2.0,g:1,c:'winning'};
+m[7][0]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[7][1]={w:0,l:2,t:0,sf:10.0,sa:13.0,g:2,c:'losing'};
+m[7][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[7][3]={w:1,l:0,t:0,sf:9.0,sa:1.0,g:1,c:'winning'};
+m[7][4]={w:1,l:1,t:0,sf:14.0,sa:7.0,g:2,c:'even'};
+m[7][5]={w:2,l:0,t:0,sf:16.0,sa:7.0,g:2,c:'winning'};
+m[7][6]={w:1,l:1,t:0,sf:10.0,sa:10.0,g:2,c:'even'};
+m[7][7]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[7][8]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[7][9]={w:1,l:1,t:0,sf:12.0,sa:10.0,g:2,c:'even'};
+m[7][10]={w:0,l:1,t:1,sf:8.0,sa:16.0,g:2,c:'losing'};
+m[7][11]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[7][12]={w:1,l:0,t:1,sf:12.0,sa:11.0,g:2,c:'winning'};
+m[8][0]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[8][1]={w:0,l:2,t:0,sf:5.0,sa:17.0,g:2,c:'losing'};
+m[8][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[8][3]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
+m[8][4]={w:1,l:1,t:0,sf:8.0,sa:14.0,g:2,c:'even'};
+m[8][5]={w:1,l:0,t:0,sf:6.0,sa:4.0,g:1,c:'winning'};
+m[8][6]={w:0,l:1,t:0,sf:4.0,sa:6.0,g:1,c:'losing'};
+m[8][7]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[8][9]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[8][10]={w:0,l:2,t:0,sf:3.0,sa:21.0,g:2,c:'losing'};
+m[8][11]={w:2,l:0,t:0,sf:15.0,sa:8.0,g:2,c:'winning'};
+m[8][12]={w:2,l:0,t:0,sf:14.0,sa:6.0,g:2,c:'winning'};
+m[9][0]={w:2,l:0,t:0,sf:16.0,sa:6.0,g:2,c:'winning'};
+m[9][1]={w:1,l:1,t:0,sf:10.0,sa:14.0,g:2,c:'even'};
+m[9][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][3]={w:2,l:0,t:0,sf:17.0,sa:6.0,g:2,c:'winning'};
+m[9][4]={w:0,l:2,t:0,sf:7.0,sa:15.0,g:2,c:'losing'};
+m[9][5]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
+m[9][6]={w:2,l:0,t:0,sf:13.0,sa:10.0,g:2,c:'winning'};
+m[9][7]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[9][8]={w:1,l:1,t:0,sf:11.0,sa:11.0,g:2,c:'even'};
+m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[9][10]={w:0,l:1,t:0,sf:0.0,sa:12.0,g:1,c:'losing'};
+m[9][11]={w:2,l:0,t:0,sf:17.0,sa:6.0,g:2,c:'winning'};
+m[9][12]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[10][0]={w:2,l:0,t:0,sf:22.0,sa:0.0,g:2,c:'winning'};
+m[10][1]={w:2,l:0,t:0,sf:20.0,sa:3.0,g:2,c:'winning'};
+m[10][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[10][3]={w:1,l:1,t:0,sf:13.0,sa:8.0,g:2,c:'even'};
+m[10][4]={w:1,l:0,t:0,sf:6.0,sa:4.0,g:1,c:'winning'};
+m[10][5]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[10][6]={w:2,l:0,t:0,sf:16.0,sa:5.0,g:2,c:'winning'};
+m[10][7]={w:1,l:0,t:1,sf:16.0,sa:8.0,g:2,c:'winning'};
+m[10][8]={w:2,l:0,t:0,sf:21.0,sa:3.0,g:2,c:'winning'};
+m[10][9]={w:1,l:0,t:0,sf:12.0,sa:0.0,g:1,c:'winning'};
+m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[10][11]={w:1,l:0,t:1,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[10][12]={w:1,l:1,t:0,sf:12.0,sa:11.0,g:2,c:'even'};
+m[11][0]={w:1,l:1,t:0,sf:13.0,sa:10.0,g:2,c:'even'};
+m[11][1]={w:0,l:2,t:0,sf:5.0,sa:17.0,g:2,c:'losing'};
+m[11][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[11][3]={w:0,l:2,t:0,sf:8.0,sa:15.0,g:2,c:'losing'};
+m[11][4]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[11][5]={w:0,l:1,t:0,sf:4.0,sa:7.0,g:1,c:'losing'};
+m[11][6]={w:1,l:1,t:0,sf:10.0,sa:13.0,g:2,c:'even'};
+m[11][7]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[11][8]={w:0,l:2,t:0,sf:8.0,sa:15.0,g:2,c:'losing'};
+m[11][9]={w:0,l:2,t:0,sf:6.0,sa:17.0,g:2,c:'losing'};
+m[11][10]={w:0,l:1,t:1,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[11][12]={w:0,l:2,t:0,sf:4.0,sa:18.0,g:2,c:'losing'};
+m[12][0]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[12][1]={w:1,l:0,t:1,sf:14.0,sa:8.0,g:2,c:'winning'};
+m[12][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[12][3]={w:1,l:1,t:0,sf:10.0,sa:12.0,g:2,c:'even'};
+m[12][4]={w:2,l:0,t:0,sf:18.0,sa:5.0,g:2,c:'winning'};
+m[12][5]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[12][6]={w:0,l:1,t:0,sf:2.0,sa:9.0,g:1,c:'losing'};
+m[12][7]={w:0,l:1,t:1,sf:11.0,sa:12.0,g:2,c:'losing'};
+m[12][8]={w:0,l:2,t:0,sf:6.0,sa:14.0,g:2,c:'losing'};
+m[12][9]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[12][10]={w:1,l:1,t:0,sf:11.0,sa:12.0,g:2,c:'even'};
+m[12][11]={w:2,l:0,t:0,sf:18.0,sa:4.0,g:2,c:'winning'};
+m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 m=D['2025'];
-m[0][0]={w:"-",l:"-",t:"-",c:'self'};
-m[0][1]={w:1,l:1,t:0,c:'even'};
-m[0][2]={w:2,l:0,t:0,c:'winning'};
-m[0][3]={w:1,l:1,t:0,c:'even'};
-m[0][4]={w:1,l:1,t:0,c:'even'};
-m[0][5]={w:1,l:0,t:0,c:'winning'};
-m[0][6]={w:0,l:2,t:0,c:'losing'};
-m[0][7]={w:2,l:0,t:0,c:'winning'};
-m[0][8]={w:2,l:0,t:0,c:'winning'};
-m[0][9]={w:0,l:2,t:0,c:'losing'};
-m[0][10]={w:1,l:1,t:0,c:'even'};
-m[0][11]={w:0,l:1,t:0,c:'losing'};
-m[1][0]={w:1,l:1,t:0,c:'even'};
-m[1][1]={w:"-",l:"-",t:"-",c:'self'};
-m[1][2]={w:0,l:1,t:0,c:'losing'};
-m[1][3]={w:0,l:1,t:0,c:'losing'};
-m[1][4]={w:0,l:2,t:0,c:'losing'};
-m[1][5]={w:0,l:2,t:0,c:'losing'};
-m[1][6]={w:0,l:2,t:0,c:'losing'};
-m[1][7]={w:1,l:1,t:0,c:'even'};
-m[1][8]={w:0,l:2,t:0,c:'losing'};
-m[1][9]={w:1,l:1,t:0,c:'even'};
-m[1][10]={w:0,l:2,t:0,c:'losing'};
-m[1][11]={w:1,l:1,t:0,c:'even'};
-m[2][0]={w:0,l:2,t:0,c:'losing'};
-m[2][1]={w:1,l:0,t:0,c:'winning'};
-m[2][2]={w:"-",l:"-",t:"-",c:'self'};
-m[2][3]={w:0,l:2,t:0,c:'losing'};
-m[2][4]={w:0,l:1,t:1,c:'losing'};
-m[2][5]={w:0,l:1,t:1,c:'losing'};
-m[2][6]={w:0,l:2,t:0,c:'losing'};
-m[2][7]={w:0,l:2,t:0,c:'losing'};
-m[2][8]={w:0,l:2,t:0,c:'losing'};
-m[2][9]={w:0,l:2,t:0,c:'losing'};
-m[2][10]={w:1,l:1,t:0,c:'even'};
-m[2][11]={w:0,l:2,t:0,c:'losing'};
-m[3][0]={w:1,l:1,t:0,c:'even'};
-m[3][1]={w:1,l:0,t:0,c:'winning'};
-m[3][2]={w:2,l:0,t:0,c:'winning'};
-m[3][3]={w:"-",l:"-",t:"-",c:'self'};
-m[3][4]={w:0,l:1,t:0,c:'losing'};
-m[3][5]={w:0,l:2,t:0,c:'losing'};
-m[3][6]={w:2,l:0,t:0,c:'winning'};
-m[3][7]={w:2,l:0,t:0,c:'winning'};
-m[3][8]={w:0,l:2,t:0,c:'losing'};
-m[3][9]={w:2,l:0,t:0,c:'winning'};
-m[3][10]={w:0,l:2,t:0,c:'losing'};
-m[3][11]={w:1,l:0,t:1,c:'winning'};
-m[4][0]={w:1,l:1,t:0,c:'even'};
-m[4][1]={w:2,l:0,t:0,c:'winning'};
-m[4][2]={w:1,l:0,t:1,c:'winning'};
-m[4][3]={w:1,l:0,t:0,c:'winning'};
-m[4][4]={w:"-",l:"-",t:"-",c:'self'};
-m[4][5]={w:1,l:1,t:0,c:'even'};
-m[4][6]={w:1,l:0,t:1,c:'winning'};
-m[4][7]={w:2,l:0,t:0,c:'winning'};
-m[4][8]={w:0,l:2,t:0,c:'losing'};
-m[4][9]={w:0,l:2,t:0,c:'losing'};
-m[4][10]={w:0,l:2,t:0,c:'losing'};
-m[4][11]={w:2,l:0,t:0,c:'winning'};
-m[5][0]={w:0,l:2,t:0,c:'losing'};
-m[5][1]={w:2,l:0,t:0,c:'winning'};
-m[5][2]={w:1,l:0,t:1,c:'winning'};
-m[5][3]={w:2,l:0,t:0,c:'winning'};
-m[5][4]={w:1,l:1,t:0,c:'even'};
-m[5][5]={w:"-",l:"-",t:"-",c:'self'};
-m[5][6]={w:1,l:1,t:0,c:'even'};
-m[5][7]={w:0,l:1,t:0,c:'losing'};
-m[5][8]={w:2,l:0,t:0,c:'winning'};
-m[5][9]={w:2,l:0,t:0,c:'winning'};
-m[5][10]={w:0,l:1,t:1,c:'losing'};
-m[5][11]={w:0,l:1,t:1,c:'losing'};
-m[6][0]={w:2,l:0,t:0,c:'winning'};
-m[6][1]={w:2,l:0,t:0,c:'winning'};
-m[6][2]={w:2,l:0,t:0,c:'winning'};
-m[6][3]={w:0,l:2,t:0,c:'losing'};
-m[6][4]={w:0,l:0,t:1,c:'even'};
-m[6][5]={w:1,l:1,t:0,c:'even'};
-m[6][6]={w:"-",l:"-",t:"-",c:'self'};
-m[6][7]={w:2,l:0,t:0,c:'winning'};
-m[6][8]={w:2,l:0,t:0,c:'winning'};
-m[6][9]={w:1,l:0,t:0,c:'winning'};
-m[6][10]={w:1,l:1,t:0,c:'even'};
-m[6][11]={w:2,l:0,t:0,c:'winning'};
-m[7][0]={w:0,l:2,t:0,c:'losing'};
-m[7][1]={w:1,l:1,t:0,c:'even'};
-m[7][2]={w:2,l:0,t:0,c:'winning'};
-m[7][3]={w:0,l:2,t:0,c:'losing'};
-m[7][4]={w:0,l:2,t:0,c:'losing'};
-m[7][5]={w:1,l:0,t:0,c:'winning'};
-m[7][6]={w:0,l:2,t:0,c:'losing'};
-m[7][7]={w:"-",l:"-",t:"-",c:'self'};
-m[7][8]={w:1,l:1,t:0,c:'even'};
-m[7][9]={w:0,l:2,t:0,c:'losing'};
-m[7][10]={w:1,l:0,t:0,c:'winning'};
-m[7][11]={w:1,l:1,t:0,c:'even'};
-m[8][0]={w:0,l:2,t:0,c:'losing'};
-m[8][1]={w:2,l:0,t:0,c:'winning'};
-m[8][2]={w:2,l:0,t:0,c:'winning'};
-m[8][3]={w:2,l:0,t:0,c:'winning'};
-m[8][4]={w:2,l:0,t:0,c:'winning'};
-m[8][5]={w:0,l:2,t:0,c:'losing'};
-m[8][6]={w:0,l:2,t:0,c:'losing'};
-m[8][7]={w:1,l:1,t:0,c:'even'};
-m[8][8]={w:"-",l:"-",t:"-",c:'self'};
-m[8][9]={w:1,l:1,t:0,c:'even'};
-m[8][10]={w:0,l:0,t:1,c:'even'};
-m[8][11]={w:1,l:1,t:0,c:'even'};
-m[9][0]={w:2,l:0,t:0,c:'winning'};
-m[9][1]={w:1,l:1,t:0,c:'even'};
-m[9][2]={w:2,l:0,t:0,c:'winning'};
-m[9][3]={w:0,l:2,t:0,c:'losing'};
-m[9][4]={w:2,l:0,t:0,c:'winning'};
-m[9][5]={w:0,l:2,t:0,c:'losing'};
-m[9][6]={w:0,l:1,t:0,c:'losing'};
-m[9][7]={w:2,l:0,t:0,c:'winning'};
-m[9][8]={w:1,l:1,t:0,c:'even'};
-m[9][9]={w:"-",l:"-",t:"-",c:'self'};
-m[9][10]={w:2,l:0,t:0,c:'winning'};
-m[9][11]={w:1,l:0,t:0,c:'winning'};
-m[10][0]={w:1,l:1,t:0,c:'even'};
-m[10][1]={w:2,l:0,t:0,c:'winning'};
-m[10][2]={w:1,l:1,t:0,c:'even'};
-m[10][3]={w:2,l:0,t:0,c:'winning'};
-m[10][4]={w:2,l:0,t:0,c:'winning'};
-m[10][5]={w:1,l:0,t:1,c:'winning'};
-m[10][6]={w:1,l:1,t:0,c:'even'};
-m[10][7]={w:0,l:1,t:0,c:'losing'};
-m[10][8]={w:0,l:0,t:1,c:'even'};
-m[10][9]={w:0,l:2,t:0,c:'losing'};
-m[10][10]={w:"-",l:"-",t:"-",c:'self'};
-m[10][11]={w:2,l:0,t:0,c:'winning'};
-m[11][0]={w:1,l:0,t:0,c:'winning'};
-m[11][1]={w:1,l:1,t:0,c:'even'};
-m[11][2]={w:2,l:0,t:0,c:'winning'};
-m[11][3]={w:0,l:1,t:1,c:'losing'};
-m[11][4]={w:0,l:2,t:0,c:'losing'};
-m[11][5]={w:1,l:0,t:1,c:'winning'};
-m[11][6]={w:0,l:2,t:0,c:'losing'};
-m[11][7]={w:1,l:1,t:0,c:'even'};
-m[11][8]={w:1,l:1,t:0,c:'even'};
-m[11][9]={w:0,l:2,t:0,c:'losing'};
-m[11][10]={w:0,l:2,t:0,c:'losing'};
-m[11][11]={w:"-",l:"-",t:"-",c:'self'};
+m[0][0]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[0][1]={w:1,l:1,t:0,sf:15.0,sa:9.0,g:2,c:'even'};
+m[0][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[0][3]={w:2,l:0,t:0,sf:21.5,sa:2.5,g:2,c:'winning'};
+m[0][4]={w:1,l:1,t:0,sf:11.5,sa:12.5,g:2,c:'even'};
+m[0][5]={w:1,l:1,t:0,sf:10.5,sa:13.5,g:2,c:'even'};
+m[0][6]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[0][7]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[0][8]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[0][9]={w:2,l:0,t:0,sf:22.0,sa:2.0,g:2,c:'winning'};
+m[0][10]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
+m[0][11]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
+m[0][12]={w:0,l:1,t:0,sf:4.5,sa:7.5,g:1,c:'losing'};
+m[1][0]={w:1,l:1,t:0,sf:9.0,sa:15.0,g:2,c:'even'};
+m[1][1]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[1][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[1][3]={w:0,l:1,t:0,sf:2.0,sa:10.0,g:1,c:'losing'};
+m[1][4]={w:0,l:2,t:0,sf:4.5,sa:19.5,g:2,c:'losing'};
+m[1][5]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[1][6]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[1][7]={w:0,l:2,t:0,sf:4.5,sa:19.5,g:2,c:'losing'};
+m[1][8]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[1][9]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[1][10]={w:1,l:1,t:0,sf:9.5,sa:14.5,g:2,c:'even'};
+m[1][11]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[1][12]={w:1,l:1,t:0,sf:10.5,sa:13.5,g:2,c:'even'};
+m[2][0]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][1]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][2]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[2][3]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][4]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][5]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][6]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][7]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][8]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][9]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][10]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][11]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[2][12]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[3][0]={w:0,l:2,t:0,sf:2.5,sa:21.5,g:2,c:'losing'};
+m[3][1]={w:1,l:0,t:0,sf:10.0,sa:2.0,g:1,c:'winning'};
+m[3][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[3][3]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[3][4]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
+m[3][5]={w:0,l:1,t:1,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[3][6]={w:0,l:1,t:1,sf:10.0,sa:14.0,g:2,c:'losing'};
+m[3][7]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[3][8]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[3][9]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[3][10]={w:0,l:2,t:0,sf:7.5,sa:16.5,g:2,c:'losing'};
+m[3][11]={w:1,l:1,t:0,sf:11.5,sa:12.5,g:2,c:'even'};
+m[3][12]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
+m[4][0]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
+m[4][1]={w:2,l:0,t:0,sf:19.5,sa:4.5,g:2,c:'winning'};
+m[4][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[4][3]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
+m[4][4]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[4][5]={w:0,l:1,t:0,sf:1.0,sa:11.0,g:1,c:'losing'};
+m[4][6]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[4][7]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[4][8]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
+m[4][9]={w:0,l:2,t:0,sf:7.5,sa:16.5,g:2,c:'losing'};
+m[4][10]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[4][11]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[4][12]={w:1,l:0,t:1,sf:17.0,sa:7.0,g:2,c:'winning'};
+m[5][0]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
+m[5][1]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[5][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[5][3]={w:1,l:0,t:1,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[5][4]={w:1,l:0,t:0,sf:11.0,sa:1.0,g:1,c:'winning'};
+m[5][5]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[5][6]={w:1,l:1,t:0,sf:11.5,sa:12.5,g:2,c:'even'};
+m[5][7]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
+m[5][8]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
+m[5][9]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[5][10]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
+m[5][11]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
+m[5][12]={w:2,l:0,t:0,sf:21.5,sa:2.5,g:2,c:'winning'};
+m[6][0]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[6][1]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[6][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[6][3]={w:1,l:0,t:1,sf:14.0,sa:10.0,g:2,c:'winning'};
+m[6][4]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[6][5]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
+m[6][6]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[6][7]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
+m[6][8]={w:0,l:1,t:0,sf:5.0,sa:7.0,g:1,c:'losing'};
+m[6][9]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
+m[6][10]={w:2,l:0,t:0,sf:17.0,sa:7.0,g:2,c:'winning'};
+m[6][11]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
+m[6][12]={w:0,l:1,t:1,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[7][0]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[7][1]={w:2,l:0,t:0,sf:19.5,sa:4.5,g:2,c:'winning'};
+m[7][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[7][3]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[7][4]={w:0,l:2,t:0,sf:8.5,sa:15.5,g:2,c:'losing'};
+m[7][5]={w:0,l:1,t:1,sf:11.0,sa:13.0,g:2,c:'losing'};
+m[7][6]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
+m[7][7]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[7][8]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[7][9]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[7][10]={w:1,l:0,t:0,sf:11.0,sa:1.0,g:1,c:'winning'};
+m[7][11]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[7][12]={w:2,l:0,t:0,sf:15.0,sa:9.0,g:2,c:'winning'};
+m[8][0]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[8][1]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[8][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[8][3]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[8][4]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
+m[8][5]={w:0,l:2,t:0,sf:6.5,sa:17.5,g:2,c:'losing'};
+m[8][6]={w:1,l:0,t:0,sf:7.0,sa:5.0,g:1,c:'winning'};
+m[8][7]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[8][8]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[8][9]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[8][10]={w:0,l:2,t:0,sf:5.5,sa:18.5,g:2,c:'losing'};
+m[8][11]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
+m[8][12]={w:1,l:1,t:0,sf:8.0,sa:16.0,g:2,c:'even'};
+m[9][0]={w:0,l:2,t:0,sf:2.0,sa:22.0,g:2,c:'losing'};
+m[9][1]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[9][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[9][3]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[9][4]={w:2,l:0,t:0,sf:16.5,sa:7.5,g:2,c:'winning'};
+m[9][5]={w:2,l:0,t:0,sf:18.0,sa:6.0,g:2,c:'winning'};
+m[9][6]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
+m[9][7]={w:0,l:2,t:0,sf:6.0,sa:18.0,g:2,c:'losing'};
+m[9][8]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[9][9]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[9][10]={w:1,l:1,t:0,sf:11.0,sa:13.0,g:2,c:'even'};
+m[9][11]={w:0,l:0,t:1,sf:6.0,sa:6.0,g:1,c:'even'};
+m[9][12]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[10][0]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
+m[10][1]={w:1,l:1,t:0,sf:14.5,sa:9.5,g:2,c:'even'};
+m[10][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[10][3]={w:2,l:0,t:0,sf:16.5,sa:7.5,g:2,c:'winning'};
+m[10][4]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[10][5]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
+m[10][6]={w:0,l:2,t:0,sf:7.0,sa:17.0,g:2,c:'losing'};
+m[10][7]={w:0,l:1,t:0,sf:1.0,sa:11.0,g:1,c:'losing'};
+m[10][8]={w:2,l:0,t:0,sf:18.5,sa:5.5,g:2,c:'winning'};
+m[10][9]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
+m[10][10]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[10][11]={w:2,l:0,t:0,sf:21.0,sa:3.0,g:2,c:'winning'};
+m[10][12]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[11][0]={w:1,l:1,t:0,sf:10.5,sa:13.5,g:2,c:'even'};
+m[11][1]={w:2,l:0,t:0,sf:19.0,sa:5.0,g:2,c:'winning'};
+m[11][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[11][3]={w:1,l:1,t:0,sf:12.5,sa:11.5,g:2,c:'even'};
+m[11][4]={w:2,l:0,t:0,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[11][5]={w:2,l:0,t:0,sf:18.5,sa:5.5,g:2,c:'winning'};
+m[11][6]={w:1,l:0,t:1,sf:13.0,sa:11.0,g:2,c:'winning'};
+m[11][7]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[11][8]={w:1,l:1,t:0,sf:13.0,sa:11.0,g:2,c:'even'};
+m[11][9]={w:0,l:0,t:1,sf:6.0,sa:6.0,g:1,c:'even'};
+m[11][10]={w:0,l:2,t:0,sf:3.0,sa:21.0,g:2,c:'losing'};
+m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
+m[11][12]={w:2,l:0,t:0,sf:16.0,sa:8.0,g:2,c:'winning'};
+m[12][0]={w:1,l:0,t:0,sf:7.5,sa:4.5,g:1,c:'winning'};
+m[12][1]={w:1,l:1,t:0,sf:13.5,sa:10.5,g:2,c:'even'};
+m[12][2]={w:0,l:0,t:0,sf:0.0,sa:0.0,g:0,c:'none'};
+m[12][3]={w:2,l:0,t:0,sf:17.5,sa:6.5,g:2,c:'winning'};
+m[12][4]={w:0,l:1,t:1,sf:7.0,sa:17.0,g:2,c:'losing'};
+m[12][5]={w:0,l:2,t:0,sf:2.5,sa:21.5,g:2,c:'losing'};
+m[12][6]={w:1,l:0,t:1,sf:15.5,sa:8.5,g:2,c:'winning'};
+m[12][7]={w:0,l:2,t:0,sf:9.0,sa:15.0,g:2,c:'losing'};
+m[12][8]={w:1,l:1,t:0,sf:16.0,sa:8.0,g:2,c:'even'};
+m[12][9]={w:1,l:1,t:0,sf:12.0,sa:12.0,g:2,c:'even'};
+m[12][10]={w:0,l:2,t:0,sf:5.0,sa:19.0,g:2,c:'losing'};
+m[12][11]={w:0,l:2,t:0,sf:8.0,sa:16.0,g:2,c:'losing'};
+m[12][12]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
 
     let currentYear = 'alltime';
+    let currentView = 'record';
 
     function renderMatrix(yearKey) {
       currentYear = yearKey;
       const m = D[yearKey];
+      const view = currentView;
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
       const sortBy = document.getElementById('sortSelect').value;
 
-      // Pre-compute totals for sorting
+      // Pre-compute totals
       const teamData = teams.map(t => {
-        let tw = 0, tl = 0, tt = 0;
+        let tw = 0, tl = 0, tt = 0, tsf = 0, tsa = 0, tg = 0;
         for (const tB of teams) {
           if (t.id === tB.id) continue;
           const cell = m[t.id][tB.id];
           if (cell.w !== '-' && !(cell.w === 0 && cell.l === 0 && cell.t === 0)) {
             tw += cell.w; tl += cell.l; tt += cell.t;
+            tsf += cell.sf; tsa += cell.sa; tg += cell.g;
           }
         }
         const total = tw + tl + tt;
         const pct = total > 0 ? (tw + tt * 0.5) / total : 0;
-        return { ...t, tw, tl, tt, total, pct };
+        return { ...t, tw, tl, tt, total, pct, tsf, tsa, tg };
       });
+
+      // Filter out managers with 0 games for year-specific views
+      const active = yearKey !== 'alltime' ? teamData.filter(t => t.total > 0) : teamData;
 
       let sorted;
       if (sortBy === 'winpct') {
-        sorted = [...teamData].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+        if (view === 'cumulative') {
+          sorted = [...active].sort((a, b) => (b.tsf - b.tsa) - (a.tsf - a.tsa) || b.tsf - a.tsf);
+        } else if (view === 'average') {
+          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
+          sorted = [...active].sort((a, b) => avgDiff(b) - avgDiff(a));
+        } else {
+          sorted = [...active].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+        }
       } else if (sortBy === 'wins') {
-        sorted = [...teamData].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+        if (view === 'cumulative') {
+          sorted = [...active].sort((a, b) => b.tsf - a.tsf || a.tsa - b.tsa);
+        } else if (view === 'average') {
+          const avgF = t => t.tg > 0 ? t.tsf / t.tg : 0;
+          sorted = [...active].sort((a, b) => avgF(b) - avgF(a));
+        } else {
+          sorted = [...active].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+        }
       } else {
-        sorted = teamData;
+        sorted = active;
       }
 
       let hdr = '<tr><th class="team-col">Manager</th>';
@@ -983,15 +1118,37 @@ m[11][11]={w:"-",l:"-",t:"-",c:'self'};
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {
             rows += '<td class="self">&mdash;</td>';
-          } else if (cell.w === 0 && cell.l === 0 && cell.t === 0) {
-            rows += '<td class="none">0-0</td>';
+          } else if (cell.g === 0 && cell.w !== '-') {
+            rows += '<td class="none">&mdash;</td>';
           } else {
-            let display = `${cell.w}-${cell.l}`;
-            if (cell.t > 0) display += `-${cell.t}`;
+            let display;
+            if (view === 'cumulative') {
+              const sfStr = cell.sf % 1 === 0 ? cell.sf.toFixed(0) : cell.sf.toFixed(1);
+              const saStr = cell.sa % 1 === 0 ? cell.sa.toFixed(0) : cell.sa.toFixed(1);
+              display = `${sfStr}-${saStr}`;
+            } else if (view === 'average') {
+              const avgF = cell.g > 0 ? (cell.sf / cell.g) : 0;
+              const avgA = cell.g > 0 ? (cell.sa / cell.g) : 0;
+              display = `${avgF.toFixed(1)}-${avgA.toFixed(1)}`;
+            } else {
+              display = `${cell.w}-${cell.l}`;
+              if (cell.t > 0) display += `-${cell.t}`;
+            }
             rows += `<td class="${cell.c}"><span class="record-line">${display}</span></td>`;
           }
         }
-        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tA.tw}-${tA.tl}${tA.tt > 0 ? '-' + tA.tt : ''} <span style="color:#64748b;font-weight:400">(${(tA.pct * 100).toFixed(0)}%)</span></td>`;
+        // Total column
+        if (view === 'cumulative') {
+          const tsfStr = tA.tsf % 1 === 0 ? tA.tsf.toFixed(0) : tA.tsf.toFixed(1);
+          const tsaStr = tA.tsa % 1 === 0 ? tA.tsa.toFixed(0) : tA.tsa.toFixed(1);
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tsfStr}-${tsaStr}</td>`;
+        } else if (view === 'average') {
+          const avgF = tA.tg > 0 ? (tA.tsf / tA.tg) : 0;
+          const avgA = tA.tg > 0 ? (tA.tsa / tA.tg) : 0;
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${avgF.toFixed(1)}-${avgA.toFixed(1)}</td>`;
+        } else {
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tA.tw}-${tA.tl}${tA.tt > 0 ? '-' + tA.tt : ''} <span style="color:#64748b;font-weight:400">(${(tA.pct * 100).toFixed(0)}%)</span></td>`;
+        }
         rows += '</tr>';
       }
       body.innerHTML = rows;
@@ -1004,6 +1161,15 @@ m[11][11]={w:"-",l:"-",t:"-",c:'self'};
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderMatrix(btn.dataset.year);
+      });
+    });
+
+    document.querySelectorAll('.view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        renderMatrix(currentYear);
       });
     });
 

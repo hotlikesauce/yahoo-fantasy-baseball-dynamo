@@ -29,13 +29,20 @@ from team_config import MANAGERS, YEAR_TN_TO_MANAGER
 
 YEARS = [2023, 2024, 2025]
 
+# Build manager list from all managers who appear in the H2H years
+# (includes historical managers like David who aren't in current MANAGERS)
+ALL_H2H_MANAGERS = sorted(set(
+    mgr for (y, tn), mgr in YEAR_TN_TO_MANAGER.items() if y in YEARS
+))
+
 COLORS = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
     '#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7',
+    '#64748b',
 ]
 
-MGR_IDX = {name: i for i, name in enumerate(MANAGERS)}
-NUM_MGRS = len(MANAGERS)
+MGR_IDX = {name: i for i, name in enumerate(ALL_H2H_MANAGERS)}
+NUM_MGRS = len(ALL_H2H_MANAGERS)
 
 
 def query_data_type(year, data_type):
@@ -123,7 +130,7 @@ for year in YEARS:
                             break
 
     print(f"  {year}: {len(year_name_to_mgr[year])} names mapped")
-    for mgr in MANAGERS:
+    for mgr in ALL_H2H_MANAGERS:
         latest = year_mgr_latest[year].get(mgr, '???')
         print(f"    {mgr:>8}: {latest}")
 
@@ -132,8 +139,9 @@ for year in YEARS:
 # ============================================================
 print("\nQuerying weekly_results...")
 
-h2h_by_year = {y: defaultdict(lambda: {'w': 0, 'l': 0, 't': 0}) for y in YEARS}
-h2h_alltime = defaultdict(lambda: {'w': 0, 'l': 0, 't': 0})
+def new_rec(): return {'w': 0, 'l': 0, 't': 0, 'sf': 0.0, 'sa': 0.0, 'g': 0}
+h2h_by_year = {y: defaultdict(new_rec) for y in YEARS}
+h2h_alltime = defaultdict(new_rec)
 
 all_matchups = []
 skipped = 0
@@ -151,6 +159,12 @@ for year in YEARS:
         score = float(item.get('Score', 0))
         opp_score = float(item.get('Opponent_Score', 0))
         week = int(item.get('Week', 0))
+
+        # 2025 had 21 regular-season weeks; 2023-2024 only have complete
+        # data through week 20 (week 21+ incomplete, causes symmetry mismatches)
+        max_week = 21 if year == 2025 else 20
+        if week > max_week:
+            continue
 
         mgr_a = YEAR_TN_TO_MANAGER.get((year, tn))
         mgr_b = year_name_to_mgr[year].get(opp_name)
@@ -172,6 +186,14 @@ for year in YEARS:
         else:
             h2h_by_year[year][(idx_a, idx_b)]['t'] += 1
             h2h_alltime[(idx_a, idx_b)]['t'] += 1
+
+        # Track cumulative category scores
+        h2h_by_year[year][(idx_a, idx_b)]['sf'] += score
+        h2h_by_year[year][(idx_a, idx_b)]['sa'] += opp_score
+        h2h_by_year[year][(idx_a, idx_b)]['g'] += 1
+        h2h_alltime[(idx_a, idx_b)]['sf'] += score
+        h2h_alltime[(idx_a, idx_b)]['sa'] += opp_score
+        h2h_alltime[(idx_a, idx_b)]['g'] += 1
 
         # Collect individual matchup once per game
         key = (year, week, min(idx_a, idx_b), max(idx_a, idx_b))
@@ -204,7 +226,7 @@ for i in range(NUM_MGRS):
         a_wins = h2h_alltime.get((i, j), {'w': 0})['w']
         b_losses = h2h_alltime.get((j, i), {'l': 0})['l']
         if a_wins != b_losses:
-            print(f"  MISMATCH: {MANAGERS[i]} wins vs {MANAGERS[j]} = {a_wins}, but {MANAGERS[j]} losses vs {MANAGERS[i]} = {b_losses}")
+            print(f"  MISMATCH: {ALL_H2H_MANAGERS[i]} wins vs {ALL_H2H_MANAGERS[j]} = {a_wins}, but {ALL_H2H_MANAGERS[j]} losses vs {ALL_H2H_MANAGERS[i]} = {b_losses}")
             errors += 1
 if errors == 0:
     print("  All records symmetric!")
@@ -222,7 +244,7 @@ for i in range(NUM_MGRS):
         win_pct = (rec['w'] + rec['t'] * 0.5) / total
         rivalries.append({
             'i': i, 'j': j,
-            'name_a': MANAGERS[i], 'name_b': MANAGERS[j],
+            'name_a': ALL_H2H_MANAGERS[i], 'name_b': ALL_H2H_MANAGERS[j],
             'w': rec['w'], 'l': rec['l'], 't': rec['t'],
             'total': total, 'win_pct': win_pct,
             'imbalance': abs(win_pct - 0.5),
@@ -244,12 +266,13 @@ def build_matrix(h2h_data):
         cells = {}
         for j in range(NUM_MGRS):
             if i == j:
-                cells[j] = {'w': '-', 'l': '-', 't': '-', 'cls': 'self'}
+                cells[j] = {'w': '-', 'l': '-', 't': '-', 'sf': 0, 'sa': 0, 'g': 0, 'cls': 'self'}
             else:
-                rec = h2h_data.get((i, j), {'w': 0, 'l': 0, 't': 0})
+                rec = h2h_data.get((i, j), new_rec())
                 total = rec['w'] + rec['l'] + rec['t']
                 cls = 'none' if total == 0 else ('winning' if rec['w'] > rec['l'] else ('losing' if rec['w'] < rec['l'] else 'even'))
-                cells[j] = {'w': rec['w'], 'l': rec['l'], 't': rec['t'], 'cls': cls}
+                cells[j] = {'w': rec['w'], 'l': rec['l'], 't': rec['t'],
+                             'sf': rec['sf'], 'sa': rec['sa'], 'g': rec['g'], 'cls': cls}
         rows[i] = cells
     return rows
 
@@ -259,7 +282,9 @@ def matrix_to_js(matrix):
     for i in range(NUM_MGRS):
         for j in range(NUM_MGRS):
             c = matrix[i][j]
-            lines.append(f"m[{i}][{j}]={{w:{json.dumps(c['w'])},l:{json.dumps(c['l'])},t:{json.dumps(c['t'])},c:'{c['cls']}'}};")
+            sf = json.dumps(round(c['sf'], 1) if isinstance(c['sf'], float) else c['sf'])
+            sa = json.dumps(round(c['sa'], 1) if isinstance(c['sa'], float) else c['sa'])
+            lines.append(f"m[{i}][{j}]={{w:{json.dumps(c['w'])},l:{json.dumps(c['l'])},t:{json.dumps(c['t'])},sf:{sf},sa:{sa},g:{c['g']},c:'{c['cls']}'}};")
     return '\n'.join(lines)
 
 
@@ -285,16 +310,16 @@ print("\nGenerating HTML...")
 
 # Team info for JS (manager name + latest team name for tooltip)
 team_info = []
-for i, mgr in enumerate(MANAGERS):
-    latest = year_mgr_latest[2025].get(mgr, mgr)
-    team_info.append({'id': i, 'mgr': mgr, 'team': js_safe(latest), 'color': COLORS[i % 12]})
+for i, mgr in enumerate(ALL_H2H_MANAGERS):
+    latest = year_mgr_latest[YEARS[-1]].get(mgr, mgr)
+    team_info.append({'id': i, 'mgr': mgr, 'team': js_safe(latest), 'color': COLORS[i % len(COLORS)]})
 team_info_js = json.dumps(team_info)
 
 # Per-year team names
 year_names = {}
 for y in YEARS:
     names = {}
-    for i, mgr in enumerate(MANAGERS):
+    for i, mgr in enumerate(ALL_H2H_MANAGERS):
         names[i] = js_safe(year_mgr_latest[y].get(mgr, mgr))
     year_names[str(y)] = names
 year_names_js = json.dumps(year_names)
@@ -350,6 +375,14 @@ html = f'''<!DOCTYPE html>
     }}
     .filter-btn:hover {{ color: #e2e8f0; border-color: #475569; }}
     .filter-btn.active {{ background: #3b82f6; color: #fff; border-color: #3b82f6; }}
+
+    .view-btn {{
+      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
+      transition: all 0.15s;
+    }}
+    .view-btn:hover {{ color: #e2e8f0; border-color: #475569; }}
+    .view-btn.active {{ background: #8b5cf6; color: #fff; border-color: #8b5cf6; }}
 
     .matrix-wrap {{ overflow-x: auto; margin-bottom: 40px; }}
     .matrix {{ border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }}
@@ -411,6 +444,12 @@ html = f'''<!DOCTYPE html>
         <option value="wins">Total Wins</option>
       </select>
     </div>
+    <div class="filter-bar">
+      <label>View:</label>
+      <button class="view-btn active" data-view="record">Record (W-L)</button>
+      <button class="view-btn" data-view="cumulative">Cumulative Scores</button>
+      <button class="view-btn" data-view="average">Average Scores</button>
+    </div>
 
     <div class="matrix-wrap">
       <table class="matrix" id="h2hMatrix">
@@ -460,36 +499,57 @@ html = f'''<!DOCTYPE html>
     {full_matrix_js()}
 
     let currentYear = 'alltime';
+    let currentView = 'record';
 
     function renderMatrix(yearKey) {{
       currentYear = yearKey;
       const m = D[yearKey];
+      const view = currentView;
       const head = document.getElementById('matrixHead');
       const body = document.getElementById('matrixBody');
       const names = yearKey !== 'alltime' && yearNames[yearKey] ? yearNames[yearKey] : null;
       const sortBy = document.getElementById('sortSelect').value;
 
+      // Pre-compute totals
       const teamData = teams.map(t => {{
-        let tw = 0, tl = 0, tt = 0;
+        let tw = 0, tl = 0, tt = 0, tsf = 0, tsa = 0, tg = 0;
         for (const tB of teams) {{
           if (t.id === tB.id) continue;
           const cell = m[t.id][tB.id];
           if (cell.w !== '-' && !(cell.w === 0 && cell.l === 0 && cell.t === 0)) {{
             tw += cell.w; tl += cell.l; tt += cell.t;
+            tsf += cell.sf; tsa += cell.sa; tg += cell.g;
           }}
         }}
         const total = tw + tl + tt;
         const pct = total > 0 ? (tw + tt * 0.5) / total : 0;
-        return {{ ...t, tw, tl, tt, total, pct }};
+        return {{ ...t, tw, tl, tt, total, pct, tsf, tsa, tg }};
       }});
+
+      // Filter out managers with 0 games for year-specific views
+      const active = yearKey !== 'alltime' ? teamData.filter(t => t.total > 0) : teamData;
 
       let sorted;
       if (sortBy === 'winpct') {{
-        sorted = [...teamData].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+        if (view === 'cumulative') {{
+          sorted = [...active].sort((a, b) => (b.tsf - b.tsa) - (a.tsf - a.tsa) || b.tsf - a.tsf);
+        }} else if (view === 'average') {{
+          const avgDiff = t => t.tg > 0 ? (t.tsf - t.tsa) / t.tg : 0;
+          sorted = [...active].sort((a, b) => avgDiff(b) - avgDiff(a));
+        }} else {{
+          sorted = [...active].sort((a, b) => b.pct - a.pct || b.tw - a.tw);
+        }}
       }} else if (sortBy === 'wins') {{
-        sorted = [...teamData].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+        if (view === 'cumulative') {{
+          sorted = [...active].sort((a, b) => b.tsf - a.tsf || a.tsa - b.tsa);
+        }} else if (view === 'average') {{
+          const avgF = t => t.tg > 0 ? t.tsf / t.tg : 0;
+          sorted = [...active].sort((a, b) => avgF(b) - avgF(a));
+        }} else {{
+          sorted = [...active].sort((a, b) => b.tw - a.tw || b.pct - a.pct);
+        }}
       }} else {{
-        sorted = teamData;
+        sorted = active;
       }}
 
       let hdr = '<tr><th class="team-col">Manager</th>';
@@ -508,15 +568,37 @@ html = f'''<!DOCTYPE html>
           const cell = m[tA.id][tB.id];
           if (tA.id === tB.id) {{
             rows += '<td class="self">&mdash;</td>';
-          }} else if (cell.w === 0 && cell.l === 0 && cell.t === 0) {{
-            rows += '<td class="none">0-0</td>';
+          }} else if (cell.g === 0 && cell.w !== '-') {{
+            rows += '<td class="none">&mdash;</td>';
           }} else {{
-            let display = `${{cell.w}}-${{cell.l}}`;
-            if (cell.t > 0) display += `-${{cell.t}}`;
+            let display;
+            if (view === 'cumulative') {{
+              const sfStr = cell.sf % 1 === 0 ? cell.sf.toFixed(0) : cell.sf.toFixed(1);
+              const saStr = cell.sa % 1 === 0 ? cell.sa.toFixed(0) : cell.sa.toFixed(1);
+              display = `${{sfStr}}-${{saStr}}`;
+            }} else if (view === 'average') {{
+              const avgF = cell.g > 0 ? (cell.sf / cell.g) : 0;
+              const avgA = cell.g > 0 ? (cell.sa / cell.g) : 0;
+              display = `${{avgF.toFixed(1)}}-${{avgA.toFixed(1)}}`;
+            }} else {{
+              display = `${{cell.w}}-${{cell.l}}`;
+              if (cell.t > 0) display += `-${{cell.t}}`;
+            }}
             rows += `<td class="${{cell.c}}"><span class="record-line">${{display}}</span></td>`;
           }}
         }}
-        rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{tA.tw}}-${{tA.tl}}${{tA.tt > 0 ? '-' + tA.tt : ''}} <span style="color:#64748b;font-weight:400">(${{(tA.pct * 100).toFixed(0)}}%)</span></td>`;
+        // Total column
+        if (view === 'cumulative') {{
+          const tsfStr = tA.tsf % 1 === 0 ? tA.tsf.toFixed(0) : tA.tsf.toFixed(1);
+          const tsaStr = tA.tsa % 1 === 0 ? tA.tsa.toFixed(0) : tA.tsa.toFixed(1);
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{tsfStr}}-${{tsaStr}}</td>`;
+        }} else if (view === 'average') {{
+          const avgF = tA.tg > 0 ? (tA.tsf / tA.tg) : 0;
+          const avgA = tA.tg > 0 ? (tA.tsa / tA.tg) : 0;
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{avgF.toFixed(1)}}-${{avgA.toFixed(1)}}</td>`;
+        }} else {{
+          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${{tA.tw}}-${{tA.tl}}${{tA.tt > 0 ? '-' + tA.tt : ''}} <span style="color:#64748b;font-weight:400">(${{(tA.pct * 100).toFixed(0)}}%)</span></td>`;
+        }}
         rows += '</tr>';
       }}
       body.innerHTML = rows;
@@ -529,6 +611,15 @@ html = f'''<!DOCTYPE html>
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderMatrix(btn.dataset.year);
+      }});
+    }});
+
+    document.querySelectorAll('.view-btn').forEach(btn => {{
+      btn.addEventListener('click', () => {{
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentView = btn.dataset.view;
+        renderMatrix(currentYear);
       }});
     }});
 
