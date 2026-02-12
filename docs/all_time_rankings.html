@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Summertime Sadness - All-Time Records</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,6 +31,18 @@
   .bar-label { width: 90px; font-size: 0.85em; color: #cbd5e1; text-align: right; }
   .bar { height: 22px; background: linear-gradient(90deg, #3b82f6, #38bdf8); border-radius: 4px; min-width: 2px; }
   .bar-value { font-size: 0.8em; color: #94a3b8; min-width: 30px; }
+  @media (max-width: 640px) {
+    body { padding: 20px 10px; }
+    h1 { font-size: 1.5em; }
+    h2 { font-size: 0.95em; margin-bottom: 24px; }
+    h3 { font-size: 1.1em; }
+    .container { max-width: 100%; }
+    th { padding: 8px 8px; font-size: 0.75em; }
+    td { padding: 8px 8px; font-size: 0.82em; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .stat-card { padding: 14px; }
+    .bar-label { width: 65px; font-size: 0.78em; }
+  }
 </style>
 </head>
 <body>

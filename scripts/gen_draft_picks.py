@@ -122,6 +122,7 @@ html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Summertime Sadness - 2026 Draft Capital</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -165,6 +166,18 @@ html = f"""<!DOCTYPE html>
   th.sortable::after {{ content: '\\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }}
   th.sortable.asc::after {{ content: '\\2191'; opacity: 0.8; }}
   th.sortable.desc::after {{ content: '\\2193'; opacity: 0.8; }}
+  @media (max-width: 640px) {{
+    body {{ padding: 10px; }}
+    h1 {{ font-size: 1.4em; }}
+    h2 {{ font-size: 0.95em; }}
+    h3 {{ font-size: 1.1em; }}
+    .chart-box {{ height: 280px; padding: 12px; }}
+    .grid-table th {{ font-size: 0.62em; padding: 6px 2px; }}
+    .grid-table th:first-child {{ min-width: 100px; }}
+    .grid-table td {{ padding: 4px 2px; font-size: 0.75em; }}
+    th {{ padding: 8px 4px; font-size: 0.72em; }}
+    td {{ padding: 6px 4px; font-size: 0.82em; }}
+  }}
 </style>
 </head>
 <body>
