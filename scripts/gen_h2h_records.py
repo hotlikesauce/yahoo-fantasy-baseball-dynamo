@@ -346,7 +346,6 @@ html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Summertime Sadness - H2H Records</title>
   <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -420,30 +419,6 @@ html = f'''<!DOCTYPE html>
 
     .card {{ background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }}
     .card h3 {{ margin-top: 0; }}
-
-    /* Mobile responsive */
-    @media (max-width: 640px) {{
-      .container {{ padding: 16px 10px; }}
-      h2 {{ font-size: 1.3em; }}
-      .subtitle {{ font-size: 0.85em; }}
-      .section-desc {{ font-size: 0.82em; }}
-
-      .filter-bar {{ gap: 6px; margin-bottom: 12px; }}
-      .filter-bar label {{ font-size: 0.8em; width: 100%; }}
-      .filter-btn, .view-btn, .rivalry-view-btn {{ padding: 5px 10px; font-size: 0.78em; }}
-
-      .matrix {{ font-size: 0.68em; }}
-      .matrix th, .matrix td {{ padding: 4px 5px; }}
-      .matrix th.team-col {{ min-width: 70px; }}
-      .matrix td.team-cell {{ font-size: 0.9em; }}
-
-      th {{ padding: 8px 8px; font-size: 0.75em; }}
-      td {{ padding: 8px 8px; font-size: 0.82em; }}
-
-      .card {{ padding: 14px 10px; }}
-      .card h3 {{ font-size: 1em; }}
-      h3 {{ font-size: 1em; margin: 24px 0 8px; }}
-    }}
   </style>
 </head>
 <body>

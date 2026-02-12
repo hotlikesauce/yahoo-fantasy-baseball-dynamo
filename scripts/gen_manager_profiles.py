@@ -263,7 +263,6 @@ html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Summertime Sadness - Manager Profiles</title>
   <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -375,20 +374,6 @@ html = f'''<!DOCTYPE html>
     @media (max-width: 768px) {{
       .profile-header {{ flex-direction: column; align-items: flex-start; }}
       .stat-cards {{ grid-template-columns: repeat(3, 1fr); }}
-    }}
-    @media (max-width: 640px) {{
-      .container {{ padding: 16px 10px; }}
-      h2 {{ font-size: 1.3em; }}
-      .mgr-grid {{ grid-template-columns: repeat(3, 1fr); gap: 8px; }}
-      .mgr-card {{ padding: 10px 8px; }}
-      .mgr-card .mgr-name {{ font-size: 0.9em; }}
-      .profile-name {{ font-size: 1.6em; }}
-      .stat-cards {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
-      .stat-card {{ padding: 12px; }}
-      .stat-card .value {{ font-size: 1.3em; }}
-      .section {{ padding: 14px 10px; }}
-      th {{ padding: 8px 8px; font-size: 0.75em; }}
-      td {{ padding: 8px 8px; font-size: 0.82em; }}
     }}
   </style>
 </head>

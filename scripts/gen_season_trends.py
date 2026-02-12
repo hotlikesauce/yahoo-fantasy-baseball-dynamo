@@ -347,7 +347,6 @@ html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Summertime Sadness - 2025 Season Trends</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -384,16 +383,6 @@ html = f"""<!DOCTYPE html>
   th.sortable.asc::after {{ content: '\\2191'; opacity: 0.8; }}
   th.sortable.desc::after {{ content: '\\2193'; opacity: 0.8; }}
   .best-table td:first-child {{ font-size: 1.2em; width: 36px; text-align: center; }}
-  @media (max-width: 640px) {{
-    body {{ padding: 10px; }}
-    h1 {{ font-size: 1.4em; }}
-    h2 {{ font-size: 0.95em; }}
-    h3 {{ font-size: 1.1em; }}
-    .chart-box {{ height: 300px; padding: 12px; }}
-    .toggle-btn {{ padding: 6px 12px; font-size: 0.82em; }}
-    th {{ padding: 8px 6px; font-size: 0.75em; }}
-    td {{ padding: 6px 6px; font-size: 0.82em; }}
-  }}
 </style>
 </head>
 <body>
