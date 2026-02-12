@@ -160,6 +160,14 @@ for year in YEARS:
         opp_score = float(item.get('Opponent_Score', 0))
         week = int(item.get('Week', 0))
 
+        # Normalize: 2023-2024 stored raw W-L (ties not distributed),
+        # 2025 stores tie-adjusted (0.5 per tie). Ensure all sum to 12.
+        total = score + opp_score
+        if total < 12:
+            ties = 12 - total
+            score += ties * 0.5
+            opp_score += ties * 0.5
+
         # 2025 had 21 regular-season weeks; 2023-2024 only have complete
         # data through week 20 (week 21+ incomplete, causes symmetry mismatches)
         max_week = 21 if year == 2025 else 20
