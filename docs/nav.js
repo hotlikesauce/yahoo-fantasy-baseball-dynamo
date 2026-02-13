@@ -114,45 +114,6 @@
       color: #64748b;
       letter-spacing: 0.05em;
     }
-    .ss-hamburger {
-      display: none;
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 1.5em;
-      cursor: pointer;
-      padding: 4px 8px;
-      margin-left: auto;
-      line-height: 1;
-    }
-    .ss-hamburger:hover { color: #e2e8f0; }
-    @media (max-width: 768px) {
-      .ss-nav { padding: 0 12px; }
-      .ss-nav-inner { flex-wrap: wrap; height: auto; min-height: 48px; }
-      .ss-nav-brand { margin-right: auto; font-size: 0.95em; padding: 12px 0; }
-      .ss-hamburger { display: block; }
-      .ss-nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        padding-bottom: 8px;
-      }
-      .ss-nav-links.open { display: flex; }
-      .ss-nav-item { height: auto; flex-direction: column; }
-      .ss-nav-link { padding: 10px 0; font-size: 0.88em; height: auto; }
-      .ss-nav-link.active { box-shadow: none; color: #3b82f6; }
-      .ss-dropdown {
-        position: static;
-        box-shadow: none;
-        border: none;
-        border-radius: 0;
-        padding: 0 0 0 16px;
-        min-width: 0;
-        display: none;
-      }
-      .ss-nav-item.open .ss-dropdown { display: block; }
-      .ss-dropdown a { padding: 8px 12px; font-size: 0.85em; }
-    }
   `;
   document.head.appendChild(style);
 
@@ -171,8 +132,7 @@
     <nav class="ss-nav">
       <div class="ss-nav-inner">
         <a href="index.html" class="ss-nav-brand">Summertime Sadness</a>
-        <button class="ss-hamburger" aria-label="Menu">&#9776;</button>
-        <ul class="ss-nav-links">
+<ul class="ss-nav-links">
           <li class="ss-nav-item">
             <a href="index.html" class="ss-nav-link${isActive('index.html')}">Home</a>
           </li>
@@ -213,21 +173,4 @@
     </nav>
   `;
 
-  // Mobile hamburger toggle
-  const hamburger = nav.querySelector('.ss-hamburger');
-  const links = nav.querySelector('.ss-nav-links');
-  if (hamburger && links) {
-    hamburger.addEventListener('click', () => {
-      links.classList.toggle('open');
-    });
-    // Dropdown toggle on mobile (tap to expand)
-    nav.querySelectorAll('.ss-nav-link.has-dropdown').forEach(link => {
-      link.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768) {
-          e.preventDefault();
-          link.closest('.ss-nav-item').classList.toggle('open');
-        }
-      });
-    });
-  }
 })();
