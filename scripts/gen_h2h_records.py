@@ -346,11 +346,13 @@ html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
   <title>Summertime Sadness - H2H Records</title>
   <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }}
     .container {{ max-width: 1400px; margin: 0 auto; padding: 32px 24px; }}
+    h1 {{ text-align: center; font-size: 2em; margin-bottom: 4px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
     h2 {{ font-size: 1.7em; margin-bottom: 6px; }}
     h3 {{ color: #22d3ee; font-size: 1.15em; margin: 40px 0 10px; }}
     .section-desc {{ color: #94a3b8; font-size: 0.92em; margin-bottom: 18px; line-height: 1.5; }}
@@ -426,6 +428,7 @@ html = f'''<!DOCTYPE html>
   <script src="nav.js"></script>
 
   <div class="container">
+    <h1>Summertime Sadness Fantasy Baseball</h1>
     <h2>&#x1F91C;&#x1F91B; Manager vs Manager H2H Records</h2>
     <p class="subtitle">Head-to-head matchup records across all seasons (2023&ndash;2025) &bull; Identified by manager, not team name</p>
 

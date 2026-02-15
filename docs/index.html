@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <title>Summertime Sadness Fantasy Baseball</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,7 +35,7 @@
   .hero h1 {
     font-size: 3em;
     font-weight: 800;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 8px;
@@ -217,6 +218,34 @@
     color: #475569;
     font-size: 0.95em;
   }
+
+  .standings-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .standings-table th {
+    background: #1e293b;
+    color: #64748b;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #334155;
+  }
+  .standings-table th:not(:first-child) { text-align: center; }
+  .standings-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1e293b;
+    font-size: 0.92em;
+  }
+  .standings-table td:not(:first-child) { text-align: center; color: #94a3b8; }
+  .standings-table tr:hover { background: #1e293b55; }
+  .standings-table .team-name { font-weight: 700; color: #e2e8f0; }
+  .standings-table .mgr-link { color: #64748b; font-size: 0.85em; margin-left: 8px; text-decoration: none; }
+  .standings-table .mgr-link:hover { color: #3b82f6; text-decoration: underline; }
+  .standings-table .rank-num { color: #64748b; font-weight: 500; width: 30px; }
 </style>
 </head>
 <body>
@@ -227,10 +256,76 @@
   <div class="year20-badge">YEAR 20</div>
   <h1>Summertime Sadness</h1>
   <p>Fantasy Baseball Analytics</p>
-  <p class="est">Est. 2007 &middot; Entering Our 20th Year &middot; 27 Managers</p>
+  <p class="est">Est. 2007 &middot; Entering Our 20th Year</p>
 </div>
 
 <div class="container">
+
+<div class="two-col">
+  <div>
+    <h2 style="margin-top:0">2026 Standings</h2>
+    <div class="panel">
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th style="text-align:left">Team</th>
+            <th>W</th>
+            <th>L</th>
+            <th>T</th>
+            <th>Win%</th>
+            <th>xWins</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol 🐳</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">4</td><td><span class="team-name">OG9️⃣</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">10</td><td><span class="team-name">¯\_(ツ)_/¯</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Season hasn't started yet &mdash; standings update once matchups begin</p>
+    </div>
+  </div>
+  <div>
+    <h2 style="margin-top:0">2026 Power Rankings</h2>
+    <div class="panel">
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th style="text-align:left">Team</th>
+            <th>Score</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol 🐳</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">4</td><td><span class="team-name">OG9️⃣</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">10</td><td><span class="team-name">¯\_(ツ)_/¯</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+        </tbody>
+      </table>
+      <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Power rankings begin once the season starts</p>
+    </div>
+  </div>
+</div>
 
 <div class="stats-grid">
   <div class="stat-card">
@@ -258,11 +353,11 @@
 <div class="two-col">
   <div class="panel">
     <h3>Recent Champions</h3>
-    <div class="champ-row"><span class="champ-year">2025</span><span class="champ-name">¯\_(ツ)_/¯</span><span class="champ-mgr">Mike</span></div><div class="champ-row"><span class="champ-year">2024</span><span class="champ-name">Grand Salami Time</span><span class="champ-mgr">Josh</span></div><div class="champ-row"><span class="champ-year">2023</span><span class="champ-name">Moniebol 🐳 (WE DID IT JOE!)</span><span class="champ-mgr">Austin</span></div><div class="champ-row"><span class="champ-year">2022</span><span class="champ-name">The Rosterbation Station</span><span class="champ-mgr">Kevin</span></div><div class="champ-row"><span class="champ-year">2021</span><span class="champ-name">¯\_(ツ)_/¯</span><span class="champ-mgr">Mike</span></div>
+    <div class="champ-row"><span class="champ-year">2025</span><span class="champ-name">¯\_(ツ)_/¯</span><span class="champ-mgr">Mike</span></div><div class="champ-row"><span class="champ-year">2024</span><span class="champ-name">Grand Salami Time</span><span class="champ-mgr">Josh</span></div><div class="champ-row"><span class="champ-year">2023</span><span class="champ-name">Moniebol 🐳 (WE DID IT JOE!)</span><span class="champ-mgr">Austin</span></div><div class="champ-row"><span class="champ-year">2022</span><span class="champ-name">The Rosterbation Station</span><span class="champ-mgr">Kevin</span></div><div class="champ-row"><span class="champ-year">2021</span><span class="champ-name">¯\_(ツ)_/¯</span><span class="champ-mgr">Mike</span></div><div class="champ-row"><span class="champ-year">2020</span><span class="champ-name">2020 Champion</span><span class="champ-mgr">Taylor</span></div><div class="champ-row"><span class="champ-year">2019</span><span class="champ-name">Goldschmidt’s List</span><span class="champ-mgr">Kevin</span></div><div class="champ-row"><span class="champ-year">2018</span><span class="champ-name">Goldschmidt’s List</span><span class="champ-mgr">Kevin</span></div><div class="champ-row"><span class="champ-year">2017</span><span class="champ-name">WE WANT BAMA</span><span class="champ-mgr">Mikey</span></div><div class="champ-row"><span class="champ-year">2016</span><span class="champ-name">Carlos Cumspraya</span><span class="champ-mgr">Taylor</span></div>
   </div>
   <div class="panel">
     <h3>Title Leaders</h3>
-    <div class="title-row"><span class="title-name">Mike</span><div class="title-bar-bg"><div class="title-bar" style="width:100%">4</div></div></div><div class="title-row"><span class="title-name">Kevin</span><div class="title-bar-bg"><div class="title-bar" style="width:75%">3</div></div></div><div class="title-row"><span class="title-name">Stephen</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Matt</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Taylor</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Andrew D</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div>
+    <div class="title-row"><span class="title-name">Mike</span><div class="title-bar-bg"><div class="title-bar" style="width:100%">4</div></div></div><div class="title-row"><span class="title-name">Kevin</span><div class="title-bar-bg"><div class="title-bar" style="width:75%">3</div></div></div><div class="title-row"><span class="title-name">Stephen</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Matt</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Taylor</span><div class="title-bar-bg"><div class="title-bar" style="width:50%">2</div></div></div><div class="title-row"><span class="title-name">Andrew D</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div><div class="title-row"><span class="title-name">Jamie</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div><div class="title-row"><span class="title-name">Eric</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div><div class="title-row"><span class="title-name">Mikey</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div><div class="title-row"><span class="title-name">Austin</span><div class="title-bar-bg"><div class="title-bar" style="width:25%">1</div></div></div>
   </div>
 </div>
 

@@ -347,6 +347,7 @@ html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <title>Summertime Sadness - 2025 Season Trends</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
