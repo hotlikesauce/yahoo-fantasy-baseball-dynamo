@@ -1,0 +1,148 @@
+/* Summertime Sadness Fantasy Baseball - Shared Base Styles */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Page title - gradient text */
+h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtitle line under h1 */
+.page-subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1em;
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+/* Section header */
+h2 {
+  color: #38bdf8;
+  font-size: 1.3em;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 8px;
+  margin: 32px 0 16px;
+}
+
+/* Subsection header */
+h3 {
+  color: #38bdf8;
+  font-size: 1.3em;
+  margin: 32px 0 12px;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 8px;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+th {
+  background: #1e293b;
+  color: #94a3b8;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.82em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid #334155;
+}
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #1e293b;
+  font-size: 0.92em;
+}
+tr:hover { background: #1e293b55; }
+
+/* Sortable column headers */
+.sortable { cursor: pointer; user-select: none; }
+.sortable:hover { color: #e2e8f0; }
+.sortable::after { content: ' \2195'; font-size: 0.8em; }
+.sortable.asc::after { content: ' \2191'; }
+.sortable.desc::after { content: ' \2193'; }
+
+/* Cards and panels */
+.card, .panel {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #334155;
+}
+.card h3, .panel h3 {
+  color: #e2e8f0;
+  font-size: 1.05em;
+  margin: 0 0 16px;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Chart containers */
+.chart-box {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  height: 550px;
+}
+.chart-box-tall {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  height: 400px;
+}
+
+/* Two-column grid */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.two-col > * {
+  min-width: 0;
+  overflow-x: auto;
+}
+@media (max-width: 768px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* Section description text */
+.section-desc {
+  color: #94a3b8;
+  font-size: 0.9em;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Color utilities */
+.gold { color: #fbbf24; }
+.blue { color: #3b82f6; }
+.green { color: #22c55e; }
+.purple { color: #a78bfa; }
+.cyan { color: #22d3ee; }
+.red { color: #f87171; }
+
+/* Common table helpers */
+.rank { color: #64748b; font-weight: 600; width: 40px; }
+.score { font-weight: 700; color: #34d399; }

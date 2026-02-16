@@ -348,17 +348,10 @@ html = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2025 Season Trends</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-  body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }}
-  .container {{ max-width: 1400px; margin: 0 auto; }}
-  h1 {{ text-align: center; font-size: 2em; margin-bottom: 4px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
-  h2 {{ text-align: center; color: #64748b; font-size: 1.1em; margin-bottom: 24px; }}
-  h3 {{ color: #38bdf8; margin: 32px 0 12px; font-size: 1.3em; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }}
-  .section-desc {{ color: #94a3b8; font-size: 0.9em; margin-bottom: 16px; }}
-  .chart-box {{ background: #1e293b; border-radius: 12px; padding: 24px; margin-bottom: 24px; position: relative; height: 550px; }}
   .toggle-container {{ text-align: center; margin-bottom: 16px; }}
   .toggle-btn {{ background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }}
   .toggle-btn:first-child {{ border-radius: 8px 0 0 8px; }}
@@ -366,23 +359,16 @@ html = f"""<!DOCTYPE html>
   .toggle-btn.active {{ background: #3b82f6; color: white; border-color: #3b82f6; }}
   .toggle-btn:hover {{ background: #475569; color: #e2e8f0; }}
   .toggle-btn.active:hover {{ background: #2563eb; }}
-  table {{ width: 100%; border-collapse: collapse; margin-bottom: 24px; }}
-  th {{ text-align: left; padding: 10px 12px; border-bottom: 2px solid #334155; color: #94a3b8; font-size: 0.85em; text-transform: uppercase; }}
-  td {{ padding: 8px 12px; border-bottom: 1px solid #1e293b; font-size: 0.95em; }}
-  tr:hover td {{ background: #1e293b; }}
-  .rank {{ color: #64748b; font-weight: 600; width: 40px; }}
-  .score {{ font-weight: 700; color: #34d399; }}
   .year {{ color: #a78bfa; font-weight: 600; }}
   .hot-val {{ color: #22c55e; font-weight: 700; }}
   .cold-val {{ color: #ef4444; font-weight: 700; }}
   .hot-tag {{ background: #22c55e22; color: #22c55e; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }}
   .cold-tag {{ background: #ef444422; color: #ef4444; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }}
   .steady-tag {{ background: #64748b22; color: #64748b; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }}
-  th.sortable {{ cursor: pointer; user-select: none; position: relative; padding-right: 18px; }}
-  th.sortable:hover {{ color: #e2e8f0; }}
-  th.sortable::after {{ content: '\\2195'; position: absolute; right: 4px; opacity: 0.3; font-size: 0.8em; }}
-  th.sortable.asc::after {{ content: '\\2191'; opacity: 0.8; }}
-  th.sortable.desc::after {{ content: '\\2193'; opacity: 0.8; }}
+  th.sortable {{ position: relative; padding-right: 18px; }}
+  th.sortable::after {{ position: absolute; right: 4px; opacity: 0.3; }}
+  th.sortable.asc::after {{ opacity: 0.8; }}
+  th.sortable.desc::after {{ opacity: 0.8; }}
   .best-table td:first-child {{ font-size: 1.2em; width: 36px; text-align: center; }}
 </style>
 </head>
@@ -391,7 +377,7 @@ html = f"""<!DOCTYPE html>
 <script src="nav.js"></script>
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
-<h2>2025 Season Trends</h2>
+<p class="page-subtitle">2025 Season Trends</p>
 
 <div class="toggle-container">
   <button class="toggle-btn active" onclick="showChart('score')">Power Score</button>
@@ -477,7 +463,7 @@ new Chart(document.getElementById('rankChart').getContext('2d'), {{
     plugins: {{ legend: legendOpts, tooltip: tooltipOpts }},
     scales: {{
       x: {{ ticks: {{ color: '#94a3b8' }}, grid: {{ color: '#1e293b33' }} }},
-      y: {{ reverse: true, min: 1, max: 12, ticks: {{ color: '#94a3b8', stepSize: 1 }}, grid: {{ color: '#334155' }}, title: {{ display: true, text: 'Power Rank', color: '#64748b' }} }}
+      y: {{ reverse: true, min: 0, max: 13, ticks: {{ color: '#94a3b8', stepSize: 1, callback: v => v >= 1 && v <= 12 ? v : '' }}, grid: {{ color: '#334155' }}, title: {{ display: true, text: 'Power Rank', color: '#64748b' }} }}
     }}
   }}
 }});
@@ -522,22 +508,33 @@ const quadrantPlugin = {{
     const x50 = x.getPixelForValue(50);
     const y50 = y.getPixelForValue(50);
     ctx.save();
-    ctx.strokeStyle = '#47556966';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = '#ffffff99';
+    ctx.lineWidth = 4.5;
+    ctx.setLineDash([6, 4]);
     ctx.beginPath(); ctx.moveTo(x50, y.top); ctx.lineTo(x50, y.bottom); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x.left, y50); ctx.lineTo(x.right, y50); ctx.stroke();
-    ctx.fillStyle = '#47556955';
-    ctx.font = '11px Segoe UI';
+    ctx.font = 'bold 13px Segoe UI';
     ctx.textAlign = 'center';
     const lx = x.getPixelForValue((x.min + 50) / 2);
     const rx = x.getPixelForValue((x.max + 50) / 2);
     const ty = y.getPixelForValue((y.max + 50) / 2);
     const by = y.getPixelForValue((y.min + 50) / 2);
-    ctx.fillText('Pitching Carry', lx, ty);
-    ctx.fillText('Elite', rx, ty);
-    ctx.fillText('Struggling', lx, by);
-    ctx.fillText('Batting Carry', rx, by);
+    const labels = [
+      [lx, ty - 8, 'Good Pitching'],
+      [lx, ty + 8, 'Bad Batting'],
+      [rx, ty - 8, 'Elite Batting'],
+      [rx, ty + 8, '& Pitching'],
+      [lx, by - 8, 'Poor Batting'],
+      [lx, by + 8, '& Pitching'],
+      [rx, by - 8, 'Good Batting'],
+      [rx, by + 8, 'Bad Pitching']
+    ];
+    labels.forEach(([px, py, text]) => {{
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.75)';
+      ctx.fillRect(px - 65, py - 12, 130, 24);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText(text, px, py + 4);
+    }});
     ctx.restore();
   }}
 }};

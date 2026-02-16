@@ -3,20 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
 <title>Trade Analyzer - Summertime Sadness</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #0f172a; color: #e2e8f0;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    min-height: 100vh;
-  }
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-  h1 {
-    font-size: 1.8em; font-weight: 700; margin-bottom: 8px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
+  body { min-height: 100vh; }
   .subtitle { color: #64748b; font-size: 0.9em; margin-bottom: 24px; }
   .no-data-banner {
     background: #1e293b; border: 1px solid #f59e0b; border-radius: 12px;
@@ -168,8 +159,10 @@
 </head>
 <body>
 <div id="nav"></div>
+<script src="nav.js"></script>
 <div class="container">
-  <h1>Trade Analyzer</h1>
+  <h1>Summertime Sadness Fantasy Baseball</h1>
+  <p class="page-subtitle">Trade Analyzer</p>
   <p class="subtitle">Evaluate trades with player values, category impact, and draft pick analysis</p>
 
   <div id="no-data-banner" class="no-data-banner" style="display:none">
@@ -243,7 +236,6 @@
   </div>
 </div>
 
-<script src="nav.js"></script>
 <script>
 (function() {
   // Draft pick value formula (matches gen_draft_picks.py)

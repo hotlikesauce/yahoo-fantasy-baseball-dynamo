@@ -2,15 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+  <link rel="stylesheet" href="common.css">
   <title>Summertime Sadness - Manager Profiles</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
-    h1 { text-align: center; font-size: 2em; margin-bottom: 4px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    h2 { text-align: center;font-size: 1.7em; margin-bottom: 6px; }
     .subtitle { color: #94a3b8; font-size: 0.95em; margin-bottom: 24px; }
-    h3 { text-align: center;color: #22d3ee; font-size: 1.15em; margin: 32px 0 10px; }
 
     .mgr-grid {
       display: grid;
@@ -72,27 +68,8 @@
     .stat-card .label { color: #64748b; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
     .stat-card .value { font-size: 1.6em; font-weight: 700; }
     .stat-card .sub { color: #94a3b8; font-size: 0.82em; margin-top: 3px; }
-    .gold { color: #fbbf24; }
-    .blue { color: #3b82f6; }
-    .green { color: #22c55e; }
-    .purple { color: #a78bfa; }
-    .cyan { color: #22d3ee; }
-    .red { color: #f87171; }
-
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
-    th { background: #1e293b; color: #94a3b8; font-weight: 600; text-align: left;
-         padding: 10px 14px; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.03em; }
-    td { padding: 10px 14px; border-bottom: 1px solid #1e293b; font-size: 0.92em; }
-    tr:hover { background: #1e293b55; }
     .champ-marker { color: #fbbf24; }
-
-    .sortable { cursor: pointer; user-select: none; }
-    .sortable:hover { color: #e2e8f0; }
-    .sortable::after { content: ' \2195'; font-size: 0.8em; }
-    .sortable.asc::after { content: ' \2191'; }
-    .sortable.desc::after { content: ' \2193'; }
-
     .winning { color: #4ade80; }
     .losing { color: #f87171; }
     .even-rec { color: #fbbf24; }
@@ -101,7 +78,7 @@
       background: #1e293b; border-radius: 12px; padding: 20px 24px;
       border: 1px solid #334155; margin-bottom: 24px;
     }
-    .section h3 { margin-top: 0; }
+    .section h3 { color: #e2e8f0; font-size: 1.05em; margin: 0 0 16px; border-bottom: none; padding-bottom: 0; }
 
     .h2h-year-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .h2h-yr-btn {
@@ -123,8 +100,9 @@
   <script src="nav.js"></script>
 
   <div class="container">
-    <h1>Manager Profiles</h1>
-    <h3><p class="subtitle">Career stats, season history, and head-to-head records for every manager in league history</p></h3>
+    <h1>Summertime Sadness Fantasy Baseball</h1>
+    <p class="page-subtitle">Manager Profiles</p>
+    <p class="subtitle">Career stats, season history, and head-to-head records for every manager in league history</p>
 
     <h3 style="margin-top:16px">Select a Manager</h3>
     <div class="mgr-grid" id="mgrGrid"></div>

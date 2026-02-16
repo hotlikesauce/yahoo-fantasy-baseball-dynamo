@@ -77,12 +77,9 @@ html = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
 <title>Summertime Sadness Fantasy Baseball</title>
 <style>
-  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-  body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }}
-  .container {{ max-width: 1400px; margin: 0 auto; padding: 24px; }}
-
   .year20-badge {{
     display: inline-block;
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
@@ -157,42 +154,6 @@ html = f"""<!DOCTYPE html>
     font-size: 0.9em;
     margin-top: 4px;
   }}
-  .gold {{ color: #fbbf24; }}
-  .blue {{ color: #3b82f6; }}
-  .green {{ color: #22c55e; }}
-  .purple {{ color: #a78bfa; }}
-  .cyan {{ color: #22d3ee; }}
-
-  h2 {{
-    color: #38bdf8;
-    font-size: 1.3em;
-    border-bottom: 1px solid #1e293b;
-    padding-bottom: 8px;
-    margin: 40px 0 16px;
-  }}
-
-  .two-col {{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 24px;
-  }}
-  @media (max-width: 768px) {{
-    .two-col {{ grid-template-columns: 1fr; }}
-  }}
-
-  .panel {{
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid #334155;
-  }}
-  .panel h3 {{
-    color: #e2e8f0;
-    font-size: 1.05em;
-    margin-bottom: 16px;
-  }}
-
   .champ-row {{
     display: flex;
     align-items: center;
@@ -272,7 +233,9 @@ html = f"""<!DOCTYPE html>
   .nav-card h3 {{
     color: #e2e8f0;
     font-size: 1.1em;
-    margin-bottom: 8px;
+    margin: 0 0 8px;
+    border-bottom: none;
+    padding-bottom: 0;
   }}
   .nav-card p {{
     color: #94a3b8;
@@ -308,18 +271,19 @@ html = f"""<!DOCTYPE html>
     letter-spacing: 0.04em;
     border-bottom: 2px solid #334155;
   }}
-  .standings-table th:not(:first-child) {{ text-align: center; }}
+  .standings-table th:nth-child(n+3) {{ text-align: center; }}
   .standings-table td {{
     padding: 10px 14px;
     border-bottom: 1px solid #1e293b;
     font-size: 0.92em;
   }}
-  .standings-table td:not(:first-child) {{ text-align: center; color: #94a3b8; }}
+  .standings-table td:nth-child(n+3) {{ text-align: center; color: #94a3b8; }}
   .standings-table tr:hover {{ background: #1e293b55; }}
   .standings-table .team-name {{ font-weight: 700; color: #e2e8f0; }}
   .standings-table .mgr-link {{ color: #64748b; font-size: 0.85em; margin-left: 8px; text-decoration: none; }}
   .standings-table .mgr-link:hover {{ color: #3b82f6; text-decoration: underline; }}
   .standings-table .rank-num {{ color: #64748b; font-weight: 500; width: 30px; }}
+  .standings-table .team-name {{ font-size: 0.88em; white-space: nowrap; }}
 </style>
 </head>
 <body>
@@ -344,29 +308,25 @@ html = f"""<!DOCTYPE html>
           <tr>
             <th>#</th>
             <th style="text-align:left">Team</th>
-            <th>W</th>
-            <th>L</th>
-            <th>T</th>
-            <th>Win%</th>
+            <th>WLT</th>
             <th>xWins</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol \U0001f433</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">4</td><td><span class="team-name">OG9\ufe0f\u20e3</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">10</td><td><span class="team-name">\u00af\\_(\u30c4)_/\u00af</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>0</td><td>0</td><td>0</td><td>.000</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol \U0001f433</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">4</td><td><span class="team-name">OG9\ufe0f\u20e3</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">10</td><td><span class="team-name">\u00af\\_(\u30c4)_/\u00af</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
         </tbody>
       </table>
-      <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Season hasn't started yet &mdash; standings update once matchups begin</p>
     </div>
   </div>
   <div>
@@ -396,7 +356,6 @@ html = f"""<!DOCTYPE html>
           <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>&mdash;</td><td>&mdash;</td></tr>
         </tbody>
       </table>
-      <p style="color:#475569; font-size:0.85em; text-align:center; margin-top:12px;">Power rankings begin once the season starts</p>
     </div>
   </div>
 </div>

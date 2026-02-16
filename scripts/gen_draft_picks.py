@@ -170,22 +170,11 @@ html = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Draft Capital</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-  body {{ background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }}
-  .container {{ max-width: 1400px; margin: 0 auto; }}
-  h1 {{ text-align: center; font-size: 2em; margin-bottom: 4px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
-  h2 {{ text-align: center; color: #64748b; font-size: 1.1em; margin-bottom: 24px; }}
-  h3 {{ color: #38bdf8; margin: 32px 0 12px; font-size: 1.3em; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }}
-  .section-desc {{ color: #94a3b8; font-size: 0.9em; margin-bottom: 16px; }}
-  .chart-box {{ background: #1e293b; border-radius: 12px; padding: 24px; margin-bottom: 24px; position: relative; height: 450px; }}
-  table {{ width: 100%; border-collapse: collapse; margin-bottom: 24px; }}
-  th {{ text-align: left; padding: 10px 8px; border-bottom: 2px solid #334155; color: #94a3b8; font-size: 0.8em; text-transform: uppercase; }}
-  td {{ padding: 6px 8px; border-bottom: 1px solid #1e293b; font-size: 0.9em; }}
-  tr:hover td {{ background: #1e293b; }}
-  .rank {{ color: #64748b; font-weight: 600; width: 36px; }}
+  .chart-box {{ height: 450px; }}
 
   /* Grid cells */
   .grid-table {{ overflow-x: auto; margin-bottom: 24px; }}
@@ -220,7 +209,7 @@ html = f"""<!DOCTYPE html>
 <script src="nav.js"></script>
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
-<h2>2026 Draft Capital</h2>
+<p class="page-subtitle">2026 Draft Capital</p>
 
 <h3>Draft Capital Rankings</h3>
 <p class="section-desc">Picks are weighted by exponential decay &mdash; each pick is worth 2% less than the one before it. Pick 1 (R3P1) = {p1_val} pts, Pick 12 (R3P12) = {p12_val} pts, Pick 49 (R7P1) = {p49_val} pts, Pick 240 (R22P12) = {p240_val} pts. Standard (avg) = {STANDARD_CAPITAL} pts.</p>
