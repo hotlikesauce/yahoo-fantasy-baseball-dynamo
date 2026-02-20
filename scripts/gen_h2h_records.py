@@ -27,13 +27,11 @@ table = dynamodb.Table('FantasyBaseball-HistoricalSeasons')
 
 from team_config import MANAGERS, YEAR_TN_TO_MANAGER
 
-YEARS = [2023, 2024, 2025]
+YEARS = [y for y in range(2007, 2026) if y != 2020]  # All years except COVID 2020
 
-# Build manager list from all managers who appear in the H2H years
-# (includes historical managers like David who aren't in current MANAGERS)
-ALL_H2H_MANAGERS = sorted(set(
-    mgr for (y, tn), mgr in YEAR_TN_TO_MANAGER.items() if y in YEARS
-))
+# All-time records will only include current managers (2026 roster)
+# This creates a 12x12 matrix of current managers with their historical H2H records
+ALL_H2H_MANAGERS = sorted(MANAGERS)
 
 COLORS = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
@@ -146,11 +144,47 @@ h2h_alltime = defaultdict(new_rec)
 all_matchups = []
 skipped = 0
 
+# Fetch all items for all years and build lookup maps
+all_items_by_year = {}
+year_week_opp_map = {}  # (year, week, opponent_team) -> (manager, score, team_number)
+
 for year in YEARS:
     items = query_data_type(year, 'weekly_results')
     print(f"  {year}: {len(items)} items")
 
+    all_items_by_year[year] = items
+    year_week_opp_map[year] = {}
+
+    # Build lookup: (week, opponent_team) -> (manager, score, team_number)
+    # This lets us find the opponent's manager by looking up their team name
+    for item in items:
+        week = int(item.get('Week', 0))
+        team_name = item.get('Team', '')
+        mgr = item.get('Manager', '')
+        score = float(item.get('Score', 0))
+        tn = str(item.get('TeamNumber', ''))
+
+        # Skip if incomplete
+        if not team_name or not mgr or week > 21:
+            continue
+
+        # Normalize score
+        opp_score_raw = float(item.get('Opponent_Score', 0))
+        total = score + opp_score_raw
+        if total < 12:
+            ties = 12 - total
+            score += ties * 0.5
+
+        # Map: (week, opponent_team_name) -> (manager, actual_score, team_number)
+        # This way, when we see opponent_name, we can look it up to find their manager
+        key = (week, team_name)
+        year_week_opp_map[year][key] = (mgr, score, tn)
+
+# Now process all matchups with reciprocal matching
+for year in YEARS:
+    items = all_items_by_year[year]
     seen = set()
+    week_opp_map = year_week_opp_map[year]
 
     for item in items:
         tn = str(item.get('TeamNumber', ''))
@@ -160,22 +194,65 @@ for year in YEARS:
         opp_score = float(item.get('Opponent_Score', 0))
         week = int(item.get('Week', 0))
 
-        # Normalize: 2023-2024 stored raw W-L (ties not distributed),
-        # 2025 stores tie-adjusted (0.5 per tie). Ensure all sum to 12.
+        # Normalize: ensure all sum to 12
         total = score + opp_score
         if total < 12:
             ties = 12 - total
             score += ties * 0.5
             opp_score += ties * 0.5
 
-        # All years had 21 regular-season weeks; exclude playoff weeks (22+)
+        # Skip playoff weeks
         if week > 21:
             continue
 
-        mgr_a = YEAR_TN_TO_MANAGER.get((year, tn))
-        mgr_b = year_name_to_mgr[year].get(opp_name)
+        def normalize_manager(raw_name):
+            """Normalize historical manager names to current manager names.
 
-        if not mgr_a or not mgr_b:
+            Only maps names we're confident about:
+            - Direct matches or case-insensitive matches to current managers
+            - Special cases where we know the same person used different names
+            """
+            if not raw_name:
+                return None
+            # Direct match (covers 2023+ data and exact matches)
+            if raw_name in ALL_H2H_MANAGERS:
+                return raw_name
+            # Case-insensitive match
+            for mgr in ALL_H2H_MANAGERS:
+                if raw_name.lower() == mgr.lower():
+                    return mgr
+            # Conservative special mappings - only for names we're sure about
+            if raw_name == 'Taylor w' or raw_name.startswith('Taylor'):
+                return 'Taylor'
+            elif 'kurtis varga' in raw_name.lower() or raw_name.lower() == 'kurtis':
+                return 'Kurtis'
+            # NOTE: "Michael" appears in historical data but is likely a different person
+            # who is no longer in the league. Don't map to "Mike".
+            # No match found
+            return None
+
+        # Get manager A directly from stored Manager field
+        mgr_a_raw = item.get('Manager', '')
+        mgr_a = normalize_manager(mgr_a_raw)
+        if not mgr_a:
+            skipped += 1
+            continue
+
+        # Get manager B by looking up opponent's team name in the week_opp_map
+        # (week, opponent_team_name) -> (opponent_manager, ...)
+        mgr_b = None
+        opp_key = (week, opp_name)
+        if opp_key in week_opp_map:
+            mgr_b_raw = week_opp_map[opp_key][0]
+            mgr_b = normalize_manager(mgr_b_raw)
+
+        # If we still don't have opponent manager, skip
+        if not mgr_b:
+            skipped += 1
+            continue
+
+        # For all-time records, only include matchups where both managers are current managers
+        if mgr_a not in MGR_IDX or mgr_b not in MGR_IDX:
             skipped += 1
             continue
 
@@ -201,7 +278,7 @@ for year in YEARS:
         h2h_alltime[(idx_a, idx_b)]['sa'] += opp_score
         h2h_alltime[(idx_a, idx_b)]['g'] += 1
 
-        # Collect individual matchup once per game
+        # Collect individual matchup once per game (deduped)
         key = (year, week, min(idx_a, idx_b), max(idx_a, idx_b))
         if key not in seen:
             seen.add(key)
@@ -333,6 +410,12 @@ for y in YEARS:
     year_names[str(y)] = names
 year_names_js = json.dumps(year_names)
 
+# Generate year filter buttons for all years (in reverse order, newest first)
+year_buttons = '\n      '.join(
+    f'<button class="filter-btn" data-year="{y}">{y}</button>'
+    for y in sorted(YEARS, reverse=True)
+)
+
 # Rivalry data as JS
 rivalries_js = json.dumps([{
     'a': r['name_a'], 'b': r['name_b'],
@@ -405,7 +488,7 @@ html = f'''<!DOCTYPE html>
   <div class="container">
     <h1>Summertime Sadness Fantasy Baseball</h1>
     <p class="page-subtitle">&#x1F91C;&#x1F91B; Manager vs Manager H2H Records</p>
-    <p class="subtitle">Head-to-head matchup records across all seasons (2023&ndash;2025) &bull; Identified by manager, not team name</p>
+    <p class="subtitle">Head-to-head matchup records across all seasons (2007&ndash;2025, excl. 2020) &bull; Identified by manager, not team name</p>
 
     <h3>All-Time H2H Matrix</h3>
     <p class="section-desc">Win-Loss-Tie record for each matchup. Rows = your record against the column opponent. Green = winning record, red = losing, yellow = even. Hover manager name for current team name.</p>
@@ -413,9 +496,7 @@ html = f'''<!DOCTYPE html>
     <div class="filter-bar">
       <label>Filter by season:</label>
       <button class="filter-btn active" data-year="alltime">All-Time</button>
-      <button class="filter-btn" data-year="2025">2025</button>
-      <button class="filter-btn" data-year="2024">2024</button>
-      <button class="filter-btn" data-year="2023">2023</button>
+      {year_buttons}
       <span style="color:#475569;font-size:0.82em;margin-left:16px">Click Manager or Total header to sort</span>
     </div>
     <div class="filter-bar">

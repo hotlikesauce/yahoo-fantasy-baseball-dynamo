@@ -22,7 +22,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 rankings_table = dynamodb.Table('FantasyBaseball-AllTimeRankings')
 historical_table = dynamodb.Table('FantasyBaseball-HistoricalSeasons')
 
-H2H_YEARS = [2023, 2024, 2025]
+H2H_YEARS = [y for y in range(2007, 2026) if y != 2020]  # All years except COVID 2020
 ALIASES = {'Jamie': 'James'}
 
 
@@ -123,6 +123,21 @@ print("\nBuilding H2H records...")
 year_name_to_mgr = {y: {} for y in H2H_YEARS}
 cached_wr = {}  # year -> weekly_results items (avoid double-query)
 
+def normalize_manager_name_for_mapping(raw_name):
+    """Quick normalization for building name->manager mapping."""
+    if not raw_name:
+        return None
+    if raw_name in MANAGERS:
+        return raw_name
+    for mgr in MANAGERS:
+        if raw_name.lower() == mgr.lower():
+            return mgr
+    if raw_name == 'Taylor w' or raw_name.startswith('Taylor'):
+        return 'Taylor'
+    elif 'kurtis varga' in raw_name.lower() or raw_name.lower() == 'kurtis':
+        return 'Kurtis'
+    return None
+
 for year in H2H_YEARS:
     # power_ranks for stable name mapping
     items = query_data_type(year, 'power_ranks_season_trend')
@@ -143,7 +158,11 @@ for year in H2H_YEARS:
         tn = str(item.get('TeamNumber', ''))
         name = item.get('Team', '')
         if tn and name and name not in year_name_to_mgr[year]:
+            # Try YEAR_TN_TO_MANAGER first (2023+)
             mgr = YEAR_TN_TO_MANAGER.get((year, tn))
+            # For 2007-2022, use Manager field directly from item
+            if not mgr and year < 2023:
+                mgr = normalize_manager_name_for_mapping(item.get('Manager', ''))
             if mgr:
                 year_name_to_mgr[year][name] = mgr
 
@@ -164,6 +183,12 @@ for year in H2H_YEARS:
                 for other_tn, other_name in week_tn_name.items():
                     if other_name == opp:
                         mgr = YEAR_TN_TO_MANAGER.get((year, other_tn))
+                        if not mgr and year < 2023:
+                            # Find opponent's Manager field
+                            for opp_item in items_in_week:
+                                if opp_item.get('Team', '') == opp:
+                                    mgr = normalize_manager_name_for_mapping(opp_item.get('Manager', ''))
+                                    break
                         if mgr:
                             year_name_to_mgr[year][opp] = mgr
                             break
@@ -174,6 +199,30 @@ for year in H2H_YEARS:
 h2h_alltime = defaultdict(lambda: defaultdict(lambda: {'w': 0, 'l': 0, 't': 0}))
 h2h_by_year = {y: defaultdict(lambda: defaultdict(lambda: {'w': 0, 'l': 0, 't': 0})) for y in H2H_YEARS}
 
+def normalize_manager_name(raw_name):
+    """Normalize historical manager names to current manager names.
+
+    Only maps names we're confident about:
+    - Direct matches or case-insensitive matches to MANAGERS list
+    - Special cases where we know the same person used different names
+    """
+    if not raw_name:
+        return None
+    # Direct match
+    if raw_name in MANAGERS:
+        return raw_name
+    # Case-insensitive match
+    for mgr in MANAGERS:
+        if raw_name.lower() == mgr.lower():
+            return mgr
+    # Conservative special mappings
+    if raw_name == 'Taylor w' or raw_name.startswith('Taylor'):
+        return 'Taylor'
+    elif 'kurtis varga' in raw_name.lower() or raw_name.lower() == 'kurtis':
+        return 'Kurtis'
+    # No match
+    return None
+
 for year in H2H_YEARS:
     for item in cached_wr[year]:
         tn = str(item.get('TeamNumber', ''))
@@ -181,7 +230,13 @@ for year in H2H_YEARS:
         score = float(item.get('Score', 0))
         opp_score = float(item.get('Opponent_Score', 0))
 
-        mgr_a = YEAR_TN_TO_MANAGER.get((year, tn))
+        # For 2023+ use YEAR_TN_TO_MANAGER, for 2007-2022 use Manager field
+        if year >= 2023:
+            mgr_a = YEAR_TN_TO_MANAGER.get((year, tn))
+        else:
+            mgr_a_raw = item.get('Manager', '')
+            mgr_a = normalize_manager_name(mgr_a_raw)
+
         mgr_b = year_name_to_mgr[year].get(opp_name)
 
         if not mgr_a or not mgr_b or mgr_a == mgr_b:
@@ -406,7 +461,7 @@ html = f'''<!DOCTYPE html>
 
       <div class="section" id="h2hSection">
         <h3>Head-to-Head Records</h3>
-        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">Record against each opponent (2023&ndash;2025 H2H data available)</p>
+        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">Record against each opponent (2007&ndash;2025 H2H data available, excl. 2020)</p>
         <div class="h2h-year-filter" id="h2hFilter"></div>
         <div class="table-wrap">
           <table id="h2hTable">
