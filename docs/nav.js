@@ -134,18 +134,6 @@
         <a href="index.html" class="ss-nav-brand">Summertime Sadness</a>
 <ul class="ss-nav-links">
           <li class="ss-nav-item">
-            <a href="index.html" class="ss-nav-link${isActive('index.html')}">Home</a>
-          </li>
-          <li class="ss-nav-item">
-            <a href="all_time_rankings.html" class="ss-nav-link${isActive('all_time_rankings.html')}">All-Time Records</a>
-          </li>
-          <li class="ss-nav-item">
-            <a href="h2h_records.html" class="ss-nav-link${isActive('h2h_records.html')}">H2H Records</a>
-          </li>
-          <li class="ss-nav-item">
-            <a href="manager_profiles.html" class="ss-nav-link${isActive('manager_profiles.html')}">Manager Profiles</a>
-          </li>
-          <li class="ss-nav-item">
             <a class="ss-nav-link has-dropdown${['draft_picks_2026.html','trade_analyzer.html'].includes(path) ? ' active' : ''}">2026 Season</a>
             <div class="ss-dropdown">
               <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
@@ -167,6 +155,15 @@
               <a href="season_trends_2023.html" class="${isActive('season_trends_2023.html').trim()}">2023 Season Trends</a>
               <a href="season_trends_2022.html" class="${isActive('season_trends_2022.html').trim()}">2022 Season Trends</a>
             </div>
+          </li>
+          <li class="ss-nav-item">
+            <a href="all_time_rankings.html" class="ss-nav-link${isActive('all_time_rankings.html')}">All-Time Records</a>
+          </li>
+          <li class="ss-nav-item">
+            <a href="h2h_records.html" class="ss-nav-link${isActive('h2h_records.html')}">H2H Records</a>
+          </li>
+          <li class="ss-nav-item">
+            <a href="manager_profiles.html" class="ss-nav-link${isActive('manager_profiles.html')}">Manager Profiles</a>
           </li>
         </ul>
       </div>

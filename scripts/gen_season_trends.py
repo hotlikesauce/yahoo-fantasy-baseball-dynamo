@@ -308,37 +308,70 @@ for i, d in enumerate(hot_data):
 # ============================================================
 # 6. Season's Best
 # ============================================================
-season_best = {}
-for cat in ALL_CATS:
-    is_low = cat in LOW_CATS
-    best = None
-    for week in stat_weeks:
-        for tn, stats in weekly_stats[week].items():
-            if cat not in stats: continue
-            val = stats[cat]
-            if best is None or (is_low and val < best['val']) or (not is_low and val > best['val']):
-                best = {'val': val, 'tn': tn, 'week': week}
-    if best:
-        if cat in ['ERA', 'WHIP', 'OPS']:
-            fmt = f"{best['val']:.3f}"
-        elif cat == 'K9':
-            fmt = f"{best['val']:.1f}"
-        else:
-            fmt = f"{int(best['val'])}" if best['val'] == int(best['val']) else f"{best['val']:.1f}"
-        season_best[cat] = {**best, 'formatted': fmt, 'team': tn_latest_name.get(best['tn'], best['tn'])}
+# Long weeks: Week 1 (10+ days) and Week 15 (All-Star break, extra long)
+LONG_WEEKS = {1, 15}
+SHORT_WEEKS = {w for w in stat_weeks if w not in LONG_WEEKS}
 
 cat_labels = {
     'R': 'Runs', 'H': 'Hits', 'HR': 'Home Runs', 'RBI': 'RBI', 'SB': 'Stolen Bases',
     'OPS': 'OPS', 'TB': 'Total Bases Allowed (Lowest)', 'K9': 'K/9', 'QS': 'Quality Starts',
     'SVH': 'Saves+Holds', 'ERA': 'ERA (Lowest)', 'WHIP': 'WHIP (Lowest)',
 }
+
+# Find best for each category in short weeks and long weeks separately
+season_best_short = {}
+season_best_long = {}
+
+for cat in ALL_CATS:
+    is_low = cat in LOW_CATS
+
+    # Best in short weeks
+    best_short = None
+    for week in SHORT_WEEKS:
+        if week not in weekly_stats: continue
+        for tn, stats in weekly_stats[week].items():
+            if cat not in stats: continue
+            val = stats[cat]
+            if best_short is None or (is_low and val < best_short['val']) or (not is_low and val > best_short['val']):
+                best_short = {'val': val, 'tn': tn, 'week': week}
+
+    # Best in long weeks
+    best_long = None
+    for week in LONG_WEEKS:
+        if week not in weekly_stats: continue
+        for tn, stats in weekly_stats[week].items():
+            if cat not in stats: continue
+            val = stats[cat]
+            if best_long is None or (is_low and val < best_long['val']) or (not is_low and val > best_long['val']):
+                best_long = {'val': val, 'tn': tn, 'week': week}
+
+    # Format both
+    for best, dest_dict in [(best_short, season_best_short), (best_long, season_best_long)]:
+        if best:
+            if cat in ['ERA', 'WHIP', 'OPS']:
+                fmt = f"{best['val']:.3f}"
+            elif cat == 'K9':
+                fmt = f"{best['val']:.1f}"
+            else:
+                fmt = f"{int(best['val'])}" if best['val'] == int(best['val']) else f"{best['val']:.1f}"
+            dest_dict[cat] = {**best, 'formatted': fmt, 'team': tn_latest_name.get(best['tn'], best['tn'])}
+
+# Build HTML rows for short and long weeks
 best_rows = ""
 for cat in ALL_CATS:
-    if cat not in season_best: continue
-    b = season_best[cat]
-    color = color_map.get(b['tn'], '#94a3b8')
-    icon = '&#x26BE;' if cat in BATTER_CATS else '&#x1F3AF;'
-    best_rows += f'<tr><td>{icon}</td><td class="year">{cat_labels.get(cat, cat)}</td><td class="score">{b["formatted"]}</td><td><span style="color:{color}">&#9679;</span> {b["team"]}</td><td class="year">Week {b["week"]}</td></tr>'
+    # Short weeks row
+    if cat in season_best_short:
+        b = season_best_short[cat]
+        color = color_map.get(b['tn'], '#94a3b8')
+        icon = '&#x26BE;' if cat in BATTER_CATS else '&#x1F3AF;'
+        best_rows += f'<tr class="best-row" data-week-type="short"><td>{icon}</td><td class="year">{cat_labels.get(cat, cat)}</td><td class="score">{b["formatted"]}</td><td><span style="color:{color}">&#9679;</span> {b["team"]}</td><td class="year">Week {b["week"]}</td></tr>'
+
+    # Long weeks row
+    if cat in season_best_long:
+        b = season_best_long[cat]
+        color = color_map.get(b['tn'], '#94a3b8')
+        icon = '&#x26BE;' if cat in BATTER_CATS else '&#x1F3AF;'
+        best_rows += f'<tr class="best-row" data-week-type="long"><td>{icon}</td><td class="year">{cat_labels.get(cat, cat)}</td><td class="score">{b["formatted"]}</td><td><span style="color:{color}">&#9679;</span> {b["team"]}</td><td class="year">Week {b["week"]}</td></tr>'
 
 # ============================================================
 # 7. Generate HTML
@@ -370,6 +403,9 @@ html = f"""<!DOCTYPE html>
   th.sortable.asc::after {{ opacity: 0.8; }}
   th.sortable.desc::after {{ opacity: 0.8; }}
   .best-table td:first-child {{ font-size: 1.2em; width: 36px; text-align: center; }}
+  .week-filter-btn {{ background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 6px 16px; cursor: pointer; font-size: 0.88em; border-radius: 6px; transition: all 0.2s; }}
+  .week-filter-btn:hover {{ color: #e2e8f0; border-color: #64748b; }}
+  .week-filter-btn.active {{ background: #3b82f6; color: white; border-color: #3b82f6; }}
 </style>
 </head>
 <body>
@@ -419,6 +455,11 @@ html = f"""<!DOCTYPE html>
 
 <h3>Season's Best Weekly Performances</h3>
 <p class="section-desc">The single best (or lowest for ERA/WHIP) team stat line in any week this season across all 12 scoring categories.</p>
+<div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+  <button class="week-filter-btn active" data-week-type="all" onclick="filterWeeks('all')">All Weeks</button>
+  <button class="week-filter-btn" data-week-type="short" onclick="filterWeeks('short')">Short Weeks (2-14, 16-21)</button>
+  <button class="week-filter-btn" data-week-type="long" onclick="filterWeeks('long')">Long Weeks (1, 15)</button>
+</div>
 <table class="best-table">
 <tr><th></th><th>Category</th><th>Value</th><th>Team</th><th>Week</th></tr>
 {best_rows}
@@ -426,6 +467,23 @@ html = f"""<!DOCTYPE html>
 
 </div>
 <script>
+// ---- Week filtering for Season's Best ----
+function filterWeeks(weekType) {{
+  const rows = document.querySelectorAll('.best-row');
+  const buttons = document.querySelectorAll('.week-filter-btn');
+
+  buttons.forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`[data-week-type="${{weekType}}"]`).classList.add('active');
+
+  rows.forEach(row => {{
+    if (weekType === 'all') {{
+      row.style.display = 'table-row';
+    }} else {{
+      row.style.display = row.dataset.weekType === weekType ? 'table-row' : 'none';
+    }}
+  }});
+}}
+
 // ---- Chart options shared ----
 const legendOpts = {{
   position: 'bottom',
