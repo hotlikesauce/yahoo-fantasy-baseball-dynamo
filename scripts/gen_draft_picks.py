@@ -2,6 +2,36 @@ import json, sys, io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
+# Round 1 & 2 keeper picks (from Yahoo draft board)
+KEEPER_R1 = [
+    ('Tarik Skubal',           'SQUEEZE AGS'),
+    ('Francisco Lindor',       'Getting Plowed Again.'),
+    ('Elly De La Cruz',        'Floppy Salami Time'),
+    ('Aaron Judge',            'Hatfield Hurlers'),
+    ('José Ramírez',           'Serafini Hit Squad'),
+    ('Bobby Witt Jr.',         'WEMBY SZN'),
+    ('Yordan Alvarez',         'Rickie Flower'),
+    ('Ketel Marte',            'Moniebol \U0001f433'),
+    ('Kyle Tucker',            'Ian Cumsler'),
+    ('Jazz Chisholm Jr.',      'OG9\ufe0f\u20e3'),
+    ('Shohei Ohtani (Batter)', '\u00af\\_(\u30c4)_/\u00af'),
+    ('Julio Rodríguez',        'The Rosterbation Station'),
+]
+KEEPER_R2 = [
+    ('Junior Caminero',          'The Rosterbation Station'),
+    ('Juan Soto',                '\u00af\\_(\u30c4)_/\u00af'),
+    ('Kyle Schwarber',           'OG9\ufe0f\u20e3'),
+    ('Ronald Acuña Jr.',         'Ian Cumsler'),
+    ('Jackson Chourio',          'Moniebol \U0001f433'),
+    ('Shohei Ohtani (Pitcher)',  'Rickie Flower'),
+    ('Corbin Carroll',           'WEMBY SZN'),
+    ('Fernando Tatis Jr.',       'Serafini Hit Squad'),
+    ('Trea Turner',              'Hatfield Hurlers'),
+    ('Nick Kurtz',               'Floppy Salami Time'),
+    ('James Wood',               'Getting Plowed Again.'),
+    ('Garrett Crochet',          'SQUEEZE AGS'),
+]
+
 # 2026 Draft Pick Data (from Yahoo Fantasy league 8614)
 TOTAL_ROUNDS = 22
 NUM_TEAMS = 12
@@ -164,6 +194,27 @@ for i, t in enumerate(team_data):
     name_esc = t['name'].replace('\\', '\\\\')
     summary_rows += f'<tr><td class="rank">{i+1}</td><td><span style="color:{color}">&#9679;</span> {name_esc}</td><td class="capital-cell">{t["capital"]}</td><td class="{diff_class}">{diff_str}</td><td>{t["total_picks"]}</td><td>{t["extra_high"]}</td><td>{t["traded_away"]}</td><td class="notes">{note_html}</td></tr>'
 
+# Build draft board HTML (rounds as rows, pick positions as columns)
+def board_cell(team, player=None, cm=None):
+    color = cm.get(team, '#64748b') if cm else '#64748b'
+    short = team.replace('Getting Plowed Again.', 'Getting Plowed').replace('The Rosterbation Station', 'Rosterbation').replace('Serafini Hit Squad', 'Serafini').replace('Floppy Salami Time', 'Floppy Salami').replace('Hatfield Hurlers', 'Hatfield').replace('SQUEEZE AGS', 'SQUEEZE AGS')
+    if player:
+        return f'<td class="board-keeper" style="border-top:2px solid {color}"><span class="board-player">{player}</span><span class="board-team" style="color:{color}">{short}</span></td>'
+    return f'<td class="board-pick" style="border-top:2px solid {color}"><span class="board-team" style="color:{color}">{short}</span></td>'
+
+board_rows = ''
+# Round 1 (keepers)
+cells = ''.join(board_cell(t, p, color_map) for p, t in KEEPER_R1)
+board_rows += f'<tr><td class="board-round keeper-round">R1<br><span>Keepers</span></td>{cells}</tr>'
+# Round 2 (keepers)
+cells = ''.join(board_cell(t, p, color_map) for p, t in KEEPER_R2)
+board_rows += f'<tr><td class="board-round keeper-round">R2<br><span>Keepers</span></td>{cells}</tr>'
+# Rounds 3-22
+for rnd in range(3, TOTAL_ROUNDS + 1):
+    order = draft_order.get(rnd, [])
+    cells = ''.join(board_cell(t, None, color_map) for t in order)
+    board_rows += f'<tr><td class="board-round">R{rnd}</td>{cells}</tr>'
+
 # Generate HTML
 html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -202,6 +253,21 @@ html = f"""<!DOCTYPE html>
   th.sortable::after {{ content: '\\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }}
   th.sortable.asc::after {{ content: '\\2191'; opacity: 0.8; }}
   th.sortable.desc::after {{ content: '\\2193'; opacity: 0.8; }}
+
+  /* Draft board */
+  .board-wrap {{ overflow-x: auto; margin-bottom: 32px; }}
+  .board-table {{ min-width: 1100px; border-collapse: collapse; width: 100%; }}
+  .board-table td {{ border: 1px solid #1e293b; padding: 0; vertical-align: top; }}
+  .board-round {{ background: #0f172a; color: #64748b; font-size: 0.75em; font-weight: 700;
+    text-align: center; padding: 6px 4px; white-space: nowrap; min-width: 52px; }}
+  .board-round span {{ display: block; font-weight: 400; color: #475569; font-size: 0.85em; }}
+  .keeper-round {{ color: #f59e0b; }}
+  .board-keeper {{ background: #1a1f2e; min-width: 100px; padding: 6px 6px; }}
+  .board-pick {{ background: #0f172a; min-width: 100px; padding: 5px 6px; }}
+  .board-player {{ display: block; font-size: 0.78em; font-weight: 700; color: #e2e8f0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }}
+  .board-team {{ display: block; font-size: 0.7em; font-weight: 600; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 110px; margin-top: 2px; }}
 </style>
 </head>
 <body>
@@ -229,6 +295,15 @@ html = f"""<!DOCTYPE html>
 <table>
 <tr><th>Team</th>{''.join(f'<th class="keeper">R{i+1}</th>' if i < 2 else f'<th>R{i+1}</th>' for i in range(TOTAL_ROUNDS))}<th>Total</th><th>Capital</th><th>+/-</th></tr>
 {grid_rows}
+</table>
+</div>
+
+<h3>2026 Draft Board</h3>
+<p class="section-desc">Full pick-by-pick draft order. Rounds 1&ndash;2 show the keeper players. Draft date: <strong>Thu, Mar 12 &mdash; 6:00 PM MDT</strong>.</p>
+<div class="board-wrap">
+<table class="board-table">
+<thead><tr><th class="board-round"></th>{''.join(f'<th class="board-round" style="background:#0f172a;color:#64748b">Pick {i+1}</th>' for i in range(12))}</tr></thead>
+<tbody>{board_rows}</tbody>
 </table>
 </div>
 

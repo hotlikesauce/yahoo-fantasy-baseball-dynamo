@@ -1,0 +1,23 @@
+﻿{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:BatchWriteItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-west-2:426188442298:table/FantasyBaseball-SeasonTrends",
+        "arn:aws:dynamodb:us-west-2:426188442298:table/FantasyBaseball-Schedule"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-west-2:426188442298:secret:yahoo-fantasy-baseball*"
+    }
+  ]
+}

@@ -13,3 +13,7 @@ manager_dict.py
 docs/data/
 yahoo_oauth_token.json
 nul
+
+# Lambda layer dependencies (pip-installed packages, not source code)
+lambda/python/
+lambda/*.zip

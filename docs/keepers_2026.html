@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Keepers</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .chart-box { height: 420px; }
+
+  /* Cards grid */
+  .keeper-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .keeper-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-rank {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+  }
+  .card-team {
+    font-size: 1em;
+    font-weight: 700;
+    color: #e2e8f0;
+    padding-left: 10px;
+  }
+  .card-players {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f172a;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .player-rank {
+    font-size: 1.1em;
+    font-weight: 800;
+    color: #f59e0b;
+    min-width: 36px;
+  }
+  .player-name {
+    flex: 1;
+    font-weight: 600;
+    color: #e2e8f0;
+    font-size: 0.95em;
+  }
+  .player-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .player-mlb {
+    font-size: 0.8em;
+    color: #64748b;
+    font-weight: 500;
+  }
+  .card-combined {
+    font-size: 0.82em;
+    color: #64748b;
+    text-align: right;
+  }
+
+  /* Position badge */
+  .pos-badge {
+    font-size: 0.72em;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  /* Table */
+  .rank-cell { font-weight: 700; color: #64748b; text-align: center; }
+  .team-cell { font-weight: 600; white-space: nowrap; }
+  .combined-cell { font-weight: 800; color: #f59e0b; text-align: center; }
+  .player-rank-sm {
+    font-size: 0.85em;
+    font-weight: 800;
+    color: #f59e0b;
+    margin-right: 4px;
+  }
+  .mlb-tag {
+    font-size: 0.78em;
+    color: #64748b;
+    margin-left: 4px;
+  }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Keepers</p>
+
+<p class="section-desc">Each team keeps 2 players in rounds 1 and 2. Rankings are Yahoo's 2026 preseason rankings for this league. <strong>Lower combined rank = stronger keeper pair.</strong></p>
+
+<h3>Keeper Strength Rankings</h3>
+<p class="section-desc">Combined Yahoo preseason rank — lower is better. Chart shows combined rank (shorter bar = stronger keepers).</p>
+<div class="chart-box">
+<canvas id="keeperChart"></canvas>
+</div>
+
+<h3>Team Keepers</h3>
+<div class="keeper-grid">
+
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#ef4444">#1</div>
+      <div class="card-team" style="border-left:3px solid #ef4444">¯\_(ツ)_/¯</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#2</span>
+          <span class="player-name">Shohei Ohtani (Batter)</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#ec489922;color:#ec4899;border:1px solid #ec489944">Util</span> <span class="player-mlb">LAD</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#4</span>
+          <span class="player-name">Juan Soto</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">NYM</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#ef4444">#6</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#f97316">#2</div>
+      <div class="card-team" style="border-left:3px solid #f97316">SQUEEZE AGS</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#5</span>
+          <span class="player-name">Tarik Skubal</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span> <span class="player-mlb">DET</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#11</span>
+          <span class="player-name">Garrett Crochet</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span> <span class="player-mlb">BOS</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#f97316">#16</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#eab308">#3</div>
+      <div class="card-team" style="border-left:3px solid #eab308">Ian Cumsler</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#9</span>
+          <span class="player-name">Kyle Tucker</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">LAD</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#12</span>
+          <span class="player-name">Ronald Acuña Jr.</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">ATL</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#eab308">#21</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#22c55e">#4</div>
+      <div class="card-team" style="border-left:3px solid #22c55e">Serafini Hit Squad</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#7</span>
+          <span class="player-name">José Ramírez</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">3B</span> <span class="player-mlb">CLE</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#15</span>
+          <span class="player-name">Fernando Tatis Jr.</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">SD</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#22c55e">#22</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#14b8a6">#5</div>
+      <div class="card-team" style="border-left:3px solid #14b8a6">WEMBY SZN</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#3</span>
+          <span class="player-name">Bobby Witt Jr.</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span> <span class="player-mlb">KC</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#20</span>
+          <span class="player-name">Corbin Carroll</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">AZ</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#14b8a6">#23</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#3b82f6">#6</div>
+      <div class="card-team" style="border-left:3px solid #3b82f6">The Rosterbation Station</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#10</span>
+          <span class="player-name">Julio Rodríguez</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">SEA</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#14</span>
+          <span class="player-name">Junior Caminero</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">3B</span> <span class="player-mlb">TB</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#3b82f6">#24</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#8b5cf6">#7</div>
+      <div class="card-team" style="border-left:3px solid #8b5cf6">Hatfield Hurlers</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#1</span>
+          <span class="player-name">Aaron Judge</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">NYY</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#24</span>
+          <span class="player-name">Trea Turner</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span> <span class="player-mlb">PHI</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#8b5cf6">#25</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#ec4899">#8</div>
+      <div class="card-team" style="border-left:3px solid #ec4899">Floppy Salami Time</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#6</span>
+          <span class="player-name">Elly De La Cruz</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span> <span class="player-mlb">CIN</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#21</span>
+          <span class="player-name">Nick Kurtz</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">1B</span> <span class="player-mlb">ATH</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#ec4899">#27</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#06b6d4">#9</div>
+      <div class="card-team" style="border-left:3px solid #06b6d4">OG9️⃣</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#19</span>
+          <span class="player-name">Kyle Schwarber</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">PHI</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#23</span>
+          <span class="player-name">Jazz Chisholm Jr.</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">2B/3B</span> <span class="player-mlb">NYY</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#06b6d4">#42</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#f59e0b">#10</div>
+      <div class="card-team" style="border-left:3px solid #f59e0b">Moniebol 🐳</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#16</span>
+          <span class="player-name">Jackson Chourio</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">MIL</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#28</span>
+          <span class="player-name">Ketel Marte</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">2B</span> <span class="player-mlb">AZ</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#f59e0b">#44</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#10b981">#11</div>
+      <div class="card-team" style="border-left:3px solid #10b981">Getting Plowed Again.</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#26</span>
+          <span class="player-name">Francisco Lindor</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span> <span class="player-mlb">NYM</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#38</span>
+          <span class="player-name">James Wood</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">WSH</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#10b981">#64</strong></div>
+    </div>
+    <div class="keeper-card">
+      <div class="card-rank" style="color:#a855f7">#12</div>
+      <div class="card-team" style="border-left:3px solid #a855f7">Rickie Flower</div>
+      <div class="card-players">
+        <div class="player-row">
+          <span class="player-rank">#37</span>
+          <span class="player-name">Yordan Alvarez</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span> <span class="player-mlb">HOU</span></span>
+        </div>
+        <div class="player-row">
+          <span class="player-rank">#117</span>
+          <span class="player-name">Shohei Ohtani (Pitcher)</span>
+          <span class="player-meta"><span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span> <span class="player-mlb">LAD</span></span>
+        </div>
+      </div>
+      <div class="card-combined">Combined rank: <strong style="color:#a855f7">#154</strong></div>
+    </div>
+</div>
+
+<h3>All Teams — Keeper Summary</h3>
+<table>
+<tr>
+  <th>#</th>
+  <th>Team</th>
+  <th>Keeper 1</th>
+  <th>Keeper 2</th>
+  <th>Combined Rank</th>
+</tr>
+<tr>
+      <td class="rank-cell">1</td>
+      <td class="team-cell"><span style="color:#ef4444">&#9679;</span> ¯\_(ツ)_/¯</td>
+      <td>
+        <span class="player-rank-sm">#2</span>
+        Shohei Ohtani (Batter) <span class="pos-badge" style="background:#ec489922;color:#ec4899;border:1px solid #ec489944">Util</span>
+        <span class="mlb-tag">LAD</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#4</span>
+        Juan Soto <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">NYM</span>
+      </td>
+      <td class="combined-cell">#6</td>
+    </tr><tr>
+      <td class="rank-cell">2</td>
+      <td class="team-cell"><span style="color:#f97316">&#9679;</span> SQUEEZE AGS</td>
+      <td>
+        <span class="player-rank-sm">#5</span>
+        Tarik Skubal <span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span>
+        <span class="mlb-tag">DET</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#11</span>
+        Garrett Crochet <span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span>
+        <span class="mlb-tag">BOS</span>
+      </td>
+      <td class="combined-cell">#16</td>
+    </tr><tr>
+      <td class="rank-cell">3</td>
+      <td class="team-cell"><span style="color:#eab308">&#9679;</span> Ian Cumsler</td>
+      <td>
+        <span class="player-rank-sm">#9</span>
+        Kyle Tucker <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">LAD</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#12</span>
+        Ronald Acuña Jr. <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">ATL</span>
+      </td>
+      <td class="combined-cell">#21</td>
+    </tr><tr>
+      <td class="rank-cell">4</td>
+      <td class="team-cell"><span style="color:#22c55e">&#9679;</span> Serafini Hit Squad</td>
+      <td>
+        <span class="player-rank-sm">#7</span>
+        José Ramírez <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">3B</span>
+        <span class="mlb-tag">CLE</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#15</span>
+        Fernando Tatis Jr. <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">SD</span>
+      </td>
+      <td class="combined-cell">#22</td>
+    </tr><tr>
+      <td class="rank-cell">5</td>
+      <td class="team-cell"><span style="color:#14b8a6">&#9679;</span> WEMBY SZN</td>
+      <td>
+        <span class="player-rank-sm">#3</span>
+        Bobby Witt Jr. <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span>
+        <span class="mlb-tag">KC</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#20</span>
+        Corbin Carroll <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">AZ</span>
+      </td>
+      <td class="combined-cell">#23</td>
+    </tr><tr>
+      <td class="rank-cell">6</td>
+      <td class="team-cell"><span style="color:#3b82f6">&#9679;</span> The Rosterbation Station</td>
+      <td>
+        <span class="player-rank-sm">#10</span>
+        Julio Rodríguez <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">SEA</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#14</span>
+        Junior Caminero <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">3B</span>
+        <span class="mlb-tag">TB</span>
+      </td>
+      <td class="combined-cell">#24</td>
+    </tr><tr>
+      <td class="rank-cell">7</td>
+      <td class="team-cell"><span style="color:#8b5cf6">&#9679;</span> Hatfield Hurlers</td>
+      <td>
+        <span class="player-rank-sm">#1</span>
+        Aaron Judge <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">NYY</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#24</span>
+        Trea Turner <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span>
+        <span class="mlb-tag">PHI</span>
+      </td>
+      <td class="combined-cell">#25</td>
+    </tr><tr>
+      <td class="rank-cell">8</td>
+      <td class="team-cell"><span style="color:#ec4899">&#9679;</span> Floppy Salami Time</td>
+      <td>
+        <span class="player-rank-sm">#6</span>
+        Elly De La Cruz <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span>
+        <span class="mlb-tag">CIN</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#21</span>
+        Nick Kurtz <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">1B</span>
+        <span class="mlb-tag">ATH</span>
+      </td>
+      <td class="combined-cell">#27</td>
+    </tr><tr>
+      <td class="rank-cell">9</td>
+      <td class="team-cell"><span style="color:#06b6d4">&#9679;</span> OG9️⃣</td>
+      <td>
+        <span class="player-rank-sm">#19</span>
+        Kyle Schwarber <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">PHI</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#23</span>
+        Jazz Chisholm Jr. <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">2B/3B</span>
+        <span class="mlb-tag">NYY</span>
+      </td>
+      <td class="combined-cell">#42</td>
+    </tr><tr>
+      <td class="rank-cell">10</td>
+      <td class="team-cell"><span style="color:#f59e0b">&#9679;</span> Moniebol 🐳</td>
+      <td>
+        <span class="player-rank-sm">#16</span>
+        Jackson Chourio <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">MIL</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#28</span>
+        Ketel Marte <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">2B</span>
+        <span class="mlb-tag">AZ</span>
+      </td>
+      <td class="combined-cell">#44</td>
+    </tr><tr>
+      <td class="rank-cell">11</td>
+      <td class="team-cell"><span style="color:#10b981">&#9679;</span> Getting Plowed Again.</td>
+      <td>
+        <span class="player-rank-sm">#26</span>
+        Francisco Lindor <span class="pos-badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e44">SS</span>
+        <span class="mlb-tag">NYM</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#38</span>
+        James Wood <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">WSH</span>
+      </td>
+      <td class="combined-cell">#64</td>
+    </tr><tr>
+      <td class="rank-cell">12</td>
+      <td class="team-cell"><span style="color:#a855f7">&#9679;</span> Rickie Flower</td>
+      <td>
+        <span class="player-rank-sm">#37</span>
+        Yordan Alvarez <span class="pos-badge" style="background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf644">OF</span>
+        <span class="mlb-tag">HOU</span>
+      </td>
+      <td>
+        <span class="player-rank-sm">#117</span>
+        Shohei Ohtani (Pitcher) <span class="pos-badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644">SP</span>
+        <span class="mlb-tag">LAD</span>
+      </td>
+      <td class="combined-cell">#154</td>
+    </tr>
+</table>
+
+</div>
+<script>
+new Chart(document.getElementById('keeperChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ["\u00af\\_(\u30c4)_/\u00af", "SQUEEZE AGS", "Ian Cumsler", "Serafini Hit Squad", "WEMBY SZN", "The Rosterbation Station", "Hatfield Hurlers", "Floppy Salami Time", "OG9\ufe0f\u20e3", "Moniebol \ud83d\udc33", "Getting Plowed Again.", "Rickie Flower"],
+    datasets: [{
+      label: 'Combined Yahoo Rank',
+      data: [6, 16, 21, 22, 23, 24, 25, 27, 42, 44, 64, 154],
+      backgroundColor: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#f59e0b", "#10b981", "#a855f7"],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    layout: { padding: { top: 10, right: 30 } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
+        borderColor: '#475569', borderWidth: 1,
+        callbacks: {
+          label: ctx => 'Combined rank: #' + ctx.parsed.x + ' (lower = stronger)'
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#94a3b8' },
+        grid: { color: '#334155' },
+        title: { display: true, text: 'Combined Yahoo Preseason Rank (lower = stronger)', color: '#64748b' }
+      },
+      y: {
+        ticks: { color: '#e2e8f0', font: { size: 11 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
