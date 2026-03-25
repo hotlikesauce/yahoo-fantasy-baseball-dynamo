@@ -5,7 +5,8 @@
       "Effect": "Allow",
       "Action": [
         "dynamodb:PutItem",
-        "dynamodb:BatchWriteItem"
+        "dynamodb:BatchWriteItem",
+        "dynamodb:GetItem"
       ],
       "Resource": [
         "arn:aws:dynamodb:us-west-2:426188442298:table/FantasyBaseball-SeasonTrends",

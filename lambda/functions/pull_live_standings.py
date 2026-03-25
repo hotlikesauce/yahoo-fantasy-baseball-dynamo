@@ -122,6 +122,18 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             # Batch write to DynamoDB
             if items_to_write:
                 count = yfl.batch_write_items('FantasyBaseball-SeasonTrends', items_to_write)
+
+                # Also write a team_names#current meta item so the static site
+                # can always fetch the latest team names (team names change often)
+                team_name_map = {item['TeamNumber']: item['Team'] for item in items_to_write}
+                yfl.put_item('FantasyBaseball-SeasonTrends', {
+                    'TeamNumber': '0',
+                    'DataTypeWeek': 'team_names#current',
+                    'Year': 2026,
+                    'Teams': team_name_map,
+                    'Timestamp': datetime.utcnow().isoformat(),
+                })
+
                 yfl.log_execution("pull_live_standings", "SUCCESS", f"Wrote {count} standings records for week {current_week}")
                 return {
                     'statusCode': 200,

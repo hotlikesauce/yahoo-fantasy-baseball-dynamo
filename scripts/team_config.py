@@ -58,15 +58,15 @@ YEAR_TN_TO_MANAGER = {
     (2025, '12'): 'Mikey',   # @DoodlesAnalytics
     # 2026
     (2026, '1'): 'Taylor',   # Serafini Hit Squad
-    (2026, '2'): 'James',    # WEMBY SZN
-    (2026, '3'): 'Josh',     # Floppy Salami Time
-    (2026, '4'): 'Bryant',   # Dan Doodletard
+    (2026, '2'): 'James',    # Bob Witt Sex Machine
+    (2026, '3'): 'Josh',     # Los Basureros
+    (2026, '4'): 'Bryant',   # Rickie Flower
     (2026, '5'): 'Kurtis',   # Getting Plowed Again.
     (2026, '6'): 'Mark',     # Hatfield Hurlers
     (2026, '7'): 'Eric',     # Ian Cumsler
-    (2026, '8'): 'Austin',   # Moniebol
-    (2026, '9'): 'Greg',     # OG9
-    (2026, '10'): 'Mikey',   # SQUEEZE AGS
+    (2026, '8'): 'Austin',   # Moniebol \U0001f433
+    (2026, '9'): 'Greg',     # OG9\ufe0f\u20e3
+    (2026, '10'): 'Mikey',   # Aces 4 Days
     (2026, '11'): 'Kevin',   # The Rosterbation Station
     (2026, '12'): 'Mike',    # \u00af\\_(\u30c4)_/\u00af
 }

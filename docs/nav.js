@@ -145,10 +145,11 @@
             </div>
           </li>
           <li class="ss-nav-item">
-            <a class="ss-nav-link has-dropdown${['season_trends_2025.html','luck_analysis_2025.html','season_trends_2024.html','season_trends_2023.html','season_trends_2022.html'].includes(path) ? ' active' : ''}">Year-over-Year</a>
+            <a class="ss-nav-link has-dropdown${['season_trends_2025.html','luck_analysis_2025.html','draft_picks_2025.html','season_trends_2024.html','season_trends_2023.html','season_trends_2022.html'].includes(path) ? ' active' : ''}">Year-over-Year</a>
             <div class="ss-dropdown">
               <div class="ss-label">2025 Season</div>
               <a href="season_trends_2025.html" class="${isActive('season_trends_2025.html').trim()}">Season Trends</a>
+              <a href="draft_picks_2025.html" class="${isActive('draft_picks_2025.html').trim()}">Draft Capital</a>
               <a href="luck_analysis_2025.html" class="${isActive('luck_analysis_2025.html').trim()}">Luck & Matchup Analysis</a>
               <div class="ss-divider"></div>
               <div class="ss-label">Previous Seasons</div>
