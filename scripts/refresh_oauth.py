@@ -20,9 +20,13 @@ TOKEN_URL = "https://api.login.yahoo.com/oauth2/get_token"
 # Step 1: Print authorization URL
 print("\n=== Yahoo OAuth Re-Authentication ===\n")
 print("1. Visit this URL in your browser:")
-print(f"\n  {AUTH_URL}?client_id={CONSUMER_KEY}&redirect_uri=oob&response_type=code\n")
+REDIRECT_URI = "https://localhost"
+
+print(f"\n  {AUTH_URL}?client_id={CONSUMER_KEY}&redirect_uri={REDIRECT_URI}&response_type=code\n")
 print("2. Authorize the app")
-print("3. Copy the code shown on the page\n")
+print("3. Yahoo will redirect to https://localhost — the page will show a connection error,")
+print("   that's fine. Look at the URL bar: it will contain ?code=XXXX")
+print("   Copy just that code value (everything after 'code=' up to any '&')\n")
 
 code = input("Paste the code here: ").strip()
 
@@ -34,7 +38,7 @@ headers = {
 }
 data = {
     'grant_type': 'authorization_code',
-    'redirect_uri': 'oob',
+    'redirect_uri': REDIRECT_URI,
     'code': code
 }
 

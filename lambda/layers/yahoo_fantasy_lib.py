@@ -95,7 +95,7 @@ def batch_write_items(table_name: str, items: list) -> int:
     """Batch write items to DynamoDB. Returns count of successful writes."""
     try:
         table = dynamodb.Table(table_name)
-        with table.batch_writer(batch_size=25) as batch:
+        with table.batch_writer() as batch:
             for item in items:
                 batch.put_item(Item=item)
         return len(items)

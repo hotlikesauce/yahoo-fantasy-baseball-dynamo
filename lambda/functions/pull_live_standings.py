@@ -7,6 +7,7 @@ Triggered by: CloudWatch Events (rate: 5 minutes)
 import json
 import logging
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict, Any
 
 # Import shared library (from Lambda layer)
@@ -108,13 +109,13 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 # Write to DynamoDB
                 item = {
                     'TeamNumber': team_id,
-                    'DataTypeWeek': f"power_ranks_live#{current_week:02d}",
+                    'DataType#Week': f"power_ranks_live#{current_week:02d}",
                     'YearDataType': f"2026#power_ranks_live",
                     'Year': 2026,
                     'Week': current_week,
                     'Team': team_name,
                     'Rank': int(rank) if rank else 0,
-                    'Score': float(points) if points else 0.0,
+                    'Score': Decimal(str(points)) if points else Decimal('0'),
                     'Timestamp': datetime.utcnow().isoformat(),
                 }
                 items_to_write.append(item)
@@ -128,7 +129,7 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 team_name_map = {item['TeamNumber']: item['Team'] for item in items_to_write}
                 yfl.put_item('FantasyBaseball-SeasonTrends', {
                     'TeamNumber': '0',
-                    'DataTypeWeek': 'team_names#current',
+                    'DataType#Week': 'team_names#current',
                     'Year': 2026,
                     'Teams': team_name_map,
                     'Timestamp': datetime.utcnow().isoformat(),

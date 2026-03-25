@@ -7,6 +7,14 @@ The pull_live_standings function keeps team_names#current up to date every 5 min
 import json
 import logging
 import boto3
+from decimal import Decimal
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return int(o) if o % 1 == 0 else float(o)
+        return super().default(o)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -29,7 +37,7 @@ def lambda_handler(event, context):
         table = dynamodb.Table('FantasyBaseball-SeasonTrends')
         result = table.get_item(Key={
             'TeamNumber': '0',
-            'DataTypeWeek': 'team_names#current',
+            'DataType#Week': 'team_names#current',
         })
 
         item = result.get('Item')
@@ -47,7 +55,7 @@ def lambda_handler(event, context):
                 'year': item.get('Year', 2026),
                 'teams': item.get('Teams', {}),   # {team_id: team_name}
                 'timestamp': item.get('Timestamp', ''),
-            }),
+            }, cls=DecimalEncoder),
         }
 
     except Exception as e:
