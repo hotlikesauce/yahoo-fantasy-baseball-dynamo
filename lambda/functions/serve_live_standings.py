@@ -182,34 +182,48 @@ def lambda_handler(event, context) -> Dict[str, Any]:
 
         league_key = yfl.get_league_key(2026, league_id)
 
-        # Pull standings
+        # Pull standings (for team names/managers and current_week)
         standings_resp = yfl.api_get(token, f"league/{league_key}/standings")
         if not standings_resp:
             raise ValueError("Failed to fetch standings")
         standings, current_week = parse_standings(standings_resp['fantasy_content']['league'])
 
-        # Pull scoreboard
-        sb_resp = yfl.api_get(token, f"league/{league_key}/scoreboard")
-        if not sb_resp:
-            raise ValueError("Failed to fetch scoreboard")
-        matchups, sb_week = parse_scoreboard(sb_resp['fantasy_content']['league'])
-
-        # Build category-level W-L-T standings from matchup scores
-        # e.g. if test is winning 3-0, that's 3 cat wins, 0 cat losses,
-        # 9 cat ties (12 categories total). Pts = W*1 + T*0.5
+        # Pull scoreboard for EVERY week (completed + in-progress)
+        # to build cumulative category W-L-T across the whole season
         NUM_CATS = 12
-        cat_records = {}  # team_name -> {w, l, t}
-        for m in matchups:
-            ties_a = NUM_CATS - m['scoreA'] - m['scoreB']
-            cat_records[m['teamA']] = {
-                'w': m['scoreA'], 'l': m['scoreB'], 't': ties_a
-            }
-            cat_records[m['teamB']] = {
-                'w': m['scoreB'], 'l': m['scoreA'], 't': ties_a
-            }
+        cumulative = {}  # team_name -> {'w': int, 'l': int, 't': int}
+        current_matchups = []
+        sb_week = current_week
 
+        for week in range(1, current_week + 1):
+            resp = yfl.api_get(token, f"league/{league_key}/scoreboard;week={week}")
+            if not resp:
+                continue
+            week_matchups, wk = parse_scoreboard(resp['fantasy_content']['league'])
+
+            for m in week_matchups:
+                ties = NUM_CATS - m['scoreA'] - m['scoreB']
+                # Team A
+                if m['teamA'] not in cumulative:
+                    cumulative[m['teamA']] = {'w': 0, 'l': 0, 't': 0}
+                cumulative[m['teamA']]['w'] += m['scoreA']
+                cumulative[m['teamA']]['l'] += m['scoreB']
+                cumulative[m['teamA']]['t'] += ties
+                # Team B
+                if m['teamB'] not in cumulative:
+                    cumulative[m['teamB']] = {'w': 0, 'l': 0, 't': 0}
+                cumulative[m['teamB']]['w'] += m['scoreB']
+                cumulative[m['teamB']]['l'] += m['scoreA']
+                cumulative[m['teamB']]['t'] += ties
+
+            # Keep current week matchups for display
+            if week == current_week:
+                current_matchups = week_matchups
+                sb_week = wk
+
+        # Apply cumulative records to standings
         for row in standings:
-            cr = cat_records.get(row['name'], {'w': 0, 'l': 0, 't': 0})
+            cr = cumulative.get(row['name'], {'w': 0, 'l': 0, 't': 0})
             row['wins'] = cr['w']
             row['losses'] = cr['l']
             row['ties'] = cr['t']
@@ -225,14 +239,14 @@ def lambda_handler(event, context) -> Dict[str, Any]:
 
         result = {
             'standings': standings,
-            'matchups': matchups,
+            'matchups': current_matchups,
             'week': sb_week,
             'currentWeek': current_week,
             'timestamp': datetime.utcnow().isoformat() + 'Z',
         }
 
         yfl.log_execution("serve_live_standings", "SUCCESS",
-                          f"Week {sb_week}, {len(standings)} teams, {len(matchups)} matchups")
+                          f"Week {sb_week}, {len(standings)} teams, {len(current_matchups)} matchups")
 
         return {
             'statusCode': 200,
