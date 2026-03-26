@@ -150,7 +150,7 @@
   <p class="page-subtitle">2026 Season &mdash; Week <span id="week-num">...</span></p>
 
   <h2>League Standings</h2>
-  <p class="section-desc">Win = 1 pt, Tie = 0.5 pts. Sorted by Yahoo ranking.</p>
+  <p class="section-desc">Win = 1 pt, Tie = 0.5 pts, Loss = 0 pts. Sorted by total score.</p>
   <div id="standings-section">
     <div class="loading"><span class="spinner"></span>Loading standings...</div>
   </div>
@@ -213,14 +213,13 @@ async function fetchAndRender() {
 function renderStandings(standings) {
   var rows = standings.map(function(row) {
     var gb = row.gb === 0 ? '\u2014' : row.gb.toFixed(1);
-    var record = row.wins + '-' + row.losses + (row.ties > 0 ? '-' + row.ties : '');
-    var pct = row.gp > 0 ? (row.pct * 100).toFixed(1) + '%' : '\u2014';
     return '<tr>' +
       '<td class="rank">' + row.rank + '</td>' +
       '<td class="team-name">' + row.name + ' <span class="manager">' + row.manager + '</span></td>' +
-      '<td class="record">' + record + '</td>' +
+      '<td>' + row.wins + '</td>' +
+      '<td>' + row.losses + '</td>' +
+      '<td>' + row.ties + '</td>' +
       '<td style="font-weight:700;color:#34d399">' + row.pts.toFixed(1) + '</td>' +
-      '<td>' + pct + '</td>' +
       '<td class="gb">' + gb + '</td>' +
     '</tr>';
   }).join('');
@@ -231,9 +230,10 @@ function renderStandings(standings) {
       '<thead><tr>' +
         '<th class="sortable" data-col="rank">#</th>' +
         '<th class="sortable" data-col="name">Team</th>' +
-        '<th class="sortable" data-col="record">Record</th>' +
+        '<th class="sortable" data-col="w">W</th>' +
+        '<th class="sortable" data-col="l">L</th>' +
+        '<th class="sortable" data-col="t">T</th>' +
         '<th class="sortable" data-col="pts">Pts</th>' +
-        '<th class="sortable" data-col="pct">Win%</th>' +
         '<th class="sortable" data-col="gb">GB</th>' +
       '</tr></thead>' +
       '<tbody id="standings-body">' + rows + '</tbody>' +
@@ -323,12 +323,11 @@ function attachSortHandlers() {
         switch(col) {
           case 'rank': av = parseInt(ca[0].textContent); bv = parseInt(cb[0].textContent); break;
           case 'name': av = ca[1].textContent.toLowerCase(); bv = cb[1].textContent.toLowerCase(); return av < bv ? -dir : av > bv ? dir : 0;
-          case 'record':
-            var p = function(s) { var x = s.split('-').map(Number); return x[0] + 0.5*(x[2]||0); };
-            av = p(ca[2].textContent); bv = p(cb[2].textContent); break;
-          case 'pts': av = parseFloat(ca[3].textContent); bv = parseFloat(cb[3].textContent); break;
-          case 'pct': av = parseFloat(ca[4].textContent)||0; bv = parseFloat(cb[4].textContent)||0; break;
-          case 'gb': av = ca[5].textContent === '\u2014' ? 0 : parseFloat(ca[5].textContent); bv = cb[5].textContent === '\u2014' ? 0 : parseFloat(cb[5].textContent); break;
+          case 'w': av = parseInt(ca[2].textContent); bv = parseInt(cb[2].textContent); break;
+          case 'l': av = parseInt(ca[3].textContent); bv = parseInt(cb[3].textContent); break;
+          case 't': av = parseInt(ca[4].textContent); bv = parseInt(cb[4].textContent); break;
+          case 'pts': av = parseFloat(ca[5].textContent); bv = parseFloat(cb[5].textContent); break;
+          case 'gb': av = ca[6].textContent === '\u2014' ? 0 : parseFloat(ca[6].textContent); bv = cb[6].textContent === '\u2014' ? 0 : parseFloat(cb[6].textContent); break;
         }
         return (av - bv) * dir;
       });
