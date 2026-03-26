@@ -159,6 +159,49 @@ aws lambda create-function \
   --layers arn:aws:lambda:us-west-2:YOUR_ACCOUNT:layer:yahoo-fantasy-layer:VERSION
 ```
 
+### Serve Live Standings (Lambda Function URL - called by browser)
+
+```bash
+zip serve_live_standings.zip serve_live_standings.py
+
+aws lambda create-function \
+  --function-name serve-live-standings \
+  --runtime python3.11 \
+  --role arn:aws:iam::YOUR_ACCOUNT:role/yahoo-fantasy-lambda-role \
+  --handler serve_live_standings.lambda_handler \
+  --zip-file fileb://serve_live_standings.zip \
+  --timeout 30 \
+  --memory-size 256 \
+  --layers arn:aws:lambda:us-west-2:YOUR_ACCOUNT:layer:yahoo-fantasy-layer:VERSION
+
+# Add env vars (same as other functions)
+aws lambda update-function-configuration \
+  --function-name serve-live-standings \
+  --environment "Variables={YAHOO_CONSUMER_KEY=YOUR_KEY,YAHOO_CONSUMER_SECRET=YOUR_SECRET,YAHOO_REFRESH_TOKEN=YOUR_TOKEN,YAHOO_LEAGUE_ID_2026=YOUR_LEAGUE_ID}"
+
+# Create Function URL (public HTTPS endpoint with CORS - no API Gateway needed)
+aws lambda create-function-url-config \
+  --function-name serve-live-standings \
+  --auth-type NONE \
+  --cors '{
+    "AllowOrigins": ["*"],
+    "AllowMethods": ["GET"],
+    "AllowHeaders": ["Content-Type"],
+    "MaxAge": 120
+  }'
+
+# Allow public invocation via Function URL
+aws lambda add-permission \
+  --function-name serve-live-standings \
+  --statement-id AllowPublicFunctionUrl \
+  --action lambda:InvokeFunctionUrl \
+  --principal "*" \
+  --function-url-auth-type NONE
+
+# Note the FunctionUrl returned - plug it into docs/live_standings_2026.html
+# Replace %%LAMBDA_FUNCTION_URL%% with the URL
+```
+
 ### Schedule (manual - run once)
 
 ```bash

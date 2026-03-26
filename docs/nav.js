@@ -134,8 +134,9 @@
         <a href="index.html" class="ss-nav-brand">Summertime Sadness</a>
 <ul class="ss-nav-links">
           <li class="ss-nav-item">
-            <a class="ss-nav-link has-dropdown${['draft_picks_2026.html','trade_analyzer.html','keepers_2026.html'].includes(path) ? ' active' : ''}">2026 Season</a>
+            <a class="ss-nav-link has-dropdown${['draft_picks_2026.html','trade_analyzer.html','keepers_2026.html','live_standings_2026.html'].includes(path) ? ' active' : ''}">2026 Season</a>
             <div class="ss-dropdown">
+              <a href="live_standings_2026.html" class="${isActive('live_standings_2026.html').trim()}">Live Standings</a>
               <a href="keepers_2026.html" class="${isActive('keepers_2026.html').trim()}">Keepers</a>
               <a href="draft_picks_2026.html" class="${isActive('draft_picks_2026.html').trim()}">Draft Capital</a>
               <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
