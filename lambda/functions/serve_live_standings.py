@@ -194,36 +194,30 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             raise ValueError("Failed to fetch scoreboard")
         matchups, sb_week = parse_scoreboard(sb_resp['fantasy_content']['league'])
 
-        # Merge live matchup results into standings
-        # Yahoo standings only update after a week completes, so we project
-        # the current in-progress matchup into the W-L-T record
-        live_results = {}  # team_name -> 'W', 'L', or 'T'
+        # Build category-level W-L-T standings from matchup scores
+        # e.g. if test is winning 3-0, that's 3 cat wins, 0 cat losses,
+        # 9 cat ties (12 categories total). Pts = W*1 + T*0.5
+        NUM_CATS = 12
+        cat_records = {}  # team_name -> {w, l, t}
         for m in matchups:
-            if m['scoreA'] > m['scoreB']:
-                live_results[m['teamA']] = 'W'
-                live_results[m['teamB']] = 'L'
-            elif m['scoreB'] > m['scoreA']:
-                live_results[m['teamA']] = 'L'
-                live_results[m['teamB']] = 'W'
-            else:
-                live_results[m['teamA']] = 'T'
-                live_results[m['teamB']] = 'T'
+            ties_a = NUM_CATS - m['scoreA'] - m['scoreB']
+            cat_records[m['teamA']] = {
+                'w': m['scoreA'], 'l': m['scoreB'], 't': ties_a
+            }
+            cat_records[m['teamB']] = {
+                'w': m['scoreB'], 'l': m['scoreA'], 't': ties_a
+            }
 
         for row in standings:
-            result = live_results.get(row['name'])
-            if result == 'W':
-                row['wins'] += 1
-            elif result == 'L':
-                row['losses'] += 1
-            elif result == 'T':
-                row['ties'] += 1
-            row['gp'] = row['wins'] + row['losses'] + row['ties']
-            row['pts'] = row['wins'] + 0.5 * row['ties']
-            row['pct'] = row['pts'] / row['gp'] if row['gp'] > 0 else 0
+            cr = cat_records.get(row['name'], {'w': 0, 'l': 0, 't': 0})
+            row['wins'] = cr['w']
+            row['losses'] = cr['l']
+            row['ties'] = cr['t']
+            row['gp'] = cr['w'] + cr['l'] + cr['t']
+            row['pts'] = cr['w'] + 0.5 * cr['t']
 
-        # Re-sort by points desc, then pct desc
-        standings.sort(key=lambda r: (-r['pts'], -r['pct']))
-        # Re-rank and recalculate GB
+        # Sort by points desc, then wins desc
+        standings.sort(key=lambda r: (-r['pts'], -r['wins']))
         leader_pts = standings[0]['pts'] if standings else 0
         for i, row in enumerate(standings):
             row['rank'] = i + 1
