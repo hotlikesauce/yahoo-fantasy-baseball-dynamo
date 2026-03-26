@@ -1,10 +1,71 @@
-import boto3, json, sys, io
+import boto3, json, sys, io, os, requests
 from collections import Counter
+from dotenv import load_dotenv
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+load_dotenv()
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('FantasyBaseball-AllTimeRankings')
+
+# ============================================================
+# 0. Pull live 2026 team names from Yahoo API
+# ============================================================
+YAHOO_CONSUMER_KEY = os.getenv('YAHOO_CONSUMER_KEY')
+YAHOO_CONSUMER_SECRET = os.getenv('YAHOO_CONSUMER_SECRET')
+YAHOO_REFRESH_TOKEN = os.getenv('YAHOO_REFRESH_TOKEN')
+YAHOO_LEAGUE_IDS_STR = os.getenv('YAHOO_LEAGUE_IDS')
+
+league_ids = {}
+for pair in YAHOO_LEAGUE_IDS_STR.split(','):
+    year, lid = pair.split(':')
+    league_ids[int(year)] = lid
+
+LEAGUE_KEY_2026 = f"469.l.{league_ids[2026]}"
+BASE_URL = "https://fantasysports.yahooapis.com/fantasy/v2"
+
+# Get OAuth token
+token_resp = requests.post("https://api.login.yahoo.com/oauth2/get_token", data={
+    'client_id': YAHOO_CONSUMER_KEY, 'client_secret': YAHOO_CONSUMER_SECRET,
+    'refresh_token': YAHOO_REFRESH_TOKEN, 'grant_type': 'refresh_token'
+})
+yahoo_token = token_resp.json()['access_token']
+yahoo_headers = {'Authorization': f'Bearer {yahoo_token}', 'Accept': 'application/json'}
+
+# Pull 2026 standings for team names + managers
+standings_resp = requests.get(f"{BASE_URL}/league/{LEAGUE_KEY_2026}/standings?format=json", headers=yahoo_headers)
+standings_data = standings_resp.json()['fantasy_content']['league']
+teams_2026 = []
+teams_raw = standings_data[1]['standings'][0]['teams']
+for tidx in teams_raw:
+    if tidx == 'count':
+        continue
+    team_list = teams_raw[tidx]['team']
+    basic = team_list[0]
+    team_name = manager = None
+    for item in basic:
+        if not isinstance(item, dict):
+            continue
+        if 'name' in item:
+            team_name = item['name']
+        elif 'managers' in item:
+            mgrs = item['managers']
+            if isinstance(mgrs, list):
+                manager = mgrs[0].get('manager', {}).get('nickname', '?')
+    # Normalize manager name for profile links
+    if manager:
+        manager = manager.strip().title().split()[0] if ' ' in manager.strip() else manager.strip().title()
+    # Yahoo nickname overrides (Yahoo account name != league name)
+    MANAGER_OVERRIDES = {'Michael': 'Mikey'}
+    if manager in MANAGER_OVERRIDES:
+        manager = MANAGER_OVERRIDES[manager]
+    teams_2026.append({'name': team_name, 'manager': manager})
+
+# Sort alphabetically by manager for consistent display
+teams_2026.sort(key=lambda t: (t['manager'] or '').lower())
+print(f"2026 teams from Yahoo API:")
+for t in teams_2026:
+    print(f"  {t['name']} ({t['manager']})")
 
 # ============================================================
 # 1. Pull all champion data
@@ -313,18 +374,7 @@ html = f"""<!DOCTYPE html>
           </tr>
         </thead>
         <tbody>
-          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol \U0001f433</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">4</td><td><span class="team-name">OG9\ufe0f\u20e3</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">10</td><td><span class="team-name">\u00af\\_(\u30c4)_/\u00af</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>
+          {''.join(f'<tr><td class="rank-num">{i+1}</td><td><span class="team-name">{t["name"]}</span><a href="manager_profiles.html#{t["manager"]}" class="mgr-link">{t["manager"]}</a></td><td>(0-0-0)</td><td>&mdash;</td></tr>' for i, t in enumerate(teams_2026))}
         </tbody>
       </table>
     </div>
@@ -342,18 +392,7 @@ html = f"""<!DOCTYPE html>
           </tr>
         </thead>
         <tbody>
-          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol \U0001f433</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">4</td><td><span class="team-name">OG9\ufe0f\u20e3</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">5</td><td><span class="team-name">WEMBY SZN</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">6</td><td><span class="team-name">Floppy Salami Time</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">10</td><td><span class="team-name">\u00af\\_(\u30c4)_/\u00af</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">11</td><td><span class="team-name">SQUEEZE AGS</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td>&mdash;</td><td>&mdash;</td></tr>
-          <tr><td class="rank-num">12</td><td><span class="team-name">Serafini Hit Squad</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td>&mdash;</td><td>&mdash;</td></tr>
+          {''.join(f'<tr><td class="rank-num">{i+1}</td><td><span class="team-name">{t["name"]}</span><a href="manager_profiles.html#{t["manager"]}" class="mgr-link">{t["manager"]}</a></td><td>&mdash;</td><td>&mdash;</td></tr>' for i, t in enumerate(teams_2026))}
         </tbody>
       </table>
     </div>
