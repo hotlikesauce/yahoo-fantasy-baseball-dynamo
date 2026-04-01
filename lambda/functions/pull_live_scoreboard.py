@@ -57,7 +57,9 @@ def lambda_handler(event, context) -> Dict[str, Any]:
 
         # Build league key and fetch scoreboard
         league_key = yfl.get_league_key(2026, league_id)
-        scoreboard_data = yfl.api_get(token, f"league/{league_key}/scoreboard")
+        week_override = event.get('week') if event else None
+        scoreboard_url = f"league/{league_key}/scoreboard" + (f";week={week_override}" if week_override else "")
+        scoreboard_data = yfl.api_get(token, scoreboard_url)
 
         if not scoreboard_data:
             raise ValueError("Failed to fetch scoreboard from API")

@@ -102,11 +102,23 @@ def lambda_handler(event, context):
                 name_to_tn[name] = tn
                 tn_latest_name[tn] = name
 
-        # Supplement with power_ranks_live for name mapping only
+        # Supplement with power_ranks_live for name mapping + latest W-L-T
+        latest_wlt = {}  # tn -> {wins, losses, ties} from most recent week
+        pr_by_week = defaultdict(list)
         for item in scan_by_prefix('power_ranks_live#'):
             tn = item['TeamNumber']
             name_to_tn[item['Team']] = tn
             tn_latest_name[tn] = item['Team']
+            pr_by_week[int(item.get('Week', 0))].append(item)
+        if pr_by_week:
+            latest_pr_week = max(pr_by_week.keys())
+            for item in pr_by_week[latest_pr_week]:
+                tn = item['TeamNumber']
+                latest_wlt[tn] = {
+                    'wins': int(item.get('Wins', 0)),
+                    'losses': int(item.get('Losses', 0)),
+                    'ties': int(item.get('Ties', 0)),
+                }
 
         # 2. Pull weekly_stats
         weekly_stats = defaultdict(dict)
@@ -263,9 +275,23 @@ def lambda_handler(event, context):
                         'isBatter': cat in BATTER_CATS,
                     }
 
+        # Standings from latest power_ranks_live W-L-T
+        standings_out = []
+        for tn in sorted_tns:
+            wlt = latest_wlt.get(tn, {})
+            standings_out.append({
+                'tn': tn,
+                'name': tn_latest_name.get(tn, tn),
+                'wins': wlt.get('wins', 0),
+                'losses': wlt.get('losses', 0),
+                'ties': wlt.get('ties', 0),
+            })
+        standings_out.sort(key=lambda x: (x['wins'] + x['ties'] * 0.5) / max(1, x['wins'] + x['losses'] + x['ties']), reverse=True)
+
         result = {
             'teams': teams,
             'statWeeks': stat_weeks,
+            'standings': standings_out,
             'weeklyPowerScores': power_score_out,
             'cumulativePowerScores': cum_power_out,
             'weeklyXwins': xwins_out,

@@ -90,14 +90,23 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 rank = None
                 points = None
 
+                wins = losses = ties = 0
                 if isinstance(team_stats, dict):
                     rank = team_stats.get('team_standings', {}).get('rank')
                     points = team_stats.get('team_points', {}).get('total')
+                    outcome = team_stats.get('team_standings', {}).get('outcome_totals', {})
+                    wins = int(outcome.get('wins', 0))
+                    losses = int(outcome.get('losses', 0))
+                    ties = int(outcome.get('ties', 0))
                 elif isinstance(team_stats, list):
                     for item in team_stats:
                         if isinstance(item, dict):
                             if 'team_standings' in item:
                                 rank = item['team_standings'].get('rank')
+                                outcome = item['team_standings'].get('outcome_totals', {})
+                                wins = int(outcome.get('wins', 0))
+                                losses = int(outcome.get('losses', 0))
+                                ties = int(outcome.get('ties', 0))
                             if 'team_points' in item:
                                 points = item['team_points'].get('total')
 
@@ -117,6 +126,9 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                     'Team': team_name,
                     'Rank': int(rank) if rank else 0,
                     'Score': Decimal(str(points)) if points else Decimal('0'),
+                    'Wins': wins,
+                    'Losses': losses,
+                    'Ties': ties,
                     'Timestamp': datetime.utcnow().isoformat(),
                 }
                 items_to_write.append(item)

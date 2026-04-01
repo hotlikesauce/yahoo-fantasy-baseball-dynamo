@@ -402,55 +402,52 @@ html = f"""<!DOCTYPE html>
 <script>
 (async function() {{
   const TRENDS_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.on.aws/';
-  const LUCK_URL = 'https://72yvkwushvgvc4qpdh7ijndcbu0rgilv.lambda-url.us-west-2.on.aws/';
+  const STANDINGS_URL = 'https://1lno31b57l.execute-api.us-west-2.amazonaws.com/live-standings';
 
   try {{
-    const [trendsResp, luckResp] = await Promise.all([fetch(TRENDS_URL), fetch(LUCK_URL)]);
+    const [trendsResp, standingsResp] = await Promise.all([fetch(TRENDS_URL), fetch(STANDINGS_URL)]);
     const trends = await trendsResp.json();
-    const luck = await luckResp.json();
+    const standingsData = await standingsResp.json();
 
-    // --- Standings: W-L-T and xWins from luck data ---
-    if (luck && luck.teamSummary && luck.teamSummary.length) {{
-      // Compute cum xWins from trends data
+    // --- xWins from trends ---
+    if (trends && trends.cumulativeXwins && trends.statWeeks && trends.statWeeks.length) {{
+      const lastWeek = trends.statWeeks[trends.statWeeks.length - 1];
       const cumXwins = {{}};
-      if (trends && trends.cumulativeXwins) {{
-        const lastWeek = trends.statWeeks[trends.statWeeks.length - 1];
-        trends.teams.forEach(t => {{
-          cumXwins[t.name] = trends.cumulativeXwins[t.tn] && trends.cumulativeXwins[t.tn][lastWeek] != null
-            ? parseFloat(trends.cumulativeXwins[t.tn][lastWeek]) : null;
-        }});
-      }}
-
-      // Sort by matchup W-L-T pct for standings rank
-      const summary = [...luck.teamSummary].sort((a, b) => {{
-        const pa = (a.matchup_w + a.matchup_t * 0.5) / Math.max(1, a.matchup_w + a.matchup_l + a.matchup_t);
-        const pb = (b.matchup_w + b.matchup_t * 0.5) / Math.max(1, b.matchup_w + b.matchup_l + b.matchup_t);
-        return pb - pa;
-      }});
-      const actualRankMap = {{}};
-      summary.forEach((s, i) => {{ actualRankMap[s.name] = i + 1; }});
-
-      // Update WLT and xWins cells
-      document.querySelectorAll('.wlt-cell').forEach(cell => {{
-        const name = cell.dataset.team;
-        const s = luck.teamSummary.find(t => t.name === name);
-        if (s) cell.textContent = s.matchup_w + '-' + s.matchup_l + '-' + s.matchup_t;
+      trends.teams.forEach(t => {{
+        const val = trends.cumulativeXwins[t.tn] && trends.cumulativeXwins[t.tn][lastWeek] != null
+          ? parseFloat(trends.cumulativeXwins[t.tn][lastWeek]) : null;
+        cumXwins[t.name] = val;
       }});
       document.querySelectorAll('.xw-cell').forEach(cell => {{
-        const name = cell.dataset.team;
-        const xw = cumXwins[name];
+        const xw = cumXwins[cell.dataset.team];
         cell.textContent = xw != null ? xw.toFixed(1) : '—';
       }});
+    }}
 
-      // Re-sort standings rows by W-L-T pct
-      const tbody = document.getElementById('standingsBody');
-      const rows = Array.from(tbody.querySelectorAll('tr'));
-      rows.sort((a, b) => {{
-        const nameA = a.querySelector('.wlt-cell').dataset.team;
-        const nameB = b.querySelector('.wlt-cell').dataset.team;
-        return (actualRankMap[nameA] || 99) - (actualRankMap[nameB] || 99);
+    // --- W-L-T from live standings (stagnant final standings after last completed week) ---
+    const rows2026 = standingsData && standingsData.standings ? standingsData.standings : [];
+    if (rows2026.length) {{
+      const standingsMap = {{}};
+      rows2026.forEach(s => {{ standingsMap[s.name] = s; }});
+
+      // Sort by W-L-T pct
+      const sorted = [...rows2026].sort((a, b) => {{
+        const pa = (a.wins + a.ties * 0.5) / Math.max(1, a.wins + a.losses + a.ties);
+        const pb = (b.wins + b.ties * 0.5) / Math.max(1, b.wins + b.losses + b.ties);
+        return pb - pa;
       }});
-      rows.forEach((r, i) => {{ r.querySelector('.rank-num').textContent = i + 1; tbody.appendChild(r); }});
+      const rankMap = {{}};
+      sorted.forEach((s, i) => {{ rankMap[s.name] = i + 1; }});
+
+      document.querySelectorAll('.wlt-cell').forEach(cell => {{
+        const s = standingsMap[cell.dataset.team];
+        if (s) cell.textContent = s.wins + '-' + s.losses + (s.ties ? '-' + s.ties : '');
+      }});
+
+      const tbody = document.getElementById('standingsBody');
+      const tbRows = Array.from(tbody.querySelectorAll('tr'));
+      tbRows.sort((a, b) => (rankMap[a.querySelector('.wlt-cell').dataset.team] || 99) - (rankMap[b.querySelector('.wlt-cell').dataset.team] || 99));
+      tbRows.forEach((r, i) => {{ r.querySelector('.rank-num').textContent = i + 1; tbody.appendChild(r); }});
     }}
 
     // --- Power Rankings from trends data ---
@@ -461,16 +458,16 @@ html = f"""<!DOCTYPE html>
         const score = trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null
           ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : null;
         const powerRank = i + 1;
-        // Actual standings rank from luck data
-        const luckTeam = luck && luck.teamSummary ? luck.teamSummary.find(s => s.name === t.name) : null;
+        // Actual standings rank from live standings
         let actualRank = null;
-        if (luck && luck.teamSummary) {{
-          const sorted = [...luck.teamSummary].sort((a, b) => {{
-            const pa = (a.matchup_w + a.matchup_t * 0.5) / Math.max(1, a.matchup_w + a.matchup_l + a.matchup_t);
-            const pb = (b.matchup_w + b.matchup_t * 0.5) / Math.max(1, b.matchup_w + b.matchup_l + b.matchup_t);
+        if (rows2026.length) {{
+          const sorted = [...rows2026].sort((a, b) => {{
+            const pa = (a.wins + a.ties * 0.5) / Math.max(1, a.wins + a.losses + a.ties);
+            const pb = (b.wins + b.ties * 0.5) / Math.max(1, b.wins + b.losses + b.ties);
             return pb - pa;
           }});
-          actualRank = sorted.findIndex(s => s.name === t.name) + 1;
+          const idx = sorted.findIndex(s => s.name === t.name);
+          if (idx >= 0) actualRank = idx + 1;
         }}
         const trend = actualRank ? actualRank - powerRank : null;
         return {{ name: t.name, score, powerRank, trend }};
