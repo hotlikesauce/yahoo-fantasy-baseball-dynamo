@@ -209,7 +209,7 @@ function render(d) {
     const mRecord = fmtWlt(s.matchup_w, s.matchup_l, s.matchup_t);
     const ap = fmtWlt(s.allplay_w, s.allplay_l, s.allplay_t);
     const luckClass = s.cum_luck > 0 ? 'lucky' : s.cum_luck < 0 ? 'unlucky' : '';
-    const luckStr = s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1);
+    const luckStr = s.cum_luck != null ? (s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1)) : '—';
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td>${ap}</td><td>${s.ap_pct != null ? s.ap_pct.toFixed(3) : '—'}</td>`;
     luckBody.appendChild(tr);
@@ -264,7 +264,7 @@ function render(d) {
     if (s.rank_diff > 0) rdStr = `<span class="unlucky">&#x2193;${s.rank_diff}</span>`;
     else if (s.rank_diff < 0) rdStr = `<span class="lucky">&#x2191;${Math.abs(s.rank_diff)}</span>`;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${s.ap_rank}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${ap}</td><td>${s.ap_pct.toFixed(3)}</td><td>${s.actual_rank}</td><td>${mq}</td><td>${rdStr}</td>`;
+    tr.innerHTML = `<td class="rank">${s.ap_rank}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${ap}</td><td>${s.ap_pct != null ? s.ap_pct.toFixed(3) : '—'}</td><td>${s.actual_rank}</td><td>${mq}</td><td>${rdStr}</td>`;
     whatifBody.appendChild(tr);
   });
 
@@ -272,7 +272,7 @@ function render(d) {
   const schedBody = document.getElementById('schedBody');
   scheduleStrength.forEach((s, i) => {
     const luckClass = s.cum_luck > 0 ? 'lucky' : 'unlucky';
-    const luckStr = s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1);
+    const luckStr = s.cum_luck != null ? (s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1)) : '—';
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${s.avg_opp_xw.toFixed(3)}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td>`;
     schedBody.appendChild(tr);
@@ -284,7 +284,7 @@ function render(d) {
     const cons = d.stdev < 0.10 ? 'Very High' : d.stdev < 0.15 ? 'High' : d.stdev < 0.22 ? 'Medium' : 'Low';
     const consCls = d.stdev < 0.10 ? 'lucky' : d.stdev < 0.15 ? 'score' : d.stdev < 0.22 ? '' : 'unlucky';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${d.color}">&#9679;</span> ${d.name}</td><td class="lucky">${d.first}</td><td>${d.top3}</td><td class="unlucky">${d.last}</td><td>${d.avg_pct.toFixed(3)}</td><td>${d.stdev.toFixed(3)}</td><td class="${consCls}">${cons}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${d.color}">&#9679;</span> ${d.name}</td><td class="lucky">${d.first}</td><td>${d.top3}</td><td class="unlucky">${d.last}</td><td>${d.avg_pct != null ? d.avg_pct.toFixed(3) : '—'}</td><td>${d.stdev != null ? d.stdev.toFixed(3) : '—'}</td><td class="${consCls}">${cons}</td>`;
     domBody.appendChild(tr);
   });
 
