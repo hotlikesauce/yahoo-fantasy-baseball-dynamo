@@ -103,7 +103,8 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 for (team, opponent) in [(team_a, team_b), (team_b, team_a)]:
                     item = {
                         'TeamNumber': team['id'],
-                        'DataType#Week': f"weekly_results#{current_week:02d}",
+                        'DataType#Week': f"weekly_results#{current_week}",
+                        'DataTypeWeek': f"weekly_results#{current_week}",
                         'YearDataType': f"2026#weekly_results",
                         'Year': 2026,
                         'Week': current_week,

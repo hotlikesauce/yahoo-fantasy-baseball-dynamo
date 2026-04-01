@@ -8,6 +8,7 @@ Triggered by: CloudWatch Events (cron: 0 9 ? * MON *)
 import json
 import logging
 from datetime import datetime
+from decimal import Decimal
 from typing import Dict, Any, List
 
 import yahoo_fantasy_lib as yfl
@@ -37,34 +38,27 @@ def extract_team_stats(team_list, week: int) -> Dict[str, Any]:
 
     # Extract stats from team_stats
     stats = team_list[1].get('team_stats', {})
-    coverage = stats.get('coverage', {})
-    stat_categories = coverage.get('stat', [])
+    stat_list = stats.get('stats', [])
 
     team_stats = {'id': team_id, 'name': team_name, 'week': week, 'stats': {}}
 
-    for stat_dict in stat_categories:
-        stat_id = stat_dict.get('stat_id')
-        # Map stat_id to category name
-        stat_map = {
-            '6': 'R',      # Runs
-            '8': 'H',      # Hits
-            '12': 'HR',    # Home Runs
-            '13': 'RBI',   # RBI
-            '16': 'SB',    # Stolen Bases
-            '50': 'OPS',   # On-base Plus Slugging
-            '58': 'K9',    # Strikeouts per 9 IP
-            '54': 'QS',    # Quality Starts
-            '56': 'SVH',   # Saves + Holds
-            '28': 'ERA',   # ERA
-            '11': 'WHIP',  # WHIP
-            '101': 'TB',   # Total Bases (allowed)
-        }
+    # Stat IDs from Yahoo league settings
+    stat_map = {
+        '7': 'R', '8': 'H', '12': 'HR', '13': 'RBI', '16': 'SB', '55': 'OPS',
+        '57': 'K9', '83': 'QS', '89': 'SVH', '26': 'ERA', '27': 'WHIP', '49': 'TB'
+    }
 
-        cat = stat_map.get(stat_id)
+    for entry in stat_list:
+        s = entry.get('stat', {})
+        stat_id = s.get('stat_id')
+        cat = stat_map.get(str(stat_id))
         if cat:
-            value = stat_dict.get('value')
-            if value is not None:
-                team_stats['stats'][cat] = float(value)
+            value = s.get('value')
+            if value is not None and value != '':
+                try:
+                    team_stats['stats'][cat] = float(value)
+                except (ValueError, TypeError):
+                    pass
 
     return team_stats
 
@@ -105,7 +99,7 @@ def lambda_handler(event, context) -> Dict[str, Any]:
         stats_week = max(1, current_week - 1)
 
         # Fetch team stats for the week
-        teams_response = yfl.api_get(token, f"league/{league_key}/teams;coverage_type=week;coverage_value={stats_week}")
+        teams_response = yfl.api_get(token, f"league/{league_key}/teams/stats;type=week;week={stats_week}")
         if not teams_response:
             raise ValueError(f"Failed to fetch team stats for week {stats_week}")
 
@@ -134,7 +128,8 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 # Write to DynamoDB
                 item = {
                     'TeamNumber': team_stats['id'],
-                    'DataTypeWeek': f"weekly_stats#{stats_week:02d}",
+                    'DataType#Week': f"weekly_stats#{stats_week}",
+                    'DataTypeWeek': f"weekly_stats#{stats_week}",
                     'YearDataType': f"2026#weekly_stats",
                     'Year': 2026,
                     'Week': stats_week,
@@ -142,10 +137,10 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                     'Timestamp': datetime.utcnow().isoformat(),
                 }
 
-                # Add all category stats
+                # Add all category stats (Decimal for DynamoDB)
                 for cat in ALL_CATS:
                     if cat in team_stats['stats']:
-                        item[cat] = team_stats['stats'][cat]
+                        item[cat] = Decimal(str(team_stats['stats'][cat]))
 
                 items_to_write.append(item)
 

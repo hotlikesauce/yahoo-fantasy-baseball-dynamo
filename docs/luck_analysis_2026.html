@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Luck & Matchup Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .year { color: #a78bfa; font-weight: 600; }
+  .lucky { color: #22c55e; font-weight: 700; }
+  .unlucky { color: #ef4444; font-weight: 700; }
+  .close-margin { color: #f59e0b; font-weight: 700; }
+  .lucky-highlight td { background: #22c55e15; }
+  .unlucky-highlight td { background: #ef444415; }
+  .weekly-table { max-height: 700px; overflow-y: auto; margin-bottom: 24px; }
+  .weekly-table table { margin-bottom: 0; }
+  .weekly-table th { position: sticky; top: 0; background: #0f172a; z-index: 1; }
+  .loading-msg { text-align: center; color: #64748b; padding: 60px 0; font-size: 1.1em; }
+  .error-msg { text-align: center; color: #ef4444; padding: 40px; background: #1e293b; border-radius: 12px; margin: 20px 0; }
+  #last-updated { color: #475569; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Luck &amp; Matchup Analysis</p>
+<div id="last-updated"></div>
+<div id="content"><div class="loading-msg">Loading luck analysis...</div></div>
+</div>
+
+<script>
+// =====================================================
+// CONFIG - Set your Lambda Function URL here
+// =====================================================
+const API_URL = 'LUCK_ANALYSIS_LAMBDA_URL_HERE';
+
+// =====================================================
+// Sortable helper
+// =====================================================
+function initSortable(tbl) {
+  if (!tbl) return;
+  tbl.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = parseInt(th.dataset.col);
+      const type = th.dataset.type || 'str';
+      const isAsc = th.classList.contains('asc');
+      tbl.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+      th.classList.add(isAsc ? 'desc' : 'asc');
+      const tbody = tbl.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const ta = a.children[col].textContent.trim();
+        const tb = b.children[col].textContent.trim();
+        let va, vb;
+        if (type === 'num') { va = parseFloat(ta.replace(/[+#↑↓—]/g, '')) || 0; vb = parseFloat(tb.replace(/[+#↑↓—]/g, '')) || 0; }
+        else if (type === 'wlt') { va = parseInt(ta.split('-')[0]) || 0; vb = parseInt(tb.split('-')[0]) || 0; }
+        else { va = ta.toLowerCase(); vb = tb.toLowerCase(); }
+        const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+        return isAsc ? -cmp : cmp;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+function th(label, col, type) {
+  return `<th class="sortable" data-col="${col}" data-type="${type}">${label}</th>`;
+}
+
+function fmtWlt(w, l, t) {
+  let s = `${w}-${l}`;
+  if (t > 0) s += `-${t}`;
+  return s;
+}
+
+// =====================================================
+// Load & Render
+// =====================================================
+async function load() {
+  try {
+    const resp = await fetch(API_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const d = await resp.json();
+
+    if (d.error && (!d.teamSummary || !d.teamSummary.length)) {
+      document.getElementById('content').innerHTML = `<div class="error-msg">${d.error}</div>`;
+      return;
+    }
+
+    if (d.timestamp) {
+      document.getElementById('last-updated').textContent = 'Updated: ' + new Date(d.timestamp).toLocaleString();
+    }
+
+    render(d);
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      `<div class="error-msg">Failed to load luck analysis.<br><br><code>${e.message}</code><br><br>Make sure <strong>API_URL</strong> is set to your Lambda Function URL.</div>`;
+  }
+}
+
+function render(d) {
+  const { weeks, teamSummary, weeklyBreakdown, blowouts, closest, bestMatchups, worstMatchups,
+          scheduleStrength, allplayStandings, dominators, allplayTrend, colorMap } = d;
+
+  let html = '';
+
+  // Luck Coefficient table
+  html += `
+<h3>Luck Coefficient</h3>
+<p class="section-desc">Record = total category W-L-T across all weeks (12 categories per week). xWins = expected category wins based on all-play H2H strength. Diff = actual cat wins - xWins. A <span class="lucky">Lucky Win</span> = won your weekly matchup despite being bottom-half in all-play (ranked 7-12). An <span class="unlucky">Unlucky Loss</span> = lost despite top-half all-play. Luck Coefficient = (Lucky Wins - Unlucky Losses) / Total Matchups.</p>
+<table id="luckTable">
+<thead><tr>
+  ${th('#','0','num')}${th('Team','1','str')}${th('Record (W-L-T)','2','wlt')}
+  ${th('xRecord','3','wlt')}${th('Diff','4','num')}${th('Lucky W','5','num')}
+  ${th('Unlucky L','6','num')}${th('Coeff','7','num')}${th('All-Play','8','wlt')}${th('xW%','9','num')}
+</tr></thead>
+<tbody id="luckBody"></tbody>
+</table>
+<div class="chart-box-tall"><canvas id="luckChart"></canvas></div>`;
+
+  // Weekly breakdown
+  html += `
+<h3>Weekly Matchup Breakdown</h3>
+<p class="section-desc">Every matchup by week, ranked by all-play performance. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (bottom-half all-play but won). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (top-half all-play but lost). Category scores show actual H2H result.</p>
+<div class="weekly-table">
+<table>
+<thead><tr><th>Week</th><th>AP Rank</th><th>Team</th><th>All-Play</th><th>Result</th><th>Opponent</th><th></th></tr></thead>
+<tbody id="weeklyBody"></tbody>
+</table>
+</div>`;
+
+  // All-play trend chart
+  html += `
+<h3>All-Play Win% Trend</h3>
+<p class="section-desc">Cumulative all-play win percentage over the season.</p>
+<div class="chart-box"><canvas id="xwinChart"></canvas></div>`;
+
+  // Blowouts & Closest
+  html += `
+<div class="two-col">
+<div>
+<h3>Biggest Blowouts</h3>
+<table id="blowoutTable">
+<thead><tr>${th('#','0','num')}${th('Week','1','num')}${th('Winner','2','str')}${th('Score','3','wlt')}${th('Loser','4','str')}</tr></thead>
+<tbody id="blowoutBody"></tbody>
+</table>
+</div>
+<div>
+<h3>Closest Matchups</h3>
+<table id="closestTable">
+<thead><tr>${th('#','0','num')}${th('Week','1','num')}${th('Winner','2','str')}${th('Score','3','wlt')}${th('Loser','4','str')}</tr></thead>
+<tbody id="closestBody"></tbody>
+</table>
+</div>
+</div>`;
+
+  // Best/Worst matchups
+  const mqCols = `${th('#','0','num')}${th('Week','1','num')}${th('Winner','2','str')}${th('Loser','3','str')}${th('Score','4','wlt')}${th('W xWins','5','num')}${th('L xWins','6','num')}`;
+  html += `
+<h3>Best Matchups of the Year</h3>
+<p class="section-desc">Combined xWins = sum of both teams' expected category wins that week. Higher = both teams firing on all cylinders.</p>
+<table id="bestMqTable">
+<thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
+<tbody id="bestMqBody"></tbody>
+</table>
+
+<h3>Worst Matchups of the Year</h3>
+<p class="section-desc">The toilet bowl games. Both teams at their worst the same week.</p>
+<table id="worstMqTable">
+<thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
+<tbody id="worstMqBody"></tbody>
+</table>`;
+
+  // What-if standings
+  html += `
+<h3>What-If Standings (All-Play vs Actual)</h3>
+<p class="section-desc">If every team played every team every week, here's how standings would look vs how they actually finished. <span class="lucky">&#x2191;</span> = schedule helped you. <span class="unlucky">&#x2193;</span> = schedule screwed you.</p>
+<table id="whatifTable">
+<thead><tr>${th('AP Rank','0','num')}${th('Team','1','str')}${th('All-Play','2','wlt')}${th('AP W%','3','num')}${th('Actual Rank','4','num')}${th('Matchup W-L','5','wlt')}${th('Rank Diff','6','num')}</tr></thead>
+<tbody id="whatifBody"></tbody>
+</table>`;
+
+  // Schedule strength
+  html += `
+<h3>Schedule Strength</h3>
+<p class="section-desc">How tough were your opponents? Avg Opp xW% = your opponents' average all-play win percentage. Higher = you faced tougher teams.</p>
+<table id="schedTable">
+<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('Avg Opp xW%','2','num')}${th('Avg Opp xCats','3','num')}${th('Record','4','wlt')}${th('xWins','5','num')}${th('Diff','6','num')}</tr></thead>
+<tbody id="schedBody"></tbody>
+</table>`;
+
+  // Dominators
+  html += `
+<h3>Weekly Dominators</h3>
+<p class="section-desc">#1 AP = weeks where a team had the best all-play record. Top 3 = weeks finishing top 3. Last = weeks finishing dead last. Consistency = standard deviation of weekly all-play win% (lower = more consistent).</p>
+<table id="domTable">
+<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('#1 AP Weeks','2','num')}${th('Top 3 Weeks','3','num')}${th('Last Place Weeks','4','num')}${th('Avg W%','5','num')}${th('Std Dev','6','num')}${th('Consistency','7','str')}</tr></thead>
+<tbody id="domBody"></tbody>
+</table>`;
+
+  document.getElementById('content').innerHTML = html;
+
+  // Populate luck table
+  const luckBody = document.getElementById('luckBody');
+  teamSummary.forEach((s, i) => {
+    const record = fmtWlt(s.cat_w, s.cat_l, s.cat_t);
+    const xrecord = fmtWlt(s.expected_cat_w, s.expected_cat_l, s.expected_cat_t > 0.5 ? s.expected_cat_t : 0);
+    const diffClass = s.diff > 0 ? 'lucky' : s.diff < 0 ? 'unlucky' : '';
+    const diffStr = s.diff > 0 ? '+' + s.diff : String(s.diff);
+    const coeffClass = s.luck_coeff > 0 ? 'lucky' : 'unlucky';
+    const coeffStr = s.luck_coeff > 0 ? '+' + s.luck_coeff.toFixed(3) : s.luck_coeff.toFixed(3);
+    const ap = fmtWlt(s.allplay_w, s.allplay_l, s.allplay_t);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${record}</td><td>${xrecord}</td><td class="${diffClass}">${diffStr}</td><td class="lucky">${s.lucky_w}</td><td class="unlucky">${s.unlucky_l}</td><td class="${coeffClass}">${coeffStr}</td><td>${ap}</td><td>${s.xwin_pct.toFixed(3)}</td>`;
+    luckBody.appendChild(tr);
+  });
+
+  // Weekly breakdown
+  const weeklyBody = document.getElementById('weeklyBody');
+  weeklyBreakdown.forEach(entry => {
+    const apStr = fmtWlt(entry.ap_w, entry.ap_l, entry.ap_t);
+    const resultStr = (entry.won ? 'W' : 'L') + ' ' + entry.cats_w + '-' + entry.cats_l;
+    const resultClass = entry.won ? 'lucky' : 'unlucky';
+    let rowClass = '';
+    let luckIcon = '';
+    if (entry.luck_tag === 'lucky_win') { rowClass = 'lucky-highlight'; luckIcon = '<span class="lucky">&#x2191;</span>'; }
+    else if (entry.luck_tag === 'unlucky_loss') { rowClass = 'unlucky-highlight'; luckIcon = '<span class="unlucky">&#x2193;</span>'; }
+    const color = colorMap && colorMap[entry.tn] ? colorMap[entry.tn] : '#94a3b8';
+    const opp = entry.opp_name.length > 20 ? entry.opp_name.slice(0, 20) : entry.opp_name;
+    const tr = document.createElement('tr');
+    if (rowClass) tr.className = rowClass;
+    tr.innerHTML = `<td class="year">Wk ${entry.week}</td><td class="rank">#${entry.ap_rank}</td><td><span style="color:${color}">&#9679;</span> ${entry.name}</td><td>${apStr}</td><td class="${resultClass}">${resultStr}</td><td>vs ${opp}</td><td>${luckIcon}</td>`;
+    weeklyBody.appendChild(tr);
+  });
+
+  // Blowouts & closest
+  [['blowoutBody', blowouts], ['closestBody', closest]].forEach(([id, list]) => {
+    const tbody = document.getElementById(id);
+    list.forEach((m, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="rank">${i+1}</td><td class="year">Wk ${m.week}</td><td>${m.winner}</td><td class="lucky">${m.w_cats}-${m.l_cats}</td><td>${m.loser}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+
+  // Best/worst matchups
+  [['bestMqBody', bestMatchups, 'lucky'], ['worstMqBody', worstMatchups, 'unlucky']].forEach(([id, list, cls]) => {
+    const tbody = document.getElementById(id);
+    list.forEach((m, i) => {
+      const wc = colorMap && colorMap[m.winner_tn] ? colorMap[m.winner_tn] : '#94a3b8';
+      const lc = colorMap && colorMap[m.loser_tn] ? colorMap[m.loser_tn] : '#94a3b8';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="rank">${i+1}</td><td class="year">Wk ${m.week}</td><td>${m.winner}</td><td>${m.loser}</td><td class="score">${m.score}</td><td>${m.w_xw}</td><td>${m.l_xw}</td><td class="${cls}">${m.combined}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+
+  // What-if standings
+  const whatifBody = document.getElementById('whatifBody');
+  allplayStandings.forEach(s => {
+    const ap = fmtWlt(s.ap_w, s.ap_l, s.ap_t);
+    const mq = fmtWlt(s.matchup_w, s.matchup_l, s.matchup_t);
+    let rdStr = '<span style="color:#64748b">&#8212;</span>';
+    if (s.rank_diff > 0) rdStr = `<span class="unlucky">&#x2193;${s.rank_diff}</span>`;
+    else if (s.rank_diff < 0) rdStr = `<span class="lucky">&#x2191;${Math.abs(s.rank_diff)}</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${s.ap_rank}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${ap}</td><td>${s.ap_pct.toFixed(3)}</td><td>${s.actual_rank}</td><td>${mq}</td><td>${rdStr}</td>`;
+    whatifBody.appendChild(tr);
+  });
+
+  // Schedule strength
+  const schedBody = document.getElementById('schedBody');
+  scheduleStrength.forEach((s, i) => {
+    const record = fmtWlt(s.cat_w, s.cat_l, s.cat_t);
+    const diffClass = s.diff > 0 ? 'lucky' : 'unlucky';
+    const diffStr = s.diff > 0 ? '+' + s.diff : String(s.diff);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${s.avg_opp_xw.toFixed(3)}</td><td>${s.avg_opp_cats}</td><td>${record}</td><td>${s.expected_cat_w}</td><td class="${diffClass}">${diffStr}</td>`;
+    schedBody.appendChild(tr);
+  });
+
+  // Dominators
+  const domBody = document.getElementById('domBody');
+  dominators.forEach((d, i) => {
+    const cons = d.stdev < 0.10 ? 'Very High' : d.stdev < 0.15 ? 'High' : d.stdev < 0.22 ? 'Medium' : 'Low';
+    const consCls = d.stdev < 0.10 ? 'lucky' : d.stdev < 0.15 ? 'score' : d.stdev < 0.22 ? '' : 'unlucky';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${d.color}">&#9679;</span> ${d.name}</td><td class="lucky">${d.first}</td><td>${d.top3}</td><td class="unlucky">${d.last}</td><td>${d.avg_pct.toFixed(3)}</td><td>${d.stdev.toFixed(3)}</td><td class="${consCls}">${cons}</td>`;
+    domBody.appendChild(tr);
+  });
+
+  // Charts
+  const luckLabels = teamSummary.map(s => s.name);
+  const luckValues = teamSummary.map(s => s.luck_coeff);
+  const luckColors = teamSummary.map(s => s.luck_coeff > 0 ? '#22c55e' : '#ef4444');
+
+  new Chart(document.getElementById('luckChart'), {
+    type: 'bar',
+    data: { labels: luckLabels, datasets: [{ label: 'Luck Coefficient', data: luckValues, backgroundColor: luckColors, borderRadius: 4 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1,
+          callbacks: { label: ctx => 'Luck Coeff: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(3) }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Luck Coefficient', color: '#64748b' } },
+        y: { ticks: { color: '#e2e8f0', font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+
+  // All-play trend chart
+  if (allplayTrend) {
+    const weekLabels = weeks.map(w => 'Wk ' + w);
+    const trendTeams = Object.keys(allplayTrend);
+    // Sort by final xW% (last week's value)
+    const lastWk = String(weeks[weeks.length - 1]);
+    trendTeams.sort((a, b) => (allplayTrend[b][lastWk] || 0) - (allplayTrend[a][lastWk] || 0));
+
+    const datasets = trendTeams.map(tn => {
+      const s = teamSummary.find(ts => ts.tn === tn);
+      const color = (colorMap && colorMap[tn]) || '#94a3b8';
+      return {
+        label: s ? s.name : tn,
+        data: weeks.map(w => allplayTrend[tn][String(w)] || 50),
+        borderColor: color, backgroundColor: color + '22',
+        borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
+      };
+    });
+
+    new Chart(document.getElementById('xwinChart'), {
+      type: 'line',
+      data: { labels: weekLabels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } },
+          tooltip: { backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1, padding: 12,
+            callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%' } }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
+          y: { min: 0, max: 100, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' }, title: { display: true, text: 'Cumulative All-Play Win %', color: '#64748b' } }
+        }
+      }
+    });
+  }
+
+  // Init sortable tables
+  ['luckTable', 'blowoutTable', 'closestTable', 'bestMqTable', 'worstMqTable', 'whatifTable', 'schedTable', 'domTable'].forEach(id => {
+    initSortable(document.getElementById(id));
+  });
+}
+
+load();
+</script>
+</body>
+</html>

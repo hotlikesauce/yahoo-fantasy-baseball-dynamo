@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Season Trends</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .toggle-container { text-align: center; margin-bottom: 16px; }
+  .toggle-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }
+  .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
+  .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
+  .toggle-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .toggle-btn:hover { background: #475569; color: #e2e8f0; }
+  .toggle-btn.active:hover { background: #2563eb; }
+  .year { color: #a78bfa; font-weight: 600; }
+  .hot-val { color: #22c55e; font-weight: 700; }
+  .cold-val { color: #ef4444; font-weight: 700; }
+  .hot-tag { background: #22c55e22; color: #22c55e; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
+  .cold-tag { background: #ef444422; color: #ef4444; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
+  .steady-tag { background: #64748b22; color: #64748b; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
+  .best-table td:first-child { font-size: 1.2em; width: 36px; text-align: center; }
+  .week-filter-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 6px 16px; cursor: pointer; font-size: 0.88em; border-radius: 6px; transition: all 0.2s; }
+  .week-filter-btn:hover { color: #e2e8f0; border-color: #64748b; }
+  .week-filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .loading-msg { text-align: center; color: #64748b; padding: 60px 0; font-size: 1.1em; }
+  .error-msg { text-align: center; color: #ef4444; padding: 40px; background: #1e293b; border-radius: 12px; margin: 20px 0; }
+  #last-updated { color: #475569; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Season Trends</p>
+<div id="last-updated"></div>
+<div id="content"><div class="loading-msg">Loading season trends...</div></div>
+</div>
+
+<script>
+// =====================================================
+// CONFIG - Set your Lambda Function URL here
+// =====================================================
+const API_URL = 'SEASON_TRENDS_LAMBDA_URL_HERE';
+
+// =====================================================
+// Chart defaults
+// =====================================================
+const legendOpts = {
+  position: 'bottom',
+  labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
+};
+const tooltipBase = {
+  backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
+  borderColor: '#475569', borderWidth: 1, padding: 12
+};
+
+// =====================================================
+// Render
+// =====================================================
+async function load() {
+  try {
+    const resp = await fetch(API_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const d = await resp.json();
+
+    if (d.error && !d.teams.length) {
+      document.getElementById('content').innerHTML = `<div class="error-msg">${d.error}</div>`;
+      return;
+    }
+
+    if (d.timestamp) {
+      document.getElementById('last-updated').textContent = 'Updated: ' + new Date(d.timestamp).toLocaleString();
+    }
+
+    render(d);
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      `<div class="error-msg">Failed to load season trends.<br><br><code>${e.message}</code><br><br>Make sure <strong>API_URL</strong> is set to your Lambda Function URL.</div>`;
+  }
+}
+
+function makeLineDs(teams, statWeeks, valuesFn) {
+  return teams.map(t => ({
+    label: t.name,
+    data: statWeeks.map(w => valuesFn(t.tn, w)),
+    borderColor: t.color, backgroundColor: t.color + '22',
+    borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
+  }));
+}
+
+function render(d) {
+  const { teams, statWeeks, powerWeeks, powerData, weeklyXwins, cumulativeXwins, scatter, hotCold, last2Label, seasonBest, catOrder } = d;
+  const hasPower = powerWeeks && powerWeeks.length > 0;
+
+  let html = '';
+
+  // Power Score/Rank toggle (if available)
+  if (hasPower) {
+    html += `
+<div class="toggle-container">
+  <button class="toggle-btn active" id="btnScore" onclick="showPower('score')">Power Score</button>
+  <button class="toggle-btn" id="btnRank" onclick="showPower('rank')">Power Rank</button>
+</div>
+<div class="chart-box" id="scoreBox"><canvas id="scoreChart"></canvas></div>
+<div class="chart-box" id="rankBox" style="display:none"><canvas id="rankChart"></canvas></div>`;
+  }
+
+  html += `
+<h3>Expected Category Wins by Week</h3>
+<p class="section-desc">Each team's expected category wins per week based on all-play H2H simulation (every team vs every team, 12 categories). Higher = dominated the field that week. Range is 0-12.</p>
+<div class="chart-box"><canvas id="xwinsChart"></canvas></div>
+
+<h3>Cumulative Expected Wins</h3>
+<p class="section-desc">Running total of expected category wins over the season. Steeper slopes = hot streaks. Flatter = cold stretches.</p>
+<div class="chart-box"><canvas id="cumChart"></canvas></div>
+
+<h3>Batter vs Pitcher Performance</h3>
+<p class="section-desc">Each team's batting win rate (x-axis) vs pitching win rate (y-axis) from all-play H2H. Batting = R, H, HR, RBI, SB, OPS. Pitching = K/9, QS, SVH, ERA, WHIP, TB. Top-right = elite at both. Dashed lines at 50%.</p>
+<div class="chart-box"><canvas id="scatterChart"></canvas></div>
+
+<h3>Who's Hot / Who's Not</h3>
+<p class="section-desc">Average expected category wins over the last 2 weeks (${last2Label}) vs season average.</p>
+<table id="hotTable">
+<thead><tr>
+  <th class="sortable rank" data-col="0" data-type="num">#</th>
+  <th class="sortable" data-col="1" data-type="str">Team</th>
+  <th class="sortable" data-col="2" data-type="num">Last 2 Wk Avg</th>
+  <th class="sortable" data-col="3" data-type="num">Season Avg</th>
+  <th class="sortable" data-col="4" data-type="num">Diff</th>
+  <th class="sortable" data-col="5" data-type="str">Trend</th>
+</tr></thead>
+<tbody id="hotBody"></tbody>
+</table>
+
+<h3>Season's Best Weekly Performances</h3>
+<p class="section-desc">The single best (or lowest for ERA/WHIP/TB) team stat line in any week this season across all 12 scoring categories.</p>
+<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+  <button class="week-filter-btn active" data-wt="all" onclick="filterWeeks('all')">All Weeks</button>
+  <button class="week-filter-btn" data-wt="short" onclick="filterWeeks('short')">Short Weeks</button>
+  <button class="week-filter-btn" data-wt="long" onclick="filterWeeks('long')">Long Weeks (1, 15)</button>
+</div>
+<table class="best-table" id="bestTable">
+<thead><tr><th></th><th>Category</th><th>Value</th><th>Team</th><th>Week</th></tr></thead>
+<tbody id="bestBody"></tbody>
+</table>`;
+
+  document.getElementById('content').innerHTML = html;
+
+  // Build Hot/Cold rows
+  const hotBody = document.getElementById('hotBody');
+  hotCold.forEach((row, i) => {
+    const diffClass = row.diff > 0 ? 'hot-val' : row.diff < 0 ? 'cold-val' : '';
+    const diffStr = row.diff > 0 ? '+' + row.diff : String(row.diff);
+    const trendTag = row.trend === 'HOT'
+      ? '<span class="hot-tag">HOT</span>'
+      : row.trend === 'COLD'
+        ? '<span class="cold-tag">COLD</span>'
+        : '<span class="steady-tag">STEADY</span>';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${row.color}">&#9679;</span> ${row.name}</td><td class="score">${row.recent.toFixed(2)}</td><td>${row.season.toFixed(2)}</td><td class="${diffClass}">${diffStr}</td><td>${trendTag}</td>`;
+    hotBody.appendChild(tr);
+  });
+
+  // Build Season's Best rows
+  const bestBody = document.getElementById('bestBody');
+  const allCats = catOrder || [];
+  allCats.forEach(cat => {
+    for (const [wt, label] of [['short', 'short'], ['long', 'long']]) {
+      const b = seasonBest[wt] && seasonBest[wt][cat];
+      if (!b) continue;
+      const icon = b.isBatter ? '&#x26BE;' : '&#x1F3AF;';
+      const tr = document.createElement('tr');
+      tr.className = 'best-row';
+      tr.dataset.weekType = wt;
+      tr.innerHTML = `<td>${icon}</td><td class="year">${b.label}</td><td class="score">${b.formatted}</td><td><span style="color:${b.color}">&#9679;</span> ${b.team}</td><td class="year">Week ${b.week}</td>`;
+      bestBody.appendChild(tr);
+    }
+  });
+
+  // Charts
+  const statLabels = statWeeks.map(w => 'Wk ' + w);
+
+  if (hasPower) {
+    const powerLabels = powerWeeks.map(w => 'Week ' + w);
+    const makePowerDs = field => teams.map(t => ({
+      label: t.name,
+      data: powerWeeks.map(w => (powerData[t.tn] && powerData[t.tn][w] ? parseFloat(powerData[t.tn][w][field]) : null)),
+      borderColor: t.color, backgroundColor: t.color + '22',
+      borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
+    }));
+
+    window._scoreChart = new Chart(document.getElementById('scoreChart'), {
+      type: 'line',
+      data: { labels: powerLabels, datasets: makePowerDs('score') },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Score', color: '#64748b' } }
+        }
+      }
+    });
+
+    window._rankChart = new Chart(document.getElementById('rankChart'), {
+      type: 'line',
+      data: { labels: powerLabels, datasets: makePowerDs('rank') },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: legendOpts, tooltip: tooltipBase },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
+          y: { reverse: true, min: 0, max: 13, ticks: { color: '#94a3b8', stepSize: 1, callback: v => (v >= 1 && v <= 12 ? v : '') }, grid: { color: '#334155' }, title: { display: true, text: 'Power Rank', color: '#64748b' } }
+        }
+      }
+    });
+  }
+
+  new Chart(document.getElementById('xwinsChart'), {
+    type: 'line',
+    data: {
+      labels: statLabels,
+      datasets: makeLineDs(teams, statWeeks, (tn, w) => (weeklyXwins[tn] && weeklyXwins[tn][w] != null ? weeklyXwins[tn][w] : 0))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
+        y: { min: 0, max: 12, ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Expected Category Wins', color: '#64748b' } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('cumChart'), {
+    type: 'line',
+    data: {
+      labels: statLabels,
+      datasets: makeLineDs(teams, statWeeks, (tn, w) => (cumulativeXwins[tn] && cumulativeXwins[tn][w] != null ? cumulativeXwins[tn][w] : 0))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
+        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Cumulative Expected Wins', color: '#64748b' } }
+      }
+    }
+  });
+
+  const quadrantPlugin = {
+    id: 'quadrant',
+    beforeDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      const x50 = x.getPixelForValue(50), y50 = y.getPixelForValue(50);
+      ctx.save();
+      ctx.strokeStyle = '#ffffff99'; ctx.lineWidth = 4.5; ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(x50, y.top); ctx.lineTo(x50, y.bottom); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x.left, y50); ctx.lineTo(x.right, y50); ctx.stroke();
+      ctx.font = 'bold 13px Segoe UI'; ctx.textAlign = 'center';
+      const lx = x.getPixelForValue((x.min + 50) / 2), rx = x.getPixelForValue((x.max + 50) / 2);
+      const ty = y.getPixelForValue((y.max + 50) / 2), by = y.getPixelForValue((y.min + 50) / 2);
+      const qlabels = [
+        [lx, ty-8, 'Good Pitching'], [lx, ty+8, 'Bad Batting'],
+        [rx, ty-8, 'Elite Batting'], [rx, ty+8, '& Pitching'],
+        [lx, by-8, 'Poor Batting'], [lx, by+8, '& Pitching'],
+        [rx, by-8, 'Good Batting'], [rx, by+8, 'Bad Pitching']
+      ];
+      qlabels.forEach(([px, py, text]) => {
+        ctx.fillStyle = 'rgba(30,41,59,0.75)'; ctx.fillRect(px-65, py-12, 130, 24);
+        ctx.fillStyle = '#e2e8f0'; ctx.fillText(text, px, py+4);
+      });
+      ctx.restore();
+    }
+  };
+  const labelPlugin = {
+    id: 'scatterLabels',
+    afterDatasetDraw(chart) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((ds, i) => {
+        chart.getDatasetMeta(i).data.forEach(pt => {
+          ctx.save(); ctx.font = '10px Segoe UI'; ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'center'; ctx.fillText(ds.label, pt.x, pt.y - 14); ctx.restore();
+        });
+      });
+    }
+  };
+
+  new Chart(document.getElementById('scatterChart'), {
+    type: 'scatter',
+    data: {
+      datasets: scatter.map(s => ({
+        label: s.name,
+        data: [{ x: s.bat, y: s.pit }],
+        backgroundColor: s.color, borderColor: s.color,
+        pointRadius: 8, pointHoverRadius: 11
+      }))
+    },
+    plugins: [quadrantPlugin, labelPlugin],
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 28, right: 40, bottom: 8, left: 8 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ' - Bat: ' + ctx.parsed.x.toFixed(1) + '%, Pitch: ' + ctx.parsed.y.toFixed(1) + '%' } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Batting Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } },
+        y: { title: { display: true, text: 'Pitching Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } }
+      }
+    }
+  });
+
+  // Sortable tables
+  initSortable(document.getElementById('hotTable'));
+}
+
+function showPower(type) {
+  document.getElementById('scoreBox').style.display = type === 'score' ? 'block' : 'none';
+  document.getElementById('rankBox').style.display = type === 'rank' ? 'block' : 'none';
+  document.getElementById('btnScore').classList.toggle('active', type === 'score');
+  document.getElementById('btnRank').classList.toggle('active', type === 'rank');
+}
+
+function filterWeeks(wt) {
+  document.querySelectorAll('.best-row').forEach(r => {
+    r.style.display = (wt === 'all' || r.dataset.weekType === wt) ? 'table-row' : 'none';
+  });
+  document.querySelectorAll('.week-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.wt === wt));
+}
+
+function initSortable(tbl) {
+  if (!tbl) return;
+  tbl.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = parseInt(th.dataset.col);
+      const type = th.dataset.type || 'str';
+      const isAsc = th.classList.contains('asc');
+      tbl.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+      th.classList.add(isAsc ? 'desc' : 'asc');
+      const tbody = tbl.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const ta = a.children[col].textContent.trim();
+        const tb = b.children[col].textContent.trim();
+        let va, vb;
+        if (type === 'num') { va = parseFloat(ta.replace(/[+#]/g, '')) || 0; vb = parseFloat(tb.replace(/[+#]/g, '')) || 0; }
+        else { va = ta.toLowerCase(); vb = tb.toLowerCase(); }
+        const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+        return isAsc ? -cmp : cmp;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+load();
+</script>
+</body>
+</html>
