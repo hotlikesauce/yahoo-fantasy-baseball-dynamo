@@ -102,23 +102,13 @@ def lambda_handler(event, context):
                 name_to_tn[name] = tn
                 tn_latest_name[tn] = name
 
-        # Supplement with power_ranks_live for name mapping + latest W-L-T
-        latest_wlt = {}  # tn -> {wins, losses, ties} from most recent week
+        # Supplement with power_ranks_live for name mapping
         pr_by_week = defaultdict(list)
         for item in scan_by_prefix('power_ranks_live#'):
             tn = item['TeamNumber']
             name_to_tn[item['Team']] = tn
             tn_latest_name[tn] = item['Team']
             pr_by_week[int(item.get('Week', 0))].append(item)
-        if pr_by_week:
-            latest_pr_week = max(pr_by_week.keys())
-            for item in pr_by_week[latest_pr_week]:
-                tn = item['TeamNumber']
-                latest_wlt[tn] = {
-                    'wins': int(item.get('Wins', 0)),
-                    'losses': int(item.get('Losses', 0)),
-                    'ties': int(item.get('Ties', 0)),
-                }
 
         # 2. Pull weekly_stats
         weekly_stats = defaultdict(dict)
@@ -135,6 +125,29 @@ def lambda_handler(event, context):
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
         stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
+
+        # WLT from weekly_results — completed weeks only, matchup-level W-L-T
+        latest_wlt = defaultdict(lambda: {'wins': 0, 'losses': 0, 'ties': 0})
+        seen_matchups = set()
+        for item in scan_by_prefix('weekly_results#'):
+            w = int(item.get('Week', 0))
+            if w not in stat_weeks:
+                continue
+            tn = name_to_tn.get(item.get('Team'))
+            if not tn:
+                continue
+            key = (tn, w)
+            if key in seen_matchups:
+                continue
+            seen_matchups.add(key)
+            score = float(item.get('Score', 0))
+            opp_score = float(item.get('Opponent_Score', 0))
+            if score > opp_score:
+                latest_wlt[tn]['wins'] += 1
+            elif score < opp_score:
+                latest_wlt[tn]['losses'] += 1
+            else:
+                latest_wlt[tn]['ties'] += 1
 
         if not stat_weeks:
             logger.warning("No weekly stats data found")

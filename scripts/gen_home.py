@@ -424,7 +424,7 @@ html = f"""<!DOCTYPE html>
       }});
     }}
 
-    // --- W-L-T from live standings (stagnant final standings after last completed week) ---
+    // --- W-L-T direct from Yahoo via serve_live_standings (completed matchup record) ---
     const rows2026 = standingsData && standingsData.standings ? standingsData.standings : [];
     if (rows2026.length) {{
       const standingsMap = {{}};
@@ -458,16 +458,11 @@ html = f"""<!DOCTYPE html>
         const score = trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null
           ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : null;
         const powerRank = i + 1;
-        // Actual standings rank from live standings
+        // Actual standings rank direct from Yahoo standings
         let actualRank = null;
         if (rows2026.length) {{
-          const sorted = [...rows2026].sort((a, b) => {{
-            const pa = (a.wins + a.ties * 0.5) / Math.max(1, a.wins + a.losses + a.ties);
-            const pb = (b.wins + b.ties * 0.5) / Math.max(1, b.wins + b.losses + b.ties);
-            return pb - pa;
-          }});
-          const idx = sorted.findIndex(s => s.name === t.name);
-          if (idx >= 0) actualRank = idx + 1;
+          const match = rows2026.find(s => s.name === t.name);
+          if (match) actualRank = match.rank;
         }}
         const trend = actualRank ? actualRank - powerRank : null;
         return {{ name: t.name, score, powerRank, trend }};
