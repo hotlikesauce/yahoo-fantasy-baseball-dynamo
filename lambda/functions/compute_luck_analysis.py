@@ -47,11 +47,18 @@ def lambda_handler(event, context):
     try:
         logger.info("compute_luck_analysis: START")
 
-        # 1. Build team mapping
+        # 1. Build team mapping - team_names#current is the canonical source (written by pull_live_standings)
         name_to_tn = {}
         tn_latest_name = {}
         all_tns_set = set(str(i) for i in range(1, 13))
 
+        meta = table.get_item(Key={'TeamNumber': '0', 'DataType#Week': 'team_names#current'})
+        if meta.get('Item') and 'Teams' in meta['Item']:
+            for tn, name in meta['Item']['Teams'].items():
+                name_to_tn[name] = tn
+                tn_latest_name[tn] = name
+
+        # Supplement with power_ranks_live (handles name changes mid-season)
         for week in range(1, 30):
             resp = table.query(IndexName='DataTypeWeekIndex',
                 KeyConditionExpression=Key('DataTypeWeek').eq(f'power_ranks_live#{week}'))
@@ -61,18 +68,6 @@ def lambda_handler(event, context):
                 tn = item['TeamNumber']
                 name_to_tn[item['Team']] = tn
                 tn_latest_name[tn] = item['Team']
-
-        for week in range(1, 30):
-            resp = table.query(IndexName='DataTypeWeekIndex',
-                KeyConditionExpression=Key('DataTypeWeek').eq(f'weekly_stats#{week}'))
-            if resp['Count'] == 0:
-                break
-            for item in resp['Items']:
-                tn = item['TeamNumber']
-                if item.get('Team'):
-                    name_to_tn[item['Team']] = tn
-                    if tn not in tn_latest_name:
-                        tn_latest_name[tn] = item['Team']
 
         # Auto-map from weekly_results
         def auto_map_week(items_list):
@@ -112,7 +107,7 @@ def lambda_handler(event, context):
             if resp['Count'] < 12:
                 continue
             for item in resp['Items']:
-                tn = name_to_tn.get(item.get('Team')) or item.get('TeamNumber')
+                tn = name_to_tn.get(item.get('Team'))
                 if not tn:
                     continue
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
