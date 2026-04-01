@@ -267,12 +267,10 @@
 <script>
 (async function() {
   const TRENDS_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.on.aws/';
-  const STANDINGS_URL = 'https://1lno31b57l.execute-api.us-west-2.amazonaws.com/live-standings';
 
   try {
-    const [trendsResp, standingsResp] = await Promise.all([fetch(TRENDS_URL), fetch(STANDINGS_URL)]);
+    const trendsResp = await fetch(TRENDS_URL);
     const trends = await trendsResp.json();
-    const standingsData = await standingsResp.json();
 
     // --- xWins from trends ---
     if (trends && trends.cumulativeXwins && trends.statWeeks && trends.statWeeks.length) {
@@ -289,8 +287,8 @@
       });
     }
 
-    // --- W-L-T direct from Yahoo via serve_live_standings (completed matchup record) ---
-    const rows2026 = standingsData && standingsData.standings ? standingsData.standings : [];
+    // --- W-L-T from compute_season_trends: derived from weekly_results, completed weeks only ---
+    const rows2026 = trends && trends.standings ? trends.standings : [];
     if (rows2026.length) {
       const standingsMap = {};
       rows2026.forEach(s => { standingsMap[s.name] = s; });
@@ -323,11 +321,11 @@
         const score = trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null
           ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : null;
         const powerRank = i + 1;
-        // Actual standings rank direct from Yahoo standings
+        // Actual standings rank from completed-week standings
         let actualRank = null;
         if (rows2026.length) {
-          const match = rows2026.find(s => s.name === t.name);
-          if (match) actualRank = match.rank;
+          const idx = rows2026.findIndex(s => s.name === t.name);
+          if (idx >= 0) actualRank = idx + 1;
         }
         const trend = actualRank ? actualRank - powerRank : null;
         return { name: t.name, score, powerRank, trend };
