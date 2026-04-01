@@ -8,7 +8,7 @@ Triggered by: CloudWatch Events - run every Monday after pull_weekly_stats (e.g.
 import json
 import logging
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
@@ -39,39 +39,53 @@ COLORS = [
 ]
 
 
-def h2h_result(a, b):
-    wa = wb = 0
-    for c in HIGH_CATS:
-        if c in a and c in b:
-            if a[c] > b[c]: wa += 1
-            elif b[c] > a[c]: wb += 1
-    for c in LOW_CATS:
-        if c in a and c in b:
-            if a[c] < b[c]: wa += 1
-            elif b[c] < a[c]: wb += 1
-    return wa, wb
+def scan_by_prefix(prefix, year=2026):
+    """Scan all items where DataType#Week starts with prefix and Year matches."""
+    items = []
+    kwargs = {'FilterExpression': Attr('DataType#Week').begins_with(prefix) & Attr('Year').eq(year)}
+    while True:
+        resp = table.scan(**kwargs)
+        items.extend(resp['Items'])
+        if 'LastEvaluatedKey' not in resp:
+            break
+        kwargs['ExclusiveStartKey'] = resp['LastEvaluatedKey']
+    return items
 
 
-def h2h_batter(a, b):
-    wa = wb = 0
-    for c in BATTER_CATS:
-        if c in a and c in b:
-            if a[c] > b[c]: wa += 1
-            elif b[c] > a[c]: wb += 1
-    return wa, wb
-
-
-def h2h_pitcher(a, b):
-    wa = wb = 0
-    for c in PITCHER_HIGH:
-        if c in a and c in b:
-            if a[c] > b[c]: wa += 1
-            elif b[c] > a[c]: wb += 1
-    for c in PITCHER_LOW:
-        if c in a and c in b:
-            if a[c] < b[c]: wa += 1
-            elif b[c] < a[c]: wb += 1
-    return wa, wb
+def rank_xwins(stats_dict, cats):
+    """
+    For each category, rank all teams linearly and assign 0 to 1/N xWins per cat.
+    Rank 1 (best) = 1/N, rank N (worst) = 0, ties get the average of their positions.
+    Returns {tn: xwins} where max total xwins = len(cats) * (1/N) = 1.0 when N=len(cats).
+    Actually max = 1.0 total since we assign 1/N per cat and there are N teams...
+    wait: max per cat = 1/N, N cats max total = N*(1/N) = 1.0. But N here is num_teams not num_cats.
+    We use num_cats=12 as the divisor so max per cat = 1/12, total max = 12*(1/12) = 1.0.
+    """
+    tns = list(stats_dict.keys())
+    n = len(tns)
+    result = {tn: 0.0 for tn in tns}
+    if n < 2:
+        return result
+    for cat in cats:
+        vals = [(tn, stats_dict[tn][cat]) for tn in tns if cat in stats_dict[tn]]
+        if not vals:
+            continue
+        # Sort: high cats descending, low cats ascending
+        reverse = cat not in LOW_CATS
+        vals.sort(key=lambda x: x[1], reverse=reverse)
+        # Assign linear scores 1/12 down to 0, handle ties by averaging
+        i = 0
+        while i < len(vals):
+            j = i
+            while j < len(vals) - 1 and vals[j][1] == vals[j + 1][1]:
+                j += 1
+            # positions i..j are tied; average their linear scores
+            # position 0 (best) → 1/12, position n-1 (worst) → 0
+            avg_score = sum((n - 1 - p) / (n - 1) for p in range(i, j + 1)) / (j - i + 1)
+            for k in range(i, j + 1):
+                result[vals[k][0]] += avg_score
+            i = j + 1
+    return result
 
 
 def lambda_handler(event, context):
@@ -81,7 +95,6 @@ def lambda_handler(event, context):
         # 1. Build team mapping - team_names#current is the canonical source (written by pull_live_standings)
         name_to_tn = {}
         tn_latest_name = {}
-        power_data = {}
 
         meta = table.get_item(Key={'TeamNumber': '0', 'DataType#Week': 'team_names#current'})
         if meta.get('Item') and 'Teams' in meta['Item']:
@@ -89,88 +102,90 @@ def lambda_handler(event, context):
                 name_to_tn[name] = tn
                 tn_latest_name[tn] = name
 
-        # Supplement with power_ranks_live (also collects power score/rank data)
-        for week in range(1, 30):
-            resp = table.query(IndexName='DataTypeWeekIndex',
-                KeyConditionExpression=Key('DataTypeWeek').eq(f'power_ranks_live#{week}'))
-            if resp['Count'] == 0:
-                break
-            for item in resp['Items']:
-                tn = item['TeamNumber']
-                name_to_tn[item['Team']] = tn
-                tn_latest_name[tn] = item['Team']
-                if tn not in power_data:
-                    power_data[tn] = {}
-                w = int(item['Week'])
-                power_data[tn][w] = {
-                    'score': float(item['Score']),
-                    'rank': float(item['Rank']),
-                }
+        # Supplement with power_ranks_live for name mapping only
+        for item in scan_by_prefix('power_ranks_live#'):
+            tn = item['TeamNumber']
+            name_to_tn[item['Team']] = tn
+            tn_latest_name[tn] = item['Team']
 
         # 2. Pull weekly_stats
         weekly_stats = defaultdict(dict)
-        for week in range(1, 30):
-            resp = table.query(IndexName='DataTypeWeekIndex',
-                KeyConditionExpression=Key('DataTypeWeek').eq(f'weekly_stats#{week}'))
-            if resp['Count'] == 0:
-                break
-            if resp['Count'] < 12:
+        ws_by_week = defaultdict(list)
+        for item in scan_by_prefix('weekly_stats#'):
+            ws_by_week[int(item['Week'])].append(item)
+        for week, items in ws_by_week.items():
+            if len(items) < 12:
                 continue
-            for item in resp['Items']:
+            for item in items:
                 tn = name_to_tn.get(item.get('Team'))
                 if not tn:
                     continue
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
         stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
-        power_weeks = sorted(set(w for d in power_data.values() for w in d))
 
         if not stat_weeks:
             logger.warning("No weekly stats data found")
             return {'statusCode': 200, 'body': 'No data to compute'}
 
-        # 3. H2H Simulation with batter/pitcher splits
+        # 3. xWins via rank-based linear assignment (0 to 1.0 per week across 12 cats)
         weekly_xwins = defaultdict(dict)
-        season_bat = defaultdict(lambda: {'w': 0, 'total': 0})
-        season_pit = defaultdict(lambda: {'w': 0, 'total': 0})
+        season_bat = defaultdict(lambda: {'xw': 0.0})
+        season_pit = defaultdict(lambda: {'xw': 0.0})
 
         for week in stat_weeks:
-            tns = list(weekly_stats[week].keys())
-            for i, ta in enumerate(tns):
-                cat_w = 0
-                for j, tb in enumerate(tns):
-                    if i == j:
-                        continue
-                    wa, wb = h2h_result(weekly_stats[week][ta], weekly_stats[week][tb])
-                    cat_w += wa
-                    ba, _ = h2h_batter(weekly_stats[week][ta], weekly_stats[week][tb])
-                    season_bat[ta]['w'] += ba
-                    season_bat[ta]['total'] += len(BATTER_CATS)
-                    pa, _ = h2h_pitcher(weekly_stats[week][ta], weekly_stats[week][tb])
-                    season_pit[ta]['w'] += pa
-                    season_pit[ta]['total'] += len(PITCHER_HIGH) + len(PITCHER_LOW)
-                n_opps = len(tns) - 1
-                weekly_xwins[week][ta] = cat_w / n_opps if n_opps > 0 else 0
+            xw = rank_xwins(weekly_stats[week], ALL_CATS)
+            for tn, val in xw.items():
+                weekly_xwins[week][tn] = round(val, 4)
 
-        # 4. Sort teams
-        if power_weeks:
-            sorted_tns = sorted(power_data.keys(),
-                key=lambda tn: power_data[tn].get(max(power_weeks), {}).get('score', 0), reverse=True)
-        else:
-            cum_xw = {tn: sum(weekly_xwins[w].get(tn, 0) for w in stat_weeks) for tn in tn_latest_name}
-            sorted_tns = sorted(cum_xw.keys(), key=lambda tn: cum_xw[tn], reverse=True)
+            bat_xw = rank_xwins(weekly_stats[week], BATTER_CATS)
+            pit_xw = rank_xwins(weekly_stats[week], PITCHER_HIGH + PITCHER_LOW)
+            for tn in weekly_stats[week]:
+                season_bat[tn]['xw'] += bat_xw.get(tn, 0)
+                season_pit[tn]['xw'] += pit_xw.get(tn, 0)
+
+        # 4. Compute power scores (0-1200 per week: 12 cats × 0-100 each via linear scaling)
+        weekly_power = defaultdict(dict)
+        for week in stat_weeks:
+            teams_in_week = list(weekly_stats[week].keys())
+            for tn in teams_in_week:
+                weekly_power[week][tn] = 0.0
+            for cat in ALL_CATS:
+                vals = {tn: weekly_stats[week][tn][cat] for tn in teams_in_week if cat in weekly_stats[week][tn]}
+                if not vals:
+                    continue
+                min_val = min(vals.values())
+                max_val = max(vals.values())
+                for tn, val in vals.items():
+                    if max_val == min_val:
+                        score = 50.0
+                    elif cat in LOW_CATS:
+                        score = (max_val - val) / (max_val - min_val) * 100
+                    else:
+                        score = (val - min_val) / (max_val - min_val) * 100
+                    weekly_power[week][tn] += score
+            for tn in weekly_power[week]:
+                weekly_power[week][tn] = round(weekly_power[week][tn], 1)
+
+        # 5. Sort teams by cumulative power score (latest week's score as tiebreaker)
+        cum_power = {tn: sum(weekly_power[w].get(tn, 0) for w in stat_weeks) for tn in tn_latest_name}
+        sorted_tns = sorted(tn_latest_name.keys(), key=lambda tn: cum_power.get(tn, 0), reverse=True)
 
         color_map = {tn: COLORS[i % len(COLORS)] for i, tn in enumerate(sorted_tns)}
 
-        # 5. Build result JSON
+        # 6. Build result JSON
         teams = [{'tn': tn, 'name': tn_latest_name.get(tn, tn), 'color': COLORS[i % len(COLORS)]}
                  for i, tn in enumerate(sorted_tns)]
 
-        # Power data
-        power_out = {}
-        if power_weeks:
-            for tn in sorted_tns:
-                power_out[tn] = {str(w): power_data[tn][w] for w in power_weeks if w in power_data.get(tn, {})}
+        # Power scores by week and cumulative
+        power_score_out = {tn: {str(w): weekly_power[w].get(tn, 0) for w in stat_weeks} for tn in sorted_tns}
+        cum_power_out = {}
+        for tn in sorted_tns:
+            cum = 0
+            cum_power_out[tn] = {}
+            for w in stat_weeks:
+                cum += weekly_power[w].get(tn, 0)
+                cum_power_out[tn][str(w)] = round(cum, 1)
 
         # xWins by week
         xwins_out = {tn: {str(w): round(weekly_xwins[w].get(tn, 0), 2) for w in stat_weeks} for tn in sorted_tns}
@@ -184,15 +199,18 @@ def lambda_handler(event, context):
                 cum += weekly_xwins[w].get(tn, 0)
                 cum_out[tn][str(w)] = round(cum, 1)
 
-        # Scatter (batter vs pitcher win%)
+        # Scatter (batter vs pitcher xWins%)
+        # Max batter xWins per week = len(BATTER_CATS) (each cat max = 1.0), same for pitcher
+        max_bat = float(len(BATTER_CATS)) * len(stat_weeks)
+        max_pit = float(len(PITCHER_HIGH) + len(PITCHER_LOW)) * len(stat_weeks)
         scatter = []
         for tn in sorted_tns:
-            bat = season_bat[tn]
-            pit = season_pit[tn]
+            bat_xw = season_bat[tn]['xw']
+            pit_xw = season_pit[tn]['xw']
             scatter.append({
                 'tn': tn, 'name': tn_latest_name.get(tn, tn),
-                'bat': round(bat['w'] / bat['total'] * 100, 1) if bat['total'] > 0 else 50,
-                'pit': round(pit['w'] / pit['total'] * 100, 1) if pit['total'] > 0 else 50,
+                'bat': round(bat_xw / max_bat * 100, 1) if max_bat > 0 else 50,
+                'pit': round(pit_xw / max_pit * 100, 1) if max_pit > 0 else 50,
                 'color': color_map.get(tn, '#94a3b8'),
             })
 
@@ -248,8 +266,8 @@ def lambda_handler(event, context):
         result = {
             'teams': teams,
             'statWeeks': stat_weeks,
-            'powerWeeks': power_weeks,
-            'powerData': power_out,
+            'weeklyPowerScores': power_score_out,
+            'cumulativePowerScores': cum_power_out,
             'weeklyXwins': xwins_out,
             'cumulativeXwins': cum_out,
             'scatter': scatter,

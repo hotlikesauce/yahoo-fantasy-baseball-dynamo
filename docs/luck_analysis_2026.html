@@ -113,9 +113,9 @@ function render(d) {
 <p class="section-desc">Record = total category W-L-T across all weeks (12 categories per week). xWins = expected category wins based on all-play H2H strength. Diff = actual cat wins - xWins. A <span class="lucky">Lucky Win</span> = won your weekly matchup despite being bottom-half in all-play (ranked 7-12). An <span class="unlucky">Unlucky Loss</span> = lost despite top-half all-play. Luck Coefficient = (Lucky Wins - Unlucky Losses) / Total Matchups.</p>
 <table id="luckTable">
 <thead><tr>
-  ${th('#','0','num')}${th('Team','1','str')}${th('Record (W-L-T)','2','wlt')}
-  ${th('xRecord','3','wlt')}${th('Diff','4','num')}${th('Lucky W','5','num')}
-  ${th('Unlucky L','6','num')}${th('Coeff','7','num')}${th('All-Play','8','wlt')}${th('xW%','9','num')}
+  ${th('#','0','num')}${th('Team','1','str')}${th('Matchup W-L-T','2','wlt')}
+  ${th('Actual Cat Wins','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}
+  ${th('All-Play','6','wlt')}${th('AP Win%','7','num')}
 </tr></thead>
 <tbody id="luckBody"></tbody>
 </table>
@@ -188,7 +188,7 @@ function render(d) {
 <h3>Schedule Strength</h3>
 <p class="section-desc">How tough were your opponents? Avg Opp xW% = your opponents' average all-play win percentage. Higher = you faced tougher teams.</p>
 <table id="schedTable">
-<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('Avg Opp xW%','2','num')}${th('Avg Opp xCats','3','num')}${th('Record','4','wlt')}${th('xWins','5','num')}${th('Diff','6','num')}</tr></thead>
+<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('Avg Opp xWins','2','num')}${th('Actual Cat W','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}</tr></thead>
 <tbody id="schedBody"></tbody>
 </table>`;
 
@@ -206,15 +206,12 @@ function render(d) {
   // Populate luck table
   const luckBody = document.getElementById('luckBody');
   teamSummary.forEach((s, i) => {
-    const record = fmtWlt(s.cat_w, s.cat_l, s.cat_t);
-    const xrecord = fmtWlt(s.expected_cat_w, s.expected_cat_l, s.expected_cat_t > 0.5 ? s.expected_cat_t : 0);
-    const diffClass = s.diff > 0 ? 'lucky' : s.diff < 0 ? 'unlucky' : '';
-    const diffStr = s.diff > 0 ? '+' + s.diff : String(s.diff);
-    const coeffClass = s.luck_coeff > 0 ? 'lucky' : 'unlucky';
-    const coeffStr = s.luck_coeff > 0 ? '+' + s.luck_coeff.toFixed(3) : s.luck_coeff.toFixed(3);
+    const mRecord = fmtWlt(s.matchup_w, s.matchup_l, s.matchup_t);
     const ap = fmtWlt(s.allplay_w, s.allplay_l, s.allplay_t);
+    const luckClass = s.cum_luck > 0 ? 'lucky' : s.cum_luck < 0 ? 'unlucky' : '';
+    const luckStr = s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1);
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${record}</td><td>${xrecord}</td><td class="${diffClass}">${diffStr}</td><td class="lucky">${s.lucky_w}</td><td class="unlucky">${s.unlucky_l}</td><td class="${coeffClass}">${coeffStr}</td><td>${ap}</td><td>${s.xwin_pct.toFixed(3)}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td>${ap}</td><td>${s.ap_pct != null ? s.ap_pct.toFixed(3) : '—'}</td>`;
     luckBody.appendChild(tr);
   });
 
@@ -274,11 +271,10 @@ function render(d) {
   // Schedule strength
   const schedBody = document.getElementById('schedBody');
   scheduleStrength.forEach((s, i) => {
-    const record = fmtWlt(s.cat_w, s.cat_l, s.cat_t);
-    const diffClass = s.diff > 0 ? 'lucky' : 'unlucky';
-    const diffStr = s.diff > 0 ? '+' + s.diff : String(s.diff);
+    const luckClass = s.cum_luck > 0 ? 'lucky' : 'unlucky';
+    const luckStr = s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1);
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${s.avg_opp_xw.toFixed(3)}</td><td>${s.avg_opp_cats}</td><td>${record}</td><td>${s.expected_cat_w}</td><td class="${diffClass}">${diffStr}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${s.avg_opp_xw.toFixed(3)}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td>`;
     schedBody.appendChild(tr);
   });
 
@@ -294,8 +290,8 @@ function render(d) {
 
   // Charts
   const luckLabels = teamSummary.map(s => s.name);
-  const luckValues = teamSummary.map(s => s.luck_coeff);
-  const luckColors = teamSummary.map(s => s.luck_coeff > 0 ? '#22c55e' : '#ef4444');
+  const luckValues = teamSummary.map(s => s.cum_luck);
+  const luckColors = teamSummary.map(s => s.cum_luck > 0 ? '#22c55e' : '#ef4444');
 
   new Chart(document.getElementById('luckChart'), {
     type: 'bar',
@@ -306,11 +302,11 @@ function render(d) {
         legend: { display: false },
         tooltip: {
           backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1,
-          callbacks: { label: ctx => 'Luck Coeff: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(3) }
+          callbacks: { label: ctx => 'Luck Score: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(1) }
         }
       },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Luck Coefficient', color: '#64748b' } },
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Luck Score (Actual Cat Wins − xWins)', color: '#64748b' } },
         y: { ticks: { color: '#e2e8f0', font: { size: 11 } }, grid: { display: false } }
       }
     }

@@ -128,8 +128,8 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 # Write to DynamoDB
                 item = {
                     'TeamNumber': team_stats['id'],
-                    'DataType#Week': f"weekly_stats#{stats_week}",
-                    'DataTypeWeek': f"weekly_stats#{stats_week}",
+                    'DataType#Week': f"weekly_stats#{stats_week:02d}",
+                    'DataTypeWeek': f"weekly_stats#{stats_week:02d}",
                     'YearDataType': f"2026#weekly_stats",
                     'Year': 2026,
                     'Week': stats_week,

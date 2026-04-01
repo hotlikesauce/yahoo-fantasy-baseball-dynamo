@@ -92,8 +92,8 @@ function makeLineDs(teams, statWeeks, valuesFn) {
 }
 
 function render(d) {
-  const { teams, statWeeks, powerWeeks, powerData, weeklyXwins, cumulativeXwins, scatter, hotCold, last2Label, seasonBest, catOrder } = d;
-  const hasPower = powerWeeks && powerWeeks.length > 0;
+  const { teams, statWeeks, weeklyPowerScores, cumulativePowerScores, weeklyXwins, cumulativeXwins, scatter, hotCold, last2Label, seasonBest, catOrder } = d;
+  const hasPower = weeklyPowerScores && teams.length > 0;
 
   let html = '';
 
@@ -184,31 +184,51 @@ function render(d) {
   const statLabels = statWeeks.map(w => 'Wk ' + w);
 
   if (hasPower) {
-    const powerLabels = powerWeeks.map(w => 'Week ' + w);
-    const makePowerDs = field => teams.map(t => ({
-      label: t.name,
-      data: powerWeeks.map(w => (powerData[t.tn] && powerData[t.tn][w] ? parseFloat(powerData[t.tn][w][field]) : null)),
-      borderColor: t.color, backgroundColor: t.color + '22',
-      borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
-    }));
+    const powerLabels = statWeeks.map(w => 'Wk ' + w);
 
     window._scoreChart = new Chart(document.getElementById('scoreChart'), {
       type: 'line',
-      data: { labels: powerLabels, datasets: makePowerDs('score') },
+      data: {
+        labels: powerLabels,
+        datasets: teams.map(t => ({
+          label: t.name,
+          data: statWeeks.map(w => (weeklyPowerScores[t.tn] && weeklyPowerScores[t.tn][w] != null ? weeklyPowerScores[t.tn][w] : null)),
+          borderColor: t.color, backgroundColor: t.color + '22',
+          borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
+        }))
+      },
       options: {
         responsive: true, maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
         scales: {
           x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-          y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Score', color: '#64748b' } }
+          y: { min: 0, max: 1200, ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Score (0–1200)', color: '#64748b' } }
         }
       }
     });
 
+    // Compute power rank per week from weeklyPowerScores
+    const weeklyPowerRank = {};
+    teams.forEach(t => { weeklyPowerRank[t.tn] = {}; });
+    statWeeks.forEach(w => {
+      const wStr = String(w);
+      const scored = teams.map(t => ({ tn: t.tn, score: weeklyPowerScores[t.tn] && weeklyPowerScores[t.tn][wStr] != null ? weeklyPowerScores[t.tn][wStr] : 0 }));
+      scored.sort((a, b) => b.score - a.score);
+      scored.forEach((s, i) => { weeklyPowerRank[s.tn][wStr] = i + 1; });
+    });
+
     window._rankChart = new Chart(document.getElementById('rankChart'), {
       type: 'line',
-      data: { labels: powerLabels, datasets: makePowerDs('rank') },
+      data: {
+        labels: powerLabels,
+        datasets: teams.map(t => ({
+          label: t.name,
+          data: statWeeks.map(w => weeklyPowerRank[t.tn][w] || null),
+          borderColor: t.color, backgroundColor: t.color + '22',
+          borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
+        }))
+      },
       options: {
         responsive: true, maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
