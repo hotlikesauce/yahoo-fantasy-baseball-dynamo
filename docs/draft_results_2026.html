@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Draft Results</title>
+<style>
+  /* Controls bar */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.9em;
+    padding: 9px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: #475569; }
+  .search-input:focus { border-color: #3b82f6; }
+  .team-select {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.9em;
+    padding: 9px 14px;
+    outline: none;
+    cursor: pointer;
+    min-width: 220px;
+    transition: border-color 0.15s;
+  }
+  .team-select:focus { border-color: #3b82f6; }
+  .results-count {
+    color: #475569;
+    font-size: 0.82em;
+    white-space: nowrap;
+  }
+
+  /* Summary grid */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .summary-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .summary-team {
+    font-size: 0.88em;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 10px;
+  }
+  .summary-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 0.8em;
+  }
+  .summary-stat { display: flex; flex-direction: column; align-items: center; }
+  .summary-stat-val { font-size: 1.3em; font-weight: 800; }
+  .summary-stat-lbl { color: #64748b; font-size: 0.85em; margin-top: 1px; }
+  .stat-keeper { color: #f59e0b; }
+  .stat-drafted { color: #3b82f6; }
+  .stat-total { color: #e2e8f0; }
+
+  /* Draft table */
+  .badge-keeper {
+    background: #f59e0b22;
+    color: #f59e0b;
+    border: 1px solid #f59e0b44;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 0.75em;
+    font-weight: 700;
+  }
+  .badge-drafted {
+    background: #3b82f622;
+    color: #3b82f6;
+    border: 1px solid #3b82f644;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 0.75em;
+    font-weight: 700;
+  }
+  .pos-badge {
+    font-size: 0.78em;
+    color: #64748b;
+    font-weight: 600;
+  }
+  .overall-num {
+    color: #475569;
+    font-size: 0.85em;
+    font-weight: 700;
+  }
+  .player-name-cell {
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+  td.team-dot { white-space: nowrap; }
+
+  th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 16px; }
+  th.sortable:hover { color: #e2e8f0; }
+  th.sortable::after { content: '\2195'; position: absolute; right: 4px; opacity: 0.3; font-size: 0.8em; }
+  th.sortable.asc::after { content: '\2191'; opacity: 0.9; }
+  th.sortable.desc::after { content: '\2193'; opacity: 0.9; }
+
+  .hidden-row { display: none; }
+
+  .round-keeper-row td { opacity: 0.65; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Draft Results</p>
+
+<h3>Full Draft Results</h3>
+<p class="section-desc">Search by player name or filter by team. Click column headers to sort. <span class="badge-keeper">Keeper</span> rounds are dimmed.</p>
+<div class="controls-bar">
+  <input type="text" class="search-input" id="playerSearch" placeholder="Search player...">
+  <select class="team-select" id="teamSelect">
+    <option value="">All Teams</option>
+  </select>
+  <span class="results-count" id="resultsCount"></span>
+</div>
+<table id="draftTable">
+  <thead>
+    <tr>
+      <th class="sortable" data-col="overall">#</th>
+      <th class="sortable" data-col="round">Rd</th>
+      <th class="sortable" data-col="pick">Pick</th>
+      <th class="sortable" data-col="team">Team</th>
+      <th class="sortable" data-col="player">Player</th>
+      <th class="sortable" data-col="position">Pos</th>
+      <th class="sortable" data-col="status">Status</th>
+    </tr>
+  </thead>
+  <tbody id="draftBody"></tbody>
+</table>
+</div>
+
+<script>
+const TEAMS = {
+  'A4D': { name: 'Aces 4 Days',               color: '#ec4899' },
+  'GPA': { name: 'Getting Plowed Again.',      color: '#22c55e' },
+  'LB':  { name: 'Los Basureros',              color: '#ef4444' },
+  'HH':  { name: 'Hatfield Hurlers',           color: '#14b8a6' },
+  'TAT': { name: 'Grab Em by the Tatis',       color: '#a855f7' },
+  'BWS': { name: 'Bob Witt Sex Machine',       color: '#f97316' },
+  'RF':  { name: 'Rickie Flower',              color: '#eab308' },
+  'MON': { name: 'Moniebol \uD83D\uDC33',      color: '#10b981' },
+  'IC':  { name: 'Ian Cumsler',                color: '#3b82f6' },
+  'OG9': { name: 'OG9\uFE0F\u20E3',            color: '#8b5cf6' },
+  'SHR': { name: '\u00AF\\_(ツ)_/\u00AF',      color: '#f59e0b' },
+  'TRS': { name: 'The Rosterbation Station',   color: '#06b6d4' },
+};
+
+// [overall, round, pick, team_key, player, position, isKeeper(0=Drafted,1=Keeper)]
+const PICKS = [
+[1,1,1,'A4D','Tarik Skubal','SP',1],
+[2,1,2,'GPA','Francisco Lindor','SS',1],
+[3,1,3,'LB','Elly De La Cruz','SS',1],
+[4,1,4,'HH','Aaron Judge','OF',1],
+[5,1,5,'TAT','Jos\u00E9 Ram\u00EDrez','3B',1],
+[6,1,6,'BWS','Bobby Witt Jr.','SS',1],
+[7,1,7,'RF','Yordan Alvarez','OF',1],
+[8,1,8,'MON','Ketel Marte','2B',1],
+[9,1,9,'IC','Kyle Tucker','OF',1],
+[10,1,10,'OG9','Jazz Chisholm Jr.','2B/3B',1],
+[11,1,11,'SHR','Shohei Ohtani','Util',1],
+[12,1,12,'TRS','Julio Rodr\u00EDguez','OF',1],
+[13,2,1,'TRS','Junior Caminero','3B',1],
+[14,2,2,'SHR','Juan Soto','OF',1],
+[15,2,3,'OG9','Kyle Schwarber','OF',1],
+[16,2,4,'IC','Ronald Acu\u00F1a Jr.','OF',1],
+[17,2,5,'MON','Jackson Chourio','OF',1],
+[18,2,6,'RF','Shohei Ohtani','SP',1],
+[19,2,7,'BWS','Corbin Carroll','OF',1],
+[20,2,8,'TAT','Fernando Tatis Jr.','OF',1],
+[21,2,9,'HH','Trea Turner','SS',1],
+[22,2,10,'LB','Nick Kurtz','1B',1],
+[23,2,11,'GPA','James Wood','OF',1],
+[24,2,12,'A4D','Garrett Crochet','SP',1],
+[25,3,1,'A4D','Paul Skenes','SP',0],
+[26,3,2,'GPA','Gunnar Henderson','SS',0],
+[27,3,3,'A4D','Cal Raleigh','C',0],
+[28,3,4,'HH','Freddie Freeman','1B',0],
+[29,3,5,'TAT','Vladimir Guerrero Jr.','1B',0],
+[30,3,6,'A4D','Pete Alonso','1B',0],
+[31,3,7,'RF','Yoshinobu Yamamoto','SP',0],
+[32,3,8,'MON','Bryce Harper','1B',0],
+[33,3,9,'IC','Cristopher S\u00E1nchez','SP',0],
+[34,3,10,'OG9','Matt Olson','1B',0],
+[35,3,11,'SHR','Manny Machado','3B',0],
+[36,3,12,'TRS','Brent Rooker','OF',0],
+[37,4,1,'TRS','Zach Neto','SS',0],
+[38,4,2,'SHR','Bryan Woo','SP',0],
+[39,4,3,'OG9','Pete Crow-Armstrong','OF',0],
+[40,4,4,'IC','Hunter Brown','SP',0],
+[41,4,5,'MON','Mookie Betts','SS',0],
+[42,4,6,'RF','Roman Anthony','OF',0],
+[43,4,7,'BWS','Logan Gilbert','SP',0],
+[44,4,8,'TAT','Logan Webb','SP',0],
+[45,4,9,'HH','Rafael Devers','1B',0],
+[46,4,10,'LB','Riley Greene','OF',0],
+[47,4,11,'GPA','Jarren Duran','OF',0],
+[48,4,12,'A4D','Wyatt Langford','OF',0],
+[49,5,1,'A4D','Mason Miller','RP',0],
+[50,5,2,'GPA','Chris Sale','SP',0],
+[51,5,3,'TAT','Cole Ragans','SP',0],
+[52,5,4,'HH','George Kirby','SP',0],
+[53,5,5,'TAT','Jacob deGrom','SP',0],
+[54,5,6,'BWS','Max Fried','SP',0],
+[55,5,7,'RF','Edwin D\u00EDaz','RP',0],
+[56,5,8,'MON','Austin Riley','3B',0],
+[57,5,9,'IC','Brice Turang','2B',0],
+[58,5,10,'OG9','Andr\u00E9s Mu\u00F1oz','RP',0],
+[59,5,11,'SHR','Josh Naylor','1B',0],
+[60,5,12,'TRS','Joe Ryan','SP',0],
+[61,6,1,'RF','Jackson Merrill','OF',0],
+[62,6,2,'SHR','Corey Seager','SS',0],
+[63,6,3,'OG9','Cody Bellinger','OF',0],
+[64,6,4,'IC','Geraldo Perdomo','SS',0],
+[65,6,5,'MON','William Contreras','C',0],
+[66,6,6,'RF','Freddy Peralta','SP',0],
+[67,6,7,'RF','CJ Abrams','SS',0],
+[68,6,8,'TAT','Cade Smith','RP',0],
+[69,6,9,'HH','Pablo L\u00F3pez','SP',0],
+[70,6,10,'RF','Shea Langeliers','C',0],
+[71,6,11,'GPA','Maikel Garcia','2B/3B/SS/OF',0],
+[72,6,12,'A4D','Dylan Cease','SP',0],
+[73,7,1,'A4D','Bo Bichette','3B/SS',0],
+[74,7,2,'GPA','Hunter Goodman','C',0],
+[75,7,3,'RF','Jhoan Duran','RP',0],
+[76,7,4,'HH','Framber Valdez','SP',0],
+[77,7,5,'TAT','Seiya Suzuki','OF',0],
+[78,7,6,'TAT','Aroldis Chapman','RP',0],
+[79,7,7,'RF','Eugenio Su\u00E1rez','3B',0],
+[80,7,8,'MON','George Springer','OF',0],
+[81,7,9,'IC','Jes\u00FAs Luzardo','SP',0],
+[82,7,10,'OG9','Randy Arozarena','OF',0],
+[83,7,11,'SHR','Kyle Bradish','SP',0],
+[84,7,12,'TRS','Vinnie Pasquantino','1B',0],
+[85,8,1,'TAT','Ben Rice','C/1B',0],
+[86,8,2,'SHR','Nolan McLean','SP',0],
+[87,8,3,'OG9','Eury P\u00E9rez','SP',0],
+[88,8,4,'IC','Tyler Soderstrom','1B/OF',0],
+[89,8,5,'BWS','Alex Bregman','3B',0],
+[90,8,6,'RF','Nick Pivetta','SP',0],
+[91,8,7,'MON','Byron Buxton','OF',0],
+[92,8,8,'TAT','Oneil Cruz','OF',0],
+[93,8,9,'HH','Zack Wheeler','SP',0],
+[94,8,10,'LB','Cam Schlittler','SP',0],
+[95,8,11,'GPA','Blake Snell','SP',0],
+[96,8,12,'A4D','Christian Yelich','OF',0],
+[97,9,1,'A4D','Jo Adell','OF',0],
+[98,9,2,'GPA','Spencer Strider','SP',0],
+[99,9,3,'RF','David Bednar','RP',0],
+[100,9,4,'HH','Emmanuel Clase','RP',0],
+[101,9,5,'TAT','Jose Altuve','2B/OF',0],
+[102,9,6,'TAT','Tyler Glasnow','SP',0],
+[103,9,7,'RF','Devin Williams','RP',0],
+[104,9,8,'RF','Nico Hoerner','2B',0],
+[105,9,9,'IC','Will Smith','C',0],
+[106,9,10,'OG9','Josh Hader','RP',0],
+[107,9,11,'TAT','Teoscar Hern\u00E1ndez','OF',0],
+[108,9,12,'RF','Jac Caglianone','1B/OF',0],
+[109,10,1,'TRS','Kevin Gausman','SP',0],
+[110,10,2,'OG9','Willy Adames','SS',0],
+[111,10,3,'OG9','Chase Burns','SP/RP',0],
+[112,10,4,'IC','Sonny Gray','SP',0],
+[113,10,5,'MON','Salvador Perez','C/1B',0],
+[114,10,6,'RF','Michael Harris II','OF',0],
+[115,10,7,'BWS','Jeremy Pe\u00F1a','SS',0],
+[116,10,8,'TAT','Ryan Helsley','RP',0],
+[117,10,9,'HH','Zac Gallen','SP',0],
+[118,10,10,'LB','Taylor Ward','OF',0],
+[119,10,11,'GPA','Kyle Stowers','OF',0],
+[120,10,12,'A4D','Brandon Nimmo','OF',0],
+[121,11,1,'A4D','Konnor Griffin','SS/OF',0],
+[122,11,2,'GPA','Yandy D\u00EDaz','1B',0],
+[123,11,3,'LB','Jacob Misiorowski','SP',0],
+[124,11,4,'HH','Luis Castillo','SP',0],
+[125,11,5,'TAT','Emmet Sheehan','SP',0],
+[126,11,6,'BWS','Bryan Abreu','RP',0],
+[127,11,7,'RF','Michael Busch','1B',0],
+[128,11,8,'RF','Raisel Iglesias','RP',0],
+[129,11,9,'IC','Colson Montgomery','3B/SS',0],
+[130,11,10,'OG9','Trey Yesavage','SP',0],
+[131,11,11,'SHR','Luke Keaschall','2B',0],
+[132,11,12,'TRS','Nick Lodolo','SP',0],
+[133,12,1,'TRS','Noelvi Marte','3B/OF',0],
+[134,12,2,'SHR','Luis Robert Jr.','OF',0],
+[135,12,3,'SHR','Brandon Woodruff','SP',0],
+[136,12,4,'IC','Sandy Alcantara','SP',0],
+[137,12,5,'MON','Nathan Eovaldi','SP',0],
+[138,12,6,'RF','Carlos Est\u00E9vez','RP',0],
+[139,12,7,'A4D','Jeff Hoffman','RP',0],
+[140,12,8,'TAT','Griffin Jax','RP',0],
+[141,12,9,'HH','Bryan Reynolds','OF',0],
+[142,12,10,'LB','Alec Burleson','1B/OF',0],
+[143,12,11,'GPA','Ryan Pepiot','SP',0],
+[144,12,12,'A4D','Michael King','SP',0],
+[145,13,1,'A4D','Ozzie Albies','2B',0],
+[146,13,2,'GPA','Bubba Chandler','SP',0],
+[147,13,3,'LB','Shota Imanaga','SP',0],
+[148,13,4,'HH','Adley Rutschman','C',0],
+[149,13,5,'TAT','Trevor Story','SS',0],
+[150,13,6,'BWS','Willson Contreras','1B',0],
+[151,13,7,'RF','Munetaka Murakami','1B/3B',0],
+[152,13,8,'LB','JJ Wetherholt','2B/3B/SS',0],
+[153,13,9,'IC','Jakob Marsee','OF',0],
+[154,13,10,'OG9','Agust\u00EDn Ram\u00EDrez','C',0],
+[155,13,11,'SHR','Andy Pages','OF',0],
+[156,13,12,'TRS','Xavier Edwards','2B/SS',0],
+[157,14,1,'TRS','Robbie Ray','SP',0],
+[158,14,2,'SHR','Gerrit Cole','SP',0],
+[159,14,3,'OG9','Ian Happ','OF',0],
+[160,14,4,'IC','Lawrence Butler','OF',0],
+[161,14,5,'MON','Spencer Schwellenbach','SP',0],
+[162,14,6,'RF','Tatsuya Imai','SP',0],
+[163,14,7,'BWS','Steven Kwan','OF',0],
+[164,14,8,'TAT','Daniel Palencia','RP',0],
+[165,14,9,'HH','Bryson Stott','2B/SS',0],
+[166,14,10,'LB','Ranger Suarez','SP',0],
+[167,14,11,'GPA','MacKenzie Gore','SP',0],
+[168,14,12,'A4D','Matt Chapman','3B',0],
+[169,15,1,'BWS','Brenton Doyle','OF',0],
+[170,15,2,'GPA','Emilio Pag\u00E1n','RP',0],
+[171,15,3,'LB','Cade Horton','SP',0],
+[172,15,4,'HH','Robert Suarez','RP',0],
+[173,15,5,'TAT','Jacob Wilson','SS',0],
+[174,15,6,'BWS','Gavin Williams','SP',0],
+[175,15,7,'MON','Mike Trout','OF',0],
+[176,15,8,'MON','Yainer Diaz','C',0],
+[177,15,9,'IC','Jonathan Aranda','1B',0],
+[178,15,10,'OG9','Kazuma Okamoto','1B/3B',0],
+[179,15,11,'SHR','Abner Uribe','RP',0],
+[180,15,12,'TRS','Garrett Whitlock','RP',0],
+[181,16,1,'TRS','Edward Cabrera','SP',0],
+[182,16,2,'SHR','Ivan Herrera','C',0],
+[183,16,3,'OG9','Trevor Megill','RP',0],
+[184,16,4,'IC','Pete Fairbanks','RP',0],
+[185,16,5,'MON','Trevor Rogers','SP',0],
+[186,16,6,'TRS','Jason Adam','RP',0],
+[187,16,7,'BWS','Drake Baldwin','C',0],
+[188,16,8,'TRS','Dylan Crews','OF',0],
+[189,16,9,'HH','Isaac Paredes','3B',0],
+[190,16,10,'LB','Drew Rasmussen','SP',0],
+[191,16,11,'GPA','Kenley Jansen','RP',0],
+[192,16,12,'A4D','Christian Walker','1B',0],
+[193,17,1,'A4D','Jack Flaherty','SP',0],
+[194,17,2,'GPA','Jos\u00E9 Caballero','2B/3B/SS/OF',0],
+[195,17,3,'LB','Sal Stewart','1B',0],
+[196,17,4,'HH','Jordan Walker','OF',0],
+[197,17,5,'SHR','Alex Vesia','RP',0],
+[198,17,6,'BWS','Tanner Bibee','SP',0],
+[199,17,7,'MON','Carlos Rod\u00F3n','SP',0],
+[200,17,8,'MON','Hunter Greene','SP',0],
+[201,17,9,'IC','Tyler Rogers','RP',0],
+[202,17,10,'OG9','Shane McClanahan','SP',0],
+[203,17,11,'LB','Kris Bubic','SP',0],
+[204,17,12,'TRS','Ceddanne Rafaela','2B/OF',0],
+[205,18,1,'TRS','Daylen Lile','OF',0],
+[206,18,2,'SHR','Chandler Simpson','OF',0],
+[207,18,3,'OG9','Jeremiah Estrada','RP',0],
+[208,18,4,'IC','Dennis Santana','RP',0],
+[209,18,5,'LB','Connelly Early','SP',0],
+[210,18,6,'BWS','Andrew Abbott','SP',0],
+[211,18,7,'BWS','Luis Garc\u00EDa Jr.','2B',0],
+[212,18,8,'TAT','Kevin McGonigle','SS',0],
+[213,18,9,'HH','Aaron Nola','SP',0],
+[214,18,10,'LB','Garrett Cleavinger','RP',0],
+[215,18,11,'GPA','Dansby Swanson','SS',0],
+[216,18,12,'BWS','Matthew Boyd','SP',0],
+[217,19,1,'A4D','Braden Montgomery','OF',0],
+[218,19,2,'GPA','Ezequiel Tovar','SS',0],
+[219,19,3,'LB','Daulton Varsho','OF',0],
+[220,19,4,'HH','Bryce Miller','SP',0],
+[221,19,5,'TAT','Ryan Walker','RP',0],
+[222,19,6,'BWS','Ryne Nelson','SP/RP',0],
+[223,19,7,'TRS','Fernando Cruz','RP',0],
+[224,19,8,'MON','Shane Bieber','SP',0],
+[225,19,9,'IC','Riley O\'Brien','RP',0],
+[226,19,10,'OG9','Luis Arraez','1B/2B',0],
+[227,19,11,'SHR','Brett Baty','2B/3B',0],
+[228,19,12,'TRS','Brad Keller','RP',0],
+[229,20,1,'TRS','Sal Frelick','OF',0],
+[230,20,2,'SHR','Caleb Durbin','2B/3B',0],
+[231,20,3,'OG9','Grayson Rodriguez','SP',0],
+[232,20,4,'IC','Shawn Armstrong','RP',0],
+[233,20,5,'MON','Shane Baz','SP',0],
+[234,20,6,'LB','Edwin Uceta','RP',0],
+[235,20,7,'BWS','Kerry Carpenter','OF',0],
+[236,20,8,'BWS','Marcus Semien','2B',0],
+[237,20,9,'HH','J.T. Realmuto','C',0],
+[238,20,10,'LB','Adrian Morejon','RP',0],
+[239,20,11,'GPA','Spencer Torkelson','1B',0],
+[240,20,12,'A4D','Kyle Manzardo','1B',0],
+[241,21,1,'LB','Luke Weaver','RP',0],
+[242,21,2,'GPA','Heliot Ramos','OF',0],
+[243,21,3,'MON','Robert Garcia','RP',0],
+[244,21,4,'HH','Camilo Doval','RP',0],
+[245,21,5,'BWS','Wilyer Abreu','OF',0],
+[246,21,6,'BWS','Masyn Winn','SS',0],
+[247,21,7,'SHR','Ryan Weathers','SP',0],
+[248,21,8,'MON','JoJo Romero','RP',0],
+[249,21,9,'IC','Jes\u00FAs Made','2B/3B/SS',0],
+[250,21,10,'OG9','Ram\u00F3n Laureano','OF',0],
+[251,21,11,'SHR','Charlie Condon','1B/OF',0],
+[252,21,12,'TRS','Samuel Basallo','C',0],
+[253,22,1,'TRS','Tony Santillan','RP',0],
+[254,22,2,'SHR','Addison Barger','3B/OF',0],
+[255,22,3,'OG9','Seranthony Dom\u00EDnguez','RP',0],
+[256,22,4,'IC','Roki Sasaki','SP',0],
+[257,22,5,'MON','Brayan Bello','SP',0],
+[258,22,6,'LB','Jackson Holliday','2B/SS',0],
+[259,22,7,'BWS','Andrew Vaughn','1B',0],
+[260,22,8,'A4D','Giancarlo Stanton','OF',0],
+[261,22,9,'HH','Francisco Alvarez','C',0],
+[262,22,10,'MON','Tanner Scott','RP',0],
+[263,22,11,'GPA','Otto Lopez','2B/SS',0],
+[264,22,12,'LB','Matt McLain','2B',0],
+];
+
+// ── Build data objects ──────────────────────────────────────────────────────
+const data = PICKS.map(function(p) {
+  return {
+    overall: p[0], round: p[1], pick: p[2],
+    teamKey: p[3], team: TEAMS[p[3]].name, color: TEAMS[p[3]].color,
+    player: p[4], position: p[5], isKeeper: p[6] === 1
+  };
+});
+
+// ── Team summary ────────────────────────────────────────────────────────────
+function buildSummary() {
+  const grid = document.getElementById('summaryGrid');
+  const teamOrder = Object.keys(TEAMS);
+  grid.innerHTML = teamOrder.map(function(key) {
+    const t = TEAMS[key];
+    const picks = data.filter(function(d) { return d.teamKey === key; });
+    const keepers = picks.filter(function(d) { return d.isKeeper; }).length;
+    const drafted = picks.filter(function(d) { return !d.isKeeper; }).length;
+    return '<div class="summary-card" style="border-top:3px solid ' + t.color + '">' +
+      '<div class="summary-team" style="border-left:3px solid ' + t.color + '">' + t.name + '</div>' +
+      '<div class="summary-stats">' +
+        '<div class="summary-stat"><span class="summary-stat-val stat-keeper">' + keepers + '</span><span class="summary-stat-lbl">Keepers</span></div>' +
+        '<div class="summary-stat"><span class="summary-stat-val stat-drafted">' + drafted + '</span><span class="summary-stat-lbl">Drafted</span></div>' +
+        '<div class="summary-stat"><span class="summary-stat-val stat-total">' + picks.length + '</span><span class="summary-stat-lbl">Total</span></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Team dropdown ────────────────────────────────────────────────────────────
+function buildTeamDropdown() {
+  const sel = document.getElementById('teamSelect');
+  Object.keys(TEAMS).forEach(function(key) {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = TEAMS[key].name;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Table render ─────────────────────────────────────────────────────────────
+let currentData = data.slice();
+let sortCol = 'overall';
+let sortDir = 1;
+
+function stripAccents(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function getFiltered() {
+  const query = stripAccents(document.getElementById('playerSearch').value.trim().toLowerCase());
+  const teamKey = document.getElementById('teamSelect').value;
+  return currentData.filter(function(d) {
+    const matchTeam = !teamKey || d.teamKey === teamKey;
+    const matchPlayer = !query || stripAccents(d.player.toLowerCase()).includes(query);
+    return matchTeam && matchPlayer;
+  });
+}
+
+function renderTable() {
+  const filtered = getFiltered();
+  const tbody = document.getElementById('draftBody');
+  const count = document.getElementById('resultsCount');
+  count.textContent = filtered.length + ' of 264 picks';
+
+  // Highlight search term
+  const query = document.getElementById('playerSearch').value.trim().toLowerCase();
+
+  tbody.innerHTML = filtered.map(function(d) {
+    const badge = d.isKeeper
+      ? '<span class="badge-keeper">Keeper</span>'
+      : '<span class="badge-drafted">Drafted</span>';
+    const rowClass = d.isKeeper ? ' class="round-keeper-row"' : '';
+
+    let playerDisplay = d.player;
+    if (query && stripAccents(d.player.toLowerCase()).includes(query)) {
+      const idx = stripAccents(d.player.toLowerCase()).indexOf(query);
+      playerDisplay = d.player.slice(0, idx) +
+        '<mark style="background:#f59e0b33;color:#f59e0b;border-radius:2px;">' +
+        d.player.slice(idx, idx + query.length) + '</mark>' +
+        d.player.slice(idx + query.length);
+    }
+
+    return '<tr' + rowClass + '>' +
+      '<td class="overall-num">' + d.overall + '</td>' +
+      '<td>' + d.round + '</td>' +
+      '<td>' + d.pick + '</td>' +
+      '<td class="team-dot"><span style="color:' + d.color + '">&#9679;</span> ' + d.team + '</td>' +
+      '<td class="player-name-cell">' + playerDisplay + '</td>' +
+      '<td class="pos-badge">' + d.position + '</td>' +
+      '<td>' + badge + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// ── Sorting ───────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  buildTeamDropdown();
+  renderTable();
+
+  document.getElementById('playerSearch').addEventListener('input', renderTable);
+  document.getElementById('teamSelect').addEventListener('change', renderTable);
+
+  document.querySelectorAll('th.sortable').forEach(function(th) {
+    th.addEventListener('click', function() {
+      const col = th.dataset.col;
+      if (sortCol === col) {
+        sortDir *= -1;
+      } else {
+        sortCol = col;
+        sortDir = 1;
+      }
+      document.querySelectorAll('th.sortable').forEach(function(h) {
+        h.classList.remove('asc', 'desc');
+      });
+      th.classList.add(sortDir === 1 ? 'asc' : 'desc');
+
+      currentData.sort(function(a, b) {
+        let va = a[col], vb = b[col];
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        if (va < vb) return -1 * sortDir;
+        if (va > vb) return 1 * sortDir;
+        return 0;
+      });
+      renderTable();
+    });
+  });
+});
+</script>
+</body>
+</html>

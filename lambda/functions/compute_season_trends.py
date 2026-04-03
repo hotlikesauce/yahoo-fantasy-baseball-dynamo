@@ -25,7 +25,7 @@ ALL_CATS = HIGH_CATS + LOW_CATS
 BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
 PITCHER_HIGH = ['K9', 'QS', 'SVH']
 PITCHER_LOW = ['ERA', 'WHIP', 'TB']
-LONG_WEEKS = {1, 15}
+LONG_WEEKS = {17}
 
 CAT_LABELS = {
     'R': 'Runs', 'H': 'Hits', 'HR': 'Home Runs', 'RBI': 'RBI', 'SB': 'Stolen Bases',
@@ -126,28 +126,47 @@ def lambda_handler(event, context):
 
         stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
 
-        # WLT from weekly_results — completed weeks only, matchup-level W-L-T
+        # WLT: compute category wins from weekly_stats using actual matchup pairings in weekly_results
         latest_wlt = defaultdict(lambda: {'wins': 0, 'losses': 0, 'ties': 0})
         seen_matchups = set()
-        for item in scan_by_prefix('weekly_results#'):
+        wr_items = scan_by_prefix('weekly_results#')
+        # Build matchup pairings: {(week, tn) -> opp_tn}
+        matchup_pairs = {}
+        for item in wr_items:
             w = int(item.get('Week', 0))
             if w not in stat_weeks:
                 continue
             tn = name_to_tn.get(item.get('Team'))
-            if not tn:
+            opp_tn = name_to_tn.get(item.get('Opponent'))
+            if tn and opp_tn:
+                matchup_pairs[(w, tn)] = opp_tn
+        # Compute category W-L-T for each matchup pair
+        for (w, tn), opp_tn in matchup_pairs.items():
+            pair = tuple(sorted([tn, opp_tn]))
+            if (w, pair) in seen_matchups:
                 continue
-            key = (tn, w)
-            if key in seen_matchups:
+            seen_matchups.add((w, pair))
+            if w not in weekly_stats or tn not in weekly_stats[w] or opp_tn not in weekly_stats[w]:
                 continue
-            seen_matchups.add(key)
-            score = float(item.get('Score', 0))
-            opp_score = float(item.get('Opponent_Score', 0))
-            if score > opp_score:
-                latest_wlt[tn]['wins'] += 1
-            elif score < opp_score:
-                latest_wlt[tn]['losses'] += 1
-            else:
-                latest_wlt[tn]['ties'] += 1
+            a = weekly_stats[w][tn]
+            b = weekly_stats[w][opp_tn]
+            for cat in ALL_CATS:
+                if cat not in a or cat not in b:
+                    continue
+                if cat in LOW_CATS:
+                    if a[cat] < b[cat]:
+                        latest_wlt[tn]['wins'] += 1; latest_wlt[opp_tn]['losses'] += 1
+                    elif a[cat] > b[cat]:
+                        latest_wlt[tn]['losses'] += 1; latest_wlt[opp_tn]['wins'] += 1
+                    else:
+                        latest_wlt[tn]['ties'] += 1; latest_wlt[opp_tn]['ties'] += 1
+                else:
+                    if a[cat] > b[cat]:
+                        latest_wlt[tn]['wins'] += 1; latest_wlt[opp_tn]['losses'] += 1
+                    elif a[cat] < b[cat]:
+                        latest_wlt[tn]['losses'] += 1; latest_wlt[opp_tn]['wins'] += 1
+                    else:
+                        latest_wlt[tn]['ties'] += 1; latest_wlt[opp_tn]['ties'] += 1
 
         if not stat_weeks:
             logger.warning("No weekly stats data found")
