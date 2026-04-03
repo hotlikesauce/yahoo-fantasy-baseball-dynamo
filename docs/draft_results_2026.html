@@ -127,6 +127,41 @@
   .hidden-row { display: none; }
 
   .round-keeper-row td { opacity: 0.65; }
+
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* ── Tablet (≤768px) ───────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .controls-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .search-input, .team-select {
+      width: 100%;
+      min-width: unset;
+      font-size: 1em;
+      padding: 11px 14px;
+    }
+    .results-count { text-align: right; }
+
+    table th, table td { padding: 8px 6px; font-size: 0.83em; }
+    .player-name-cell { font-size: 0.9em; }
+    td.team-dot { font-size: 0.8em; }
+  }
+
+  /* ── Phone (≤480px) ────────────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    h1 { font-size: 1.2em; }
+    .page-subtitle { font-size: 0.9em; }
+    h3 { font-size: 1em; }
+
+    /* Hide less critical columns to keep the table scannable */
+    .col-pick { display: none; }
+    .col-overall { display: none; }
+
+    table th, table td { padding: 7px 5px; font-size: 0.8em; }
+    .badge-keeper, .badge-drafted { font-size: 0.7em; padding: 2px 5px; }
+  }
 </style>
 </head>
 <body>
@@ -145,12 +180,13 @@
   </select>
   <span class="results-count" id="resultsCount"></span>
 </div>
+<div class="table-wrap">
 <table id="draftTable">
   <thead>
     <tr>
-      <th class="sortable" data-col="overall">#</th>
+      <th class="sortable col-overall" data-col="overall">#</th>
       <th class="sortable" data-col="round">Rd</th>
-      <th class="sortable" data-col="pick">Pick</th>
+      <th class="sortable col-pick" data-col="pick">Pick</th>
       <th class="sortable" data-col="team">Team</th>
       <th class="sortable" data-col="player">Player</th>
       <th class="sortable" data-col="position">Pos</th>
@@ -159,6 +195,7 @@
   </thead>
   <tbody id="draftBody"></tbody>
 </table>
+</div>
 </div>
 
 <script>
@@ -529,9 +566,9 @@ function renderTable() {
     }
 
     return '<tr' + rowClass + '>' +
-      '<td class="overall-num">' + d.overall + '</td>' +
+      '<td class="overall-num col-overall">' + d.overall + '</td>' +
       '<td>' + d.round + '</td>' +
-      '<td>' + d.pick + '</td>' +
+      '<td class="col-pick">' + d.pick + '</td>' +
       '<td class="team-dot"><span style="color:' + d.color + '">&#9679;</span> ' + d.team + '</td>' +
       '<td class="player-name-cell">' + playerDisplay + '</td>' +
       '<td class="pos-badge">' + d.position + '</td>' +
