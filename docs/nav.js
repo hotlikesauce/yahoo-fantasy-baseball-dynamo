@@ -233,7 +233,7 @@
   const nav = document.getElementById('nav');
   if (!nav) return;
 
-  const pages2026    = ['draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html'];
+  const pages2026    = ['draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html','positional_strength_2026.html'];
   const pagesYoY     = ['season_trends_2025.html','luck_analysis_2025.html','draft_picks_2025.html','season_trends_2024.html','season_trends_2023.html','season_trends_2022.html'];
 
   nav.innerHTML = `
@@ -250,7 +250,7 @@
               <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
               <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
               <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
-              <a class="disabled">Positional Strength &mdash; Coming Soon</a>
+              <a href="positional_strength_2026.html" class="${isActive('positional_strength_2026.html').trim()}">Positional Strength</a>
               <div class="ss-divider"></div>
               <a href="draft_picks_2026.html" class="${isActive('draft_picks_2026.html').trim()}">Draft Capital</a>
               <a href="draft_results_2026.html" class="${isActive('draft_results_2026.html').trim()}">Draft Results</a>
@@ -300,7 +300,7 @@
           <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
           <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
           <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
-          <a class="disabled">Positional Strength &mdash; Coming Soon</a>
+          <a href="positional_strength_2026.html" class="${isActive('positional_strength_2026.html').trim()}">Positional Strength</a>
           <div class="ss-mob-divider"></div>
           <a href="draft_picks_2026.html" class="${isActive('draft_picks_2026.html').trim()}">Draft Capital</a>
           <a href="draft_results_2026.html" class="${isActive('draft_results_2026.html').trim()}">Draft Results</a>

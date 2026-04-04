@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Positional Strength</title>
+<style>
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .ss-select {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.92em;
+    padding: 10px 16px;
+    outline: none;
+    cursor: pointer;
+    min-width: 240px;
+    transition: border-color 0.15s;
+  }
+  .ss-select:focus { border-color: #3b82f6; }
+
+  /* ── Diamond section ─────────────────────────────────────────────── */
+  .diamond-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+  .diamond-svg-container {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 520px;
+  }
+  #diamondSvg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ── Tooltip / player panel ──────────────────────────────────────── */
+  .pos-panel {
+    display: none;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 220px;
+    flex: 1;
+  }
+  .pos-panel.visible { display: block; }
+  .pos-panel-title {
+    font-size: 1em;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pos-score-badge {
+    font-size: 0.78em;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .player-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid #0f172a;
+    font-size: 0.88em;
+    gap: 8px;
+  }
+  .player-entry:last-child { border-bottom: none; }
+  .player-entry-name { color: #e2e8f0; font-weight: 600; flex: 1; }
+  .player-entry-pts  { color: #64748b; font-size: 0.85em; white-space: nowrap; }
+  .starter-dot { color: #22c55e; font-size: 0.7em; margin-right: 4px; }
+  .bench-dot   { color: #475569; font-size: 0.7em; margin-right: 4px; }
+
+  /* ── Legend ──────────────────────────────────────────────────────── */
+  .legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    font-size: 0.82em;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: #94a3b8; }
+  .legend-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Position leaderboard ────────────────────────────────────────── */
+  .leaderboard-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 0.88em;
+  }
+  .lb-team {
+    width: 210px;
+    flex-shrink: 0;
+    color: #e2e8f0;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lb-bar-wrap {
+    flex: 1;
+    background: #1e293b;
+    border-radius: 4px;
+    height: 22px;
+    overflow: hidden;
+  }
+  .lb-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    min-width: 28px;
+  }
+  .lb-score {
+    width: 36px;
+    text-align: right;
+    color: #64748b;
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  .timestamp { font-size: 0.78em; color: #475569; margin-top: 8px; }
+
+  @media (max-width: 480px) {
+    .lb-team { width: 130px; font-size: 0.82em; }
+    .ss-select { min-width: unset; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Positional Strength</p>
+
+<div id="loadingMsg" class="section-desc">Loading roster data...</div>
+<div id="mainContent" style="display:none">
+
+  <!-- ── Diamond view ───────────────────────────────────────────────── -->
+  <h3>Team Diamond</h3>
+  <p class="section-desc">
+    Circle size = organizational strength at that position relative to the rest of the league.
+    Tap any circle to see the players behind the score.
+  </p>
+
+  <div class="controls-row">
+    <select class="ss-select" id="teamSelect">
+      <option value="">Select a team...</option>
+    </select>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Strong (top tier)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Average</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Weak (bottom tier)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#334155;border:1px solid #475569"></div> No data</div>
+  </div>
+
+  <div class="diamond-wrap">
+    <div class="diamond-svg-container">
+      <svg id="diamondSvg" viewBox="0 0 520 600" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="pos-panel" id="posPanel">
+      <div class="pos-panel-title" id="posPanelTitle"></div>
+      <div id="posPanelPlayers"></div>
+    </div>
+  </div>
+
+  <!-- ── Position leaderboard ───────────────────────────────────────── -->
+  <h3>Position Leaderboard</h3>
+  <p class="section-desc">Select a position to rank all 12 teams by organizational strength. Useful for finding trade partners.</p>
+
+  <div class="controls-row">
+    <select class="ss-select" id="posSelect">
+      <option value="C">Catcher (C)</option>
+      <option value="1B">First Base (1B)</option>
+      <option value="2B">Second Base (2B)</option>
+      <option value="SS">Shortstop (SS)</option>
+      <option value="3B">Third Base (3B)</option>
+      <option value="OF">Outfield (OF)</option>
+      <option value="SP">Starting Pitching (SP)</option>
+      <option value="RP">Relief Pitching (RP)</option>
+    </select>
+  </div>
+  <div id="leaderboard"></div>
+
+  <div class="timestamp" id="timestamp"></div>
+</div><!-- /mainContent -->
+</div>
+
+<script>
+const API_URL = 'https://gmujeqyxbpgqdde2ltoqdllwwq0wxfoq.lambda-url.us-west-2.on.aws/';
+
+// Team colors — consistent with rest of site
+const TEAM_COLORS = {
+  'Aces 4 Days':               '#ec4899',
+  'Getting Plowed Again.':     '#22c55e',
+  'Los Basureros':             '#ef4444',
+  'Hatfield Hurlers':          '#14b8a6',
+  'Grab Em by the Tatis':      '#a855f7',
+  'Bob Witt Sex Machine':      '#f97316',
+  'Rickie Flower':             '#eab308',
+  'Moniebol \uD83D\uDC33':     '#10b981',
+  'Ian Cumsler':               '#3b82f6',
+  'OG9\uFE0F\u20E3':           '#8b5cf6',
+  '\u00AF\\_(ツ)_/\u00AF':     '#f59e0b',
+  'The Rosterbation Station':  '#06b6d4',
+};
+
+function teamColor(name) {
+  return TEAM_COLORS[name] || '#64748b';
+}
+
+// ── Diamond layout ────────────────────────────────────────────────────────
+// [cx, cy, label, text-anchor offset for score label]
+const POSITIONS = [
+  { pos: 'SP', cx: 260, cy: 295, label: 'SP' },
+  { pos: 'C',  cx: 260, cy: 515, label: 'C'  },
+  { pos: '1B', cx: 440, cy: 295, label: '1B' },
+  { pos: '2B', cx: 330, cy: 200, label: '2B' },
+  { pos: 'SS', cx: 190, cy: 200, label: 'SS' },
+  { pos: '3B', cx:  80, cy: 295, label: '3B' },
+  { pos: 'OF', cx:  90, cy:  65, label: 'LF' },
+  { pos: 'OF', cx: 260, cy:  45, label: 'CF' },
+  { pos: 'OF', cx: 430, cy:  65, label: 'RF' },
+  { pos: 'RP', cx: 478, cy: 405, label: 'RP' },
+];
+
+function scoreToRadius(s) { return 15 + (s / 100) * 27; }
+function scoreToColor(s) {
+  if (s >= 67) return '#22c55e';
+  if (s >= 33) return '#f59e0b';
+  return '#ef4444';
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function renderDiamond(teamData) {
+  const svg = document.getElementById('diamondSvg');
+  svg.innerHTML = '';
+
+  // Outfield arc (visual only)
+  svg.appendChild(svgEl('path', {
+    d: 'M 30,80 Q 260,-30 490,80',
+    fill: 'none', stroke: '#1e293b', 'stroke-width': '2',
+  }));
+
+  // Base lines
+  svg.appendChild(svgEl('polygon', {
+    points: '260,470 440,295 260,120 80,295',
+    fill: 'none', stroke: '#1e293b', 'stroke-width': '2',
+  }));
+
+  // Home plate lines to catcher
+  svg.appendChild(svgEl('line', {
+    x1: 260, y1: 470, x2: 260, y2: 530,
+    stroke: '#1e293b', 'stroke-width': '1.5',
+  }));
+
+  // RP bullpen line hint
+  svg.appendChild(svgEl('line', {
+    x1: 440, y1: 295, x2: 478, y2: 405,
+    stroke: '#1e293b', 'stroke-width': '1', 'stroke-dasharray': '4 4',
+  }));
+
+  // Position circles
+  for (const p of POSITIONS) {
+    const posData = teamData ? teamData[p.pos] : null;
+    const score   = posData ? posData.score : 0;
+    const r       = scoreToRadius(posData ? score : 0);
+    const fill    = posData ? scoreToColor(score) : '#334155';
+    const stroke  = posData ? fill : '#475569';
+
+    const circle = svgEl('circle', {
+      cx: p.cx, cy: p.cy, r,
+      fill, 'fill-opacity': '0.8', stroke, 'stroke-width': '2',
+    });
+    circle.style.cursor = 'pointer';
+    circle.addEventListener('click', () => showPanel(p.pos, p.label, posData, score, fill));
+    svg.appendChild(circle);
+
+    // Position label inside circle
+    const lbl = svgEl('text', {
+      x: p.cx, y: p.cy + 4,
+      'text-anchor': 'middle',
+      fill: '#fff', 'font-size': r > 26 ? '11' : '9', 'font-weight': '700',
+    });
+    lbl.textContent = p.label;
+    lbl.style.pointerEvents = 'none';
+    svg.appendChild(lbl);
+
+    // Score below circle (skip if no data)
+    if (posData) {
+      const scoreLbl = svgEl('text', {
+        x: p.cx, y: p.cy + r + 13,
+        'text-anchor': 'middle',
+        fill: '#64748b', 'font-size': '9', 'font-weight': '600',
+      });
+      scoreLbl.textContent = Math.round(score);
+      scoreLbl.style.pointerEvents = 'none';
+      svg.appendChild(scoreLbl);
+    }
+  }
+}
+
+// ── Player panel ──────────────────────────────────────────────────────────
+function showPanel(pos, label, posData, score, color) {
+  const panel   = document.getElementById('posPanel');
+  const title   = document.getElementById('posPanelTitle');
+  const players = document.getElementById('posPanelPlayers');
+
+  const badgeBg  = color + '22';
+  const badgeTxt = color;
+  title.innerHTML =
+    `<span style="color:${color};font-size:1.1em">${label === pos ? pos : label + ' / ' + pos}</span>` +
+    `<span class="pos-score-badge" style="background:${badgeBg};color:${badgeTxt};border:1px solid ${color}44">` +
+      Math.round(score) + ' / 100' +
+    `</span>`;
+
+  if (!posData || !posData.players || posData.players.length === 0) {
+    players.innerHTML = '<div style="color:#475569;font-size:0.85em">No rostered players.</div>';
+  } else {
+    players.innerHTML = posData.players.map(p => `
+      <div class="player-entry">
+        <span class="player-entry-name">
+          <span class="${p.starter ? 'starter-dot' : 'bench-dot'}">&#9679;</span>${p.name}
+        </span>
+        <span class="player-entry-pts">${p.points} pts</span>
+      </div>
+    `).join('');
+  }
+
+  panel.classList.add('visible');
+}
+
+// ── Leaderboard ───────────────────────────────────────────────────────────
+let allData = null;
+
+function renderLeaderboard(pos) {
+  if (!allData) return;
+  const lb = document.getElementById('leaderboard');
+
+  const rows = Object.entries(allData.teams)
+    .map(([name, posScores]) => ({ name, score: posScores[pos]?.score ?? 0 }))
+    .sort((a, b) => b.score - a.score);
+
+  lb.innerHTML = rows.map(r => {
+    const color = teamColor(r.name);
+    const width = Math.max(r.score, 3).toFixed(1);
+    return `
+      <div class="leaderboard-row">
+        <div class="lb-team">
+          <span style="color:${color}">&#9679;</span> ${r.name}
+        </div>
+        <div class="lb-bar-wrap">
+          <div class="lb-bar" style="width:${width}%;background:${color}88;border:1px solid ${color}">
+            ${r.score >= 12 ? Math.round(r.score) : ''}
+          </div>
+        </div>
+        <div class="lb-score">${Math.round(r.score)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function () {
+  // Render empty diamond placeholder
+  renderDiamond(null);
+
+  try {
+    const resp = await fetch(API_URL);
+    const data = await resp.json();
+
+    if (data.error || !data.teams) {
+      document.getElementById('loadingMsg').textContent =
+        data.error || 'No data available yet.';
+      return;
+    }
+
+    allData = data;
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+
+    if (data.timestamp) {
+      document.getElementById('timestamp').textContent =
+        'Last updated: ' + new Date(data.timestamp).toLocaleString();
+    }
+
+    // Populate team dropdown
+    const teamSel = document.getElementById('teamSelect');
+    Object.keys(data.teams).sort().forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      teamSel.appendChild(opt);
+    });
+
+    teamSel.addEventListener('change', function () {
+      const teamData = data.teams[this.value] || null;
+      renderDiamond(teamData);
+      document.getElementById('posPanel').classList.remove('visible');
+    });
+
+    // Position leaderboard
+    const posSel = document.getElementById('posSelect');
+    posSel.addEventListener('change', () => renderLeaderboard(posSel.value));
+    renderLeaderboard(posSel.value);
+
+  } catch (e) {
+    document.getElementById('loadingMsg').innerHTML =
+      `<div class="error-msg">Failed to load data.<br><code>${e.message}</code><br>` +
+      `Set <strong>API_URL</strong> to your Lambda Function URL.</div>`;
+  }
+});
+</script>
+</body>
+</html>
