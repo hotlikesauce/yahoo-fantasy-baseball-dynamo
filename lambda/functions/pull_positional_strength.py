@@ -102,16 +102,18 @@ def get_roster(token, team_key) -> List[dict]:
         return []
 
 
-def get_player_points(token, league_key, player_keys: List[str]) -> Dict[str, float]:
-    """Return {player_key: season_points} for a list of player keys."""
+def get_player_percent_owned(token, league_key, player_keys: List[str]) -> Dict[str, float]:
+    """Return {player_key: percent_owned} for a list of player keys.
+    percent_owned is a reliable day-1 signal of player value (0-100).
+    """
     CHUNK = 25
-    points = {}
+    pct = {}
     for i in range(0, len(player_keys), CHUNK):
         chunk = player_keys[i:i + CHUNK]
         keys_str = ','.join(chunk)
         resp = yfl.api_get(
             token,
-            f"league/{league_key}/players;player_keys={keys_str};out=player_points"
+            f"league/{league_key}/players;player_keys={keys_str};out=percent_owned"
         )
         if not resp:
             continue
@@ -128,18 +130,22 @@ def get_player_points(token, league_key, player_keys: List[str]) -> Dict[str, fl
                     if isinstance(item, dict) and 'player_key' in item:
                         pkey = item['player_key']
                         break
-                total = 0.0
+                value = 0.0
                 if isinstance(player_list[1], dict):
-                    raw = player_list[1].get('player_points', {}).get('total', 0)
-                    try:
-                        total = float(raw) if raw else 0.0
-                    except (TypeError, ValueError):
-                        total = 0.0
+                    po_list = player_list[1].get('percent_owned', [])
+                    # format: [{coverage_type, week}, {value: N}, {delta: N}]
+                    for entry in po_list:
+                        if isinstance(entry, dict) and 'value' in entry:
+                            try:
+                                value = float(entry['value'])
+                            except (TypeError, ValueError):
+                                value = 0.0
+                            break
                 if pkey:
-                    points[pkey] = total
+                    pct[pkey] = value
         except Exception as e:
-            logger.warning(f"Error parsing player points chunk {i}: {e}")
-    return points
+            logger.warning(f"Error parsing percent_owned chunk {i}: {e}")
+    return pct
 
 
 # ── Scoring ──────────────────────────────────────────────────────────────────
@@ -216,15 +222,15 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             team_rosters[team_key] = roster
             all_player_keys.extend(p['player_key'] for p in roster)
 
-        # 3. Season fantasy points for every player on every roster
-        points_map = get_player_points(token, league_key, list(set(all_player_keys)))
+        # 3. Percent owned for every player on every roster
+        pct_map = get_player_percent_owned(token, league_key, list(set(all_player_keys)))
 
-        # 4. Attach points
+        # 4. Attach percent_owned (used as the value signal)
         teams_data = []
         for team_key, meta in teams_meta.items():
             players = team_rosters[team_key]
             for p in players:
-                p['points'] = points_map.get(p['player_key'], 0.0)
+                p['points'] = pct_map.get(p['player_key'], 0.0)
             teams_data.append({'name': meta['name'], 'players': players})
 
         # 5. Compute + normalize
@@ -232,11 +238,12 @@ def lambda_handler(event, context) -> Dict[str, Any]:
         final = normalize(raw)
 
         output = {
-            'teams':        final,
-            'positions':    list(TRACKED),
+            'teams':         final,
+            'positions':     list(TRACKED),
             'starter_slots': STARTER_SLOTS,
-            'bench_weight': BENCH_WEIGHT,
-            'timestamp':    datetime.utcnow().isoformat() + 'Z',
+            'bench_weight':  BENCH_WEIGHT,
+            'value_metric':  'percent_owned',
+            'timestamp':     datetime.utcnow().isoformat() + 'Z',
         }
 
         yfl.put_item('FantasyBaseball-PositionalStrength', {
