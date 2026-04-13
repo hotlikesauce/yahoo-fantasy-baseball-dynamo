@@ -51,12 +51,12 @@
 </div>
 
 <script>
-const DATA_URL = 'data/draft_capital_2026.json';
+const DATA_URL = 'https://lkzcwrpxiem4pzdwn4txrqduae0exdlv.lambda-url.us-west-2.on.aws/';
 
 async function load() {
   let d;
   try {
-    const resp = await fetch(DATA_URL + '?t=' + Date.now());
+    const resp = await fetch(DATA_URL);
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     d = await resp.json();
   } catch (e) {
