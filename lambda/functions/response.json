@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "{\"message\": \"Stored schedule with 0 records\"}"}
+{"statusCode": 500, "body": "401 Client Error: Unauthorized for url: https://baseball.fantasysports.yahoo.com/b1/8614/showtradedpicks?view=next"}
