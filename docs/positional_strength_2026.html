@@ -355,7 +355,7 @@ function showPanel(pos, label, posData, score, color) {
         <span class="player-entry-name">
           <span class="${p.starter ? 'starter-dot' : 'bench-dot'}">&#9679;</span>${p.name}
         </span>
-        <span class="player-entry-pts">${p.points}% owned</span>
+        <span class="player-entry-pts">${p.current_rank ? 'Rank #' + p.current_rank : 'ADP ' + p.preseason_adp}</span>
       </div>
     `).join('');
   }

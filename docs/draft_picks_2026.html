@@ -4,12 +4,11 @@
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
-<title>Summertime Sadness - 2026 Draft Capital</title>
+<title>Summertime Sadness - 2027 Draft Capital</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   .chart-box { height: 450px; }
 
-  /* Grid cells */
   .grid-table { overflow-x: auto; margin-bottom: 24px; }
   .grid-table table { min-width: 900px; }
   .grid-table th { font-size: 0.72em; padding: 8px 4px; text-align: center; min-width: 32px; }
@@ -17,39 +16,27 @@
   .grid-table th.keeper { color: #475569; font-style: italic; }
   .grid-table td { text-align: center; padding: 6px 4px; font-size: 0.85em; font-weight: 600; }
   .team-cell { text-align: left !important; white-space: nowrap; font-weight: 500 !important; }
-  .cell-zero { background: #ef444422; color: #ef4444; }
-  .cell-one { color: #64748b; }
-  .cell-two { background: #4ade8018; color: #4ade80; }
+  .cell-zero  { background: #ef444422; color: #ef4444; }
+  .cell-one   { color: #64748b; }
+  .cell-two   { background: #4ade8018; color: #4ade80; }
   .cell-three { background: #22c55e44; color: #4ade80; font-weight: 800; text-shadow: 0 0 6px #22c55e66; }
-  .total-cell { font-weight: 700; color: #e2e8f0; }
+  .total-cell   { font-weight: 700; color: #e2e8f0; }
   .capital-cell { font-weight: 700; color: #34d399; }
-  .pos { color: #22c55e; font-weight: 700; }
-  .neg { color: #ef4444; font-weight: 700; }
+  .pos  { color: #22c55e; font-weight: 700; }
+  .neg  { color: #ef4444; font-weight: 700; }
   .even { color: #64748b; }
   .notes { font-size: 0.82em; }
-  .note-extra { color: #22c55e; }
+  .note-extra   { color: #22c55e; }
   .note-missing { color: #ef4444; opacity: 0.7; }
 
   th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 14px; }
   th.sortable:hover { color: #e2e8f0; }
   th.sortable::after { content: '\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }
-  th.sortable.asc::after { content: '\2191'; opacity: 0.8; }
+  th.sortable.asc::after  { content: '\2191'; opacity: 0.8; }
   th.sortable.desc::after { content: '\2193'; opacity: 0.8; }
 
-  /* Draft board */
-  .board-wrap { overflow-x: auto; margin-bottom: 32px; }
-  .board-table { min-width: 1100px; border-collapse: collapse; width: 100%; }
-  .board-table td { border: 1px solid #1e293b; padding: 0; vertical-align: top; }
-  .board-round { background: #0f172a; color: #64748b; font-size: 0.75em; font-weight: 700;
-    text-align: center; padding: 6px 4px; white-space: nowrap; min-width: 52px; }
-  .board-round span { display: block; font-weight: 400; color: #475569; font-size: 0.85em; }
-  .keeper-round { color: #f59e0b; }
-  .board-keeper { background: #1a1f2e; min-width: 100px; padding: 6px 6px; }
-  .board-pick { background: #0f172a; min-width: 100px; padding: 5px 6px; }
-  .board-player { display: block; font-size: 0.78em; font-weight: 700; color: #e2e8f0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
-  .board-team { display: block; font-size: 0.7em; font-weight: 600; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; max-width: 110px; margin-top: 2px; }
+  .loading { text-align: center; color: #64748b; padding: 60px 0; }
+  #generated-at { text-align: center; color: #475569; font-size: 0.8em; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -57,144 +44,200 @@
 <script src="nav.js"></script>
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
-<p class="page-subtitle">2026 Draft Capital</p>
-
-<h3>Draft Capital Rankings</h3>
-<p class="section-desc">Picks are weighted by exponential decay &mdash; each pick is worth 2% less than the one before it. Pick 1 (R3P1) = 242 pts, Pick 12 (R3P12) = 194 pts, Pick 49 (R7P1) = 92 pts, Pick 240 (R22P12) = 2 pts. Standard (avg) = 1000 pts.</p>
-<div class="chart-box">
-<canvas id="capitalChart"></canvas>
+<p class="page-subtitle">2027 Draft Capital</p>
+<p class="section-desc" style="color:#64748b;margin-bottom:8px;">Current pick ownership. Pick value uses exponential decay &mdash; picks within a round are distributed equally since draft order is not yet set.</p>
+<div id="generated-at"></div>
+<div id="content"><div class="loading">Loading draft capital data&hellip;</div></div>
 </div>
 
-<h3>Draft Capital Summary</h3>
-<table>
-<tr><th class="sortable" data-type="num">#</th><th class="sortable" data-type="str">Team</th><th class="sortable" data-type="num">Capital</th><th class="sortable" data-type="num">vs Avg</th><th class="sortable" data-type="num">Total Picks</th><th class="sortable" data-type="num">Bonus R1-10</th><th class="sortable" data-type="num">Rounds Empty</th><th>Notable</th></tr><tr><td class="rank">1</td><td><span style="color:#ef4444">&#9679;</span> Los Basureros</td><td class="capital-cell">1162</td><td class="pos">+162</td><td>22</td><td>1</td><td>4</td><td class="notes"><span class="note-extra">2x R5, 2x R11, 3x R17</span> <span class="note-missing">No R16, No R20, No R21, No R22</span></td></tr><tr><td class="rank">2</td><td><span style="color:#f97316">&#9679;</span> Bob Witt Sex Machine</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">3</td><td><span style="color:#eab308">&#9679;</span> Rickie Flower</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">4</td><td><span style="color:#22c55e">&#9679;</span> Getting Plowed Again.</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">5</td><td><span style="color:#14b8a6">&#9679;</span> Hatfield Hurlers</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">6</td><td><span style="color:#3b82f6">&#9679;</span> Ian Cumsler</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">7</td><td><span style="color:#8b5cf6">&#9679;</span> OG9️⃣</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">8</td><td><span style="color:#ec4899">&#9679;</span> Aces 4 Days</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">9</td><td><span style="color:#06b6d4">&#9679;</span> The Rosterbation Station</td><td class="capital-cell">1000</td><td class="even">0</td><td>22</td><td>0</td><td>0</td><td class="notes"></td></tr><tr><td class="rank">10</td><td><span style="color:#f59e0b">&#9679;</span> ¯\_(ツ)_/¯</td><td class="capital-cell">997</td><td class="neg">-3</td><td>22</td><td>0</td><td>1</td><td class="notes"><span class="note-extra">2x R20</span> <span class="note-missing">No R17</span></td></tr><tr><td class="rank">11</td><td><span style="color:#10b981">&#9679;</span> Moniebol 🐳</td><td class="capital-cell">979</td><td class="neg">-21</td><td>22</td><td>0</td><td>1</td><td class="notes"><span class="note-extra">2x R16</span> <span class="note-missing">No R11</span></td></tr><tr><td class="rank">12</td><td><span style="color:#a855f7">&#9679;</span> Serafini Hit Squad</td><td class="capital-cell">864</td><td class="neg">-136</td><td>22</td><td>0</td><td>2</td><td class="notes"><span class="note-extra">2x R21, 2x R22</span> <span class="note-missing">No R5, No R17</span></td></tr></table>
-
-<h3>Pick Grid</h3>
-<p class="section-desc">Number of picks each team holds per round. R1-R2 are keeper rounds (not tradeable) &mdash; R3 is effectively the first available draft pick. <span class="cell-zero" style="padding:2px 6px; border-radius:4px;">0 = traded away</span> &nbsp; <span style="color:#64748b">1 = standard</span> &nbsp; <span class="cell-two" style="padding:2px 6px; border-radius:4px;">2 = extra</span> &nbsp; <span class="cell-three" style="padding:2px 6px; border-radius:4px;">3+ = stockpiled</span></p>
-<div class="grid-table">
-<table>
-<tr><th>Team</th><th class="keeper">R1</th><th class="keeper">R2</th><th>R3</th><th>R4</th><th>R5</th><th>R6</th><th>R7</th><th>R8</th><th>R9</th><th>R10</th><th>R11</th><th>R12</th><th>R13</th><th>R14</th><th>R15</th><th>R16</th><th>R17</th><th>R18</th><th>R19</th><th>R20</th><th>R21</th><th>R22</th><th>Total</th><th>Capital</th><th>+/-</th></tr><tr><td class="team-cell"><span style="color:#ef4444">&#9679;</span> Los Basureros</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-three">3</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="cell-zero">0</td><td class="total-cell">22</td><td class="capital-cell">1162</td><td class="pos">+162</td></tr><tr><td class="team-cell"><span style="color:#f97316">&#9679;</span> Bob Witt Sex Machine</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#eab308">&#9679;</span> Rickie Flower</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#22c55e">&#9679;</span> Getting Plowed Again.</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#14b8a6">&#9679;</span> Hatfield Hurlers</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#3b82f6">&#9679;</span> Ian Cumsler</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#8b5cf6">&#9679;</span> OG9️⃣</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#ec4899">&#9679;</span> Aces 4 Days</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#06b6d4">&#9679;</span> The Rosterbation Station</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">1000</td><td class="even">0</td></tr><tr><td class="team-cell"><span style="color:#f59e0b">&#9679;</span> ¯\_(ツ)_/¯</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">997</td><td class="neg">-3</td></tr><tr><td class="team-cell"><span style="color:#10b981">&#9679;</span> Moniebol 🐳</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="total-cell">22</td><td class="capital-cell">979</td><td class="neg">-21</td></tr><tr><td class="team-cell"><span style="color:#a855f7">&#9679;</span> Serafini Hit Squad</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-zero">0</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-one">1</td><td class="cell-two">2</td><td class="cell-two">2</td><td class="total-cell">22</td><td class="capital-cell">864</td><td class="neg">-136</td></tr></table>
-</div>
-
-<h3>2026 Draft Board</h3>
-<p class="section-desc">Full pick-by-pick draft order. Rounds 1&ndash;2 show the keeper players. Draft date: <strong>Thu, Mar 12 &mdash; 6:00 PM MDT</strong>.</p>
-<div class="board-wrap">
-<table class="board-table">
-<thead><tr><th class="board-round"></th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 1</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 2</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 3</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 4</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 5</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 6</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 7</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 8</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 9</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 10</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 11</th><th class="board-round" style="background:#0f172a;color:#64748b">Pick 12</th></tr></thead>
-<tbody><tr><td class="board-round keeper-round">R1<br><span>Keepers</span></td><td class="board-keeper" style="border-top:2px solid #f97316"><span class="board-player">Tarik Skubal</span><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-keeper" style="border-top:2px solid #22c55e"><span class="board-player">Francisco Lindor</span><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-keeper" style="border-top:2px solid #a855f7"><span class="board-player">Elly De La Cruz</span><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-keeper" style="border-top:2px solid #3b82f6"><span class="board-player">Aaron Judge</span><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-keeper" style="border-top:2px solid #eab308"><span class="board-player">José Ramírez</span><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-keeper" style="border-top:2px solid #10b981"><span class="board-player">Bobby Witt Jr.</span><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-keeper" style="border-top:2px solid #ef4444"><span class="board-player">Yordan Alvarez</span><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-keeper" style="border-top:2px solid #06b6d4"><span class="board-player">Ketel Marte</span><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-keeper" style="border-top:2px solid #8b5cf6"><span class="board-player">Kyle Tucker</span><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-keeper" style="border-top:2px solid #14b8a6"><span class="board-player">Jazz Chisholm Jr.</span><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-keeper" style="border-top:2px solid #ec4899"><span class="board-player">Shohei Ohtani (Batter)</span><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-keeper" style="border-top:2px solid #f59e0b"><span class="board-player">Julio Rodríguez</span><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round keeper-round">R2<br><span>Keepers</span></td><td class="board-keeper" style="border-top:2px solid #f59e0b"><span class="board-player">Junior Caminero</span><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-keeper" style="border-top:2px solid #ec4899"><span class="board-player">Juan Soto</span><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-keeper" style="border-top:2px solid #14b8a6"><span class="board-player">Kyle Schwarber</span><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-keeper" style="border-top:2px solid #8b5cf6"><span class="board-player">Ronald Acuña Jr.</span><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-keeper" style="border-top:2px solid #06b6d4"><span class="board-player">Jackson Chourio</span><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-keeper" style="border-top:2px solid #ef4444"><span class="board-player">Shohei Ohtani (Pitcher)</span><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-keeper" style="border-top:2px solid #10b981"><span class="board-player">Corbin Carroll</span><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-keeper" style="border-top:2px solid #eab308"><span class="board-player">Fernando Tatis Jr.</span><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-keeper" style="border-top:2px solid #3b82f6"><span class="board-player">Trea Turner</span><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-keeper" style="border-top:2px solid #a855f7"><span class="board-player">Nick Kurtz</span><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-keeper" style="border-top:2px solid #22c55e"><span class="board-player">James Wood</span><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-keeper" style="border-top:2px solid #f97316"><span class="board-player">Garrett Crochet</span><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R3</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R4</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R5</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R6</td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R7</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R8</td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R9</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td></tr><tr><td class="board-round">R10</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R11</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R12</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R13</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R14</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #ef4444"><span class="board-team" style="color:#ef4444"><span data-team-id="4">Rickie Flower</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R15</td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R16</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R17</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R18</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td></tr><tr><td class="board-round">R19</td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #eab308"><span class="board-team" style="color:#eab308">Serafini</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R20</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td></tr><tr><td class="board-round">R21</td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td></tr><tr><td class="board-round">R22</td><td class="board-pick" style="border-top:2px solid #f59e0b"><span class="board-team" style="color:#f59e0b">Rosterbation</span></td><td class="board-pick" style="border-top:2px solid #ec4899"><span class="board-team" style="color:#ec4899"><span data-team-id="12">¯\_(ツ)_/¯</span></span></td><td class="board-pick" style="border-top:2px solid #14b8a6"><span class="board-team" style="color:#14b8a6"><span data-team-id="9">OG9️⃣</span></span></td><td class="board-pick" style="border-top:2px solid #8b5cf6"><span class="board-team" style="color:#8b5cf6"><span data-team-id="7">Ian Cumsler</span></span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td><td class="board-pick" style="border-top:2px solid #10b981"><span class="board-team" style="color:#10b981"><span data-team-id="2">Bob Witt Sex Machine</span></span></td><td class="board-pick" style="border-top:2px solid #f97316"><span class="board-team" style="color:#f97316"><span data-team-id="10">Aces 4 Days</span></span></td><td class="board-pick" style="border-top:2px solid #3b82f6"><span class="board-team" style="color:#3b82f6">Hatfield</span></td><td class="board-pick" style="border-top:2px solid #06b6d4"><span class="board-team" style="color:#06b6d4"><span data-team-id="8">Moniebol 🐳</span></span></td><td class="board-pick" style="border-top:2px solid #22c55e"><span class="board-team" style="color:#22c55e">Getting Plowed</span></td><td class="board-pick" style="border-top:2px solid #a855f7"><span class="board-team" style="color:#a855f7">Floppy Salami</span></td></tr></tbody>
-</table>
-</div>
-
-</div>
 <script>
-new Chart(document.getElementById('capitalChart').getContext('2d'), {
-  type: 'bar',
-  data: {
-    labels: ["Los Basureros", "Bob Witt Sex Machine", "Rickie Flower", "Getting Plowed Again.", "Hatfield Hurlers", "Ian Cumsler", "OG9️⃣", "Aces 4 Days", "The Rosterbation Station", "¯\\_(ツ)_/¯", "Moniebol 🐳", "Serafini Hit Squad"],
-    datasets: [{
-      label: 'Draft Capital',
-      data: [1162, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 997, 979, 864],
-      backgroundColor: ["#ef4444", "#f97316", "#eab308", "#22c55e", "#14b8a6", "#3b82f6", "#8b5cf6", "#ec4899", "#06b6d4", "#f59e0b", "#10b981", "#a855f7"],
-      borderRadius: 4
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    indexAxis: 'y',
-    layout: { padding: { top: 20, right: 20 } },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-        borderColor: '#475569', borderWidth: 1,
-        callbacks: {
-          label: ctx => {
-            const val = ctx.parsed.x;
-            const diff = val - 1000;
-            const sign = diff > 0 ? '+' : '';
-            return 'Capital: ' + val + ' (' + sign + diff + ' vs avg)';
+const DATA_URL = 'data/draft_capital_2026.json';
+
+async function load() {
+  let d;
+  try {
+    const resp = await fetch(DATA_URL + '?t=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    d = await resp.json();
+  } catch (e) {
+    document.getElementById('content').innerHTML =
+      '<p style="color:#ef4444;text-align:center">Failed to load draft capital data: ' + e.message + '</p>';
+    return;
+  }
+
+  if (d.generated) {
+    document.getElementById('generated-at').textContent =
+      'Data as of: ' + new Date(d.generated).toLocaleString();
+  }
+
+  const teams = d.teams;
+  const STD   = d.standardCapital;
+  const KR    = d.keeperRounds;
+  const TR    = d.totalRounds;
+  const pv    = d.pickValues;
+
+  let html = '';
+
+  // Pick value description
+  html += `<p class="section-desc">Each pick is weighted by exponential decay (2% per slot).
+    Pick 1 (R${KR+1}P1) = ${pv.p1} pts, Pick 12 (R${KR+1}P12) = ${pv.p12} pts,
+    Pick 49 (R7P1) = ${pv.p49} pts, Pick ${(TR-KR)*12} (R${TR}P12) = ${pv.p240} pts.
+    Standard (avg) = ${STD} pts.</p>`;
+
+  // Bar chart
+  html += `<h3>Draft Capital Rankings</h3>
+<div class="chart-box"><canvas id="capitalChart"></canvas></div>`;
+
+  // Summary table
+  html += `<h3>Draft Capital Summary</h3>
+<table id="summaryTable">
+<thead><tr>
+  <th class="sortable" data-type="num">#</th>
+  <th class="sortable" data-type="str">Team</th>
+  <th class="sortable" data-type="num">Capital</th>
+  <th class="sortable" data-type="num">vs Avg</th>
+  <th class="sortable" data-type="num">Total Picks</th>
+  <th class="sortable" data-type="num">Bonus R1-10</th>
+  <th class="sortable" data-type="num">Rounds Empty</th>
+  <th>Notable</th>
+</tr></thead>
+<tbody>`;
+
+  teams.forEach((t, i) => {
+    const diffStr = t.capitalVsStd > 0 ? '+' + t.capitalVsStd : String(t.capitalVsStd);
+    const diffCls = t.capitalVsStd > 0 ? 'pos' : t.capitalVsStd < 0 ? 'neg' : 'even';
+    const notable = [], missing = [];
+    t.picks.forEach((count, ri) => {
+      if (count >= 3) notable.push(count + 'x R' + (ri+1));
+      else if (count === 2 && ri < 10) notable.push('2x R' + (ri+1));
+      if (count === 0 && ri < 15) missing.push('R' + (ri+1));
+    });
+    let noteHtml = '';
+    if (notable.length) noteHtml += '<span class="note-extra">' + notable.join(', ') + '</span>';
+    if (missing.length) noteHtml += ' <span class="note-missing">No ' + missing.join(', ') + '</span>';
+    html += `<tr>
+      <td class="rank">${i+1}</td>
+      <td><span style="color:${t.color}">&#9679;</span> ${t.name}</td>
+      <td class="capital-cell">${t.capital}</td>
+      <td class="${diffCls}">${diffStr}</td>
+      <td>${t.totalPicks}</td>
+      <td>${t.extraHigh}</td>
+      <td>${t.tradedAway}</td>
+      <td class="notes">${noteHtml}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+
+  // Grid table
+  const roundHeaders = Array.from({length: TR}, (_, i) =>
+    '<th' + (i < KR ? ' class="keeper"' : '') + '>R' + (i+1) + '</th>').join('');
+  html += `<h3>Pick Grid</h3>
+<p class="section-desc">Number of picks each team holds per round. R1-R${KR} are keeper rounds (not tradeable).
+<span class="cell-zero" style="padding:2px 6px;border-radius:4px">0 = traded away</span> &nbsp;
+<span style="color:#64748b">1 = standard</span> &nbsp;
+<span class="cell-two" style="padding:2px 6px;border-radius:4px">2 = extra</span> &nbsp;
+<span class="cell-three" style="padding:2px 6px;border-radius:4px">3+ = stockpiled</span></p>
+<div class="grid-table"><table id="gridTable">
+<thead><tr><th>Team</th>${roundHeaders}<th>Total</th><th>Capital</th><th>+/-</th></tr></thead>
+<tbody>`;
+
+  teams.forEach(t => {
+    const diffStr = t.capitalVsStd > 0 ? '+' + t.capitalVsStd : String(t.capitalVsStd);
+    const diffCls = t.capitalVsStd > 0 ? 'pos' : t.capitalVsStd < 0 ? 'neg' : 'even';
+    const cells = t.picks.map(c => {
+      const cls = c === 0 ? 'cell-zero' : c === 1 ? 'cell-one' : c === 2 ? 'cell-two' : 'cell-three';
+      return '<td class="' + cls + '">' + c + '</td>';
+    }).join('');
+    html += `<tr>
+      <td class="team-cell"><span style="color:${t.color}">&#9679;</span> ${t.name}</td>
+      ${cells}
+      <td class="total-cell">${t.totalPicks}</td>
+      <td class="capital-cell">${t.capital}</td>
+      <td class="${diffCls}">${diffStr}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  document.getElementById('content').innerHTML = html;
+
+  // Bar chart
+  new Chart(document.getElementById('capitalChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: teams.map(t => t.name),
+      datasets: [{
+        label: 'Draft Capital',
+        data: teams.map(t => t.capital),
+        backgroundColor: teams.map(t => t.color),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      layout: { padding: { top: 20, right: 20 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
+          borderColor: '#475569', borderWidth: 1,
+          callbacks: {
+            label: ctx => {
+              const val = ctx.parsed.x;
+              const diff = val - STD;
+              return 'Capital: ' + val + ' (' + (diff >= 0 ? '+' : '') + diff + ' vs avg)';
+            }
           }
         }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' },
+             title: { display: true, text: 'Draft Capital Points', color: '#64748b' } },
+        y: { ticks: { color: '#e2e8f0', font: { size: 11 } }, grid: { display: false } }
       }
     },
-    scales: {
-      x: {
-        ticks: { color: '#94a3b8' },
-        grid: { color: '#334155' },
-        title: { display: true, text: 'Draft Capital Points', color: '#64748b' }
-      },
-      y: {
-        ticks: { color: '#e2e8f0', font: { size: 11 } },
-        grid: { display: false }
+    plugins: [{
+      id: 'avgLine',
+      afterDraw(chart) {
+        const { ctx, scales: { x, y } } = chart;
+        const px = x.getPixelForValue(STD);
+        ctx.save();
+        ctx.strokeStyle = '#94a3b866'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(px, y.top); ctx.lineTo(px, y.bottom); ctx.stroke();
+        ctx.fillStyle = '#94a3b8'; ctx.font = '10px Segoe UI';
+        ctx.textAlign = 'center'; ctx.fillText('Avg (' + STD + ')', px, y.top - 6);
+        ctx.restore();
       }
-    }
-  }
-});
-
-// Reference line at standard capital
-const capitalChart = Chart.getChart('capitalChart');
-const origDraw = capitalChart.draw.bind(capitalChart);
-capitalChart.draw = function() {
-  origDraw();
-  const ctx = this.ctx;
-  const xScale = this.scales.x;
-  const yScale = this.scales.y;
-  const x = xScale.getPixelForValue(1000);
-  ctx.save();
-  ctx.strokeStyle = '#94a3b866';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([6, 4]);
-  ctx.beginPath();
-  ctx.moveTo(x, yScale.top);
-  ctx.lineTo(x, yScale.bottom);
-  ctx.stroke();
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '10px Segoe UI';
-  ctx.textAlign = 'center';
-  ctx.fillText('Avg (1000)', x, yScale.top - 6);
-  ctx.restore();
-};
-capitalChart.draw();
-
-// Sortable tables
-document.querySelectorAll('th.sortable').forEach(th => {
-  th.addEventListener('click', () => {
-    const tbl = th.closest('table');
-    const idx = Array.from(th.parentElement.children).indexOf(th);
-    const rows = Array.from(tbl.querySelectorAll('tr')).slice(1);
-    const type = th.dataset.type || 'str';
-    const isAsc = th.classList.contains('asc');
-    th.parentElement.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
-    th.classList.add(isAsc ? 'desc' : 'asc');
-    const getVal = (row, i) => {
-      const text = row.children[i].textContent.trim();
-      if (type === 'num') return parseFloat(text.replace(/[+#]/g, '')) || 0;
-      return text.toLowerCase();
-    };
-    rows.sort((a, b) => {
-      const va = getVal(a, idx), vb = getVal(b, idx);
-      const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
-      return isAsc ? -cmp : cmp;
-    });
-    const tbody = tbl.querySelector('tbody') || tbl;
-    rows.forEach(r => tbody.appendChild(r));
+    }]
   });
-});
-</script>
 
-<script>window._teamNamesUrl = "https://5yw6rtxmqyo6j3mtdhilpch6xa0ocazy.lambda-url.us-west-2.on.aws/";</script>
-<script>
-(function() {
-  var url = window._teamNamesUrl;
-  if (!url) return;
-  function apply(teams) {
-    document.querySelectorAll('[data-team-id]').forEach(function(el) {
-      var n = teams[el.dataset.teamId];
-      if (n) el.textContent = n;
+  // Sortable tables
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const tbl = th.closest('table');
+      const idx = Array.from(th.parentElement.children).indexOf(th);
+      const rows = Array.from(tbl.querySelectorAll('tbody tr'));
+      const type = th.dataset.type || 'str';
+      const isAsc = th.classList.contains('asc');
+      th.parentElement.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+      th.classList.add(isAsc ? 'desc' : 'asc');
+      const getVal = (row, i) => {
+        const text = row.children[i] ? row.children[i].textContent.trim() : '';
+        if (type === 'num') return parseFloat(text.replace(/[+#]/g, '')) || 0;
+        return text.toLowerCase();
+      };
+      rows.sort((a, b) => {
+        const va = getVal(a, idx), vb = getVal(b, idx);
+        const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+        return isAsc ? -cmp : cmp;
+      });
+      const tbody = tbl.querySelector('tbody');
+      rows.forEach(r => tbody.appendChild(r));
     });
-  }
-  fetch(url).then(function(r){return r.json();}).then(function(d){if(d.teams)apply(d.teams);}).catch(function(){});
-})();
+  });
+}
+
+load();
 </script>
 </body>
 </html>

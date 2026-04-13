@@ -1,6 +1,12 @@
 """
-Lambda: Pull team rosters + season player points from Yahoo, compute positional
-strength scores per team, store result in FantasyBaseball-SeasonTrends.
+Lambda: Compute positional strength scores per team using a blended value metric:
+  - Pre-season: 100% Yahoo preseason ADP rank (lower ADP = better player)
+  - Mid-season: blends in current Yahoo overall rank as games pile up
+  - Late season: current rank dominates
+
+Scoring per position:
+  - Average of starter slots (quality over quantity)
+  - Small depth bonus capped at 1 bench player
 
 Triggered by: EventBridge schedule (daily recommended)
 """
@@ -15,10 +21,10 @@ import yahoo_fantasy_lib as yfl
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-YEAR = 2026
+YEAR          = 2026
 LEAGUE_ID_KEY = 'YAHOO_LEAGUE_ID_2026'
+SEASON_GAMES  = 162   # MLB regular season length — used to calculate blend weight
 
-# Number of active roster slots per position — adjust to match league settings
 STARTER_SLOTS = {
     'C':  1,
     '1B': 1,
@@ -29,14 +35,16 @@ STARTER_SLOTS = {
     'SP': 5,
     'RP': 2,
 }
-BENCH_WEIGHT  = 0.4   # bench players count at 40% vs starters at 100%
-TRACKED       = set(STARTER_SLOTS.keys())
+BENCH_WEIGHT = 0.15   # single bench player depth bonus weight
+TRACKED      = set(STARTER_SLOTS.keys())
+
+# Fallback rank if a player has no preseason ADP (very low-value player)
+DEFAULT_PRESEASON_RANK = 500
 
 
-# ── Yahoo API helpers ────────────────────────────────────────────────────────
+# ── Yahoo API helpers ─────────────────────────────────────────────────────────
 
 def get_teams(token, league_key) -> Dict[str, dict]:
-    """Return {team_key: {name, id}} for all teams in the league."""
     resp = yfl.api_get(token, f"league/{league_key}/teams")
     teams_raw = resp['fantasy_content']['league'][1]['teams']
     out = {}
@@ -60,13 +68,11 @@ def get_teams(token, league_key) -> Dict[str, dict]:
 
 
 def get_roster(token, team_key) -> List[dict]:
-    """Return list of {player_key, name, eligible_positions} for a team's roster."""
     resp = yfl.api_get(token, f"team/{team_key}/roster/players")
     if not resp:
         return []
     try:
-        team_data  = resp['fantasy_content']['team']
-        players_raw = team_data[1]['roster']['0']['players']
+        players_raw = resp['fantasy_content']['team'][1]['roster']['0']['players']
         out = []
         for pidx, pdata in players_raw.items():
             if pidx == 'count':
@@ -81,8 +87,6 @@ def get_roster(token, team_key) -> List[dict]:
                     player_key = item['player_key']
                 elif 'name' in item and isinstance(item['name'], dict):
                     player_name = item['name'].get('full', '')
-                elif 'full_name' in item:
-                    player_name = item['full_name']
                 elif 'eligible_positions' in item:
                     pos_list = item['eligible_positions']
                     if isinstance(pos_list, list):
@@ -102,19 +106,55 @@ def get_roster(token, team_key) -> List[dict]:
         return []
 
 
-def get_player_percent_owned(token, league_key, player_keys: List[str]) -> Dict[str, float]:
-    """Return {player_key: percent_owned} for a list of player keys.
-    percent_owned is a reliable day-1 signal of player value (0-100).
+def get_current_rank_map(token, league_key, all_player_keys: List[str]) -> Dict[str, int]:
+    """
+    Fetch all rostered players sorted by current overall rank (sort=OR).
+    Their position in the sorted list = their current rank (1 = best).
+    Returns {player_key: current_rank}
+    """
+    rank_map = {}
+    start = 0
+    CHUNK = 100
+    roster_set = set(all_player_keys)
+
+    while True:
+        resp = yfl.api_get(
+            token,
+            f"league/{league_key}/players;sort=OR;sort_type=season;status=T;start={start};count={CHUNK}"
+        )
+        if not resp:
+            break
+        try:
+            players_raw = resp['fantasy_content']['league'][1]['players']
+            count = int(players_raw.get('count', 0))
+            if count == 0:
+                break
+            for i in range(count):
+                pdata = players_raw[str(i)]['player'][0]
+                pkey = next((x['player_key'] for x in pdata if isinstance(x, dict) and 'player_key' in x), None)
+                if pkey and pkey in roster_set:
+                    rank_map[pkey] = start + i + 1  # 1-indexed rank
+            if count < CHUNK:
+                break
+            start += CHUNK
+        except Exception as e:
+            logger.warning(f"Error parsing current rank at start={start}: {e}")
+            break
+
+    return rank_map
+
+
+def get_preseason_rank_map(token, league_key, player_keys: List[str]) -> Dict[str, float]:
+    """
+    Fetch preseason ADP for each player via draft_analysis.
+    Returns {player_key: preseason_average_pick} — lower = better.
     """
     CHUNK = 25
-    pct = {}
+    adp_map = {}
     for i in range(0, len(player_keys), CHUNK):
         chunk = player_keys[i:i + CHUNK]
         keys_str = ','.join(chunk)
-        resp = yfl.api_get(
-            token,
-            f"league/{league_key}/players;player_keys={keys_str};out=percent_owned"
-        )
+        resp = yfl.api_get(token, f"league/{league_key}/players;player_keys={keys_str};out=draft_analysis")
         if not resp:
             continue
         try:
@@ -123,38 +163,67 @@ def get_player_percent_owned(token, league_key, player_keys: List[str]) -> Dict[
                 if pidx == 'count':
                     continue
                 player_list = pdata.get('player', [])
-                if len(player_list) < 2:
-                    continue
                 pkey = None
                 for item in player_list[0]:
                     if isinstance(item, dict) and 'player_key' in item:
                         pkey = item['player_key']
                         break
-                value = 0.0
-                if isinstance(player_list[1], dict):
-                    po_list = player_list[1].get('percent_owned', [])
-                    # format: [{coverage_type, week}, {value: N}, {delta: N}]
-                    for entry in po_list:
-                        if isinstance(entry, dict) and 'value' in entry:
+                adp = DEFAULT_PRESEASON_RANK
+                if len(player_list) > 1 and isinstance(player_list[1], dict):
+                    da = player_list[1].get('draft_analysis', [])
+                    for entry in da:
+                        if isinstance(entry, dict) and 'preseason_average_pick' in entry:
                             try:
-                                value = float(entry['value'])
+                                adp = float(entry['preseason_average_pick'])
                             except (TypeError, ValueError):
-                                value = 0.0
+                                adp = DEFAULT_PRESEASON_RANK
                             break
                 if pkey:
-                    pct[pkey] = value
+                    adp_map[pkey] = adp
         except Exception as e:
-            logger.warning(f"Error parsing percent_owned chunk {i}: {e}")
-    return pct
+            logger.warning(f"Error parsing draft_analysis chunk {i}: {e}")
+    return adp_map
 
 
-# ── Scoring ──────────────────────────────────────────────────────────────────
+def get_games_played(token, league_key) -> int:
+    """Return approximate games played this season (from current week)."""
+    try:
+        resp = yfl.api_get(token, f"league/{league_key}")
+        week = int(resp['fantasy_content']['league'][0].get('current_week', 1))
+        return max(0, (week - 1) * 7)  # rough approximation
+    except Exception:
+        return 0
+
+
+# ── Blend weight ──────────────────────────────────────────────────────────────
+
+def blend_weight(games_played: int) -> float:
+    """
+    Returns the weight (0.0–1.0) to apply to current rank.
+    At 0 games: 0.0 (100% preseason ADP)
+    At 81 games (midseason): 0.5
+    At 162 games: 1.0 (100% current rank)
+    """
+    return min(1.0, games_played / SEASON_GAMES)
+
+
+# ── Value score ───────────────────────────────────────────────────────────────
+
+def rank_to_value(rank: float, max_rank: int = 500) -> float:
+    """
+    Convert a rank (lower = better) to a value score (higher = better).
+    Rank 1 → ~100, Rank 500 → ~0.
+    """
+    return max(0.0, (max_rank - rank) / max_rank * 100)
+
+
+# ── Scoring ───────────────────────────────────────────────────────────────────
 
 def compute_raw_scores(teams_data: List[dict]) -> Dict[str, dict]:
     """
-    For each team, for each position: sort eligible players by points,
-    apply starter/bench weights, sum to a raw score.
-    Returns {team_name: {pos: {raw, players}}}
+    For each team + position:
+      - Sort eligible players by blended value (higher = better)
+      - Score = average of starter slots + small depth bonus from best 1 bench player
     """
     results = {}
     for team in teams_data:
@@ -162,27 +231,34 @@ def compute_raw_scores(teams_data: List[dict]) -> Dict[str, dict]:
         for pos in TRACKED:
             eligible = sorted(
                 [p for p in team['players'] if pos in p['eligible']],
-                key=lambda p: p['points'],
+                key=lambda p: p['value'],
                 reverse=True,
             )
-            n_starters = STARTER_SLOTS[pos]
-            raw = 0.0
+            n_starters  = STARTER_SLOTS[pos]
+            starters    = eligible[:n_starters]
+            bench_one   = eligible[n_starters:n_starters + 1]
+
+            starter_avg  = sum(p['value'] for p in starters) / len(starters) if starters else 0.0
+            depth_bonus  = (bench_one[0]['value'] * BENCH_WEIGHT) if bench_one else 0.0
+            raw          = starter_avg + depth_bonus
+
             player_list = []
             for idx, p in enumerate(eligible):
-                weight = 1.0 if idx < n_starters else BENCH_WEIGHT
-                raw += p['points'] * weight
-                player_list.append({
-                    'name':    p['name'],
-                    'points':  round(p['points'], 1),
-                    'starter': idx < n_starters,
-                })
+                if idx < n_starters or idx == n_starters:
+                    player_list.append({
+                        'name':          p['name'],
+                        'current_rank':  p['current_rank'],
+                        'preseason_adp': round(p['preseason_adp'], 1),
+                        'value':         round(p['value'], 1),
+                        'starter':       idx < n_starters,
+                    })
+
             pos_scores[pos] = {'raw': raw, 'players': player_list}
         results[team['name']] = pos_scores
     return results
 
 
 def normalize(raw_results: Dict[str, dict]) -> Dict[str, dict]:
-    """Normalize raw scores 0-100 per position across all teams."""
     team_names = list(raw_results.keys())
     for pos in TRACKED:
         scores = [raw_results[t][pos]['raw'] for t in team_names]
@@ -200,40 +276,54 @@ def lambda_handler(event, context) -> Dict[str, Any]:
     try:
         yfl.log_execution("pull_positional_strength", "START")
 
-        secrets = yfl.get_secrets()
-        league_id = secrets.get(LEAGUE_ID_KEY)
+        secrets    = yfl.get_secrets()
+        league_id  = secrets.get(LEAGUE_ID_KEY)
         if not league_id:
             raise ValueError(f"{LEAGUE_ID_KEY} not found in env")
 
-        token = yfl.get_access_token(secrets)
+        token      = yfl.get_access_token(secrets)
         if not token:
             raise ValueError("Failed to get access token")
 
         league_key = yfl.get_league_key(YEAR, league_id)
 
-        # 1. All teams
-        teams_meta = get_teams(token, league_key)
-
-        # 2. Rosters for every team
-        all_player_keys = []
+        # 1. Teams + rosters
+        teams_meta   = get_teams(token, league_key)
         team_rosters = {}
-        for team_key, meta in teams_meta.items():
-            roster = get_roster(token, team_key)
-            team_rosters[team_key] = roster
-            all_player_keys.extend(p['player_key'] for p in roster)
+        all_keys     = []
+        for tk, meta in teams_meta.items():
+            roster = get_roster(token, tk)
+            team_rosters[tk] = roster
+            all_keys.extend(p['player_key'] for p in roster)
+        unique_keys = list(set(all_keys))
 
-        # 3. Percent owned for every player on every roster
-        pct_map = get_player_percent_owned(token, league_key, list(set(all_player_keys)))
+        # 2. How far into the season are we?
+        games_played  = get_games_played(token, league_key)
+        w_current     = blend_weight(games_played)
+        w_preseason   = 1.0 - w_current
+        logger.info(f"Games played ~{games_played}, w_current={w_current:.2f}, w_preseason={w_preseason:.2f}")
 
-        # 4. Attach percent_owned (used as the value signal)
-        teams_data = []
-        for team_key, meta in teams_meta.items():
-            players = team_rosters[team_key]
-            for p in players:
-                p['points'] = pct_map.get(p['player_key'], 0.0)
-            teams_data.append({'name': meta['name'], 'players': players})
+        # 3. Current rank (position in OR-sorted list)
+        current_rank_map = get_current_rank_map(token, league_key, unique_keys)
 
-        # 5. Compute + normalize
+        # 4. Preseason ADP
+        preseason_map = get_preseason_rank_map(token, league_key, unique_keys)
+
+        # 5. Blend into a single value score per player
+        for tk, meta in teams_meta.items():
+            for p in team_rosters[tk]:
+                pkey         = p['player_key']
+                cur_rank     = current_rank_map.get(pkey, DEFAULT_PRESEASON_RANK)
+                pre_adp      = preseason_map.get(pkey, DEFAULT_PRESEASON_RANK)
+                cur_val      = rank_to_value(cur_rank)
+                pre_val      = rank_to_value(pre_adp)
+                p['value']        = w_preseason * pre_val + w_current * cur_val
+                p['current_rank'] = cur_rank
+                p['preseason_adp'] = pre_adp
+
+        # 6. Compute + normalize
+        teams_data = [{'name': meta['name'], 'players': team_rosters[tk]}
+                      for tk, meta in teams_meta.items()]
         raw   = compute_raw_scores(teams_data)
         final = normalize(raw)
 
@@ -242,19 +332,22 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             'positions':     list(TRACKED),
             'starter_slots': STARTER_SLOTS,
             'bench_weight':  BENCH_WEIGHT,
-            'value_metric':  'percent_owned',
+            'games_played':  games_played,
+            'w_preseason':   round(w_preseason, 2),
+            'w_current':     round(w_current, 2),
+            'value_metric':  'blended_rank',
             'timestamp':     datetime.utcnow().isoformat() + 'Z',
         }
 
         yfl.put_item('FantasyBaseball-PositionalStrength', {
-            'TeamNumber':   '0',
+            'TeamNumber':    '0',
             'DataType#Week': 'computed#positional_strength',
-            'Year':         YEAR,
-            'Data':         json.dumps(output),
-            'Timestamp':    datetime.utcnow().isoformat(),
+            'Year':          YEAR,
+            'Data':          json.dumps(output),
+            'Timestamp':     datetime.utcnow().isoformat(),
         })
 
-        msg = f"{len(final)} teams, {len(set(all_player_keys))} players"
+        msg = f"{len(final)} teams, {len(unique_keys)} players, games~{games_played}, blend={w_preseason:.0%} pre/{w_current:.0%} current"
         yfl.log_execution("pull_positional_strength", "SUCCESS", msg)
         return {'statusCode': 200, 'body': json.dumps({'message': msg})}
 

@@ -2,232 +2,208 @@ import json, sys, io
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-# Round 1 & 2 keeper picks (from Yahoo draft board)
-KEEPER_R1 = [
-    ('Tarik Skubal',           'SQUEEZE AGS'),
-    ('Francisco Lindor',       'Getting Plowed Again.'),
-    ('Elly De La Cruz',        'Floppy Salami Time'),
-    ('Aaron Judge',            'Hatfield Hurlers'),
-    ('José Ramírez',           'Serafini Hit Squad'),
-    ('Bobby Witt Jr.',         'WEMBY SZN'),
-    ('Yordan Alvarez',         'Rickie Flower'),
-    ('Ketel Marte',            'Moniebol \U0001f433'),
-    ('Kyle Tucker',            'Ian Cumsler'),
-    ('Jazz Chisholm Jr.',      'OG9\ufe0f\u20e3'),
-    ('Shohei Ohtani (Batter)', '\u00af\\_(\u30c4)_/\u00af'),
-    ('Julio Rodríguez',        'The Rosterbation Station'),
-]
-KEEPER_R2 = [
-    ('Junior Caminero',          'The Rosterbation Station'),
-    ('Juan Soto',                '\u00af\\_(\u30c4)_/\u00af'),
-    ('Kyle Schwarber',           'OG9\ufe0f\u20e3'),
-    ('Ronald Acuña Jr.',         'Ian Cumsler'),
-    ('Jackson Chourio',          'Moniebol \U0001f433'),
-    ('Shohei Ohtani (Pitcher)',  'Rickie Flower'),
-    ('Corbin Carroll',           'WEMBY SZN'),
-    ('Fernando Tatis Jr.',       'Serafini Hit Squad'),
-    ('Trea Turner',              'Hatfield Hurlers'),
-    ('Nick Kurtz',               'Floppy Salami Time'),
-    ('James Wood',               'Getting Plowed Again.'),
-    ('Garrett Crochet',          'SQUEEZE AGS'),
-]
+# 2027 Draft Pick Counts (from Yahoo showtradedpicks - updated Apr 2026)
+# Index 0 = R1 (keeper), 1 = R2 (keeper), 2 = R3 (first tradeable pick), ...
+TOTAL_ROUNDS  = 22
+NUM_TEAMS     = 12
+KEEPER_ROUNDS = 2
 
-# 2026 Draft Pick Data (from Yahoo Fantasy league 8614)
-TOTAL_ROUNDS = 22
-NUM_TEAMS = 12
-
-# Rounds 1-2 are keeper rounds (every team keeps 1 player per round)
-# Draft order by round (R3-R22). Index = pick position - 1.
-draft_order = {
-    3: ['SQUEEZE AGS','Getting Plowed Again.','SQUEEZE AGS','Hatfield Hurlers','Serafini Hit Squad','SQUEEZE AGS','Rickie Flower','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    4: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Rickie Flower','WEMBY SZN','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    5: ['SQUEEZE AGS','Getting Plowed Again.','Serafini Hit Squad','Hatfield Hurlers','Serafini Hit Squad','WEMBY SZN','Rickie Flower','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    6: ['Rickie Flower','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Rickie Flower','Rickie Flower','Serafini Hit Squad','Hatfield Hurlers','Rickie Flower','Getting Plowed Again.','SQUEEZE AGS'],
-    7: ['SQUEEZE AGS','Getting Plowed Again.','Rickie Flower','Hatfield Hurlers','Serafini Hit Squad','Serafini Hit Squad','Rickie Flower','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    8: ['Serafini Hit Squad','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','WEMBY SZN','Rickie Flower','Moniebol \U0001f433','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    9: ['SQUEEZE AGS','Getting Plowed Again.','Rickie Flower','Hatfield Hurlers','Serafini Hit Squad','Serafini Hit Squad','Rickie Flower','Rickie Flower','Ian Cumsler','OG9\ufe0f\u20e3','Serafini Hit Squad','Rickie Flower'],
-    10: ['The Rosterbation Station','OG9\ufe0f\u20e3','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Rickie Flower','WEMBY SZN','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    11: ['SQUEEZE AGS','Getting Plowed Again.','Floppy Salami Time','Hatfield Hurlers','Serafini Hit Squad','WEMBY SZN','Rickie Flower','Rickie Flower','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    12: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','\u00af\\_(\u30c4)_/\u00af','Ian Cumsler','Moniebol \U0001f433','Rickie Flower','SQUEEZE AGS','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    13: ['SQUEEZE AGS','Getting Plowed Again.','Floppy Salami Time','Hatfield Hurlers','Serafini Hit Squad','WEMBY SZN','Rickie Flower','Floppy Salami Time','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    14: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Rickie Flower','WEMBY SZN','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    15: ['WEMBY SZN','Getting Plowed Again.','Floppy Salami Time','Hatfield Hurlers','Serafini Hit Squad','WEMBY SZN','Moniebol \U0001f433','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    16: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','The Rosterbation Station','WEMBY SZN','The Rosterbation Station','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    17: ['SQUEEZE AGS','Getting Plowed Again.','Floppy Salami Time','Hatfield Hurlers','\u00af\\_(\u30c4)_/\u00af','WEMBY SZN','Moniebol \U0001f433','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','Floppy Salami Time','The Rosterbation Station'],
-    18: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Floppy Salami Time','WEMBY SZN','WEMBY SZN','Serafini Hit Squad','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','WEMBY SZN'],
-    19: ['SQUEEZE AGS','Getting Plowed Again.','Floppy Salami Time','Hatfield Hurlers','Serafini Hit Squad','WEMBY SZN','The Rosterbation Station','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    20: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Floppy Salami Time','WEMBY SZN','WEMBY SZN','Hatfield Hurlers','Floppy Salami Time','Getting Plowed Again.','SQUEEZE AGS'],
-    21: ['Floppy Salami Time','Getting Plowed Again.','Moniebol \U0001f433','Hatfield Hurlers','WEMBY SZN','WEMBY SZN','\u00af\\_(\u30c4)_/\u00af','Moniebol \U0001f433','Ian Cumsler','OG9\ufe0f\u20e3','\u00af\\_(\u30c4)_/\u00af','The Rosterbation Station'],
-    22: ['The Rosterbation Station','\u00af\\_(\u30c4)_/\u00af','OG9\ufe0f\u20e3','Ian Cumsler','Moniebol \U0001f433','Floppy Salami Time','WEMBY SZN','SQUEEZE AGS','Hatfield Hurlers','Moniebol \U0001f433','Getting Plowed Again.','Floppy Salami Time'],
+pick_counts = {
+    'Grab Em by the Tatis':      [1,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,0,2,2,1,2,2],
+    'Bob Witt Sex Machine':      [1,1,1,2,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1],
+    'Los Basureros':             [1,1,1,2,2,1,2,1,1,1,2,1,1,1,1,0,3,0,0,0,0,0],
+    'Rickie Flower':             [1,1,1,0,1,1,0,1,1,0,1,1,1,1,3,1,1,1,1,1,1,2],
+    'Getting Plowed Again.':     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    'Hatfield Hurlers':          [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    'Ian Cumsler':               [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    'Moniebol \U0001f433':       [1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,2,1,1,1,1,1,1],
+    'OG9\ufe0f\u20e3':           [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    'Aces 4 Days':               [1,1,1,1,1,1,2,1,1,2,1,1,1,1,0,1,1,1,1,1,1,0],
+    'The Rosterbation Station':  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    '\u00af\\_(\u30c4)_/\u00af': [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,2,1,1],
 }
 
 # Scoring: exponential decay by overall draft position
-# Each pick is worth 2% less than the previous one (DECAY = 0.98)
-# Scaled so average team capital = 1000
-KEEPER_ROUNDS = 2
-DRAFT_ROUNDS = TOTAL_ROUNDS - KEEPER_ROUNDS  # 20
-TOTAL_PICKS = DRAFT_ROUNDS * NUM_TEAMS  # 240
-DECAY = 0.98
-
-# Scale factor: total of all pick values = 12000, so avg per team = 1000
-total_raw = sum(DECAY ** i for i in range(TOTAL_PICKS))
-SCALE = 1000 * NUM_TEAMS / total_raw
+# Each pick worth 2% less than the previous. Scaled so avg team capital = 1000.
+# Since 2027 pick ORDER within rounds is unknown, each pick in a round gets
+# the average value for that round (distribute equally).
+DRAFT_ROUNDS = TOTAL_ROUNDS - KEEPER_ROUNDS   # 20
+TOTAL_PICKS  = DRAFT_ROUNDS * NUM_TEAMS        # 240
+DECAY        = 0.98
 STANDARD_CAPITAL = 1000
 
+total_raw = sum(DECAY ** i for i in range(TOTAL_PICKS))
+SCALE = STANDARD_CAPITAL * NUM_TEAMS / total_raw
+
 def overall_pick(rnd, pos):
-    """Convert round (3-22) and position (1-12) to overall pick number (1-240)."""
+    """Round (3-22) + pick position (1-12) → overall pick number (1-240)."""
     return (rnd - KEEPER_ROUNDS - 1) * NUM_TEAMS + pos
 
 def pick_value(overall):
-    """Value of a draft pick by overall position (1-240)."""
     raw = SCALE * DECAY ** (overall - 1)
     return round(raw) if raw >= 0.5 else 0
 
+def avg_round_value(rnd):
+    """Average pick value across all 12 slots in a round."""
+    base = overall_pick(rnd, 1)
+    return sum(pick_value(base + i) for i in range(NUM_TEAMS)) / NUM_TEAMS
+
 # Sample values for display
-p1_val = pick_value(1)
-p12_val = pick_value(12)
-p49_val = pick_value(overall_pick(7, 1))
+p1_val   = pick_value(1)
+p12_val  = pick_value(12)
+p49_val  = pick_value(overall_pick(7, 1))
 p240_val = pick_value(240)
 
-# Build per-team data from draft order
-all_teams = sorted(set(t for order in draft_order.values() for t in order))
+# ── Build per-team stats ───────────────────────────────────────────────────────
 
-team_pick_list = {t: [] for t in all_teams}  # list of overall pick numbers
-team_round_counts = {t: [0] * TOTAL_ROUNDS for t in all_teams}
-
-# Everyone gets R1 and R2 keepers (equal value, not counted in capital)
-for t in all_teams:
-    team_round_counts[t][0] = 1
-    team_round_counts[t][1] = 1
-
-for rnd, order in draft_order.items():
-    for idx, team in enumerate(order):
-        pos = idx + 1
-        team_pick_list[team].append(overall_pick(rnd, pos))
-        team_round_counts[team][rnd - 1] += 1
-
-# Calculate per-team stats
 team_data = []
-for team in all_teams:
-    rounds = team_round_counts[team]
-    capital = sum(pick_value(p) for p in team_pick_list[team])
-    total_picks = sum(rounds)
-    extra_high = sum(max(0, rounds[i] - 1) for i in range(10))
-    traded_away = sum(1 for i in range(TOTAL_ROUNDS) if rounds[i] == 0)
+for team, rounds in pick_counts.items():
+    capital = sum(
+        rounds[rnd - 1] * avg_round_value(rnd)
+        for rnd in range(KEEPER_ROUNDS + 1, TOTAL_ROUNDS + 1)
+    )
+    capital = round(capital)
+
+    total_picks  = sum(rounds)
+    extra_high   = sum(max(0, rounds[i] - 1) for i in range(10))
+    traded_away  = sum(1 for i in range(TOTAL_ROUNDS) if rounds[i] == 0)
+
     team_data.append({
-        'name': team,
-        'picks': rounds,
-        'total_picks': total_picks,
-        'capital': capital,
+        'name':          team,
+        'picks':         rounds,
+        'total_picks':   total_picks,
+        'capital':       capital,
         'capital_vs_std': capital - STANDARD_CAPITAL,
-        'extra_high': extra_high,
-        'traded_away': traded_away,
+        'extra_high':    extra_high,
+        'traded_away':   traded_away,
     })
 
 team_data.sort(key=lambda x: x['capital'], reverse=True)
 
 # Print summary
-print("=== 2026 DRAFT CAPITAL ===")
+print("=== 2027 DRAFT CAPITAL ===")
 print(f"Standard capital (avg): {STANDARD_CAPITAL}")
 for i, t in enumerate(team_data):
     diff = f"+{t['capital_vs_std']}" if t['capital_vs_std'] > 0 else str(t['capital_vs_std'])
-    print(f"  {i+1}. {t['name']:30s} Capital: {t['capital']:4d} ({diff:>4s})  Picks: {t['total_picks']:2d}  Traded Away: {t['traded_away']}")
+    print(f"  {i+1}. {t['name']:30s} Capital: {t['capital']:4d} ({diff:>5s})  Picks: {t['total_picks']:2d}  Traded Away: {t['traded_away']}")
 
-# 12 distinct colors (same palette as other pages)
+# ── Colors ─────────────────────────────────────────────────────────────────────
+
+
 colors = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
     '#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7',
 ]
 color_map = {t['name']: colors[i % len(colors)] for i, t in enumerate(team_data)}
 
-# Bar chart data
-bar_labels = json.dumps([t['name'].replace('\\', '\\\\') for t in team_data])
+# ── Output JSON data file ───────────────────────────────────────────────────────
+from datetime import datetime
+json_out = {
+    'generated': datetime.utcnow().isoformat() + 'Z',
+    'totalRounds': TOTAL_ROUNDS,
+    'keeperRounds': KEEPER_ROUNDS,
+    'standardCapital': STANDARD_CAPITAL,
+    'pickValues': {
+        'p1': p1_val, 'p12': p12_val, 'p49': p49_val, 'p240': p240_val
+    },
+    'teams': [
+        {
+            'name': t['name'],
+            'color': color_map[t['name']],
+            'picks': t['picks'],
+            'totalPicks': t['total_picks'],
+            'capital': t['capital'],
+            'capitalVsStd': t['capital_vs_std'],
+            'extraHigh': t['extra_high'],
+            'tradedAway': t['traded_away'],
+        }
+        for t in team_data
+    ]
+}
+json_path = r'c:\Users\taylor.ward\Documents\yahoo-fantasy-baseball-dynamo\docs\data\draft_capital_2026.json'
+import os
+os.makedirs(os.path.dirname(json_path), exist_ok=True)
+with open(json_path, 'w', encoding='utf-8') as f:
+    json.dump(json_out, f, indent=2, ensure_ascii=False)
+print(f'Generated {json_path}')
+
+# ── Chart data (kept for reference; HTML now loads from JSON) ──────────────────
+
+bar_labels = json.dumps([t['name'] for t in team_data])
 bar_values = json.dumps([t['capital'] for t in team_data])
 bar_colors = json.dumps([color_map[t['name']] for t in team_data])
 
-# Grid table rows
+# ── Grid rows ──────────────────────────────────────────────────────────────────
+
 grid_rows = ""
 for t in team_data:
-    color = color_map[t['name']]
-    diff = t['capital_vs_std']
+    color    = color_map[t['name']]
+    diff     = t['capital_vs_std']
     diff_str = f"+{diff}" if diff > 0 else str(diff)
-    diff_class = "pos" if diff > 0 else "neg" if diff < 0 else "even"
+    diff_cls = "pos" if diff > 0 else "neg" if diff < 0 else "even"
 
     cells = ""
     for i, count in enumerate(t['picks']):
-        if count == 0:
-            cls = "cell-zero"
-        elif count == 1:
-            cls = "cell-one"
-        elif count == 2:
-            cls = "cell-two"
-        else:
-            cls = "cell-three"
+        if   count == 0: cls = "cell-zero"
+        elif count == 1: cls = "cell-one"
+        elif count == 2: cls = "cell-two"
+        else:            cls = "cell-three"
         cells += f'<td class="{cls}">{count}</td>'
 
-    name_esc = t['name'].replace('\\', '\\\\')
-    grid_rows += f'<tr><td class="team-cell"><span style="color:{color}">&#9679;</span> {name_esc}</td>{cells}<td class="total-cell">{t["total_picks"]}</td><td class="capital-cell">{t["capital"]}</td><td class="{diff_class}">{diff_str}</td></tr>'
+    grid_rows += (
+        f'<tr><td class="team-cell"><span style="color:{color}">&#9679;</span> {t["name"]}</td>'
+        f'{cells}'
+        f'<td class="total-cell">{t["total_picks"]}</td>'
+        f'<td class="capital-cell">{t["capital"]}</td>'
+        f'<td class="{diff_cls}">{diff_str}</td></tr>'
+    )
 
-# Summary table rows
+# ── Summary rows ───────────────────────────────────────────────────────────────
+
 summary_rows = ""
 for i, t in enumerate(team_data):
-    color = color_map[t['name']]
-    diff = t['capital_vs_std']
+    color    = color_map[t['name']]
+    diff     = t['capital_vs_std']
     diff_str = f"+{diff}" if diff > 0 else str(diff)
-    diff_class = "pos" if diff > 0 else "neg" if diff < 0 else "even"
+    diff_cls = "pos" if diff > 0 else "neg" if diff < 0 else "even"
 
-    # Notable picks
-    notable = []
+    notable, missing = [], []
     for r_i, count in enumerate(t['picks']):
         if count >= 3:
             notable.append(f"{count}x R{r_i+1}")
         elif count == 2 and r_i < 10:
             notable.append(f"2x R{r_i+1}")
-    missing = [f"R{r_i+1}" for r_i, count in enumerate(t['picks']) if count == 0 and r_i < 15]
+        if count == 0 and r_i < 15:
+            missing.append(f"R{r_i+1}")
 
     note_html = ""
-    if notable:
-        note_html += '<span class="note-extra">' + ', '.join(notable) + '</span>'
-    if missing:
-        note_html += ' <span class="note-missing">No ' + ', '.join(missing) + '</span>'
+    if notable: note_html += '<span class="note-extra">'  + ', '.join(notable) + '</span>'
+    if missing: note_html += ' <span class="note-missing">No ' + ', '.join(missing) + '</span>'
 
-    name_esc = t['name'].replace('\\', '\\\\')
-    summary_rows += f'<tr><td class="rank">{i+1}</td><td><span style="color:{color}">&#9679;</span> {name_esc}</td><td class="capital-cell">{t["capital"]}</td><td class="{diff_class}">{diff_str}</td><td>{t["total_picks"]}</td><td>{t["extra_high"]}</td><td>{t["traded_away"]}</td><td class="notes">{note_html}</td></tr>'
+    summary_rows += (
+        f'<tr><td class="rank">{i+1}</td>'
+        f'<td><span style="color:{color}">&#9679;</span> {t["name"]}</td>'
+        f'<td class="capital-cell">{t["capital"]}</td>'
+        f'<td class="{diff_cls}">{diff_str}</td>'
+        f'<td>{t["total_picks"]}</td>'
+        f'<td>{t["extra_high"]}</td>'
+        f'<td>{t["traded_away"]}</td>'
+        f'<td class="notes">{note_html}</td></tr>'
+    )
 
-# Build draft board HTML (rounds as rows, pick positions as columns)
-def board_cell(team, player=None, cm=None):
-    color = cm.get(team, '#64748b') if cm else '#64748b'
-    short = team.replace('Getting Plowed Again.', 'Getting Plowed').replace('The Rosterbation Station', 'Rosterbation').replace('Serafini Hit Squad', 'Serafini').replace('Floppy Salami Time', 'Floppy Salami').replace('Hatfield Hurlers', 'Hatfield').replace('SQUEEZE AGS', 'SQUEEZE AGS')
-    if player:
-        return f'<td class="board-keeper" style="border-top:2px solid {color}"><span class="board-player">{player}</span><span class="board-team" style="color:{color}">{short}</span></td>'
-    return f'<td class="board-pick" style="border-top:2px solid {color}"><span class="board-team" style="color:{color}">{short}</span></td>'
+# ── HTML ───────────────────────────────────────────────────────────────────────
 
-board_rows = ''
-# Round 1 (keepers)
-cells = ''.join(board_cell(t, p, color_map) for p, t in KEEPER_R1)
-board_rows += f'<tr><td class="board-round keeper-round">R1<br><span>Keepers</span></td>{cells}</tr>'
-# Round 2 (keepers)
-cells = ''.join(board_cell(t, p, color_map) for p, t in KEEPER_R2)
-board_rows += f'<tr><td class="board-round keeper-round">R2<br><span>Keepers</span></td>{cells}</tr>'
-# Rounds 3-22
-for rnd in range(3, TOTAL_ROUNDS + 1):
-    order = draft_order.get(rnd, [])
-    cells = ''.join(board_cell(t, None, color_map) for t in order)
-    board_rows += f'<tr><td class="board-round">R{rnd}</td>{cells}</tr>'
-
-# Generate HTML
 html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
-<title>Summertime Sadness - 2026 Draft Capital</title>
+<title>Summertime Sadness - 2027 Draft Capital</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   .chart-box {{ height: 450px; }}
 
-  /* Grid cells */
   .grid-table {{ overflow-x: auto; margin-bottom: 24px; }}
   .grid-table table {{ min-width: 900px; }}
   .grid-table th {{ font-size: 0.72em; padding: 8px 4px; text-align: center; min-width: 32px; }}
@@ -235,39 +211,24 @@ html = f"""<!DOCTYPE html>
   .grid-table th.keeper {{ color: #475569; font-style: italic; }}
   .grid-table td {{ text-align: center; padding: 6px 4px; font-size: 0.85em; font-weight: 600; }}
   .team-cell {{ text-align: left !important; white-space: nowrap; font-weight: 500 !important; }}
-  .cell-zero {{ background: #ef444422; color: #ef4444; }}
-  .cell-one {{ color: #64748b; }}
-  .cell-two {{ background: #4ade8018; color: #4ade80; }}
+  .cell-zero  {{ background: #ef444422; color: #ef4444; }}
+  .cell-one   {{ color: #64748b; }}
+  .cell-two   {{ background: #4ade8018; color: #4ade80; }}
   .cell-three {{ background: #22c55e44; color: #4ade80; font-weight: 800; text-shadow: 0 0 6px #22c55e66; }}
-  .total-cell {{ font-weight: 700; color: #e2e8f0; }}
+  .total-cell   {{ font-weight: 700; color: #e2e8f0; }}
   .capital-cell {{ font-weight: 700; color: #34d399; }}
-  .pos {{ color: #22c55e; font-weight: 700; }}
-  .neg {{ color: #ef4444; font-weight: 700; }}
+  .pos  {{ color: #22c55e; font-weight: 700; }}
+  .neg  {{ color: #ef4444; font-weight: 700; }}
   .even {{ color: #64748b; }}
   .notes {{ font-size: 0.82em; }}
-  .note-extra {{ color: #22c55e; }}
+  .note-extra   {{ color: #22c55e; }}
   .note-missing {{ color: #ef4444; opacity: 0.7; }}
 
   th.sortable {{ cursor: pointer; user-select: none; position: relative; padding-right: 14px; }}
   th.sortable:hover {{ color: #e2e8f0; }}
   th.sortable::after {{ content: '\\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }}
-  th.sortable.asc::after {{ content: '\\2191'; opacity: 0.8; }}
+  th.sortable.asc::after  {{ content: '\\2191'; opacity: 0.8; }}
   th.sortable.desc::after {{ content: '\\2193'; opacity: 0.8; }}
-
-  /* Draft board */
-  .board-wrap {{ overflow-x: auto; margin-bottom: 32px; }}
-  .board-table {{ min-width: 1100px; border-collapse: collapse; width: 100%; }}
-  .board-table td {{ border: 1px solid #1e293b; padding: 0; vertical-align: top; }}
-  .board-round {{ background: #0f172a; color: #64748b; font-size: 0.75em; font-weight: 700;
-    text-align: center; padding: 6px 4px; white-space: nowrap; min-width: 52px; }}
-  .board-round span {{ display: block; font-weight: 400; color: #475569; font-size: 0.85em; }}
-  .keeper-round {{ color: #f59e0b; }}
-  .board-keeper {{ background: #1a1f2e; min-width: 100px; padding: 6px 6px; }}
-  .board-pick {{ background: #0f172a; min-width: 100px; padding: 5px 6px; }}
-  .board-player {{ display: block; font-size: 0.78em; font-weight: 700; color: #e2e8f0;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }}
-  .board-team {{ display: block; font-size: 0.7em; font-weight: 600; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; max-width: 110px; margin-top: 2px; }}
 </style>
 </head>
 <body>
@@ -275,10 +236,11 @@ html = f"""<!DOCTYPE html>
 <script src="nav.js"></script>
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
-<p class="page-subtitle">2026 Draft Capital</p>
+<p class="page-subtitle">2027 Draft Capital</p>
+<p class="section-desc" style="color:#64748b;margin-bottom:24px;">Current pick ownership as of April 2026. Pick value uses exponential decay &mdash; picks within a round are distributed equally since draft order is not yet set.</p>
 
 <h3>Draft Capital Rankings</h3>
-<p class="section-desc">Picks are weighted by exponential decay &mdash; each pick is worth 2% less than the one before it. Pick 1 (R3P1) = {p1_val} pts, Pick 12 (R3P12) = {p12_val} pts, Pick 49 (R7P1) = {p49_val} pts, Pick 240 (R22P12) = {p240_val} pts. Standard (avg) = {STANDARD_CAPITAL} pts.</p>
+<p class="section-desc">Each pick is weighted by exponential decay (2% per slot). Pick 1 (R3P1) = {p1_val} pts, Pick 12 (R3P12) = {p12_val} pts, Pick 49 (R7P1) = {p49_val} pts, Pick 240 (R22P12) = {p240_val} pts. Standard (avg) = {STANDARD_CAPITAL} pts.</p>
 <div class="chart-box">
 <canvas id="capitalChart"></canvas>
 </div>
@@ -290,20 +252,11 @@ html = f"""<!DOCTYPE html>
 </table>
 
 <h3>Pick Grid</h3>
-<p class="section-desc">Number of picks each team holds per round. R1-R2 are keeper rounds (not tradeable) &mdash; R3 is effectively the first available draft pick. <span class="cell-zero" style="padding:2px 6px; border-radius:4px;">0 = traded away</span> &nbsp; <span style="color:#64748b">1 = standard</span> &nbsp; <span class="cell-two" style="padding:2px 6px; border-radius:4px;">2 = extra</span> &nbsp; <span class="cell-three" style="padding:2px 6px; border-radius:4px;">3+ = stockpiled</span></p>
+<p class="section-desc">Number of picks each team holds per round. R1-R2 are keeper rounds (not tradeable). <span class="cell-zero" style="padding:2px 6px;border-radius:4px;">0 = traded away</span> &nbsp; <span style="color:#64748b">1 = standard</span> &nbsp; <span class="cell-two" style="padding:2px 6px;border-radius:4px;">2 = extra</span> &nbsp; <span class="cell-three" style="padding:2px 6px;border-radius:4px;">3+ = stockpiled</span></p>
 <div class="grid-table">
 <table>
 <tr><th>Team</th>{''.join(f'<th class="keeper">R{i+1}</th>' if i < 2 else f'<th>R{i+1}</th>' for i in range(TOTAL_ROUNDS))}<th>Total</th><th>Capital</th><th>+/-</th></tr>
 {grid_rows}
-</table>
-</div>
-
-<h3>2026 Draft Board</h3>
-<p class="section-desc">Full pick-by-pick draft order. Rounds 1&ndash;2 show the keeper players. Draft date: <strong>Thu, Mar 12 &mdash; 6:00 PM MDT</strong>.</p>
-<div class="board-wrap">
-<table class="board-table">
-<thead><tr><th class="board-round"></th>{''.join(f'<th class="board-round" style="background:#0f172a;color:#64748b">Pick {i+1}</th>' for i in range(12))}</tr></thead>
-<tbody>{board_rows}</tbody>
 </table>
 </div>
 
@@ -353,7 +306,6 @@ new Chart(document.getElementById('capitalChart').getContext('2d'), {{
   }}
 }});
 
-// Reference line at standard capital
 const capitalChart = Chart.getChart('capitalChart');
 const origDraw = capitalChart.draw.bind(capitalChart);
 capitalChart.draw = function() {{
@@ -378,7 +330,6 @@ capitalChart.draw = function() {{
 }};
 capitalChart.draw();
 
-// Sortable tables
 document.querySelectorAll('th.sortable').forEach(th => {{
   th.addEventListener('click', () => {{
     const tbl = th.closest('table');
@@ -406,7 +357,4 @@ document.querySelectorAll('th.sortable').forEach(th => {{
 </body>
 </html>"""
 
-with open(r'c:\Users\taylor.ward\Documents\yahoo-fantasy-baseball-dynamo\docs\draft_picks_2026.html', 'w', encoding='utf-8') as f:
-    f.write(html)
-
-print(f'\nGenerated docs/draft_picks_2026.html')
+print(f'\nDone. The HTML (draft_picks_2026.html) loads data dynamically from docs/data/draft_capital_2026.json.')

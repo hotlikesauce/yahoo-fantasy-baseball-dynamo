@@ -239,7 +239,7 @@
           </tr>
         </thead>
         <tbody id="standingsBody">
-          <tr><td class="rank-num">1</td><td><span class="team-name">Moniebol 🐳</span><a href="manager_profiles.html#Austin" class="mgr-link">Austin</a></td><td class="wlt-cell" data-team="Moniebol 🐳">&mdash;</td><td class="xw-cell" data-team="Moniebol 🐳">&mdash;</td></tr><tr><td class="rank-num">2</td><td><span class="team-name">Rickie Flower</span><a href="manager_profiles.html#Bryant" class="mgr-link">Bryant</a></td><td class="wlt-cell" data-team="Rickie Flower">&mdash;</td><td class="xw-cell" data-team="Rickie Flower">&mdash;</td></tr><tr><td class="rank-num">3</td><td><span class="team-name">Ian Cumsler</span><a href="manager_profiles.html#Eric" class="mgr-link">Eric</a></td><td class="wlt-cell" data-team="Ian Cumsler">&mdash;</td><td class="xw-cell" data-team="Ian Cumsler">&mdash;</td></tr><tr><td class="rank-num">4</td><td><span class="team-name">OG9️⃣</span><a href="manager_profiles.html#Greg" class="mgr-link">Greg</a></td><td class="wlt-cell" data-team="OG9️⃣">&mdash;</td><td class="xw-cell" data-team="OG9️⃣">&mdash;</td></tr><tr><td class="rank-num">5</td><td><span class="team-name">Bob Witt Sex Machine</span><a href="manager_profiles.html#James" class="mgr-link">James</a></td><td class="wlt-cell" data-team="Bob Witt Sex Machine">&mdash;</td><td class="xw-cell" data-team="Bob Witt Sex Machine">&mdash;</td></tr><tr><td class="rank-num">6</td><td><span class="team-name">Los Basureros</span><a href="manager_profiles.html#Josh" class="mgr-link">Josh</a></td><td class="wlt-cell" data-team="Los Basureros">&mdash;</td><td class="xw-cell" data-team="Los Basureros">&mdash;</td></tr><tr><td class="rank-num">7</td><td><span class="team-name">The Rosterbation Station</span><a href="manager_profiles.html#Kevin" class="mgr-link">Kevin</a></td><td class="wlt-cell" data-team="The Rosterbation Station">&mdash;</td><td class="xw-cell" data-team="The Rosterbation Station">&mdash;</td></tr><tr><td class="rank-num">8</td><td><span class="team-name">Getting Plowed Again.</span><a href="manager_profiles.html#Kurtis" class="mgr-link">Kurtis</a></td><td class="wlt-cell" data-team="Getting Plowed Again.">&mdash;</td><td class="xw-cell" data-team="Getting Plowed Again.">&mdash;</td></tr><tr><td class="rank-num">9</td><td><span class="team-name">Hatfield Hurlers</span><a href="manager_profiles.html#Mark" class="mgr-link">Mark</a></td><td class="wlt-cell" data-team="Hatfield Hurlers">&mdash;</td><td class="xw-cell" data-team="Hatfield Hurlers">&mdash;</td></tr><tr><td class="rank-num">10</td><td><span class="team-name">¯\_(ツ)_/¯</span><a href="manager_profiles.html#Mike" class="mgr-link">Mike</a></td><td class="wlt-cell" data-team="¯\_(ツ)_/¯">&mdash;</td><td class="xw-cell" data-team="¯\_(ツ)_/¯">&mdash;</td></tr><tr><td class="rank-num">11</td><td><span class="team-name">Aces 4 Days</span><a href="manager_profiles.html#Mikey" class="mgr-link">Mikey</a></td><td class="wlt-cell" data-team="Aces 4 Days">&mdash;</td><td class="xw-cell" data-team="Aces 4 Days">&mdash;</td></tr><tr><td class="rank-num">12</td><td><span class="team-name">Grab Em by the Tatis</span><a href="manager_profiles.html#Taylor" class="mgr-link">Taylor</a></td><td class="wlt-cell" data-team="Grab Em by the Tatis">&mdash;</td><td class="xw-cell" data-team="Grab Em by the Tatis">&mdash;</td></tr>
+          <tr><td colspan="4" style="text-align:center;color:#475569;padding:20px">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -266,82 +266,125 @@
 
 <script>
 (async function() {
+  const LIVE_URL   = 'https://1lno31b57l.execute-api.us-west-2.amazonaws.com/live-standings';
   const TRENDS_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.on.aws/';
 
-  try {
-    const trendsResp = await fetch(TRENDS_URL);
-    const trends = await trendsResp.json();
+  // Manager anchor links for manager_profiles.html
+  const MGR = {
+    'Moniebol \uD83D\uDC33':        { anchor: 'Austin' },
+    'Rickie Flower':                 { anchor: 'Bryant' },
+    'Ian Cumsler':                   { anchor: 'Eric' },
+    'OG9\uFE0F\u20E3':              { anchor: 'Greg' },
+    'Bob Witt Sex Machine':          { anchor: 'James' },
+    'Los Basureros':                 { anchor: 'Josh' },
+    'The Rosterbation Station':      { anchor: 'Kevin' },
+    'Getting Plowed Again.':         { anchor: 'Kurtis' },
+    'Hatfield Hurlers':              { anchor: 'Mark' },
+    '\u00AF\\_(ツ)_/\u00AF':        { anchor: 'Mike' },
+    'Aces 4 Days':                   { anchor: 'Mikey' },
+    'Grab Em by the Tatis':          { anchor: 'Taylor' },
+  };
 
-    // --- xWins from trends ---
-    if (trends && trends.cumulativeXwins && trends.statWeeks && trends.statWeeks.length) {
-      const lastWeek = trends.statWeeks[trends.statWeeks.length - 1];
-      const cumXwins = {};
+  function mgrHtml(teamName, mgrNick) {
+    const m = MGR[teamName];
+    const displayName = mgrNick || (m ? m.anchor : null);
+    const anchor = m ? m.anchor : null;
+    if (!displayName) return '';
+    return anchor
+      ? `<a href="manager_profiles.html#${anchor}" class="mgr-link">${displayName}</a>`
+      : `<span class="mgr-link">${displayName}</span>`;
+  }
+
+  try {
+    // Fetch live standings + season trends in parallel
+    const [liveResp, trendsResp] = await Promise.all([
+      fetch(LIVE_URL).catch(() => null),
+      fetch(TRENDS_URL).catch(() => null),
+    ]);
+
+    const live   = liveResp   ? await liveResp.json().catch(() => null)   : null;
+    const trends = trendsResp ? await trendsResp.json().catch(() => null) : null;
+
+    const lastWeek = (trends && trends.statWeeks && trends.statWeeks.length)
+      ? String(trends.statWeeks[trends.statWeeks.length - 1]) : null;
+
+    // --- Build cumulative xWins map from trends ---
+    const cumXwins = {};
+    if (lastWeek && trends && trends.cumulativeXwins && trends.teams) {
       trends.teams.forEach(t => {
         const val = trends.cumulativeXwins[t.tn] && trends.cumulativeXwins[t.tn][lastWeek] != null
           ? parseFloat(trends.cumulativeXwins[t.tn][lastWeek]) : null;
         cumXwins[t.name] = val;
       });
-      document.querySelectorAll('.xw-cell').forEach(cell => {
-        const xw = cumXwins[cell.dataset.team];
-        cell.textContent = xw != null ? xw.toFixed(1) : '—';
-      });
     }
 
-    // --- W-L-T from compute_season_trends: derived from weekly_results, completed weeks only ---
-    const rows2026 = trends && trends.standings ? trends.standings : [];
-    if (rows2026.length) {
-      const standingsMap = {};
-      rows2026.forEach(s => { standingsMap[s.name] = s; });
-
-      // Sort by W-L-T pct
-      const sorted = [...rows2026].sort((a, b) => {
-        const pa = (a.wins + a.ties * 0.5) / Math.max(1, a.wins + a.losses + a.ties);
-        const pb = (b.wins + b.ties * 0.5) / Math.max(1, b.wins + b.losses + b.ties);
-        return pb - pa;
-      });
-      const rankMap = {};
-      sorted.forEach((s, i) => { rankMap[s.name] = i + 1; });
-
-      document.querySelectorAll('.wlt-cell').forEach(cell => {
-        const s = standingsMap[cell.dataset.team];
-        if (s) cell.textContent = s.wins + '-' + s.losses + (s.ties ? '-' + s.ties : '');
+    // --- Standings from live API, stripped of current week's in-progress data ---
+    if (live && live.standings && live.standings.length) {
+      // Map current-week matchup scores per team so we can subtract them
+      const weekContrib = {};
+      (live.matchups || []).forEach(m => {
+        const t = Math.max(0, 12 - m.scoreA - m.scoreB);
+        weekContrib[m.teamA] = { w: m.scoreA, l: m.scoreB, t };
+        weekContrib[m.teamB] = { w: m.scoreB, l: m.scoreA, t };
       });
 
+      // Prior-week standings = cumulative minus current week
+      const prior = live.standings.map(row => {
+        const c = weekContrib[row.name] || { w: 0, l: 0, t: 0 };
+        const w = Math.max(0, row.wins   - c.w);
+        const l = Math.max(0, row.losses - c.l);
+        const t = Math.max(0, row.ties   - c.t);
+        return { ...row, wins: w, losses: l, ties: t, pts: w + 0.5 * t };
+      }).sort((a, b) => b.pts - a.pts || b.wins - a.wins);
+
+      // Also build a standings rank map for power ranking trend arrows
+      const standingsRank = {};
+      prior.forEach((s, i) => { standingsRank[s.name] = i + 1; });
+
+      // Render standings
       const tbody = document.getElementById('standingsBody');
-      const tbRows = Array.from(tbody.querySelectorAll('tr'));
-      tbRows.sort((a, b) => (rankMap[a.querySelector('.wlt-cell').dataset.team] || 99) - (rankMap[b.querySelector('.wlt-cell').dataset.team] || 99));
-      tbRows.forEach((r, i) => { r.querySelector('.rank-num').textContent = i + 1; tbody.appendChild(r); });
-    }
-
-    // --- Power Rankings from trends data ---
-    if (trends && trends.teams && trends.cumulativePowerScores) {
-      const lastWeek = trends.statWeeks[trends.statWeeks.length - 1];
-      // teams array is already sorted by cumulative power score
-      const powerRanked = trends.teams.map((t, i) => {
-        const score = trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null
-          ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : null;
-        const powerRank = i + 1;
-        // Actual standings rank from completed-week standings
-        let actualRank = null;
-        if (rows2026.length) {
-          const idx = rows2026.findIndex(s => s.name === t.name);
-          if (idx >= 0) actualRank = idx + 1;
-        }
-        const trend = actualRank ? actualRank - powerRank : null;
-        return { name: t.name, score, powerRank, trend };
+      tbody.innerHTML = '';
+      const weekLabel = live.week > 1 ? ` <span style="color:#475569;font-size:0.8em">thru Wk ${live.week - 1}</span>` : '';
+      document.querySelector('h2[data-standings]') && (document.querySelector('h2[data-standings]').innerHTML = '2026 Standings' + weekLabel);
+      prior.forEach((s, i) => {
+        const xw  = cumXwins[s.name] != null ? cumXwins[s.name].toFixed(1) : '&mdash;';
+        const wlt = s.wins + '-' + s.losses + (s.ties ? '-' + s.ties : '');
+        tbody.innerHTML += `<tr>
+          <td class="rank-num">${i + 1}</td>
+          <td><span class="team-name">${s.name}</span>${mgrHtml(s.name, s.manager)}</td>
+          <td>${wlt}</td>
+          <td>${xw}</td>
+        </tr>`;
       });
 
-      const powerBody = document.getElementById('powerBody');
-      powerBody.innerHTML = '';
-      powerRanked.forEach((t, i) => {
-        let trendStr = '&mdash;';
-        if (t.trend !== null) {
-          if (t.trend > 0) trendStr = '<span style="color:#ef4444">&#x2193;' + t.trend + '</span>';
-          else if (t.trend < 0) trendStr = '<span style="color:#22c55e">&#x2191;' + Math.abs(t.trend) + '</span>';
-          else trendStr = '<span style="color:#64748b">&#8212;</span>';
-        }
-        powerBody.innerHTML += `<tr><td class="rank-num">${i+1}</td><td><span class="team-name">${t.name}</span></td><td>${t.score != null ? t.score.toFixed(0) : '&mdash;'}</td><td>${trendStr}</td></tr>`;
-      });
+      // --- Power Rankings: most recent week's score, sorted descending ---
+      if (lastWeek && trends && trends.teams && trends.weeklyPowerScores) {
+        const ranked = trends.teams.map(t => ({
+          name: t.name,
+          score: (trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null)
+            ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : 0,
+        })).sort((a, b) => b.score - a.score);
+
+        const powerBody = document.getElementById('powerBody');
+        powerBody.innerHTML = '';
+        ranked.forEach((t, i) => {
+          const powerRank  = i + 1;
+          const actualRank = standingsRank[t.name];
+          let trendStr = '&mdash;';
+          if (actualRank != null) {
+            const diff = actualRank - powerRank;
+            if (diff > 0)      trendStr = `<span style="color:#ef4444">&#x2193;${diff}</span>`;
+            else if (diff < 0) trendStr = `<span style="color:#22c55e">&#x2191;${Math.abs(diff)}</span>`;
+            else               trendStr = `<span style="color:#64748b">&#8212;</span>`;
+          }
+          powerBody.innerHTML += `<tr>
+            <td class="rank-num">${powerRank}</td>
+            <td><span class="team-name">${t.name}</span></td>
+            <td>${t.score > 0 ? t.score.toFixed(0) : '&mdash;'}</td>
+            <td>${trendStr}</td>
+          </tr>`;
+        });
+      }
     }
   } catch(e) {
     console.error('Failed to load live data:', e);

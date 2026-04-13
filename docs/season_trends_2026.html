@@ -136,11 +136,12 @@ function render(d) {
 </table>
 
 <h3>Season's Best Weekly Performances</h3>
-<p class="section-desc">The single best (or lowest for ERA/WHIP/TB) team stat line in any week this season across all 12 scoring categories.</p>
+<p class="section-desc">The single best (or lowest for ERA/WHIP/TB) team stat line in any week this season across all 12 scoring categories. Wk 1 = short, Wk 17 = long, all others = regular.</p>
 <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
-  <button class="week-filter-btn active" data-wt="all" onclick="filterWeeks('all')">All Weeks</button>
-  <button class="week-filter-btn" data-wt="short" onclick="filterWeeks('short')">Short Weeks</button>
-  <button class="week-filter-btn" data-wt="long" onclick="filterWeeks('long')">Long Weeks (1, 15)</button>
+  <button class="week-filter-btn" data-wt="all" onclick="filterWeeks('all')">All Weeks</button>
+  <button class="week-filter-btn active" data-wt="regular" onclick="filterWeeks('regular')">Regular Weeks</button>
+  <button class="week-filter-btn" data-wt="short" onclick="filterWeeks('short')">Short Week (Wk 1)</button>
+  <button class="week-filter-btn" data-wt="long" onclick="filterWeeks('long')">Long Week (Wk 17)</button>
 </div>
 <table class="best-table" id="bestTable">
 <thead><tr><th></th><th>Category</th><th>Value</th><th>Team</th><th>Week</th></tr></thead>
@@ -164,11 +165,12 @@ function render(d) {
     hotBody.appendChild(tr);
   });
 
-  // Build Season's Best rows
+  // Build Season's Best rows (3 categories: short, regular, long)
   const bestBody = document.getElementById('bestBody');
   const allCats = catOrder || [];
+  const wtOrder = [['short', 'short'], ['regular', 'regular'], ['long', 'long']];
   allCats.forEach(cat => {
-    for (const [wt, label] of [['short', 'short'], ['long', 'long']]) {
+    for (const [wt] of wtOrder) {
       const b = seasonBest[wt] && seasonBest[wt][cat];
       if (!b) continue;
       const icon = b.isBatter ? '&#x26BE;' : '&#x1F3AF;';
@@ -179,6 +181,8 @@ function render(d) {
       bestBody.appendChild(tr);
     }
   });
+  // Apply default filter
+  filterWeeks('regular');
 
   // Charts
   const statLabels = statWeeks.map(w => 'Wk ' + w);
@@ -275,41 +279,131 @@ function render(d) {
     }
   });
 
-  const quadrantPlugin = {
-    id: 'quadrant',
+  // Manager name lookup for scatter labels
+  const SCATTER_MGR = {
+    'Moniebol \uD83D\uDC33':        'Austin',
+    'Rickie Flower':                 'Bryant',
+    'Ian Cumsler':                   'Eric',
+    'OG9\uFE0F\u20E3':              'Greg',
+    'Bob Witt Sex Machine':          'James',
+    'Los Basureros':                 'Josh',
+    'The Rosterbation Station':      'Kevin',
+    'Getting Plowed Again.':         'Kurtis',
+    'Hatfield Hurlers':              'Mark',
+    '\u00AF\\_(ツ)_/\u00AF':        'Mike',
+    'Aces 4 Days':                   'Mikey',
+    'Grab Em by the Tatis':          'Taylor',
+  };
+
+  function shortLabel(name) {
+    return SCATTER_MGR[name] || name.split(' ')[0].substring(0, 9);
+  }
+
+  // Plugin: solid thick quadrant dividers at 50%
+  const quadrantLinesPlugin = {
+    id: 'quadrantLines',
     beforeDraw(chart) {
-      const { ctx, scales: { x, y } } = chart;
+      const { ctx, scales: { x, y }, chartArea: ca } = chart;
       const x50 = x.getPixelForValue(50), y50 = y.getPixelForValue(50);
       ctx.save();
-      ctx.strokeStyle = '#ffffff99'; ctx.lineWidth = 4.5; ctx.setLineDash([6, 4]);
-      ctx.beginPath(); ctx.moveTo(x50, y.top); ctx.lineTo(x50, y.bottom); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x.left, y50); ctx.lineTo(x.right, y50); ctx.stroke();
-      ctx.font = 'bold 13px Segoe UI'; ctx.textAlign = 'center';
-      const lx = x.getPixelForValue((x.min + 50) / 2), rx = x.getPixelForValue((x.max + 50) / 2);
-      const ty = y.getPixelForValue((y.max + 50) / 2), by = y.getPixelForValue((y.min + 50) / 2);
-      const qlabels = [
-        [lx, ty-8, 'Good Pitching'], [lx, ty+8, 'Bad Batting'],
-        [rx, ty-8, 'Elite Batting'], [rx, ty+8, '& Pitching'],
-        [lx, by-8, 'Poor Batting'], [lx, by+8, '& Pitching'],
-        [rx, by-8, 'Good Batting'], [rx, by+8, 'Bad Pitching']
-      ];
-      qlabels.forEach(([px, py, text]) => {
-        ctx.fillStyle = 'rgba(30,41,59,0.75)'; ctx.fillRect(px-65, py-12, 130, 24);
-        ctx.fillStyle = '#e2e8f0'; ctx.fillText(text, px, py+4);
-      });
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x50, ca.top); ctx.lineTo(x50, ca.bottom); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ca.left, y50); ctx.lineTo(ca.right, y50); ctx.stroke();
       ctx.restore();
     }
   };
-  const labelPlugin = {
-    id: 'scatterLabels',
-    afterDatasetDraw(chart) {
-      const { ctx } = chart;
-      chart.data.datasets.forEach((ds, i) => {
-        chart.getDatasetMeta(i).data.forEach(pt => {
-          ctx.save(); ctx.font = '10px Segoe UI'; ctx.fillStyle = '#94a3b8';
-          ctx.textAlign = 'center'; ctx.fillText(ds.label, pt.x, pt.y - 14); ctx.restore();
-        });
+
+  // Plugin: corner quadrant labels (non-overlapping with team dots)
+  const cornerLabelsPlugin = {
+    id: 'cornerLabels',
+    afterDraw(chart) {
+      const { ctx, chartArea: ca } = chart;
+      const pad = 10;
+      ctx.save();
+      ctx.font = '10px Segoe UI, sans-serif';
+      ctx.fillStyle = 'rgba(148,163,184,0.5)';
+      ctx.textAlign = 'right';  ctx.textBaseline = 'top';    ctx.fillText('Elite (Both)',   ca.right - pad, ca.top + pad);
+      ctx.textAlign = 'left';   ctx.textBaseline = 'top';    ctx.fillText('Pitching Only',  ca.left + pad,  ca.top + pad);
+      ctx.textAlign = 'left';   ctx.textBaseline = 'bottom'; ctx.fillText('Struggling',     ca.left + pad,  ca.bottom - pad);
+      ctx.textAlign = 'right';  ctx.textBaseline = 'bottom'; ctx.fillText('Batting Only',   ca.right - pad, ca.bottom - pad);
+      ctx.restore();
+    }
+  };
+
+  // Plugin: smart team labels with collision avoidance
+  const smartLabelsPlugin = {
+    id: 'smartLabels',
+    afterDraw(chart) {
+      const { ctx, chartArea: ca } = chart;
+      const TH = 12, HPAD = 10;
+
+      // Gather all point positions
+      const pts = [];
+      chart.data.datasets.forEach((ds, di) => {
+        const meta = chart.getDatasetMeta(di);
+        if (meta.data[0]) {
+          pts.push({
+            px: meta.data[0].x,
+            py: meta.data[0].y,
+            label: shortLabel(ds.label),
+            color: typeof ds.borderColor === 'string' ? ds.borderColor : '#94a3b8',
+          });
+        }
       });
+
+      // Set font before measuring
+      ctx.font = 'bold 10px Segoe UI, sans-serif';
+
+      // Initial label placement: right of dot, shift left only if near right edge
+      pts.forEach(pt => {
+        const nearRight = pt.px > ca.right - 80;
+        const nearTop   = pt.py < ca.top + 20;
+        pt.lx    = nearRight ? pt.px - HPAD : pt.px + HPAD;
+        pt.align = nearRight ? 'right' : 'left';
+        pt.ly    = nearTop ? pt.py + TH + 5 : pt.py - 4;
+      });
+
+      // Iterative collision resolution (push overlapping labels apart vertically)
+      for (let pass = 0; pass < 10; pass++) {
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const a = pts[i], b = pts[j];
+            const twA = ctx.measureText(a.label).width;
+            const twB = ctx.measureText(b.label).width;
+            const ax1 = a.align === 'right' ? a.lx - twA - 3 : a.lx - 2;
+            const ax2 = a.align === 'right' ? a.lx + 2       : a.lx + twA + 3;
+            const bx1 = b.align === 'right' ? b.lx - twB - 3 : b.lx - 2;
+            const bx2 = b.align === 'right' ? b.lx + 2       : b.lx + twB + 3;
+            const ay1 = a.ly - TH, ay2 = a.ly + 2;
+            const by1 = b.ly - TH, by2 = b.ly + 2;
+            if (ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1) {
+              const overlap = Math.min(ay2, by2) - Math.max(ay1, by1);
+              const push = overlap / 2 + 2;
+              if (a.ly <= b.ly) { a.ly -= push; b.ly += push; }
+              else               { a.ly += push; b.ly -= push; }
+              a.ly = Math.max(ca.top + TH, Math.min(ca.bottom - 2, a.ly));
+              b.ly = Math.max(ca.top + TH, Math.min(ca.bottom - 2, b.ly));
+            }
+          }
+        }
+      }
+
+      // Draw labels with dark background for readability
+      ctx.save();
+      pts.forEach(pt => {
+        ctx.font = 'bold 10px Segoe UI, sans-serif';
+        ctx.textAlign = pt.align;
+        ctx.textBaseline = 'alphabetic';
+        const tw = ctx.measureText(pt.label).width;
+        const bgX = pt.align === 'right' ? pt.lx - tw - 3 : pt.lx - 2;
+        ctx.fillStyle = 'rgba(15,23,42,0.88)';
+        ctx.fillRect(bgX, pt.ly - TH + 1, tw + 5, TH + 2);
+        ctx.fillStyle = pt.color;
+        ctx.fillText(pt.label, pt.lx, pt.ly);
+      });
+      ctx.restore();
     }
   };
 
@@ -319,21 +413,38 @@ function render(d) {
       datasets: scatter.map(s => ({
         label: s.name,
         data: [{ x: s.bat, y: s.pit }],
-        backgroundColor: s.color, borderColor: s.color,
-        pointRadius: 8, pointHoverRadius: 11
+        backgroundColor: s.color + 'bb',
+        borderColor: s.color,
+        borderWidth: 2,
+        pointRadius: 9,
+        pointHoverRadius: 13,
       }))
     },
-    plugins: [quadrantPlugin, labelPlugin],
+    plugins: [quadrantLinesPlugin, cornerLabelsPlugin, smartLabelsPlugin],
     options: {
-      responsive: true, maintainAspectRatio: false,
-      layout: { padding: { top: 28, right: 40, bottom: 8, left: 8 } },
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 20, right: 100, bottom: 20, left: 20 } },
       plugins: {
         legend: { display: false },
-        tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ' - Bat: ' + ctx.parsed.x.toFixed(1) + '%, Pitch: ' + ctx.parsed.y.toFixed(1) + '%' } }
+        tooltip: {
+          ...tooltipBase,
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}  —  Bat: ${ctx.parsed.x.toFixed(1)}%  |  Pitch: ${ctx.parsed.y.toFixed(1)}%`
+          }
+        }
       },
       scales: {
-        x: { title: { display: true, text: 'Batting Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } },
-        y: { title: { display: true, text: 'Pitching Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } }
+        x: {
+          title: { display: true, text: 'Batting Win %', color: '#64748b' },
+          ticks: { color: '#94a3b8', callback: v => v + '%' },
+          grid: { color: '#334155' }
+        },
+        y: {
+          title: { display: true, text: 'Pitching Win %', color: '#64748b' },
+          ticks: { color: '#94a3b8', callback: v => v + '%' },
+          grid: { color: '#334155' }
+        }
       }
     }
   });
@@ -355,6 +466,7 @@ function filterWeeks(wt) {
   });
   document.querySelectorAll('.week-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.wt === wt));
 }
+window.filterWeeks = filterWeeks;
 
 function initSortable(tbl) {
   if (!tbl) return;

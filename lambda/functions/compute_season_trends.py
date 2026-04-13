@@ -25,7 +25,8 @@ ALL_CATS = HIGH_CATS + LOW_CATS
 BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
 PITCHER_HIGH = ['K9', 'QS', 'SVH']
 PITCHER_LOW = ['ERA', 'WHIP', 'TB']
-LONG_WEEKS = {17}
+LONG_WEEKS  = {17}
+SHORT_WEEKS = {1}
 
 CAT_LABELS = {
     'R': 'Runs', 'H': 'Hits', 'HR': 'Home Runs', 'RBI': 'RBI', 'SB': 'Stolen Bases',
@@ -275,12 +276,17 @@ def lambda_handler(event, context):
             })
         hot_cold.sort(key=lambda x: x['recent'], reverse=True)
 
-        # Season's Best
-        short_weeks = {w for w in stat_weeks if w not in LONG_WEEKS}
-        season_best = {'short': {}, 'long': {}}
+        # Season's Best — three categories: short (Wk 1), regular (Wk 2-16, 18+), long (Wk 17)
+        regular_weeks = {w for w in stat_weeks if w not in LONG_WEEKS and w not in SHORT_WEEKS}
+        season_best = {'short': {}, 'regular': {}, 'long': {}}
+        week_buckets = [
+            (SHORT_WEEKS,   'short'),
+            (regular_weeks, 'regular'),
+            (LONG_WEEKS,    'long'),
+        ]
         for cat in ALL_CATS:
             is_low = cat in LOW_CATS
-            for week_set, key in [(short_weeks, 'short'), (LONG_WEEKS, 'long')]:
+            for week_set, key in week_buckets:
                 best = None
                 for week in week_set:
                     if week not in weekly_stats:
