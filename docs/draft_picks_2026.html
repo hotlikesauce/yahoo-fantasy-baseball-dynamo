@@ -37,6 +37,51 @@
 
   .loading { text-align: center; color: #64748b; padding: 60px 0; }
   #generated-at { text-align: center; color: #475569; font-size: 0.8em; margin-bottom: 16px; }
+
+  /* Trade Grades */
+  .trades-header { margin-top: 48px; margin-bottom: 4px; }
+  .trades-filter { margin-bottom: 20px; }
+  .trades-filter select {
+    padding: 8px 14px; border-radius: 8px; background: #1e293b;
+    border: 1px solid #334155; color: #e2e8f0; font-size: 0.9em; cursor: pointer;
+  }
+  .trades-filter select:focus { outline: none; border-color: #3b82f6; }
+  .trade-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 20px; margin-bottom: 16px;
+  }
+  .trade-date { font-size: 0.78em; color: #475569; margin-bottom: 14px; }
+  .trade-sides {
+    display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0; align-items: stretch;
+  }
+  .trade-side { min-width: 0; }
+  .trade-side-label {
+    font-size: 0.78em; color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-bottom: 6px;
+  }
+  .trade-team-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .trade-team-name { font-size: 0.95em; font-weight: 600; color: #e2e8f0; }
+  .grade-badge {
+    font-size: 1.1em; font-weight: 800; padding: 2px 10px;
+    border-radius: 6px; letter-spacing: 0.02em; flex-shrink: 0;
+  }
+  .trade-value { font-size: 0.78em; color: #64748b; margin-left: auto; }
+  .trade-asset { padding: 4px 0; font-size: 0.85em; color: #cbd5e1; }
+  .trade-asset .asset-name { font-weight: 500; }
+  .trade-asset .asset-meta { color: #64748b; font-size: 0.82em; margin-left: 4px; }
+  .trade-asset .asset-rank { color: #94a3b8; }
+  .trade-asset .asset-adp  { color: #64748b; }
+  .trade-arrow-col {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4em; color: #334155;
+  }
+  .no-trades { color: #64748b; text-align: center; padding: 40px 0; font-size: 0.9em; }
+  @media (max-width: 700px) {
+    .trade-sides { grid-template-columns: 1fr; }
+    .trade-arrow-col { transform: rotate(90deg); padding: 8px 0; }
+  }
 </style>
 </head>
 <body>
@@ -48,10 +93,23 @@
 <p class="section-desc" style="color:#64748b;margin-bottom:8px;">Current pick ownership. Pick value uses exponential decay &mdash; picks within a round are distributed equally since draft order is not yet set.</p>
 <div id="generated-at"></div>
 <div id="content"><div class="loading">Loading draft capital data&hellip;</div></div>
+
+  <h3 class="trades-header">Trade Grades</h3>
+  <p class="section-desc" style="color:#64748b;margin-bottom:12px;">
+    All completed trades graded using current player rankings + draft pick values (same exponential decay as the pick grid above).
+    Grades: <span style="color:#22c55e">A+</span> = you cleaned up &nbsp;&bull;&nbsp; <span style="color:#fbbf24">C</span> = even &nbsp;&bull;&nbsp; <span style="color:#ef4444">F</span> = you got robbed.
+  </p>
+  <div class="trades-filter">
+    <select id="trade-team-filter">
+      <option value="">All teams</option>
+    </select>
+  </div>
+  <div id="trade-grades-container"><div class="loading">Loading trade data&hellip;</div></div>
 </div>
 
 <script>
 const DATA_URL = 'data/draft_capital_2026.json';
+const TRADE_GRADES_URL = 'https://snqvblvaj4vh3tiocaibzkgu240cdtjx.lambda-url.us-west-2.on.aws/';
 
 async function load() {
   let d;
@@ -238,6 +296,114 @@ async function load() {
 }
 
 load();
+
+// ── Trade Grades ──────────────────────────────────────────────────────────────
+
+let ALL_TRADES = [];
+
+async function loadTradeGrades() {
+  const container = document.getElementById('trade-grades-container');
+  try {
+    const resp = await fetch(TRADE_GRADES_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const d = await resp.json();
+    ALL_TRADES = d.trades || [];
+    buildTeamFilter(ALL_TRADES);
+    renderTrades(ALL_TRADES);
+  } catch (e) {
+    container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:32px 0">Failed to load trade data: ' + e.message + '</p>';
+  }
+}
+
+function buildTeamFilter(trades) {
+  const sel = document.getElementById('trade-team-filter');
+  const names = new Set();
+  trades.forEach(t => {
+    names.add(t.trader.name);
+    names.add(t.tradee.name);
+  });
+  Array.from(names).sort().forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', () => {
+    const filter = sel.value;
+    const filtered = filter
+      ? ALL_TRADES.filter(t => t.trader.name === filter || t.tradee.name === filter)
+      : ALL_TRADES;
+    renderTrades(filtered);
+  });
+}
+
+function renderTrades(trades) {
+  const container = document.getElementById('trade-grades-container');
+  if (!trades.length) {
+    container.innerHTML = '<div class="no-trades">No trades found yet this season.</div>';
+    return;
+  }
+
+  let html = '';
+  trades.forEach(trade => {
+    html += renderTradeCard(trade);
+  });
+  container.innerHTML = html;
+}
+
+function renderTradeCard(trade) {
+  const { trader, tradee, date } = trade;
+  return `
+<div class="trade-card">
+  <div class="trade-date">${date || 'Unknown date'}</div>
+  <div class="trade-sides">
+    <div class="trade-side">
+      <div class="trade-side-label">Receives</div>
+      <div class="trade-team-row">
+        <span class="grade-badge" style="background:${trader.grade_color}22;color:${trader.grade_color};border:1px solid ${trader.grade_color}55">${trader.grade}</span>
+        <span class="trade-team-name">${trader.name}</span>
+        <span class="trade-value">${trader.value} pts</span>
+      </div>
+      ${renderAssets(trader.players, trader.picks)}
+    </div>
+    <div class="trade-arrow-col">&#8646;</div>
+    <div class="trade-side">
+      <div class="trade-side-label">Receives</div>
+      <div class="trade-team-row">
+        <span class="grade-badge" style="background:${tradee.grade_color}22;color:${tradee.grade_color};border:1px solid ${tradee.grade_color}55">${tradee.grade}</span>
+        <span class="trade-team-name">${tradee.name}</span>
+        <span class="trade-value">${tradee.value} pts</span>
+      </div>
+      ${renderAssets(tradee.players, tradee.picks)}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderAssets(players, picks) {
+  let html = '';
+  players.forEach(p => {
+    const rankStr = p.rank ? `#${p.rank}` : 'NR';
+    const adpStr  = p.adp  ? `ADP ${p.adp}` : '';
+    html += `<div class="trade-asset">
+      <span class="asset-name">${p.name}</span>
+      <span class="asset-meta">${p.pos || ''}</span>
+      <span class="asset-meta asset-rank">&nbsp;Rank ${rankStr}</span>
+      ${adpStr ? `<span class="asset-meta asset-adp">&nbsp;&bull; ${adpStr}</span>` : ''}
+    </div>`;
+  });
+  picks.forEach(pk => {
+    const ownerStr = pk.original_owner ? ` (${pk.original_owner}'s pick)` : '';
+    html += `<div class="trade-asset">
+      <span class="asset-name">Round ${pk.round} pick</span>
+      <span class="asset-meta">${ownerStr}</span>
+      <span class="asset-meta asset-rank">&nbsp;${pk.value} pts</span>
+    </div>`;
+  });
+  return html;
+}
+
+loadTradeGrades();
 </script>
 </body>
 </html>

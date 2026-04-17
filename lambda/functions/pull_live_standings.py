@@ -75,12 +75,22 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 team_basic = team_data[0]
                 team_id = None
                 team_name = None
+                manager_name = None
                 for info in team_basic:
                     if isinstance(info, dict):
                         if 'team_id' in info:
                             team_id = str(info['team_id'])
                         elif 'name' in info:
                             team_name = info['name']
+                        elif 'managers' in info:
+                            mgr = info['managers']
+                            if isinstance(mgr, dict):
+                                mgr0 = mgr.get('manager', mgr.get('0', {}).get('manager', {}))
+                                if isinstance(mgr0, dict):
+                                    manager_name = mgr0.get('nickname') or mgr0.get('guid')
+                            elif isinstance(mgr, list) and mgr:
+                                mgr0 = mgr[0].get('manager', {}) if isinstance(mgr[0], dict) else {}
+                                manager_name = mgr0.get('nickname') or mgr0.get('guid')
 
                 if not team_id or not team_name:
                     continue
@@ -124,6 +134,7 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                     'Year': 2026,
                     'Week': current_week,
                     'Team': team_name,
+                    'ManagerName': manager_name or '',
                     'Rank': int(rank) if rank else 0,
                     'Score': Decimal(str(points)) if points else Decimal('0'),
                     'Wins': wins,
@@ -147,6 +158,16 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                     'Teams': team_name_map,
                     'Timestamp': datetime.utcnow().isoformat(),
                 })
+
+                # Write team info to FantasyBaseball-TeamInfo-2026 (master TN/name/manager reference)
+                now = datetime.utcnow().isoformat()
+                for it in items_to_write:
+                    yfl.put_item('FantasyBaseball-TeamInfo-2026', {
+                        'TeamNumber': it['TeamNumber'],
+                        'TeamName': it['Team'],
+                        'ManagerName': it.get('ManagerName', ''),
+                        'Timestamp': now,
+                    })
 
                 yfl.log_execution("pull_live_standings", "SUCCESS", f"Wrote {count} standings records for week {current_week}")
                 return {

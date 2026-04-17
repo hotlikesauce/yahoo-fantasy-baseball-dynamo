@@ -371,6 +371,55 @@ aws lambda delete-layer-version \
   --version-number VERSION
 ```
 
+### Serve Trade Grades (Lambda Function URL - called by browser)
+
+```bash
+cd lambda/functions
+zip serve_trade_grades.zip serve_trade_grades.py
+
+aws lambda create-function \
+  --function-name serve-trade-grades \
+  --runtime python3.11 \
+  --role arn:aws:iam::YOUR_ACCOUNT:role/yahoo-fantasy-lambda-role \
+  --handler serve_trade_grades.lambda_handler \
+  --zip-file fileb://serve_trade_grades.zip \
+  --timeout 60 \
+  --memory-size 256 \
+  --layers arn:aws:lambda:us-west-2:YOUR_ACCOUNT:layer:yahoo-fantasy-layer:VERSION
+
+# Create Function URL (public HTTPS endpoint)
+aws lambda create-function-url-config \
+  --function-name serve-trade-grades \
+  --auth-type NONE \
+  --cors '{
+    "AllowOrigins": ["*"],
+    "AllowMethods": ["GET"],
+    "AllowHeaders": ["Content-Type"],
+    "MaxAge": 120
+  }'
+
+# Allow public invocation via Function URL
+aws lambda add-permission \
+  --function-name serve-trade-grades \
+  --statement-id AllowPublicFunctionUrl \
+  --action lambda:InvokeFunctionUrl \
+  --principal "*" \
+  --function-url-auth-type NONE
+
+# Note the FunctionUrl returned — replace %%TRADE_GRADES_LAMBDA_URL%% in docs/draft_picks_2026.html
+# with just the subdomain portion (e.g. abc123xyz.lambda-url.us-west-2.on.aws)
+```
+
+To update after code changes:
+```bash
+cd lambda/functions
+zip -u serve_trade_grades.zip serve_trade_grades.py
+
+aws lambda update-function-code \
+  --function-name serve-trade-grades \
+  --zip-file fileb://serve_trade_grades.zip
+```
+
 ## Notes
 
 - All times are in UTC for CloudWatch/EventBridge
@@ -378,3 +427,4 @@ aws lambda delete-layer-version \
 - Functions log to CloudWatch automatically
 - DynamoDB auto-scales on-demand, so no provisioning needed
 - Secrets are automatically refreshed on each invocation
+- serve-trade-grades needs 60s timeout (makes 5 Yahoo API calls per request)
