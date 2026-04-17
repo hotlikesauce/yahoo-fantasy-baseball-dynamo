@@ -169,6 +169,7 @@ function renderAssets(players, picks) {
       <span class="asset-meta">${p.pos || ''}</span>
       <span class="asset-meta asset-rank">&nbsp;Rank ${rankStr}</span>
       ${adpStr ? `<span class="asset-meta asset-adp">&nbsp;&bull; ${adpStr}</span>` : ''}
+      ${p.sp_boosted ? `<span class="asset-meta" style="color:#a78bfa;margin-left:4px">2x SP</span>` : ''}
     </div>`;
   });
   picks.forEach(pk => {

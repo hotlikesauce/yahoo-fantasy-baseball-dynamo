@@ -30,6 +30,7 @@ CORS_HEADERS = {
 SCALE = 242.0
 DECAY = 0.98
 KEEPER_ROUNDS = 2  # R1-R2 are keeper rounds (not tradeable)
+SP_MULTIPLIER = 2.0  # Pure SPs boosted 2x — league has 50 IP/week minimum
 
 
 def pick_value_for_round(round_num: int) -> float:
@@ -301,12 +302,17 @@ def grade_trade(trade: dict, rank_map: dict, team_names: dict) -> dict:
             info = rank_map.get(p['player_key'], {})
             rank = info.get('rank')
             adp = info.get('adp')
+            pos = info.get('pos') or p['position']
+            base_val = player_value(rank)
+            sp_boosted = (pos == 'SP')
+            value = round(base_val * SP_MULTIPLIER, 1) if sp_boosted else base_val
             out.append({
                 'name': info.get('name') or p['name'],
-                'pos': info.get('pos') or p['position'],
+                'pos': pos,
                 'rank': rank,
                 'adp': round(adp) if adp else None,
-                'value': player_value(rank),
+                'value': value,
+                'sp_boosted': sp_boosted,
             })
         return out
 
