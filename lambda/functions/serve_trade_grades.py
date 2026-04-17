@@ -243,8 +243,8 @@ def fetch_player_ranks(token: str, league_key: str, traded_keys: list) -> dict:
     """
     rank_map: dict = {}
 
-    # Step 1: top 300 current rank, 25/page
-    for start in range(0, 300, 25):
+    # Step 1: top 400 current rank, 25/page
+    for start in range(0, 400, 25):
         data = yfl.api_get(token, f"league/{league_key}/players;start={start};count=25;sort=AR", timeout=15)
         if not data:
             continue
