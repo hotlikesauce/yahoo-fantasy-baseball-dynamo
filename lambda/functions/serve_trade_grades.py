@@ -30,7 +30,7 @@ CORS_HEADERS = {
 SCALE = 242.0
 DECAY = 0.98
 KEEPER_ROUNDS = 2  # R1-R2 are keeper rounds (not tradeable)
-SP_MULTIPLIER = 2.0  # Pure SPs boosted 2x — league has 50 IP/week minimum
+SP_MULTIPLIER = 4.0  # Pure SPs boosted 4x — Yahoo AR undervalues SPs in a 50 IP/week league
 PICK_DISCOUNT = 0.5  # Future picks discounted 50% — outcome uncertain (tanking vs contending)
 
 
