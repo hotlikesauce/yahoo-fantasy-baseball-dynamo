@@ -31,6 +31,7 @@ SCALE = 242.0
 DECAY = 0.98
 KEEPER_ROUNDS = 2  # R1-R2 are keeper rounds (not tradeable)
 SP_MULTIPLIER = 2.0  # Pure SPs boosted 2x — league has 50 IP/week minimum
+PICK_DISCOUNT = 0.5  # Future picks discounted 50% — outcome uncertain (tanking vs contending)
 
 
 def pick_value_for_round(round_num: int) -> float:
@@ -39,7 +40,7 @@ def pick_value_for_round(round_num: int) -> float:
         return 0.0
     # Overall pick number (1-indexed) for the average slot in this round
     avg_overall = (round_num - KEEPER_ROUNDS - 1) * 12 + 6.5
-    return round(SCALE * (DECAY ** (avg_overall - 1)), 1)
+    return round(SCALE * (DECAY ** (avg_overall - 1)) * PICK_DISCOUNT, 1)
 
 
 def player_value(rank: Optional[int]) -> float:
