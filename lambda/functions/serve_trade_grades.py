@@ -54,14 +54,15 @@ def assign_grade(advantage: float):
     """
     advantage = (received - given) / max(received, given)
     Returns (letter_grade, hex_color).
-    Thresholds are symmetric: B(+25%) mirrors D(-25%), A(+50%) mirrors F(-50%), A+(+80%) mirrors F(-80%+).
+    A+(≥75%) | A(≥50%) | B(≥25%) | C(rest) | D(≤-25%) | F(≤-50%) | F-(≤-75%)
     """
-    if advantage >= 0.80:  return ('A+', '#22c55e')
+    if advantage >= 0.75:  return ('A+', '#22c55e')
     if advantage >= 0.50:  return ('A',  '#4ade80')
     if advantage >= 0.25:  return ('B',  '#86efac')
     if advantage >= -0.25: return ('C',  '#fbbf24')
     if advantage >= -0.50: return ('D',  '#f97316')
-    return ('F', '#ef4444')
+    if advantage >= -0.75: return ('F',  '#ef4444')
+    return ('F-', '#b91c1c')
 
 
 def fetch_team_names(token: str, league_key: str) -> dict:
