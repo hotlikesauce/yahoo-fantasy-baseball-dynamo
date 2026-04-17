@@ -34,6 +34,7 @@
     font-size: 1.1em; font-weight: 800; padding: 2px 10px;
     border-radius: 6px; letter-spacing: 0.02em; flex-shrink: 0;
   }
+  .adv-pct { font-size: 0.82em; font-weight: 700; flex-shrink: 0; }
   .trade-value { font-size: 0.78em; color: #64748b; margin-left: auto; }
   .trade-asset { padding: 4px 0; font-size: 0.85em; color: #cbd5e1; }
   .trade-asset .asset-name { font-weight: 500; }
@@ -140,6 +141,7 @@ function renderTradeCard(trade) {
       <div class="trade-side-label">Receives</div>
       <div class="trade-team-row">
         <span class="grade-badge" style="background:${trader.grade_color}22;color:${trader.grade_color};border:1px solid ${trader.grade_color}55">${trader.grade}</span>
+        <span class="adv-pct" style="color:${trader.grade_color}">${trader.advantage_pct > 0 ? '+' : ''}${trader.advantage_pct}%</span>
         <span class="trade-team-name">${trader.name}</span>
         <span class="trade-value">${trader.value} pts</span>
       </div>
@@ -150,6 +152,7 @@ function renderTradeCard(trade) {
       <div class="trade-side-label">Receives</div>
       <div class="trade-team-row">
         <span class="grade-badge" style="background:${tradee.grade_color}22;color:${tradee.grade_color};border:1px solid ${tradee.grade_color}55">${tradee.grade}</span>
+        <span class="adv-pct" style="color:${tradee.grade_color}">${tradee.advantage_pct > 0 ? '+' : ''}${tradee.advantage_pct}%</span>
         <span class="trade-team-name">${tradee.name}</span>
         <span class="trade-value">${tradee.value} pts</span>
       </div>

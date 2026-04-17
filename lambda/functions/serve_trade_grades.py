@@ -360,6 +360,7 @@ def grade_trade(trade: dict, rank_map: dict, team_names: dict) -> dict:
             'value': round(trader_val, 1),
             'grade': trader_grade,
             'grade_color': trader_color,
+            'advantage_pct': round(trader_adv * 100),
         },
         'tradee': {
             'name': tradee_name,
@@ -368,6 +369,7 @@ def grade_trade(trade: dict, rank_map: dict, team_names: dict) -> dict:
             'value': round(tradee_val, 1),
             'grade': tradee_grade,
             'grade_color': tradee_color,
+            'advantage_pct': round(tradee_adv * 100),
         },
     }
 
