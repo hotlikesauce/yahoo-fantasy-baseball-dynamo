@@ -30,7 +30,7 @@ CORS_HEADERS = {
 SCALE = 242.0
 DECAY = 0.98
 KEEPER_ROUNDS = 2  # R1-R2 are keeper rounds (not tradeable)
-SP_RANK_DIVISOR = 4  # SP rank divided by 4 — Yahoo AR undervalues SPs in a 50 IP/week league
+SP_RANK_DIVISOR = 2.5  # SP rank divided by 2.5 — Yahoo AR undervalues SPs in a 50 IP/week league
 PICK_DISCOUNT = 0.5  # Future picks discounted 50% — outcome uncertain (tanking vs contending)
 
 
