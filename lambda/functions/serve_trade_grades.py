@@ -30,7 +30,7 @@ CORS_HEADERS = {
 SCALE = 242.0
 DECAY = 0.98
 KEEPER_ROUNDS = 2  # R1-R2 are keeper rounds (not tradeable)
-SP_MULTIPLIER = 4.0  # Pure SPs boosted 4x — Yahoo AR undervalues SPs in a 50 IP/week league
+SP_RANK_DIVISOR = 4  # SP rank divided by 4 — Yahoo AR undervalues SPs in a 50 IP/week league
 PICK_DISCOUNT = 0.5  # Future picks discounted 50% — outcome uncertain (tanking vs contending)
 
 
@@ -306,13 +306,14 @@ def grade_trade(trade: dict, rank_map: dict, team_names: dict) -> dict:
             rank = info.get('rank')
             adp = info.get('adp')
             pos = info.get('pos') or p['position']
-            base_val = player_value(rank)
             sp_boosted = (pos == 'SP')
-            value = round(base_val * SP_MULTIPLIER, 1) if sp_boosted else base_val
+            adj_rank = round(rank / SP_RANK_DIVISOR) if (sp_boosted and rank) else rank
+            value = player_value(adj_rank)
             out.append({
                 'name': info.get('name') or p['name'],
                 'pos': pos,
                 'rank': rank,
+                'adj_rank': adj_rank,
                 'adp': round(adp) if adp else None,
                 'value': value,
                 'sp_boosted': sp_boosted,
