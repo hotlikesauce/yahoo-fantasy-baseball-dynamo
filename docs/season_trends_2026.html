@@ -92,8 +92,9 @@ function makeLineDs(teams, statWeeks, valuesFn) {
 }
 
 function render(d) {
-  const { teams, statWeeks, weeklyPowerScores, cumulativePowerScores, weeklyXwins, cumulativeXwins, scatter, hotCold, last2Label, seasonBest, catOrder } = d;
-  const hasPower = weeklyPowerScores && teams.length > 0;
+  const { teams, statWeeks, weeklyPowerScores, cumulativePowerScores, runningPowerScores, weeklyXwins, cumulativeXwins, scatter, hotCold, last2Label, seasonBest, catOrder } = d;
+  const powerScores = runningPowerScores || weeklyPowerScores;
+  const hasPower = powerScores && teams.length > 0;
 
   let html = '';
 
@@ -196,7 +197,7 @@ function render(d) {
         labels: powerLabels,
         datasets: teams.map(t => ({
           label: t.name,
-          data: statWeeks.map(w => (weeklyPowerScores[t.tn] && weeklyPowerScores[t.tn][w] != null ? weeklyPowerScores[t.tn][w] : null)),
+          data: statWeeks.map(w => (powerScores[t.tn] && powerScores[t.tn][w] != null ? powerScores[t.tn][w] : null)),
           borderColor: t.color, backgroundColor: t.color + '22',
           borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
         }))
@@ -217,7 +218,7 @@ function render(d) {
     teams.forEach(t => { weeklyPowerRank[t.tn] = {}; });
     statWeeks.forEach(w => {
       const wStr = String(w);
-      const scored = teams.map(t => ({ tn: t.tn, score: weeklyPowerScores[t.tn] && weeklyPowerScores[t.tn][wStr] != null ? weeklyPowerScores[t.tn][wStr] : 0 }));
+      const scored = teams.map(t => ({ tn: t.tn, score: powerScores[t.tn] && powerScores[t.tn][wStr] != null ? powerScores[t.tn][wStr] : 0 }));
       scored.sort((a, b) => b.score - a.score);
       scored.forEach((s, i) => { weeklyPowerRank[s.tn][wStr] = i + 1; });
     });

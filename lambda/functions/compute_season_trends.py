@@ -212,9 +212,60 @@ def lambda_handler(event, context):
             for tn in weekly_power[week]:
                 weekly_power[week][tn] = round(weekly_power[week][tn], 1)
 
-        # 5. Sort teams by cumulative power score (latest week's score as tiebreaker)
-        cum_power = {tn: sum(weekly_power[w].get(tn, 0) for w in stat_weeks) for tn in tn_latest_name}
-        sorted_tns = sorted(tn_latest_name.keys(), key=lambda tn: cum_power.get(tn, 0), reverse=True)
+        # 4b. Running power scores: cumulative raw stats through each week, then normalized.
+        # Counting cats are summed; rate cats are averaged. This shows who has been
+        # strongest on a season-to-date basis, not just who had the best single week.
+        COUNT_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'TB', 'QS', 'SVH']
+        RATE_CATS  = ['OPS', 'ERA', 'WHIP', 'K9']
+        running_power = {tn: {} for tn in tn_latest_name}
+        for w_idx, w in enumerate(stat_weeks):
+            weeks_so_far = stat_weeks[:w_idx + 1]
+            agg = {}
+            for tn in tn_latest_name:
+                counts = {}
+                rates = {}
+                for ww in weeks_so_far:
+                    if ww not in weekly_stats or tn not in weekly_stats[ww]:
+                        continue
+                    for cat in COUNT_CATS:
+                        if cat in weekly_stats[ww][tn]:
+                            counts[cat] = counts.get(cat, 0) + weekly_stats[ww][tn][cat]
+                    for cat in RATE_CATS:
+                        if cat in weekly_stats[ww][tn]:
+                            rates.setdefault(cat, []).append(weekly_stats[ww][tn][cat])
+                if not counts and not rates:
+                    continue
+                agg[tn] = {}
+                for cat in COUNT_CATS:
+                    if cat in counts:
+                        agg[tn][cat] = counts[cat]
+                for cat in RATE_CATS:
+                    if cat in rates:
+                        agg[tn][cat] = sum(rates[cat]) / len(rates[cat])
+            for tn in agg:
+                running_power[tn][w] = 0.0
+            for cat in ALL_CATS:
+                vals = {tn: agg[tn][cat] for tn in agg if cat in agg[tn]}
+                if not vals:
+                    continue
+                min_val = min(vals.values())
+                max_val = max(vals.values())
+                for tn, val in vals.items():
+                    if max_val == min_val:
+                        score = 50.0
+                    elif cat in LOW_CATS:
+                        score = (max_val - val) / (max_val - min_val) * 100
+                    else:
+                        score = (val - min_val) / (max_val - min_val) * 100
+                    running_power[tn][w] += score
+            for tn in running_power:
+                if w in running_power[tn]:
+                    running_power[tn][w] = round(running_power[tn][w], 1)
+
+        # 5. Sort teams by running power score at the latest week
+        latest_w = stat_weeks[-1] if stat_weeks else 0
+        sorted_tns = sorted(tn_latest_name.keys(),
+                            key=lambda tn: running_power[tn].get(latest_w, 0), reverse=True)
 
         color_map = {tn: COLORS[i % len(COLORS)] for i, tn in enumerate(sorted_tns)}
 
@@ -326,12 +377,15 @@ def lambda_handler(event, context):
             })
         standings_out.sort(key=lambda x: (x['wins'] + x['ties'] * 0.5) / max(1, x['wins'] + x['losses'] + x['ties']), reverse=True)
 
+        running_power_out = {tn: {str(w): running_power[tn].get(w, 0) for w in stat_weeks} for tn in sorted_tns}
+
         result = {
             'teams': teams,
             'statWeeks': stat_weeks,
             'standings': standings_out,
             'weeklyPowerScores': power_score_out,
             'cumulativePowerScores': cum_power_out,
+            'runningPowerScores': running_power_out,
             'weeklyXwins': xwins_out,
             'cumulativeXwins': cum_out,
             'scatter': scatter,

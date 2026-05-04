@@ -13,6 +13,9 @@
   .close-margin { color: #f59e0b; font-weight: 700; }
   .lucky-highlight td { background: #22c55e15; }
   .unlucky-highlight td { background: #ef444415; }
+  .upset-highlight td { background: #f59e0b12; }
+  .upset-tag { background: #f59e0b; color: #0f172a; font-size: 0.7em; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.05em; }
+  .score { color: #e2e8f0; font-weight: 600; }
   .weekly-table { max-height: 700px; overflow-y: auto; margin-bottom: 24px; }
   .weekly-table table { margin-bottom: 0; }
   .weekly-table th { position: sticky; top: 0; background: #0f172a; z-index: 1; }
@@ -102,41 +105,57 @@ async function load() {
 }
 
 function render(d) {
-  const { weeks, teamSummary, weeklyBreakdown, blowouts, closest, bestMatchups, worstMatchups,
-          scheduleStrength, allplayStandings, dominators, allplayTrend, colorMap } = d;
+  const { teamSummary, weeklyBreakdown, matchupXwins, blowouts, closest,
+          bestMatchups, worstMatchups, scheduleStrength, colorMap } = d;
 
   let html = '';
 
-  // Luck Coefficient table
+  // Luck table
   html += `
-<h3>Luck Coefficient</h3>
-<p class="section-desc">Record = total category W-L-T across all weeks (12 categories per week). xWins = expected category wins based on all-play H2H strength. Diff = actual cat wins - xWins. A <span class="lucky">Lucky Win</span> = won your weekly matchup despite being bottom-half in all-play (ranked 7-12). An <span class="unlucky">Unlucky Loss</span> = lost despite top-half all-play. Luck Coefficient = (Lucky Wins - Unlucky Losses) / Total Matchups.</p>
+<h3>Luck Score</h3>
+<p class="section-desc">xWins = expected category wins based on how your stats ranked against every opponent that week. Luck Score = actual category wins minus xWins. <span class="lucky">&#x2191; Lucky Win</span> = won your matchup despite lower xWins than your opponent. <span class="unlucky">&#x2193; Unlucky Loss</span> = lost despite higher xWins.</p>
 <table id="luckTable">
 <thead><tr>
   ${th('#','0','num')}${th('Team','1','str')}${th('Matchup W-L-T','2','wlt')}
-  ${th('Actual Cat Wins','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}
-  ${th('All-Play','6','wlt')}${th('AP Win%','7','num')}
+  ${th('Cat Wins','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}
+  ${th('Lucky W','6','num')}${th('Unlucky L','7','num')}
 </tr></thead>
 <tbody id="luckBody"></tbody>
 </table>
 <div class="chart-box-tall"><canvas id="luckChart"></canvas></div>`;
 
+  // Recent form predictor
+  html += `
+<h3>Recent Form</h3>
+<p class="section-desc">Ranked by last week's xWins — a leading indicator for this week's matchup. <strong>Trend</strong> = last week vs season average. Teams running hot are likely to carry that into the current week.</p>
+<table id="formTable">
+<thead><tr>
+  ${th('#','0','num')}${th('Team','1','str')}${th('Last Wk xWins','2','num')}${th('Season Avg','3','num')}${th('Trend','4','num')}${th('Last Wk Result','5','str')}
+</tr></thead>
+<tbody id="formBody"></tbody>
+</table>`;
+
   // Weekly breakdown
   html += `
-<h3>Weekly Matchup Breakdown</h3>
-<p class="section-desc">Every matchup by week, ranked by all-play performance. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (bottom-half all-play but won). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (top-half all-play but lost). Category scores show actual H2H result.</p>
+<h3>Weekly Breakdown</h3>
+<p class="section-desc">Every matchup by week. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (won despite lower xWins). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (lost despite higher xWins).</p>
 <div class="weekly-table">
-<table>
-<thead><tr><th>Week</th><th>AP Rank</th><th>Team</th><th>All-Play</th><th>Result</th><th>Opponent</th><th></th></tr></thead>
+<table id="weeklyTable">
+<thead><tr>${th('Week','0','num')}${th('Team','1','str')}${th('xWins','2','num')}${th('Opp xWins','3','num')}${th('Result','4','wlt')}${th('Opponent','5','str')}<th></th></tr></thead>
 <tbody id="weeklyBody"></tbody>
 </table>
 </div>`;
 
-  // All-play trend chart
+  // Matchup xWins
   html += `
-<h3>All-Play Win% Trend</h3>
-<p class="section-desc">Cumulative all-play win percentage over the season.</p>
-<div class="chart-box"><canvas id="xwinChart"></canvas></div>`;
+<h3>Matchup xWins vs Actual</h3>
+<p class="section-desc">Both teams' xWins side-by-side with the actual result. <span class="upset-tag">UPSET</span> = winner had lower xWins than their opponent.</p>
+<div class="weekly-table">
+<table id="matchupXwTable">
+<thead><tr>${th('Week','0','num')}${th('Winner','1','str')}${th('W xWins','2','num')}${th('Score','3','wlt')}${th('Loser','4','str')}${th('L xWins','5','num')}<th></th></tr></thead>
+<tbody id="matchupXwBody"></tbody>
+</table>
+</div>`;
 
   // Blowouts & Closest
   html += `
@@ -161,64 +180,79 @@ function render(d) {
   const mqCols = `${th('#','0','num')}${th('Week','1','num')}${th('Winner','2','str')}${th('Loser','3','str')}${th('Score','4','wlt')}${th('W xWins','5','num')}${th('L xWins','6','num')}`;
   html += `
 <h3>Best Matchups of the Year</h3>
-<p class="section-desc">Combined xWins = sum of both teams' expected category wins that week. Higher = both teams firing on all cylinders.</p>
+<p class="section-desc">Combined xWins = sum of both teams' xWins that week. Higher = two strong teams going at it.</p>
 <table id="bestMqTable">
 <thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
 <tbody id="bestMqBody"></tbody>
 </table>
-
 <h3>Worst Matchups of the Year</h3>
-<p class="section-desc">The toilet bowl games. Both teams at their worst the same week.</p>
+<p class="section-desc">The toilet bowl games — lowest combined xWins.</p>
 <table id="worstMqTable">
 <thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
 <tbody id="worstMqBody"></tbody>
 </table>`;
 
-  // What-if standings
-  html += `
-<h3>What-If Standings (All-Play vs Actual)</h3>
-<p class="section-desc">If every team played every team every week, here's how standings would look vs how they actually finished. <span class="lucky">&#x2191;</span> = schedule helped you. <span class="unlucky">&#x2193;</span> = schedule screwed you.</p>
-<table id="whatifTable">
-<thead><tr>${th('AP Rank','0','num')}${th('Team','1','str')}${th('All-Play','2','wlt')}${th('AP W%','3','num')}${th('Actual Rank','4','num')}${th('Matchup W-L','5','wlt')}${th('Rank Diff','6','num')}</tr></thead>
-<tbody id="whatifBody"></tbody>
-</table>`;
-
   // Schedule strength
   html += `
 <h3>Schedule Strength</h3>
-<p class="section-desc">How tough were your opponents? Avg Opp xW% = your opponents' average all-play win percentage. Higher = you faced tougher teams.</p>
+<p class="section-desc">How tough were your opponents? Avg Opp xWins = average expected category wins of the teams you faced. Higher = harder schedule.</p>
 <table id="schedTable">
-<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('Avg Opp xWins','2','num')}${th('Actual Cat W','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}</tr></thead>
+<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('Avg Opp xWins','2','num')}${th('Cat Wins','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}</tr></thead>
 <tbody id="schedBody"></tbody>
-</table>`;
-
-  // Dominators
-  html += `
-<h3>Weekly Dominators</h3>
-<p class="section-desc">#1 AP = weeks where a team had the best all-play record. Top 3 = weeks finishing top 3. Last = weeks finishing dead last. Consistency = standard deviation of weekly all-play win% (lower = more consistent).</p>
-<table id="domTable">
-<thead><tr>${th('#','0','num')}${th('Team','1','str')}${th('#1 AP Weeks','2','num')}${th('Top 3 Weeks','3','num')}${th('Last Place Weeks','4','num')}${th('Avg W%','5','num')}${th('Std Dev','6','num')}${th('Consistency','7','str')}</tr></thead>
-<tbody id="domBody"></tbody>
 </table>`;
 
   document.getElementById('content').innerHTML = html;
 
-  // Populate luck table
+  // Luck table — count lucky/unlucky from weeklyBreakdown
+  const luckyWins = {}, unluckyL = {};
+  weeklyBreakdown.forEach(e => {
+    if (e.luck_tag === 'lucky_win') luckyWins[e.tn] = (luckyWins[e.tn] || 0) + 1;
+    if (e.luck_tag === 'unlucky_loss') unluckyL[e.tn] = (unluckyL[e.tn] || 0) + 1;
+  });
+
+  // Recent form predictor
+  const allWeeks = [...new Set(weeklyBreakdown.map(e => e.week))].sort((a, b) => a - b);
+  const lastWeek = allWeeks[allWeeks.length - 1];
+  const formRows = [];
+  const tnSet = [...new Set(weeklyBreakdown.map(e => e.tn))];
+  tnSet.forEach(tn => {
+    const entries = weeklyBreakdown.filter(e => e.tn === tn).sort((a, b) => a.week - b.week);
+    const lastEntry = entries.find(e => e.week === lastWeek);
+    if (!lastEntry) return;
+    const seasonAvg = entries.reduce((sum, e) => sum + (e.xw_cats || 0), 0) / entries.length;
+    const trend = (lastEntry.xw_cats || 0) - seasonAvg;
+    formRows.push({ tn, lastEntry, seasonAvg, trend });
+  });
+  formRows.sort((a, b) => (b.lastEntry.xw_cats || 0) - (a.lastEntry.xw_cats || 0));
+
+  const formBody = document.getElementById('formBody');
+  formRows.forEach((row, i) => {
+    const { lastEntry, seasonAvg, trend } = row;
+    const color = colorMap && colorMap[row.tn] ? colorMap[row.tn] : '#94a3b8';
+    const trendStr = trend > 0 ? `<span class="lucky">▲ +${trend.toFixed(1)}</span>` : trend < 0 ? `<span class="unlucky">▼ ${trend.toFixed(1)}</span>` : '<span style="color:#64748b">— 0.0</span>';
+    const resultStr = lastEntry.won ? `<span class="lucky">W ${lastEntry.cats_w}-${lastEntry.cats_l}</span>` : `<span class="unlucky">L ${lastEntry.cats_w}-${lastEntry.cats_l}</span>`;
+    const luckIcon = lastEntry.luck_tag === 'lucky_win' ? ' <span class="lucky" title="Lucky Win">↑</span>' : lastEntry.luck_tag === 'unlucky_loss' ? ' <span class="unlucky" title="Unlucky Loss">↓</span>' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${color}">&#9679;</span> ${lastEntry.name}</td><td class="lucky">${(lastEntry.xw_cats||0).toFixed(1)}</td><td style="color:#94a3b8">${seasonAvg.toFixed(1)}</td><td>${trendStr}</td><td>${resultStr}${luckIcon} vs ${lastEntry.opp_name}</td>`;
+    formBody.appendChild(tr);
+  });
+  initSortable(document.getElementById('formTable'));
+
   const luckBody = document.getElementById('luckBody');
   teamSummary.forEach((s, i) => {
     const mRecord = fmtWlt(s.matchup_w, s.matchup_l, s.matchup_t);
-    const ap = fmtWlt(s.allplay_w, s.allplay_l, s.allplay_t);
     const luckClass = s.cum_luck > 0 ? 'lucky' : s.cum_luck < 0 ? 'unlucky' : '';
     const luckStr = s.cum_luck != null ? (s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1)) : '—';
+    const lw = luckyWins[s.tn] || 0;
+    const ul = unluckyL[s.tn] || 0;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td>${ap}</td><td>${s.ap_pct != null ? s.ap_pct.toFixed(3) : '—'}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td class="lucky">${lw}</td><td class="unlucky">${ul}</td>`;
     luckBody.appendChild(tr);
   });
 
   // Weekly breakdown
   const weeklyBody = document.getElementById('weeklyBody');
   weeklyBreakdown.forEach(entry => {
-    const apStr = fmtWlt(entry.ap_w, entry.ap_l, entry.ap_t);
     const resultStr = (entry.won ? 'W' : 'L') + ' ' + entry.cats_w + '-' + entry.cats_l;
     const resultClass = entry.won ? 'lucky' : 'unlucky';
     let rowClass = '';
@@ -226,12 +260,27 @@ function render(d) {
     if (entry.luck_tag === 'lucky_win') { rowClass = 'lucky-highlight'; luckIcon = '<span class="lucky">&#x2191;</span>'; }
     else if (entry.luck_tag === 'unlucky_loss') { rowClass = 'unlucky-highlight'; luckIcon = '<span class="unlucky">&#x2193;</span>'; }
     const color = colorMap && colorMap[entry.tn] ? colorMap[entry.tn] : '#94a3b8';
-    const opp = entry.opp_name.length > 20 ? entry.opp_name.slice(0, 20) : entry.opp_name;
+    const opp = entry.opp_name.length > 22 ? entry.opp_name.slice(0, 22) : entry.opp_name;
     const tr = document.createElement('tr');
     if (rowClass) tr.className = rowClass;
-    tr.innerHTML = `<td class="year">Wk ${entry.week}</td><td class="rank">#${entry.ap_rank}</td><td><span style="color:${color}">&#9679;</span> ${entry.name}</td><td>${apStr}</td><td class="${resultClass}">${resultStr}</td><td>vs ${opp}</td><td>${luckIcon}</td>`;
+    tr.innerHTML = `<td class="year">Wk ${entry.week}</td><td><span style="color:${color}">&#9679;</span> ${entry.name}</td><td class="lucky">${entry.xw_cats != null ? entry.xw_cats.toFixed(1) : '—'}</td><td class="unlucky">${entry.opp_xw != null ? entry.opp_xw.toFixed(1) : '—'}</td><td class="${resultClass}">${resultStr}</td><td>vs ${opp}</td><td>${luckIcon}</td>`;
     weeklyBody.appendChild(tr);
   });
+
+  // Matchup xWins
+  if (matchupXwins && matchupXwins.length) {
+    const mxBody = document.getElementById('matchupXwBody');
+    matchupXwins.forEach(m => {
+      const wc = colorMap && colorMap[m.winner_tn] ? colorMap[m.winner_tn] : '#94a3b8';
+      const lc = colorMap && colorMap[m.loser_tn] ? colorMap[m.loser_tn] : '#94a3b8';
+      const upsetTag = m.upset ? '<span class="upset-tag">UPSET</span>' : '';
+      const tr = document.createElement('tr');
+      if (m.upset) tr.className = 'upset-highlight';
+      tr.innerHTML = `<td class="year">Wk ${m.week}</td><td><span style="color:${wc}">&#9679;</span> ${m.winner}</td><td class="lucky">${m.w_xw.toFixed(1)}</td><td class="score">${m.score}</td><td><span style="color:${lc}">&#9679;</span> ${m.loser}</td><td class="unlucky">${m.l_xw.toFixed(1)}</td><td>${upsetTag}</td>`;
+      mxBody.appendChild(tr);
+    });
+    initSortable(document.getElementById('matchupXwTable'));
+  }
 
   // Blowouts & closest
   [['blowoutBody', blowouts], ['closestBody', closest]].forEach(([id, list]) => {
@@ -247,25 +296,10 @@ function render(d) {
   [['bestMqBody', bestMatchups, 'lucky'], ['worstMqBody', worstMatchups, 'unlucky']].forEach(([id, list, cls]) => {
     const tbody = document.getElementById(id);
     list.forEach((m, i) => {
-      const wc = colorMap && colorMap[m.winner_tn] ? colorMap[m.winner_tn] : '#94a3b8';
-      const lc = colorMap && colorMap[m.loser_tn] ? colorMap[m.loser_tn] : '#94a3b8';
       const tr = document.createElement('tr');
       tr.innerHTML = `<td class="rank">${i+1}</td><td class="year">Wk ${m.week}</td><td>${m.winner}</td><td>${m.loser}</td><td class="score">${m.score}</td><td>${m.w_xw}</td><td>${m.l_xw}</td><td class="${cls}">${m.combined}</td>`;
       tbody.appendChild(tr);
     });
-  });
-
-  // What-if standings
-  const whatifBody = document.getElementById('whatifBody');
-  allplayStandings.forEach(s => {
-    const ap = fmtWlt(s.ap_w, s.ap_l, s.ap_t);
-    const mq = fmtWlt(s.matchup_w, s.matchup_l, s.matchup_t);
-    let rdStr = '<span style="color:#64748b">&#8212;</span>';
-    if (s.rank_diff > 0) rdStr = `<span class="unlucky">&#x2193;${s.rank_diff}</span>`;
-    else if (s.rank_diff < 0) rdStr = `<span class="lucky">&#x2191;${Math.abs(s.rank_diff)}</span>`;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${s.ap_rank}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${ap}</td><td>${s.ap_pct != null ? s.ap_pct.toFixed(3) : '—'}</td><td>${s.actual_rank}</td><td>${mq}</td><td>${rdStr}</td>`;
-    whatifBody.appendChild(tr);
   });
 
   // Schedule strength
@@ -278,32 +312,19 @@ function render(d) {
     schedBody.appendChild(tr);
   });
 
-  // Dominators
-  const domBody = document.getElementById('domBody');
-  dominators.forEach((d, i) => {
-    const cons = d.stdev < 0.10 ? 'Very High' : d.stdev < 0.15 ? 'High' : d.stdev < 0.22 ? 'Medium' : 'Low';
-    const consCls = d.stdev < 0.10 ? 'lucky' : d.stdev < 0.15 ? 'score' : d.stdev < 0.22 ? '' : 'unlucky';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${d.color}">&#9679;</span> ${d.name}</td><td class="lucky">${d.first}</td><td>${d.top3}</td><td class="unlucky">${d.last}</td><td>${d.avg_pct != null ? d.avg_pct.toFixed(3) : '—'}</td><td>${d.stdev != null ? d.stdev.toFixed(3) : '—'}</td><td class="${consCls}">${cons}</td>`;
-    domBody.appendChild(tr);
-  });
-
-  // Charts
+  // Luck bar chart
   const luckLabels = teamSummary.map(s => s.name);
   const luckValues = teamSummary.map(s => s.cum_luck);
   const luckColors = teamSummary.map(s => s.cum_luck > 0 ? '#22c55e' : '#ef4444');
-
   new Chart(document.getElementById('luckChart'), {
     type: 'bar',
-    data: { labels: luckLabels, datasets: [{ label: 'Luck Coefficient', data: luckValues, backgroundColor: luckColors, borderRadius: 4 }] },
+    data: { labels: luckLabels, datasets: [{ label: 'Luck Score', data: luckValues, backgroundColor: luckColors, borderRadius: 4 }] },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: {
         legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1,
-          callbacks: { label: ctx => 'Luck Score: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(1) }
-        }
+        tooltip: { backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1,
+          callbacks: { label: ctx => 'Luck Score: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(1) } }
       },
       scales: {
         x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Luck Score (Actual Cat Wins − xWins)', color: '#64748b' } },
@@ -312,46 +333,7 @@ function render(d) {
     }
   });
 
-  // All-play trend chart
-  if (allplayTrend) {
-    const weekLabels = weeks.map(w => 'Wk ' + w);
-    const trendTeams = Object.keys(allplayTrend);
-    // Sort by final xW% (last week's value)
-    const lastWk = String(weeks[weeks.length - 1]);
-    trendTeams.sort((a, b) => (allplayTrend[b][lastWk] || 0) - (allplayTrend[a][lastWk] || 0));
-
-    const datasets = trendTeams.map(tn => {
-      const s = teamSummary.find(ts => ts.tn === tn);
-      const color = (colorMap && colorMap[tn]) || '#94a3b8';
-      return {
-        label: s ? s.name : tn,
-        data: weeks.map(w => allplayTrend[tn][String(w)] || 50),
-        borderColor: color, backgroundColor: color + '22',
-        borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
-      };
-    });
-
-    new Chart(document.getElementById('xwinChart'), {
-      type: 'line',
-      data: { labels: weekLabels, datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { position: 'bottom', labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } },
-          tooltip: { backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1, padding: 12,
-            callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%' } }
-        },
-        scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-          y: { min: 0, max: 100, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' }, title: { display: true, text: 'Cumulative All-Play Win %', color: '#64748b' } }
-        }
-      }
-    });
-  }
-
-  // Init sortable tables
-  ['luckTable', 'blowoutTable', 'closestTable', 'bestMqTable', 'worstMqTable', 'whatifTable', 'schedTable', 'domTable'].forEach(id => {
+  ['luckTable', 'formTable', 'weeklyTable', 'blowoutTable', 'closestTable', 'bestMqTable', 'worstMqTable', 'schedTable'].forEach(id => {
     initSortable(document.getElementById(id));
   });
 }

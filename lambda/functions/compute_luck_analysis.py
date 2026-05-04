@@ -1,6 +1,6 @@
 """
 Lambda: Compute 2026 luck & matchup analysis and store in DynamoDB.
-Reads weekly_stats + weekly_results + power_ranks_live, computes luck coefficients,
+Reads weekly_stats + FantasyBaseball-Matchups2026 + power_ranks_live, computes luck coefficients,
 all-play records, blowouts, schedule strength, etc. Stores full result as a single DynamoDB item.
 Triggered by: CloudWatch Events - run every Monday after pull_weekly_stats (e.g. cron(30 9 ? * MON *))
 """
@@ -19,6 +19,7 @@ logger.setLevel(logging.INFO)
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('FantasyBaseball-SeasonTrends')
+matchups_table = dynamodb.Table('FantasyBaseball-Matchups2026')
 
 HIGH_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'K9', 'QS', 'SVH']
 LOW_CATS = ['ERA', 'WHIP', 'TB']
@@ -103,31 +104,24 @@ def lambda_handler(event, context):
             name_to_tn[item['Team']] = tn
             tn_latest_name[tn] = item['Team']
 
-        # Pull weekly_results once for both name mapping and actual results
-        wr_items = scan_by_prefix('weekly_results#')
+        # Pull matchup results from clean 2026-only table
         wr_by_week = defaultdict(list)
-        for item in wr_items:
+        matchups_resp = matchups_table.scan()
+        matchups_items = matchups_resp['Items']
+        while 'LastEvaluatedKey' in matchups_resp:
+            matchups_resp = matchups_table.scan(ExclusiveStartKey=matchups_resp['LastEvaluatedKey'])
+            matchups_items.extend(matchups_resp['Items'])
+        for item in matchups_items:
             wr_by_week[int(item['Week'])].append(item)
 
-        # Auto-map names from weekly_results
+        # Map names from matchup data
         for week_items in wr_by_week.values():
-            mapped = {}
-            unmapped_names = []
             for item in week_items:
                 name = item.get('Team', '')
-                if not name:
-                    continue
-                tn = name_to_tn.get(name)
-                if tn:
-                    mapped[name] = tn
-                else:
-                    unmapped_names.append(name)
-            if unmapped_names:
-                used_tns = set(mapped.values())
-                missing_tns = sorted(all_tns_set - used_tns, key=int)
-                if len(unmapped_names) == 1 and len(missing_tns) == 1:
-                    name_to_tn[unmapped_names[0]] = missing_tns[0]
-                    tn_latest_name[missing_tns[0]] = unmapped_names[0]
+                tn = item.get('TeamNumber', '')
+                if name and tn:
+                    name_to_tn[name] = tn
+                    tn_latest_name[tn] = name
 
         # 2. Pull weekly_stats
         weekly_stats = defaultdict(dict)
@@ -143,33 +137,33 @@ def lambda_handler(event, context):
                     continue
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
-        weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
-
-        if not weeks:
-            logger.warning("No weekly stats data found")
-            return {'statusCode': 200, 'body': 'No data to compute'}
-
-        # 3. Build actual_results from weekly_results
+        # 3. Build actual_results from Matchups2026 table
         actual_results = defaultdict(dict)
         for week, week_items in wr_by_week.items():
-            seen = set()
             for item in week_items:
-                team = item['Team']
-                tn = name_to_tn.get(team)
+                tn = item.get('TeamNumber')
                 w = int(item['Week'])
-                if tn is None or (tn, w) in seen:
+                if tn is None:
                     continue
-                seen.add((tn, w))
                 score = float(item['Score'])
-                opp_score = float(item['Opponent_Score'])
+                opp_score = float(item['OpponentScore'])
                 diff = score - opp_score
                 actual_results[w][tn] = {
                     'won': diff > 0, 'tied': diff == 0,
                     'cats_won': score, 'cats_lost': opp_score,
-                    'opp_tn': name_to_tn.get(item['Opponent']),
-                    'opp_name': item['Opponent'],
-                    'team_name': team, 'diff': diff,
+                    'opp_tn': item.get('OpponentTeamNumber'),
+                    'opp_name': item.get('Opponent', ''),
+                    'team_name': item.get('Team', ''),
+                    'diff': diff,
                 }
+
+        # Only compute weeks where both stats AND matchup results exist (completed weeks only)
+        completed_weeks = set(actual_results.keys())
+        weeks = sorted(w for w in weekly_stats.keys() if w in completed_weeks and w <= 20)
+
+        if not weeks:
+            logger.warning("No completed weeks with both stats and matchup results")
+            return {'statusCode': 200, 'body': 'No data to compute'}
 
         # 4. Compute xWins per team per week (rank-based, 0-1.0 per week)
         weekly_xwins = {}
@@ -219,13 +213,14 @@ def lambda_handler(event, context):
                     cats_l = int(actual['cats_lost'])
                     won = actual['won']
                     luck_score = round(cats_w - xw_cats, 2)
-                    # lucky win = won matchup but below-median all-play; unlucky loss = opposite
+                    # lucky win = won matchup but had lower xWins than opponent
+                    # unlucky loss = lost matchup but had higher xWins than opponent
+                    opp_tn = actual.get('opp_tn')
+                    opp_xw = weekly_xwins[week].get(opp_tn, 0) if opp_tn else 0
                     luck_tag = ''
-                    n_teams = len(weekly_allplay[week])
-                    median_rank = n_teams / 2
-                    if won and ap_rank > median_rank:
+                    if won and xw_cats < opp_xw:
                         luck_tag = 'lucky_win'
-                    elif not won and not actual['tied'] and ap_rank <= median_rank:
+                    elif not won and not actual['tied'] and xw_cats > opp_xw:
                         luck_tag = 'unlucky_loss'
 
                     team_luck_totals[tn]['actual_cats'] += cats_w
@@ -240,10 +235,9 @@ def lambda_handler(event, context):
                     weekly_luck_data.append({
                         'week': week, 'tn': tn,
                         'name': tn_latest_name.get(tn, tn),
-                        'ap_w': ap['w'], 'ap_l': ap['l'], 'ap_t': ap['t'],
-                        'ap_pct': round(ap_pct, 3), 'ap_rank': ap_rank,
                         'cats_w': cats_w, 'cats_l': cats_l,
                         'xw_cats': xw_cats,
+                        'opp_xw': round(opp_xw, 2),
                         'luck_score': luck_score,
                         'luck_tag': luck_tag,
                         'won': won, 'opp_name': actual['opp_name'],
@@ -448,10 +442,48 @@ def lambda_handler(event, context):
                 points[str(w)] = round(pct, 1)
             allplay_trend[tn] = points
 
+        # 13. Build per-matchup xWins comparison (one entry per matchup pair per week)
+        matchup_xwins = []
+        for week in weeks:
+            week_entries = {e['tn']: e for e in weekly_luck_data if e['week'] == week}
+            seen_pairs = set()
+            for tn, entry in week_entries.items():
+                opp_tn = actual_results[week][tn]['opp_tn']
+                if not opp_tn:
+                    continue
+                pair = tuple(sorted([tn, opp_tn]))
+                if pair in seen_pairs:
+                    continue
+                seen_pairs.add(pair)
+                opp_entry = week_entries.get(opp_tn)
+                if not opp_entry:
+                    continue
+                t_xw = round(entry['xw_cats'], 2)
+                o_xw = round(opp_entry['xw_cats'], 2)
+                if entry['won']:
+                    w_name, l_name = entry['name'], opp_entry['name']
+                    w_tn, l_tn = tn, opp_tn
+                    w_xw, l_xw = t_xw, o_xw
+                    score = f"{int(entry['cats_w'])}-{int(entry['cats_l'])}"
+                else:
+                    w_name, l_name = opp_entry['name'], entry['name']
+                    w_tn, l_tn = opp_tn, tn
+                    w_xw, l_xw = o_xw, t_xw
+                    score = f"{int(opp_entry['cats_w'])}-{int(opp_entry['cats_l'])}"
+                upset = w_xw < l_xw  # winner had lower xWins
+                matchup_xwins.append({
+                    'week': week,
+                    'winner': w_name, 'winner_tn': w_tn, 'w_xw': w_xw,
+                    'loser': l_name,  'loser_tn': l_tn,  'l_xw': l_xw,
+                    'score': score, 'upset': upset,
+                })
+        matchup_xwins.sort(key=lambda x: (x['week'], x['winner']))
+
         result = {
             'weeks': weeks,
             'teamSummary': team_summary,
             'weeklyBreakdown': weekly_luck_data,
+            'matchupXwins': matchup_xwins,
             'blowouts': blowouts,
             'closest': closest,
             'bestMatchups': best_matchups,
@@ -459,7 +491,6 @@ def lambda_handler(event, context):
             'scheduleStrength': schedule_strength,
             'allplayStandings': allplay_standings,
             'dominators': dominator_data,
-            'allplayTrend': allplay_trend,
             'colorMap': color_map,
             'timestamp': datetime.utcnow().isoformat() + 'Z',
         }
