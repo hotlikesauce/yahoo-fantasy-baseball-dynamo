@@ -3,8 +3,7 @@ Lambda: Compute positional strength scores per team using current Yahoo AR rank.
 Mirrors the trade grader — pure current performance, no preseason ADP blending.
 
 Scoring per position:
-  - Average of starter slots (quality over quantity)
-  - Small depth bonus capped at 1 bench player
+  - Average of starter slots only — bench carries zero weight
 
 Triggered by: EventBridge schedule (daily recommended)
 """
@@ -32,10 +31,10 @@ STARTER_SLOTS = {
     'SP': 5,
     'RP': 2,
 }
-BENCH_WEIGHT = 0.15   # single bench player depth bonus weight
+BENCH_WEIGHT = 0.0    # starters only — bench has no weight on score
 TRACKED      = set(STARTER_SLOTS.keys())
 
-AR_FETCH_LIMIT = 400  # top N players to fetch by current AR rank
+AR_FETCH_LIMIT = 600  # top N players to fetch by current AR rank
 
 
 # ── Yahoo API helpers ─────────────────────────────────────────────────────────
@@ -84,12 +83,18 @@ def get_roster(token, team_key) -> List[dict]:
                 elif 'name' in item and isinstance(item['name'], dict):
                     player_name = item['name'].get('full', '')
                 elif 'eligible_positions' in item:
-                    pos_list = item['eligible_positions']
-                    if isinstance(pos_list, list):
-                        for p in pos_list:
-                            pos = p.get('position', '') if isinstance(p, dict) else p
-                            if pos in TRACKED:
-                                eligible.append(pos)
+                    ep = item['eligible_positions']
+                    # Yahoo returns list-of-dicts, list-of-strings, or a dict — handle all
+                    if isinstance(ep, list):
+                        pos_list = ep
+                    elif isinstance(ep, dict):
+                        pos_list = [v for v in ep.values() if v != ep.get('count')]
+                    else:
+                        pos_list = []
+                    for p in pos_list:
+                        pos = p.get('position', '') if isinstance(p, dict) else str(p)
+                        if pos in TRACKED:
+                            eligible.append(pos)
             if player_key and player_name:
                 out.append({
                     'player_key': player_key,
@@ -220,10 +225,13 @@ def lambda_handler(event, context) -> Dict[str, Any]:
 
         # 3. Assign value per player based purely on current rank
         for tk in teams_meta:
+            tname = teams_meta[tk]['name']
             for p in team_rosters[tk]:
                 rank = ar_rank_map.get(p['player_key'], AR_FETCH_LIMIT + 1)
                 p['value']        = rank_to_value(rank)
                 p['current_rank'] = rank if rank <= AR_FETCH_LIMIT else None
+            ss_players = [p for p in team_rosters[tk] if 'SS' in p.get('eligible', [])]
+            logger.info(f"SS pool for {tname}: {[(p['name'], p['current_rank']) for p in ss_players]}")
 
         # 4. Compute + normalize
         teams_data = [{'name': meta['name'], 'players': team_rosters[tk]}
