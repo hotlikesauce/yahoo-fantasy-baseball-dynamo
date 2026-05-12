@@ -1,4 +1,30 @@
 (function() {
+  // Inject favicon + PWA manifest into every page
+  (function injectHead() {
+    const base = document.currentScript
+      ? document.currentScript.src.replace(/nav\.js.*$/, '')
+      : '';
+    [
+      { rel: 'icon', type: 'image/png', sizes: '32x32',  href: base + 'icon-32.png' },
+      { rel: 'icon', type: 'image/png', sizes: '192x192', href: base + 'icon-192.png' },
+      { rel: 'apple-touch-icon', sizes: '192x192', href: base + 'icon-192.png' },
+      { rel: 'manifest', href: base + 'manifest.json' },
+    ].forEach(function(attrs) {
+      var existing = document.querySelector('link[rel="' + attrs.rel + '"]');
+      if (attrs.rel === 'icon' && attrs.sizes) existing = document.querySelector('link[rel="icon"][sizes="' + attrs.sizes + '"]');
+      if (existing) return;
+      var el = document.createElement('link');
+      Object.keys(attrs).forEach(function(k) { el.setAttribute(k, attrs[k]); });
+      document.head.appendChild(el);
+    });
+    // Theme color for browser chrome
+    if (!document.querySelector('meta[name="theme-color"]')) {
+      var meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = '#0f172a';
+      document.head.appendChild(meta);
+    }
+  })();
   const style = document.createElement('style');
   style.textContent = `
     /* ── Shared ─────────────────────────────────────────────────────────── */
