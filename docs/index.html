@@ -394,12 +394,12 @@
         </tr>`;
       });
 
-      // --- Power Rankings: most recent week's score, sorted descending ---
-      if (lastWeek && trends && trends.teams && trends.weeklyPowerScores) {
+      // --- Power Rankings: season-to-date running power score (same as Season Trends page) ---
+      if (lastWeek && trends && trends.teams && trends.runningPowerScores) {
         const ranked = trends.teams.map(t => ({
           name: t.name,
-          score: (trends.weeklyPowerScores[t.tn] && trends.weeklyPowerScores[t.tn][lastWeek] != null)
-            ? parseFloat(trends.weeklyPowerScores[t.tn][lastWeek]) : 0,
+          score: (trends.runningPowerScores[t.tn] && trends.runningPowerScores[t.tn][lastWeek] != null)
+            ? parseFloat(trends.runningPowerScores[t.tn][lastWeek]) : 0,
         })).sort((a, b) => b.score - a.score);
 
         const powerBody = document.getElementById('powerBody');

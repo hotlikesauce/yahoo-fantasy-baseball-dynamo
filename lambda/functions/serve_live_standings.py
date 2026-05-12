@@ -7,10 +7,16 @@ Triggered by: Lambda Function URL (HTTPS) - called from browser every 5 min.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any
 
+import boto3
 import yahoo_fantasy_lib as yfl
+
+dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+standings_table = dynamodb.Table('FantasyBaseball-Standings')
+
+CACHE_TTL_HOURS = 12
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -166,10 +172,55 @@ def parse_scoreboard(league_arr):
     return matchups, sb_week
 
 
+def _cache_get():
+    """Return cached response body string if fresh, else None."""
+    try:
+        resp = standings_table.get_item(Key={'Year': '2026', 'Week': 'current'})
+        item = resp.get('Item')
+        if not item:
+            return None
+        cached_at = datetime.fromisoformat(item['CachedAt'])
+        if cached_at.tzinfo is None:
+            cached_at = cached_at.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) - cached_at < timedelta(hours=CACHE_TTL_HOURS):
+            logger.info(f"Cache hit — age {datetime.now(timezone.utc) - cached_at}")
+            return item['Data']
+    except Exception as e:
+        logger.warning(f"Cache read failed: {e}")
+    return None
+
+
+def _cache_put(data_str: str):
+    try:
+        standings_table.put_item(Item={
+            'Year': '2026',
+            'Week': 'current',
+            'Data': data_str,
+            'CachedAt': datetime.now(timezone.utc).isoformat(),
+        })
+    except Exception as e:
+        logger.warning(f"Cache write failed: {e}")
+
+
 def lambda_handler(event, context) -> Dict[str, Any]:
     """Lambda handler - returns JSON for the live standings page."""
     try:
         yfl.log_execution("serve_live_standings", "START")
+
+        # Serve from cache if fresh (avoids N+1 Yahoo API calls per page load)
+        cached = _cache_get()
+        if cached:
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Cache-Control': 'max-age=3600',
+                },
+                'body': cached,
+            }
 
         secrets = yfl.get_secrets()
         league_id = secrets.get('YAHOO_LEAGUE_ID_2026')
@@ -248,6 +299,9 @@ def lambda_handler(event, context) -> Dict[str, Any]:
         yfl.log_execution("serve_live_standings", "SUCCESS",
                           f"Week {sb_week}, {len(standings)} teams, {len(current_matchups)} matchups")
 
+        body = json.dumps(result)
+        _cache_put(body)
+
         return {
             'statusCode': 200,
             'headers': {
@@ -255,9 +309,9 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type',
-                'Cache-Control': 'max-age=120',
+                'Cache-Control': 'max-age=3600',
             },
-            'body': json.dumps(result),
+            'body': body,
         }
 
     except Exception as e:

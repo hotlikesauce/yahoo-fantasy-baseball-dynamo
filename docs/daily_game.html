@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Daily Game ⚾ — Summertime Sadness</title>
+<style>
+  .game-wrap {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+
+  .game-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .game-header h1 {
+    font-size: 1.8em;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .game-header .date-badge {
+    display: inline-block;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.82em;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+  .game-header .subtitle {
+    color: #64748b;
+    font-size: 0.9em;
+  }
+
+  /* Streak bar */
+  .streak-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 0.82em;
+    color: #64748b;
+  }
+  .streak-row span { color: #e2e8f0; font-weight: 700; }
+
+  /* Stat line card */
+  .stat-card {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '⚾';
+    position: absolute;
+    top: -10px; right: -10px;
+    font-size: 80px;
+    opacity: 0.04;
+  }
+  .stat-card .label {
+    color: #64748b;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .stat-card .stat-line {
+    font-size: 1.6em;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+  .stat-card .pitcher-badge {
+    display: inline-block;
+    background: #3b82f620;
+    border: 1px solid #3b82f640;
+    color: #60a5fa;
+    font-size: 0.7em;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Guess tracker dots */
+  .guess-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .guess-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #334155;
+    transition: background 0.3s;
+  }
+  .guess-dot.used   { background: #ef4444; }
+  .guess-dot.won    { background: #22c55e; }
+
+  /* Hints */
+  .hints-area {
+    min-height: 36px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .hint-pill {
+    background: #1e293b;
+    border: 1px solid #fbbf2440;
+    color: #fbbf24;
+    font-size: 0.8em;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* MLB team grid */
+  .team-section { margin-bottom: 12px; }
+  .division-label {
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .team-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 7px;
+    color: #94a3b8;
+    font-size: 0.72em;
+    font-weight: 700;
+    padding: 7px 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  .team-btn:hover:not(:disabled) {
+    background: #2d3f55;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+  .team-btn:disabled { cursor: default; }
+
+  /* Guess result colors */
+  .team-btn.result-correct  { background: #14532d; border-color: #22c55e; color: #86efac; }
+  .team-btn.result-division { background: #7c2d12; border-color: #f97316; color: #fdba74; }
+  .team-btn.result-league   { background: #713f12; border-color: #eab308; color: #fde047; }
+  .team-btn.result-wrong    { background: #0f172a; border-color: #1e293b; color: #334155; }
+
+  /* Guess history */
+  .guess-history {
+    margin-bottom: 16px;
+  }
+  .guess-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.88em;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+  .guess-row.correct  { background: #14532d40; border: 1px solid #22c55e30; }
+  .guess-row.division { background: #7c2d1240; border: 1px solid #f9731630; }
+  .guess-row.league   { background: #71400040; border: 1px solid #eab30830; }
+  .guess-row.wrong    { background: #1e293b; border: 1px solid #334155; color: #475569; }
+  .guess-color-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .correct  .guess-color-dot  { background: #22c55e; }
+  .division .guess-color-dot  { background: #f97316; }
+  .league   .guess-color-dot  { background: #eab308; }
+  .wrong    .guess-color-dot  { background: #334155; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75em;
+    color: #64748b;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  /* Result card */
+  .result-card {
+    display: none;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 16px;
+    animation: fadeIn 0.5s ease;
+  }
+  .result-card.show { display: block; }
+  .result-card.win  { border-color: #22c55e40; background: #14532d20; }
+  .result-card.lose { border-color: #ef444440; }
+  .result-card .result-emoji { font-size: 2.5em; margin-bottom: 8px; }
+  .result-card .result-title { font-size: 1.1em; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+  .result-card .player-name  { font-size: 1.5em; font-weight: 800; color: #f1f5f9; margin: 8px 0 4px; }
+  .result-card .mlb-team     { color: #60a5fa; font-size: 0.95em; margin-bottom: 12px; }
+  .result-card .owner-line   {
+    display: inline-block;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    color: #94a3b8;
+  }
+  .result-card .owner-line strong { color: #e2e8f0; }
+  .result-card .rank-badge {
+    display: inline-block;
+    background: #7c3aed20;
+    border: 1px solid #7c3aed40;
+    color: #a78bfa;
+    font-size: 0.78em;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+  }
+
+  /* Share / next */
+  .result-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-share, .btn-next {
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    transition: opacity 0.15s;
+  }
+  .btn-share { background: #3b82f6; color: white; }
+  .btn-next  { background: #1e293b; border: 1px solid #334155; color: #94a3b8; }
+  .btn-share:hover, .btn-next:hover { opacity: 0.85; }
+
+  /* Shake animation */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-5px); }
+    40%      { transform: translateX(5px); }
+    60%      { transform: translateX(-3px); }
+    80%      { transform: translateX(3px); }
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 9999;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    top: -20px;
+    animation: confettiFall linear forwards;
+    border-radius: 2px;
+  }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* No data state */
+  .no-data {
+    text-align: center;
+    padding: 60px 20px;
+    color: #475569;
+  }
+  .no-data .emoji { font-size: 3em; margin-bottom: 16px; }
+
+  @media (max-width: 480px) {
+    .team-grid { grid-template-columns: repeat(5, 1fr); gap: 3px; }
+    .team-btn { font-size: 0.65em; padding: 6px 2px; }
+    .stat-card .stat-line { font-size: 1.3em; }
+  }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+
+<div class="game-wrap">
+
+  <div class="game-header">
+    <div class="date-badge" id="dateBadge">Loading…</div>
+    <h1>⚾ Stat Line Guesser</h1>
+    <p class="subtitle">Guess the MLB team behind last night's top fantasy stat line.</p>
+  </div>
+
+  <div class="streak-row">
+    <div>🔥 Streak: <span id="streakVal">0</span></div>
+    <div>✅ Won: <span id="wonVal">0</span></div>
+    <div>🎯 Played: <span id="playedVal">0</span></div>
+  </div>
+
+  <div id="gameArea" style="display:none">
+
+    <div class="stat-card">
+      <div class="label" id="statLabel">Last night's top performance</div>
+      <div class="stat-line" id="statLine">—</div>
+      <div id="pitcherBadge" class="pitcher-badge" style="display:none">Pitcher</div>
+    </div>
+
+    <div class="guess-dots" id="guessDots"></div>
+
+    <div class="hints-area" id="hintsArea"></div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Correct team</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Same division</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div> Same league</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#334155"></div> Different league</div>
+    </div>
+
+    <div class="guess-history" id="guessHistory"></div>
+
+    <div id="teamGridWrap"></div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-emoji" id="resultEmoji"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="player-name" id="resultPlayer"></div>
+      <div class="mlb-team" id="resultMlbTeam"></div>
+      <div class="owner-line" id="resultOwner"></div>
+      <div class="result-actions">
+        <button class="btn-share" onclick="shareResult()">📋 Copy Result</button>
+        <a href="season_trends_2026.html" class="btn-next">View Season Trends →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="noData" style="display:none" class="no-data">
+    <div class="emoji">⚾</div>
+    <p>No puzzle available yet — check back after 8:30am MST when last night's data is loaded.</p>
+  </div>
+
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ── MLB teams: league + division ──────────────────────────────────────────────
+const MLB_TEAMS = {
+  // AL East
+  'New York Yankees':    {abbr:'NYY', league:'AL', div:'East'},
+  'Boston Red Sox':      {abbr:'BOS', league:'AL', div:'East'},
+  'Tampa Bay Rays':      {abbr:'TBR', league:'AL', div:'East'},
+  'Toronto Blue Jays':   {abbr:'TOR', league:'AL', div:'East'},
+  'Baltimore Orioles':   {abbr:'BAL', league:'AL', div:'East'},
+  // AL Central
+  'Cleveland Guardians': {abbr:'CLE', league:'AL', div:'Central'},
+  'Chicago White Sox':   {abbr:'CHW', league:'AL', div:'Central'},
+  'Minnesota Twins':     {abbr:'MIN', league:'AL', div:'Central'},
+  'Kansas City Royals':  {abbr:'KCR', league:'AL', div:'Central'},
+  'Detroit Tigers':      {abbr:'DET', league:'AL', div:'Central'},
+  // AL West
+  'Houston Astros':      {abbr:'HOU', league:'AL', div:'West'},
+  'Seattle Mariners':    {abbr:'SEA', league:'AL', div:'West'},
+  'Los Angeles Angels':  {abbr:'LAA', league:'AL', div:'West'},
+  'Texas Rangers':       {abbr:'TEX', league:'AL', div:'West'},
+  'Athletics':           {abbr:'ATH', league:'AL', div:'West'},
+  // NL East
+  'Atlanta Braves':      {abbr:'ATL', league:'NL', div:'East'},
+  'New York Mets':       {abbr:'NYM', league:'NL', div:'East'},
+  'Philadelphia Phillies':{abbr:'PHI', league:'NL', div:'East'},
+  'Miami Marlins':       {abbr:'MIA', league:'NL', div:'East'},
+  'Washington Nationals':{abbr:'WSH', league:'NL', div:'East'},
+  // NL Central
+  'Chicago Cubs':        {abbr:'CHC', league:'NL', div:'Central'},
+  'St. Louis Cardinals': {abbr:'STL', league:'NL', div:'Central'},
+  'Milwaukee Brewers':   {abbr:'MIL', league:'NL', div:'Central'},
+  'Cincinnati Reds':     {abbr:'CIN', league:'NL', div:'Central'},
+  'Pittsburgh Pirates':  {abbr:'PIT', league:'NL', div:'Central'},
+  // NL West
+  'Los Angeles Dodgers': {abbr:'LAD', league:'NL', div:'West'},
+  'San Francisco Giants':{abbr:'SFG', league:'NL', div:'West'},
+  'San Diego Padres':    {abbr:'SDP', league:'NL', div:'West'},
+  'Colorado Rockies':    {abbr:'COL', league:'NL', div:'West'},
+  'Arizona Diamondbacks':{abbr:'ARI', league:'NL', div:'West'},
+};
+
+const DIVISIONS = [
+  {label:'AL East',    teams:['New York Yankees','Boston Red Sox','Tampa Bay Rays','Toronto Blue Jays','Baltimore Orioles']},
+  {label:'AL Central', teams:['Cleveland Guardians','Chicago White Sox','Minnesota Twins','Kansas City Royals','Detroit Tigers']},
+  {label:'AL West',    teams:['Houston Astros','Seattle Mariners','Los Angeles Angels','Texas Rangers','Athletics']},
+  {label:'NL East',    teams:['Atlanta Braves','New York Mets','Philadelphia Phillies','Miami Marlins','Washington Nationals']},
+  {label:'NL Central', teams:['Chicago Cubs','St. Louis Cardinals','Milwaukee Brewers','Cincinnati Reds','Pittsburgh Pirates']},
+  {label:'NL West',    teams:['Los Angeles Dodgers','San Francisco Giants','San Diego Padres','Colorado Rockies','Arizona Diamondbacks']},
+];
+
+const MAX_GUESSES  = 6;
+const SERVE_URL    = 'https://zaai7rpcqjveztpjmyhnagr2oa0mlypk.lambda-url.us-west-2.on.aws/';
+const STORAGE_KEY  = 'statGuesser_v1';
+
+let puzzle       = null;
+let state        = null; // {date, guesses:[], won, done}
+
+// ── Proximity logic ───────────────────────────────────────────────────────────
+function normalize(name) {
+  return name.toLowerCase().replace(/[^a-z]/g,'');
+}
+
+function findTeam(name) {
+  if (MLB_TEAMS[name]) return name;
+  const n = normalize(name);
+  return Object.keys(MLB_TEAMS).find(k => normalize(k) === n) || null;
+}
+
+function proximity(guessedName, answerName) {
+  const g = MLB_TEAMS[findTeam(guessedName)];
+  const a = MLB_TEAMS[findTeam(answerName)];
+  if (!g || !a) return 'wrong';
+  if (guessedName === answerName || findTeam(guessedName) === findTeam(answerName)) return 'correct';
+  if (g.league === a.league && g.div === a.div) return 'division';
+  if (g.league === a.league) return 'league';
+  return 'wrong';
+}
+
+const RESULT_LABEL = {
+  correct:  '✅ Correct team!',
+  division: '🟧 Same division',
+  league:   '🟨 Same league',
+  wrong:    '⬜ Different league',
+};
+
+// ── State persistence ─────────────────────────────────────────────────────────
+function loadAllState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveAllState(all) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); } catch {}
+}
+
+function loadState(date) {
+  const all = loadAllState();
+  return all[date] || { date, guesses: [], won: false, done: false };
+}
+function saveState() {
+  const all = loadAllState();
+  all[state.date] = state;
+  saveAllState(all);
+}
+
+// ── Stats (streak etc.) ───────────────────────────────────────────────────────
+function getStats() {
+  const all = loadAllState();
+  let played = 0, won = 0, streak = 0;
+  const dates = Object.keys(all).sort();
+  for (const d of dates) {
+    if (all[d].done) {
+      played++;
+      if (all[d].won) { won++; streak++; } else { streak = 0; }
+    }
+  }
+  return { played, won, streak };
+}
+
+function renderStats() {
+  const s = getStats();
+  document.getElementById('streakVal').textContent  = s.streak;
+  document.getElementById('wonVal').textContent     = s.won;
+  document.getElementById('playedVal').textContent  = s.played;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderDots() {
+  const el = document.getElementById('guessDots');
+  el.innerHTML = '';
+  for (let i = 0; i < MAX_GUESSES; i++) {
+    const d  = document.createElement('div');
+    d.className = 'guess-dot';
+    if (i < state.guesses.length) {
+      d.classList.add(state.guesses[i].result === 'correct' ? 'won' : 'used');
+    }
+    el.appendChild(d);
+  }
+}
+
+function renderHints() {
+  const el = document.getElementById('hintsArea');
+  el.innerHTML = '';
+  const numGuesses = state.guesses.length;
+  [2, 4, 6].forEach(threshold => {
+    if (numGuesses >= threshold && puzzle.hints[String(threshold)]) {
+      const pill = document.createElement('div');
+      pill.className   = 'hint-pill';
+      pill.textContent = '💡 ' + puzzle.hints[String(threshold)];
+      el.appendChild(pill);
+    }
+  });
+}
+
+function renderGuessHistory() {
+  const el = document.getElementById('guessHistory');
+  el.innerHTML = '';
+  state.guesses.forEach(g => {
+    const row = document.createElement('div');
+    row.className = `guess-row ${g.result}`;
+    row.innerHTML = `
+      <div class="guess-color-dot"></div>
+      <div style="flex:1;font-weight:600;color:#e2e8f0">${g.team}</div>
+      <div style="color:#64748b;font-size:0.85em">${RESULT_LABEL[g.result]}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function buildTeamGrid() {
+  const wrap = document.getElementById('teamGridWrap');
+  wrap.innerHTML = '';
+
+  DIVISIONS.forEach(div => {
+    const section = document.createElement('div');
+    section.className = 'team-section';
+
+    const label = document.createElement('div');
+    label.className   = 'division-label';
+    label.textContent = div.label;
+    section.appendChild(label);
+
+    const grid = document.createElement('div');
+    grid.className = 'team-grid';
+
+    div.teams.forEach(teamName => {
+      const info = MLB_TEAMS[teamName];
+      const btn  = document.createElement('button');
+      btn.className        = 'team-btn';
+      btn.textContent      = info.abbr;
+      btn.title            = teamName;
+      btn.dataset.team     = teamName;
+      btn.addEventListener('click', () => makeGuess(teamName));
+
+      // Restore any previous guess result
+      const prev = state.guesses.find(g => g.team === teamName);
+      if (prev) {
+        btn.classList.add(`result-${prev.result}`);
+        btn.disabled = true;
+      } else if (state.done) {
+        btn.disabled = true;
+      }
+      grid.appendChild(btn);
+    });
+
+    section.appendChild(grid);
+    wrap.appendChild(section);
+  });
+}
+
+function updateGrid(teamName, result) {
+  const btn = document.querySelector(`[data-team="${CSS.escape(teamName)}"]`);
+  if (btn) {
+    btn.classList.add(`result-${result}`);
+    btn.disabled = true;
+  }
+}
+
+function disableAllButtons() {
+  document.querySelectorAll('.team-btn').forEach(b => b.disabled = true);
+}
+
+// ── Guess logic ───────────────────────────────────────────────────────────────
+function makeGuess(teamName) {
+  if (state.done) return;
+  const result = proximity(teamName, puzzle.answer.mlbTeam);
+  state.guesses.push({ team: teamName, result });
+
+  if (result === 'correct') {
+    state.won  = true;
+    state.done = true;
+  } else if (state.guesses.length >= MAX_GUESSES) {
+    state.done = true;
+  }
+
+  saveState();
+  renderDots();
+  renderHints();
+  renderGuessHistory();
+  updateGrid(teamName, result);
+
+  if (result !== 'correct') {
+    const btn = document.querySelector(`[data-team="${CSS.escape(teamName)}"]`);
+    if (btn) {
+      btn.classList.add('shake');
+      btn.addEventListener('animationend', () => btn.classList.remove('shake'), { once: true });
+    }
+  }
+
+  if (state.done) {
+    disableAllButtons();
+    renderStats();
+    setTimeout(showResult, 400);
+    if (state.won) spawnConfetti();
+  }
+}
+
+// ── Result card ───────────────────────────────────────────────────────────────
+function showResult() {
+  const card = document.getElementById('resultCard');
+  card.className = 'result-card show ' + (state.won ? 'win' : 'lose');
+
+  document.getElementById('resultEmoji').textContent  = state.won ? '🎉' : '😔';
+  document.getElementById('resultTitle').textContent  = state.won
+    ? `Got it in ${state.guesses.length}!`
+    : 'Better luck tomorrow';
+
+  const a = puzzle.answer;
+  document.getElementById('resultPlayer').textContent  = a.playerName;
+  document.getElementById('resultMlbTeam').textContent = a.mlbTeam;
+
+  const rankStr = a.rank ? `<span class="rank-badge">AR #${a.rank}</span>` : '';
+  document.getElementById('resultOwner').innerHTML =
+    `Owned by <strong>${a.fantasyTeam}</strong> ${rankStr}`;
+}
+
+// ── Share ─────────────────────────────────────────────────────────────────────
+function shareResult() {
+  const squares = state.guesses.map(g => ({
+    correct: '🟩', division: '🟧', league: '🟨', wrong: '⬜'
+  }[g.result])).join('');
+  const txt = `⚾ Stat Line Guesser ${puzzle.date}\n${squares} ${state.won ? state.guesses.length + '/' + MAX_GUESSES : 'X/' + MAX_GUESSES}\nSummertime Sadness Fantasy Baseball`;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.querySelector('.btn-share');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy Result', 1500);
+  }).catch(() => alert(txt));
+}
+
+// ── Confetti ──────────────────────────────────────────────────────────────────
+function spawnConfetti() {
+  const colors = ['#22c55e','#3b82f6','#f59e0b','#a855f7','#ef4444','#06b6d4'];
+  const cont   = document.getElementById('confettiContainer');
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*8}px;
+      height:${6+Math.random()*8}px;
+      animation-duration:${1.2+Math.random()*1.5}s;
+      animation-delay:${Math.random()*0.6}s;
+    `;
+    cont.appendChild(p);
+    p.addEventListener('animationend', () => p.remove());
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+function formatDate(dateStr) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+}
+
+async function init() {
+  renderStats();
+
+  let data;
+  try {
+    const r = await fetch(SERVE_URL);
+    data = await r.json();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('noData').style.display = 'block';
+    return;
+  }
+
+  if (!data.available) {
+    document.getElementById('noData').style.display = 'block';
+    return;
+  }
+
+  puzzle = data;
+  state  = loadState(puzzle.date);
+
+  document.getElementById('dateBadge').textContent = formatDate(puzzle.date);
+  document.getElementById('statLine').textContent  = puzzle.statLine;
+  if (puzzle.isPitcher) document.getElementById('pitcherBadge').style.display = 'inline-block';
+
+  document.getElementById('gameArea').style.display = 'block';
+
+  renderDots();
+  renderHints();
+  renderGuessHistory();
+  buildTeamGrid();
+
+  if (state.done) {
+    disableAllButtons();
+    showResult();
+  }
+}
+
+init();
+</script>
+</body>
+</html>

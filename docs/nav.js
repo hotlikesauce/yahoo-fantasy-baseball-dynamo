@@ -281,6 +281,9 @@
           <li class="ss-nav-item">
             <a href="manager_profiles.html" class="ss-nav-link${isActive('manager_profiles.html')}">Manager Profiles</a>
           </li>
+          <li class="ss-nav-item">
+            <a href="daily_game.html" class="ss-nav-link${isActive('daily_game.html')}">Daily Game</a>
+          </li>
         </ul>
 
         <!-- Hamburger -->
@@ -329,6 +332,7 @@
         <a href="all_time_rankings.html" class="ss-mob-link${isActive('all_time_rankings.html')}">All-Time Records</a>
         <a href="h2h_records.html" class="ss-mob-link${isActive('h2h_records.html')}">H2H Records</a>
         <a href="manager_profiles.html" class="ss-mob-link${isActive('manager_profiles.html')}">Manager Profiles</a>
+        <a href="daily_game.html" class="ss-mob-link${isActive('daily_game.html')}">Daily Game</a>
       </div>
     </nav>
   `;
