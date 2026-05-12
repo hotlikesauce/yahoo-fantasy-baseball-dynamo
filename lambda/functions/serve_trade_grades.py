@@ -13,7 +13,12 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
+import boto3
+from boto3.dynamodb.conditions import Key
 import yahoo_fantasy_lib as yfl
+
+dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+roster_table = dynamodb.Table('FantasyBaseball-RosterData')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -45,7 +50,7 @@ def pick_value_for_round(round_num: int) -> float:
 
 def player_value(rank: Optional[int]) -> float:
     """Convert overall player rank to point value (same scale as picks)."""
-    if rank is None or rank > 600:
+    if rank is None or rank > 1000:
         return 1.5
     return round(SCALE * (DECAY ** (rank - 1)), 1)
 
@@ -237,34 +242,24 @@ def _parse_player_list(p_list: list, rank: Optional[int] = None) -> tuple:
 def fetch_player_ranks(token: str, league_key: str, traded_keys: list) -> dict:
     """
     Build rank map:
-    1. Top 300 by current in-season rank (sort=AR), 25 per page (Yahoo limit).
-    2. Direct lookup of all traded player keys for ADP.
+    1. Read cached AR rank map from DynamoDB (populated nightly by pull_roster_data).
+    2. Direct Yahoo lookup for ADP on the specific traded player keys.
     Returns {player_key: {rank, adp, name, pos}}.
     """
     rank_map: dict = {}
 
-    # Step 1: top 400 current rank, 25/page
-    for start in range(0, 400, 25):
-        data = yfl.api_get(token, f"league/{league_key}/players;start={start};count=25;sort=AR", timeout=15)
-        if not data:
-            continue
-        try:
-            league_data = data.get('fantasy_content', {}).get('league', [])
-            if len(league_data) < 2:
-                continue
-            players_raw = league_data[1].get('players', {})
-            cnt = int(players_raw.get('count', 0))
-            for i in range(cnt):
-                p_list = players_raw.get(str(i), {}).get('player', [])
-                if not p_list:
-                    continue
-                pkey, pname, ppos, _ = _parse_player_list(p_list)
-                if pkey:
-                    rank_map.setdefault(pkey, {}).update({'rank': start + i + 1, 'name': pname, 'pos': ppos})
-        except Exception as e:
-            logger.warning(f"Rank page start={start}: {e}")
+    # Step 1: cached rank map from DynamoDB (1000 players, refreshed nightly at 6am MST)
+    try:
+        resp = roster_table.get_item(Key={'Year': 2026, 'TeamName': '#ar_rank_map'})
+        item = resp.get('Item', {})
+        cached = json.loads(item.get('RankMap', '{}'))
+        for pkey, rank in cached.items():
+            rank_map[pkey] = {'rank': rank}
+        logger.info(f"Loaded {len(rank_map)} ranks from DynamoDB cache")
+    except Exception as e:
+        logger.warning(f"DynamoDB rank map read failed, falling back to empty: {e}")
 
-    # Step 2: direct lookup for ADP on traded players
+    # Step 2: direct Yahoo lookup for ADP + names on traded players only
     if traded_keys:
         keys_str = ','.join(traded_keys[:50])
         data = yfl.api_get(token, f"league/{league_key}/players;player_keys={keys_str};out=draft_analysis", timeout=20)

@@ -213,14 +213,39 @@
   .standings-table .team-name { font-size: 0.88em; white-space: nowrap; }
 
   @media (max-width: 768px) {
-    .hero { padding: 32px 16px 24px; }
-    .hero h1 { font-size: 2em; }
-    .hero p { font-size: 1em; }
-    .panel { overflow-x: auto; }
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stat-card { padding: 16px; }
-    .stat-card .value { font-size: 1.4em; }
+    .hero { padding: 24px 12px 20px; }
+    .hero h1 { font-size: 1.7em; }
+    .hero p { font-size: 0.95em; }
+    .year20-badge { font-size: 1.1em; padding: 8px 20px; }
+
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { padding: 14px 12px; }
+    .stat-card .value { font-size: 1.3em; }
+    .stat-card .sub { font-size: 0.8em; }
+
     .nav-cards { grid-template-columns: 1fr; gap: 12px; }
+    .nav-card { padding: 18px; }
+
+    /* Tables: let them scroll sideways rather than overflow the page */
+    .panel { padding: 14px 12px; }
+    .standings-table .team-name { white-space: normal; font-size: 0.82em; }
+    .standings-table .mgr-link { display: none; }
+    .standings-table td, .standings-table th { padding: 8px 6px; font-size: 0.78em; }
+
+    /* Title leader bars: tighten up */
+    .title-name { min-width: 60px; font-size: 0.88em; }
+    .title-bar { font-size: 0.82em; }
+
+    /* Champions list */
+    .champ-name { font-size: 0.85em; }
+    .champ-year { font-size: 0.85em; }
+    .champ-mgr { font-size: 0.78em; }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 1.4em; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-card .value { font-size: 1.15em; }
   }
 </style>
 </head>

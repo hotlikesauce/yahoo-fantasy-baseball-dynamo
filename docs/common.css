@@ -124,7 +124,11 @@ tr:hover { background: #1e293b55; }
   overflow-x: auto;
 }
 @media (max-width: 768px) {
-  .two-col { grid-template-columns: 1fr; }
+  .container { padding: 16px 12px; }
+  .two-col { grid-template-columns: 1fr; gap: 16px; }
+  h2 { font-size: 1.15em; margin: 24px 0 12px; }
+  h3 { font-size: 1.1em; margin: 20px 0 10px; }
+  .card, .panel { padding: 16px 14px; }
 }
 
 /* Section description text */
