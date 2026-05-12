@@ -155,9 +155,33 @@
     .trade-builder { grid-template-columns: 1fr; }
     .trade-arrow { transform: rotate(90deg); padding: 12px 0; }
   }
+
+  /* Loading overlay */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+  }
+  #loading-box {
+    background: #1e293b; border: 1px solid #475569; border-radius: 16px;
+    padding: 44px 52px; text-align: center; max-width: 380px; width: 90%;
+  }
+  #loading-box p { color: #e2e8f0; font-size: 1.1em; font-weight: 600; margin-bottom: 8px; }
+  #loading-box .loading-sub { color: #64748b; font-size: 0.88em; font-weight: 400; margin-bottom: 0; }
+  .spinner {
+    width: 52px; height: 52px; border: 4px solid #334155; border-top-color: #3b82f6;
+    border-radius: 50%; animation: spin 0.85s linear infinite; margin: 0 auto 24px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+<div id="loading-overlay">
+  <div id="loading-box">
+    <div class="spinner"></div>
+    <p>Loading roster data</p>
+    <p class="loading-sub">Loading rosters from cache — should be quick!</p>
+  </div>
+</div>
 <div id="nav"></div>
 <script src="nav.js"></script>
 <div class="container">
@@ -238,126 +262,167 @@
 
 <script>
 (function() {
-  // Draft pick value formula (matches gen_draft_picks.py)
-  const TOTAL_ROUNDS = 22;
-  function pickValue(round) {
-    return Math.round(Math.pow(TOTAL_ROUNDS + 1 - round, 1.5));
+  // Exponential decay value: rank 1 = 242, rank 600 ≈ 2. Matches draft_picks page.
+  const DECAY = 0.98;
+  const SCALE = 242;
+  function rankToValue(rank) {
+    if (!rank || rank > 600) return 0;
+    return Math.round(SCALE * Math.pow(DECAY, rank - 1) * 10) / 10;
   }
 
-  // Available draft rounds for pick trading (2027 picks)
-  const DRAFT_ROUNDS = Array.from({length: TOTAL_ROUNDS}, (_, i) => i + 1);
+  // 2027 pick value: avg slot 6.5 → overall pick = (round-1)*12 + 6.5
+  const TOTAL_ROUNDS = 22;
+  function pickValue(round) {
+    const overallPick = (round - 1) * 12 + 6.5;
+    return Math.round(SCALE * Math.pow(DECAY, overallPick - 1) * 10) / 10;
+  }
 
-  let DATA = null;
+  const POS_API_URL   = 'https://s5kpsvzaeab7yqnnzdvvm6qeay0xtnld.lambda-url.us-west-2.on.aws/';
+  const CAPITAL_URL   = 'data/draft_capital_2026.json';
 
-  // Load data
-  fetch('data/trade_data.json')
-    .then(r => r.json())
-    .then(data => {
-      DATA = data;
+  let TEAMS_BY_NAME   = {};  // name -> {name, players}
+  let PICKS_BY_NAME   = {};  // name -> picks[] (22-element array, count per round)
+
+  const overlay = document.getElementById('loading-overlay');
+  const banner  = document.getElementById('no-data-banner');
+
+  Promise.all([
+    fetch(POS_API_URL).then(r => r.json()),
+    fetch(CAPITAL_URL).then(r => r.json()).catch(() => null),
+  ])
+    .then(([posData, capData]) => {
+      if (!posData.rosters) throw new Error('No rosters in response');
+      buildTeamMap(posData);
+      buildPicksMap(capData);
+      overlay.style.display = 'none';
       init();
     })
     .catch(err => {
-      console.error('Failed to load trade data:', err);
-      document.getElementById('no-data-banner').style.display = 'block';
-      document.getElementById('no-data-banner').innerHTML =
-        '<h2>Data Not Found</h2><p>Run <code>python scripts/fetch_trade_data.py</code> to generate trade data.</p>';
+      console.error('Failed to load data:', err);
+      overlay.style.display = 'none';
+      banner.style.display = 'block';
+      banner.innerHTML = `<h2>Failed to Load Roster Data</h2><p>${err.message}</p>`;
     });
+
+  function buildTeamMap(data) {
+    if (data.rosters) {
+      // Lambda returns linear 0-100 values — recompute with exponential decay to match pick scale
+      Object.entries(data.rosters).forEach(([teamName, players]) => {
+        const recalc = players.map(p => ({ ...p, value: rankToValue(p.rank) }));
+        recalc.sort((a, b) => b.value - a.value);
+        TEAMS_BY_NAME[teamName] = { name: teamName, players: recalc };
+      });
+    } else {
+      // Fallback: reconstruct from positional breakdown (partial rosters)
+      Object.entries(data.teams).forEach(([teamName, posData]) => {
+        const seen = new Set();
+        const players = [];
+        Object.entries(posData).forEach(([pos, posInfo]) => {
+          (posInfo.players || []).forEach(p => {
+            if (seen.has(p.name)) return;
+            seen.add(p.name);
+            players.push({ name: p.name, pos, rank: p.current_rank, value: rankToValue(p.current_rank) });
+          });
+        });
+        players.sort((a, b) => b.value - a.value);
+        TEAMS_BY_NAME[teamName] = { name: teamName, players };
+      });
+    }
+  }
+
+  function buildPicksMap(capData) {
+    if (!capData || !capData.teams) return;
+    capData.teams.forEach(t => { PICKS_BY_NAME[t.name] = t.picks; });
+  }
 
   function init() {
-    const teams = DATA.teams;
-    const hasRosters = teams.some(t => t.players && t.players.length > 0);
-
-    if (!hasRosters) {
-      document.getElementById('no-data-banner').style.display = 'block';
-    }
-
-    // Populate team dropdowns
+    const teams = Object.keys(TEAMS_BY_NAME).sort();
     const selA = document.getElementById('team-a-select');
     const selB = document.getElementById('team-b-select');
-
-    teams.forEach(t => {
-      const label = `${t.manager} - ${t.name}`;
-      selA.innerHTML += `<option value="${t.team_id}">${label}</option>`;
-      selB.innerHTML += `<option value="${t.team_id}">${label}</option>`;
+    teams.forEach(name => {
+      selA.innerHTML += `<option value="${name}">${name}</option>`;
+      selB.innerHTML += `<option value="${name}">${name}</option>`;
     });
-
     selA.addEventListener('change', () => renderSide('a'));
     selB.addEventListener('change', () => renderSide('b'));
     document.getElementById('analyze-btn').addEventListener('click', analyzeTrade);
   }
 
-  function getTeam(teamId) {
-    return DATA.teams.find(t => t.team_id === parseInt(teamId));
-  }
-
   function renderSide(side) {
-    const sel = document.getElementById(`team-${side}-select`);
-    const teamId = sel.value;
+    const teamName = document.getElementById(`team-${side}-select`).value;
     const rosterDiv = document.getElementById(`roster-${side}`);
-    const picksDiv = document.getElementById(`picks-${side}`);
+    const picksDiv  = document.getElementById(`picks-${side}`);
 
-    if (!teamId) {
-      rosterDiv.innerHTML = '';
-      picksDiv.innerHTML = '';
-      updateAnalyzeBtn();
-      return;
-    }
+    if (!teamName) { rosterDiv.innerHTML = ''; picksDiv.innerHTML = ''; updateAnalyzeBtn(); return; }
 
-    const team = getTeam(teamId);
+    const team = TEAMS_BY_NAME[teamName];
     if (!team) return;
 
-    // Render players
-    if (team.players && team.players.length > 0) {
-      rosterDiv.innerHTML = team.players.map((p, i) => {
-        const valClass = p.value > 0 ? 'positive' : p.value < 0 ? 'negative' : '';
-        const posStr = p.display_position || p.positions?.join('/') || 'Util';
-        // Show a couple key stats
-        const stats = p.stats || {};
-        let miniStats = '';
-        if (posStr.match(/SP|RP|P/)) {
-          const era = stats['ERA'] !== undefined ? `ERA ${stats['ERA']}` : '';
-          const qs = stats['QS'] !== undefined ? `QS ${stats['QS']}` : '';
-          miniStats = [era, qs].filter(Boolean).join(' ');
-        } else {
-          const hr = stats['HR'] !== undefined ? `${stats['HR']} HR` : '';
-          const rbi = stats['RBI'] !== undefined ? `${stats['RBI']} RBI` : '';
-          miniStats = [hr, rbi].filter(Boolean).join(' ');
+    rosterDiv.innerHTML = team.players.map((p, i) => `
+      <div class="player-row" data-side="${side}" data-idx="${i}" onclick="togglePlayer(event,this)">
+        <input type="checkbox" data-side="${side}" data-idx="${i}">
+        <div class="player-name">${p.name} <span class="pos">${p.pos}</span></div>
+        <div class="player-value ${p.value > 0 ? 'positive' : ''}">${p.value > 0 ? p.value.toFixed(1) : '—'}</div>
+        <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : 'unranked'}</div>
+      </div>`).join('') ||
+      '<div style="color:#64748b;padding:16px;text-align:center;font-size:0.9em">No players found</div>';
+
+    // Picks: use actual owned picks from draft capital (rounds 3+ only, 1-2 are keeper rounds)
+    const ownedPicks = PICKS_BY_NAME[teamName];
+    if (ownedPicks) {
+      const rows = [];
+      ownedPicks.forEach((count, idx) => {
+        const round = idx + 1;
+        if (round <= 2) return; // keeper rounds — not tradeable
+        for (let k = 0; k < count; k++) {
+          const val = pickValue(round);
+          const suffix = count > 1 ? ` (pick ${k + 1} of ${count})` : '';
+          rows.push(`
+            <div class="pick-row" onclick="togglePick(event,this)" data-side="${side}" data-val="${val}">
+              <input type="checkbox" data-side="${side}" data-val="${val}">
+              <span class="pick-round">2027 Rd ${round}${suffix}</span>
+              <span class="pick-value-label">${val.toFixed(1)} pts</span>
+            </div>`);
         }
+      });
+      picksDiv.innerHTML = rows.join('') ||
+        '<div style="color:#64748b;padding:12px;font-size:0.85em;text-align:center">No 2027 picks owned (Rd 3+)</div>';
+    } else {
+      // Fallback: rounds 3-22
+      picksDiv.innerHTML = Array.from({length: TOTAL_ROUNDS - 2}, (_, i) => i + 3).map(r => {
+        const val = pickValue(r);
         return `
-          <div class="player-row" data-side="${side}" data-idx="${i}" onclick="togglePlayer(this)">
-            <input type="checkbox" data-side="${side}" data-idx="${i}">
-            <div class="player-name">${p.name} <span class="pos">${posStr}</span></div>
-            <div class="player-value ${valClass}">${p.value > 0 ? '+' : ''}${p.value?.toFixed(1) || '0.0'}</div>
-            <div class="player-stats-mini">${miniStats}</div>
+          <div class="pick-row" onclick="togglePick(event,this)" data-side="${side}" data-val="${val}">
+            <input type="checkbox" data-side="${side}" data-val="${val}">
+            <span class="pick-round">2027 Rd ${r}</span>
+            <span class="pick-value-label">${val.toFixed(1)} pts</span>
           </div>`;
       }).join('');
-    } else {
-      rosterDiv.innerHTML = '<div style="color:#64748b;padding:16px;text-align:center;font-size:0.9em">No roster data yet</div>';
     }
-
-    // Render draft picks (2027)
-    picksDiv.innerHTML = DRAFT_ROUNDS.map(r => {
-      const val = pickValue(r);
-      return `
-        <div class="pick-row" onclick="togglePick(this)" data-side="${side}" data-round="${r}">
-          <input type="checkbox" data-side="${side}" data-round="${r}">
-          <span class="pick-round">Round ${r}</span>
-          <span class="pick-value-label">${val} pts</span>
-        </div>`;
-    }).join('');
 
     updateAnalyzeBtn();
   }
 
-  // Toggle functions (need to be global)
-  window.togglePlayer = function(row) {
+  // Toggle helpers — pass event so we can detect direct checkbox clicks (which the
+  // browser already handles natively) and avoid double-toggling via the parent div.
+  window.togglePlayer = function(e, row) {
+    if (e.target.type === 'checkbox') {
+      row.classList.toggle('selected', e.target.checked);
+      updateAnalyzeBtn();
+      return;
+    }
     const cb = row.querySelector('input[type="checkbox"]');
     cb.checked = !cb.checked;
     row.classList.toggle('selected', cb.checked);
     updateAnalyzeBtn();
   };
 
-  window.togglePick = function(row) {
+  window.togglePick = function(e, row) {
+    if (e.target.type === 'checkbox') {
+      row.classList.toggle('selected', e.target.checked);
+      updateAnalyzeBtn();
+      return;
+    }
     const cb = row.querySelector('input[type="checkbox"]');
     cb.checked = !cb.checked;
     row.classList.toggle('selected', cb.checked);
@@ -365,173 +430,87 @@
   };
 
   function updateAnalyzeBtn() {
-    const selA = document.getElementById('team-a-select').value;
-    const selB = document.getElementById('team-b-select').value;
-    const hasSelections = getSelectedPlayers('a').length + getSelectedPicks('a').length > 0 ||
-                         getSelectedPlayers('b').length + getSelectedPicks('b').length > 0;
-    document.getElementById('analyze-btn').disabled = !(selA && selB && selA !== selB && hasSelections);
+    const nameA = document.getElementById('team-a-select').value;
+    const nameB = document.getElementById('team-b-select').value;
+    const hasSel = getSelectedPlayers('a').length + getSelectedPicks('a').length > 0 ||
+                   getSelectedPlayers('b').length + getSelectedPicks('b').length > 0;
+    document.getElementById('analyze-btn').disabled = !(nameA && nameB && nameA !== nameB && hasSel);
   }
 
   function getSelectedPlayers(side) {
-    const cbs = document.querySelectorAll(`#roster-${side} input[type="checkbox"]:checked`);
-    const team = getTeam(document.getElementById(`team-${side}-select`).value);
+    const cbs  = document.querySelectorAll(`#roster-${side} input[type="checkbox"]:checked`);
+    const team = TEAMS_BY_NAME[document.getElementById(`team-${side}-select`).value];
     if (!team) return [];
     return Array.from(cbs).map(cb => team.players[parseInt(cb.dataset.idx)]).filter(Boolean);
   }
 
   function getSelectedPicks(side) {
-    const cbs = document.querySelectorAll(`#picks-${side} input[type="checkbox"]:checked`);
-    return Array.from(cbs).map(cb => parseInt(cb.dataset.round));
+    return Array.from(document.querySelectorAll(`#picks-${side} input[type="checkbox"]:checked`))
+      .map(cb => parseFloat(cb.dataset.val));
   }
 
   function analyzeTrade() {
-    const teamA = getTeam(document.getElementById('team-a-select').value);
-    const teamB = getTeam(document.getElementById('team-b-select').value);
+    const nameA = document.getElementById('team-a-select').value;
+    const nameB = document.getElementById('team-b-select').value;
+    const teamA = TEAMS_BY_NAME[nameA];
+    const teamB = TEAMS_BY_NAME[nameB];
     if (!teamA || !teamB) return;
 
-    const playersA = getSelectedPlayers('a'); // Team A sends these
-    const playersB = getSelectedPlayers('b'); // Team B sends these
-    const picksA = getSelectedPicks('a');     // Team A sends these picks
-    const picksB = getSelectedPicks('b');     // Team B sends these picks
+    const playersA = getSelectedPlayers('a');
+    const playersB = getSelectedPlayers('b');
+    const picksA   = getSelectedPicks('a');
+    const picksB   = getSelectedPicks('b');
 
-    // Calculate player values
-    const playerValA = playersA.reduce((sum, p) => sum + (p.value || 0), 0);
-    const playerValB = playersB.reduce((sum, p) => sum + (p.value || 0), 0);
+    const playerValA = playersA.reduce((s, p) => s + p.value, 0);
+    const playerValB = playersB.reduce((s, p) => s + p.value, 0);
+    const pickValA   = picksA.reduce((s, v) => s + v, 0);
+    const pickValB   = picksB.reduce((s, v) => s + v, 0);
 
-    // Calculate draft pick values
-    const pickValA = picksA.reduce((sum, r) => sum + pickValue(r), 0);
-    const pickValB = picksB.reduce((sum, r) => sum + pickValue(r), 0);
+    const aReceives = playerValB + pickValB;
+    const bReceives = playerValA + pickValA;
+    const netA = aReceives - bReceives;
+    const total = aReceives + bReceives;
 
-    // Team A sends playerValA + pickValA, receives playerValB + pickValB
-    const totalSendsA = playerValA + pickValA;
-    const totalSendsB = playerValB + pickValB;
-
-    // Net gain for each team (what they get minus what they give)
-    const netA = totalSendsB - totalSendsA;  // Team A gains
-    const netB = totalSendsA - totalSendsB;  // Team B gains
-
-    // Display summary
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.classList.add('show');
-
-    document.getElementById('summary-team-a-label').textContent = `${teamA.manager} receives`;
-    document.getElementById('summary-team-b-label').textContent = `${teamB.manager} receives`;
+    document.getElementById('summary-team-a-label').textContent = `${nameA} receives`;
+    document.getElementById('summary-team-b-label').textContent = `${nameB} receives`;
 
     const valAEl = document.getElementById('summary-value-a');
     const valBEl = document.getElementById('summary-value-b');
-
-    // What Team A receives: players from B + picks from B
-    const aReceivesPlayer = playerValB;
-    const aReceivesPick = pickValB;
-    const bReceivesPlayer = playerValA;
-    const bReceivesPick = pickValA;
-
-    valAEl.textContent = (aReceivesPlayer + aReceivesPick).toFixed(1);
+    valAEl.textContent = aReceives.toFixed(1);
     valAEl.className = 'value-num ' + (netA > 0 ? 'positive' : netA < 0 ? 'negative' : 'neutral');
+    valBEl.textContent = bReceives.toFixed(1);
+    valBEl.className = 'value-num ' + (netA < 0 ? 'positive' : netA > 0 ? 'negative' : 'neutral');
 
-    valBEl.textContent = (bReceivesPlayer + bReceivesPick).toFixed(1);
-    valBEl.className = 'value-num ' + (netB > 0 ? 'positive' : netB < 0 ? 'negative' : 'neutral');
-
-    // Detail lines
     const detailA = [];
-    if (playersB.length) detailA.push(`${aReceivesPlayer.toFixed(1)} player value`);
-    if (picksB.length) detailA.push(`${aReceivesPick} pick pts`);
-    document.getElementById('summary-detail-a').textContent = detailA.join(' + ');
+    if (playersB.length) detailA.push(`${playerValB.toFixed(1)} player`);
+    if (picksB.length) detailA.push(`${pickValB.toFixed(1)} pick pts`);
+    document.getElementById('summary-detail-a').textContent = detailA.join(' + ') || '—';
 
     const detailB = [];
-    if (playersA.length) detailB.push(`${bReceivesPlayer.toFixed(1)} player value`);
-    if (picksA.length) detailB.push(`${bReceivesPick} pick pts`);
-    document.getElementById('summary-detail-b').textContent = detailB.join(' + ');
+    if (playersA.length) detailB.push(`${playerValA.toFixed(1)} player`);
+    if (picksA.length) detailB.push(`${pickValA.toFixed(1)} pick pts`);
+    document.getElementById('summary-detail-b').textContent = detailB.join(' + ') || '—';
 
-    // Verdict
     const diff = Math.abs(netA);
+    const pct  = total > 0 ? diff / total * 100 : 0;
+    const winner = netA > 0 ? nameA : nameB;
     const verdictEl = document.getElementById('verdict');
-    const winner = netA > 0 ? teamA.manager : teamB.manager;
-    if (diff < 2) {
+    if (pct < 5) {
       verdictEl.className = 'verdict fair';
-      verdictEl.textContent = 'Fair trade - roughly even value';
-    } else if (diff < 5) {
+      verdictEl.textContent = 'Fair trade — roughly even value';
+    } else if (pct < 15) {
       verdictEl.className = 'verdict slight';
-      verdictEl.textContent = `Slight edge to ${winner} (+${diff.toFixed(1)})`;
+      verdictEl.textContent = `Slight edge to ${winner} (+${diff.toFixed(1)} pts, ${pct.toFixed(0)}%)`;
     } else {
       verdictEl.className = 'verdict lopsided';
-      verdictEl.textContent = `${winner} wins big (+${diff.toFixed(1)})`;
+      verdictEl.textContent = `${winner} wins this trade (+${diff.toFixed(1)} pts, ${pct.toFixed(0)}%)`;
     }
 
-    // Category impact
-    renderCategoryImpact(teamA, teamB, playersA, playersB);
+    document.getElementById('cat-impact-card').style.display = 'none';
 
-    // Scroll to results
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.classList.add('show');
     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function renderCategoryImpact(teamA, teamB, playersA, playersB) {
-    if (!DATA.league.stat_categories) return;
-
-    const cats = DATA.league.stat_categories.filter(c =>
-      !['H/AB', 'IP'].includes(c.name)  // Skip display-only stats
-    );
-
-    document.getElementById('cat-team-a-label').textContent = `${teamA.manager}'s Category Changes`;
-    document.getElementById('cat-team-b-label').textContent = `${teamB.manager}'s Category Changes`;
-
-    // Calculate category contributions of traded players
-    function playerCatTotal(players, catName) {
-      return players.reduce((sum, p) => sum + ((p.stats && p.stats[catName]) || 0), 0);
-    }
-
-    // For Team A: loses playersA stats, gains playersB stats
-    const tbodyA = document.querySelector('#cat-table-a tbody');
-    const tbodyB = document.querySelector('#cat-table-b tbody');
-    tbodyA.innerHTML = '';
-    tbodyB.innerHTML = '';
-
-    cats.forEach(cat => {
-      const cname = cat.name;
-      const beforeA = (teamA.category_totals && teamA.category_totals[cname]) || 0;
-      const beforeB = (teamB.category_totals && teamB.category_totals[cname]) || 0;
-
-      const loseA = playerCatTotal(playersA, cname);
-      const gainA = playerCatTotal(playersB, cname);
-      const afterA = beforeA - loseA + gainA;
-
-      const loseB = playerCatTotal(playersB, cname);
-      const gainB = playerCatTotal(playersA, cname);
-      const afterB = beforeB - loseB + gainB;
-
-      const changeA = afterA - beforeA;
-      const changeB = afterB - beforeB;
-
-      const isLower = !cat.higher_is_better;
-
-      function changeClass(change, isLowerBetter) {
-        if (Math.abs(change) < 0.001) return 'cat-neutral';
-        if (isLowerBetter) return change < 0 ? 'cat-improve' : 'cat-worsen';
-        return change > 0 ? 'cat-improve' : 'cat-worsen';
-      }
-
-      function fmt(v) {
-        if (Math.abs(v) < 10) return v.toFixed(3);
-        return v.toFixed(1);
-      }
-
-      tbodyA.innerHTML += `<tr>
-        <td>${cname}</td>
-        <td>${fmt(beforeA)}</td>
-        <td>${fmt(afterA)}</td>
-        <td class="${changeClass(changeA, isLower)}">${changeA >= 0 ? '+' : ''}${fmt(changeA)}</td>
-      </tr>`;
-
-      tbodyB.innerHTML += `<tr>
-        <td>${cname}</td>
-        <td>${fmt(beforeB)}</td>
-        <td>${fmt(afterB)}</td>
-        <td class="${changeClass(changeB, isLower)}">${changeB >= 0 ? '+' : ''}${fmt(changeB)}</td>
-      </tr>`;
-    });
-
-    document.getElementById('cat-impact-card').style.display =
-      (playersA.length || playersB.length) ? 'block' : 'none';
   }
 })();
 </script>

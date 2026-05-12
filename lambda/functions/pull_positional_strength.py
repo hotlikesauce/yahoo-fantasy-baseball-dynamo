@@ -109,8 +109,8 @@ def get_roster(token, team_key) -> List[dict]:
 
 def get_ar_rank_map(token, league_key) -> Dict[str, int]:
     """
-    Fetch top AR_FETCH_LIMIT players sorted by current in-season AR rank.
-    Matches the trade grader approach — pure current performance.
+    Fetch top AR_FETCH_LIMIT players sorted by current in-season overall rank.
+    sort=OR;sort_type=season = Yahoo's live season performance rank.
     Returns {player_key: rank} where rank 1 = best.
     """
     rank_map = {}

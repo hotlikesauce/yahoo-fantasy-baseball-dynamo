@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness Fantasy Baseball</title>
@@ -210,6 +211,17 @@
   .standings-table .mgr-link:hover { color: #3b82f6; text-decoration: underline; }
   .standings-table .rank-num { color: #64748b; font-weight: 500; width: 30px; }
   .standings-table .team-name { font-size: 0.88em; white-space: nowrap; }
+
+  @media (max-width: 768px) {
+    .hero { padding: 32px 16px 24px; }
+    .hero h1 { font-size: 2em; }
+    .hero p { font-size: 1em; }
+    .panel { overflow-x: auto; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card { padding: 16px; }
+    .stat-card .value { font-size: 1.4em; }
+    .nav-cards { grid-template-columns: 1fr; gap: 12px; }
+  }
 </style>
 </head>
 <body>

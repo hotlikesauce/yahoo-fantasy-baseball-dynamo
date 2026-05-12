@@ -262,6 +262,43 @@ def lambda_handler(event, context):
                 if w in running_power[tn]:
                     running_power[tn][w] = round(running_power[tn][w], 1)
 
+        # 4c. Per-category scores at latest week (season-to-date, 0-100 scale)
+        cat_scores = {}
+        cat_raw = {}
+        if stat_weeks:
+            season_agg = {}
+            for tn in tn_latest_name:
+                counts = {}
+                rates = {}
+                for ww in stat_weeks:
+                    if ww not in weekly_stats or tn not in weekly_stats[ww]:
+                        continue
+                    for cat in COUNT_CATS:
+                        if cat in weekly_stats[ww][tn]:
+                            counts[cat] = counts.get(cat, 0) + weekly_stats[ww][tn][cat]
+                    for cat in RATE_CATS:
+                        if cat in weekly_stats[ww][tn]:
+                            rates.setdefault(cat, []).append(weekly_stats[ww][tn][cat])
+                if counts or rates:
+                    season_agg[tn] = {}
+                    for cat in COUNT_CATS:
+                        if cat in counts:
+                            season_agg[tn][cat] = counts[cat]
+                    for cat in RATE_CATS:
+                        if cat in rates:
+                            season_agg[tn][cat] = sum(rates[cat]) / len(rates[cat])
+            for cat in ALL_CATS:
+                vals = {tn: season_agg[tn][cat] for tn in season_agg if cat in season_agg.get(tn, {})}
+                if not vals:
+                    continue
+                min_val = min(vals.values())
+                max_val = max(vals.values())
+                spread = max_val - min_val if max_val != min_val else 1
+                for tn, val in vals.items():
+                    score = (max_val - val) / spread * 100 if cat in LOW_CATS else (val - min_val) / spread * 100
+                    cat_scores.setdefault(tn, {})[cat] = round(score, 1)
+                    cat_raw.setdefault(tn, {})[cat] = round(val, 3) if cat in RATE_CATS else round(val, 1)
+
         # 5. Sort teams by running power score at the latest week
         latest_w = stat_weeks[-1] if stat_weeks else 0
         sorted_tns = sorted(tn_latest_name.keys(),
@@ -393,6 +430,8 @@ def lambda_handler(event, context):
             'last2Label': f"Weeks {last_2[0]}-{last_2[-1]}" if len(last_2) > 1 else f"Week {last_2[0]}",
             'seasonBest': season_best,
             'catOrder': ALL_CATS,
+            'catScores': cat_scores,
+            'catRaw': cat_raw,
             'timestamp': datetime.utcnow().isoformat() + 'Z',
         }
 

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Season Trends</title>
@@ -27,6 +28,19 @@
   .loading-msg { text-align: center; color: #64748b; padding: 60px 0; font-size: 1.1em; }
   .error-msg { text-align: center; color: #ef4444; padding: 40px; background: #1e293b; border-radius: 12px; margin: 20px 0; }
   #last-updated { color: #475569; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
+  .info-btn { background: none; border: 1px solid #475569; color: #64748b; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75em; cursor: pointer; line-height: 18px; text-align: center; margin-left: 8px; vertical-align: middle; transition: border-color 0.2s, color 0.2s; }
+  .info-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: #1e293b; border: 1px solid #475569; border-radius: 14px; padding: 28px; max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+  .modal-box h3 { color: #e2e8f0; margin-bottom: 12px; }
+  .modal-box p, .modal-box li { color: #94a3b8; font-size: 0.9em; line-height: 1.6; }
+  .modal-box ul { padding-left: 20px; }
+  .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #64748b; font-size: 1.4em; cursor: pointer; }
+  .modal-close:hover { color: #e2e8f0; }
+  .xcum-label { font-size: 0.65em; font-weight: 400; color: #64748b; margin-left: 8px; vertical-align: middle; }
+  .cat-dot-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #catTooltip { position: fixed; display: none; background: #1e293b; border: 1px solid #475569; border-radius: 8px; padding: 8px 12px; font-size: 0.85em; color: #e2e8f0; pointer-events: none; z-index: 100; }
 </style>
 </head>
 <body>
@@ -101,6 +115,7 @@ function render(d) {
   // Power Score/Rank toggle (if available)
   if (hasPower) {
     html += `
+<h3>Power Score / Rank <button class="info-btn" onclick="document.getElementById('powerModal').classList.add('show')" title="How is Power Score calculated?">?</button></h3>
 <div class="toggle-container">
   <button class="toggle-btn active" id="btnScore" onclick="showPower('score')">Power Score</button>
   <button class="toggle-btn" id="btnRank" onclick="showPower('rank')">Power Rank</button>
@@ -110,11 +125,18 @@ function render(d) {
   }
 
   html += `
+<h3>Stat Category Breakdown</h3>
+<p class="section-desc">Season-to-date strength per category (0–100). Best team in each category = 100, worst = 0. ERA/WHIP/TB are inverted so lower is better. Hover for raw value.</p>
+<div class="cat-dot-container">
+  <svg id="catDotChart" viewBox="0 0 960 620" style="width:100%;min-width:600px;height:620px" preserveAspectRatio="xMidYMid meet"></svg>
+</div>
+<div id="catTooltip"></div>
+
 <h3>Expected Category Wins by Week</h3>
 <p class="section-desc">Each team's expected category wins per week based on all-play H2H simulation (every team vs every team, 12 categories). Higher = dominated the field that week. Range is 0-12.</p>
 <div class="chart-box"><canvas id="xwinsChart"></canvas></div>
 
-<h3>Cumulative Expected Wins</h3>
+<h3>Cumulative Expected Wins <span class="xcum-label">xCUM</span></h3>
 <p class="section-desc">Running total of expected category wins over the season. Steeper slopes = hot streaks. Flatter = cold stretches.</p>
 <div class="chart-box"><canvas id="cumChart"></canvas></div>
 
@@ -450,6 +472,9 @@ function render(d) {
     }
   });
 
+  // Cat dot chart
+  renderCatDotChart(d);
+
   // Sortable tables
   initSortable(document.getElementById('hotTable'));
 }
@@ -494,7 +519,121 @@ function initSortable(tbl) {
   });
 }
 
+function renderCatDotChart(d) {
+  const { teams, catScores, catRaw, catOrder } = d;
+  const svg = document.getElementById('catDotChart');
+  if (!svg || !catScores || !catOrder || !catOrder.length) return;
+
+  const ML = 38, MR = 12, MT = 18, MB = 60;
+  const W = 960, H = 620;
+  const iW = W - ML - MR, iH = H - MT - MB;
+  const colW = iW / catOrder.length;
+
+  let s = '';
+
+  // Y-axis guides
+  [0, 25, 50, 75, 100].forEach(v => {
+    const y = MT + (1 - v / 100) * iH;
+    s += `<line x1="${ML}" y1="${y}" x2="${W - MR}" y2="${y}" stroke="#334155" stroke-width="${v === 50 ? 1.5 : 1}"/>`;
+    s += `<text x="${ML - 5}" y="${y + 4}" text-anchor="end" fill="#64748b" font-size="11">${v}</text>`;
+  });
+
+  // Column verticals + category labels
+  catOrder.forEach((cat, i) => {
+    const cx = ML + (i + 0.5) * colW;
+    s += `<line x1="${cx}" y1="${MT}" x2="${cx}" y2="${MT + iH}" stroke="#1e293b80" stroke-width="1"/>`;
+    s += `<text x="${cx}" y="${MT + iH + 18}" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">${cat}</text>`;
+    const isLow = ['ERA','WHIP','TB'].includes(cat);
+    if (isLow) s += `<text x="${cx}" y="${MT + iH + 32}" text-anchor="middle" fill="#475569" font-size="9">&#x2193;</text>`;
+  });
+
+  // Per-team groups: line + dots together so opacity/blur apply as one unit
+  teams.forEach(t => {
+    if (!catScores[t.tn]) return;
+    const tn = t.tn.replace(/'/g, '');
+    s += `<g data-tn="${t.tn}" onclick="selectCatTeam('${tn}')" style="cursor:pointer">`;
+
+    const pts = catOrder.map((cat, i) => {
+      const score = catScores[t.tn][cat];
+      if (score == null) return null;
+      return `${ML + (i + 0.5) * colW},${MT + (1 - score / 100) * iH}`;
+    }).filter(Boolean);
+    if (pts.length > 1) {
+      s += `<polyline points="${pts.join(' ')}" fill="none" stroke="${t.color}" stroke-width="1.5" opacity="0.18" pointer-events="none"/>`;
+    }
+
+    catOrder.forEach((cat, i) => {
+      const score = catScores[t.tn][cat];
+      if (score == null) return;
+      const raw = catRaw && catRaw[t.tn] ? catRaw[t.tn][cat] : null;
+      const cx = ML + (i + 0.5) * colW;
+      const cy = MT + (1 - score / 100) * iH;
+      const rawStr = raw != null ? raw : '';
+      const esc = t.name.replace(/'/g, '&#39;').replace(/\\/g, '\\\\');
+      s += `<circle cx="${cx}" cy="${cy}" r="7" fill="${t.color}" opacity="0.85" stroke="#0f172a" stroke-width="1.5"
+        onmouseover="showCatTip(event,'${esc}','${cat}',${score},'${rawStr}')"
+        onmouseout="hideCatTip()"/>`;
+    });
+
+    s += `</g>`;
+  });
+
+  svg.innerHTML = s;
+
+  // Any click on the SVG resets unless it landed on a team group
+  svg.addEventListener('click', function(e) {
+    if (!e.target.closest('g[data-tn]')) selectCatTeam(null);
+  });
+}
+
+let _selectedCatTn = null;
+
+window.selectCatTeam = function(tn) {
+  hideCatTip();
+  const groups = document.querySelectorAll('#catDotChart g[data-tn]');
+  if (_selectedCatTn === tn || tn === null) {
+    _selectedCatTn = null;
+    groups.forEach(g => { g.style.opacity = '1'; g.style.filter = ''; });
+  } else {
+    _selectedCatTn = tn;
+    groups.forEach(g => {
+      const active = g.dataset.tn === tn;
+      g.style.opacity = active ? '1' : '0.08';
+      g.style.filter  = active ? '' : 'blur(1.5px)';
+    });
+  }
+};
+
+window.showCatTip = function(e, team, cat, score, raw) {
+  const tip = document.getElementById('catTooltip');
+  const rawStr = raw !== '' ? `<br><span style="color:#64748b">${cat}: ${raw}</span>` : '';
+  tip.innerHTML = `<strong>${team}</strong> — ${cat} score: <span style="color:#3b82f6">${parseFloat(score).toFixed(1)}</span>/100${rawStr}`;
+  tip.style.display = 'block';
+  tip.style.left = (e.clientX + 14) + 'px';
+  tip.style.top = (e.clientY - 12) + 'px';
+};
+
+window.hideCatTip = function() {
+  document.getElementById('catTooltip').style.display = 'none';
+};
+
 load();
 </script>
+
+<div class="modal-overlay" id="powerModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('powerModal').classList.remove('show')">&times;</button>
+    <h3>How Power Score is Calculated</h3>
+    <p>The <strong>Power Score</strong> (0–1200) measures overall weekly dominance across all 12 scoring categories.</p>
+    <ul>
+      <li>For each category, every team is ranked from best to worst.</li>
+      <li>The best team scores <strong>100</strong>, worst scores <strong>0</strong>, others scale linearly.</li>
+      <li>Scores for all 12 categories are summed → max possible is <strong>1,200</strong>.</li>
+      <li>ERA, WHIP, and TB are <em>lower is better</em> — the team with the lowest value scores 100.</li>
+    </ul>
+    <p style="margin-top:12px">The chart uses <strong>Running Power Score</strong>: cumulative season-to-date stats are normalized each week, so it reflects who has been strongest <em>overall</em> rather than just in the latest week.</p>
+    <p style="margin-top:8px"><strong>Power Rank</strong> is simply the week-by-week ranking (1 = best that week).</p>
+  </div>
+</div>
 </body>
 </html>
