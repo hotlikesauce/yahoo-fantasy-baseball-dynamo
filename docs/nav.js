@@ -8,7 +8,6 @@
       { rel: 'icon', type: 'image/png', sizes: '32x32',  href: base + 'icon-32.png' },
       { rel: 'icon', type: 'image/png', sizes: '192x192', href: base + 'icon-192.png' },
       { rel: 'apple-touch-icon', sizes: '192x192', href: base + 'icon-192.png' },
-      { rel: 'manifest', href: base + 'manifest.json' },
     ].forEach(function(attrs) {
       var existing = document.querySelector('link[rel="' + attrs.rel + '"]');
       if (attrs.rel === 'icon' && attrs.sizes) existing = document.querySelector('link[rel="icon"][sizes="' + attrs.sizes + '"]');
