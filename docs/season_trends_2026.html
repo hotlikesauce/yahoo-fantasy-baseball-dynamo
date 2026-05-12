@@ -127,6 +127,7 @@ function render(d) {
   html += `
 <h3>Stat Category Breakdown</h3>
 <p class="section-desc">Season-to-date strength per category (0–100). Best team in each category = 100, worst = 0. ERA/WHIP/TB are inverted so lower is better. Hover for raw value.</p>
+<div id="catTeamFilter" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:14px;"></div>
 <div class="cat-dot-container">
   <svg id="catDotChart" viewBox="0 0 960 620" style="width:100%;min-width:600px;height:620px" preserveAspectRatio="xMidYMid meet"></svg>
 </div>
@@ -474,6 +475,7 @@ function render(d) {
 
   // Cat dot chart
   renderCatDotChart(d);
+  selectCatTeam(null); // set "All Teams" button active on load
 
   // Sortable tables
   initSortable(document.getElementById('hotTable'));
@@ -584,6 +586,21 @@ function renderCatDotChart(d) {
   svg.addEventListener('click', function(e) {
     if (!e.target.closest('g[data-tn]')) selectCatTeam(null);
   });
+
+  // Build team filter bar
+  const filterBar = document.getElementById('catTeamFilter');
+  if (filterBar) {
+    let fb = `<span style="font-size:0.8em;color:#64748b;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-right:4px;line-height:30px;">Filter:</span>`;
+    fb += `<button id="catBtn_all" onclick="selectCatTeam(null)" style="padding:5px 13px;border-radius:20px;border:2px solid #334155;background:#1e293b;color:#e2e8f0;font-size:0.82em;font-weight:600;cursor:pointer;transition:all 0.15s;" class="cat-team-btn active">All Teams</button>`;
+    teams.forEach(t => {
+      const esc = t.name.replace(/'/g, '&#39;');
+      const tn  = t.tn.replace(/'/g, '');
+      fb += `<button id="catBtn_${tn}" onclick="selectCatTeam('${tn}')" data-tn="${t.tn}"
+        style="padding:5px 13px;border-radius:20px;border:2px solid ${t.color};background:transparent;color:${t.color};font-size:0.82em;font-weight:600;cursor:pointer;transition:all 0.15s;"
+        class="cat-team-btn">${esc}</button>`;
+    });
+    filterBar.innerHTML = fb;
+  }
 }
 
 let _selectedCatTn = null;
@@ -594,6 +611,13 @@ window.selectCatTeam = function(tn) {
   if (_selectedCatTn === tn || tn === null) {
     _selectedCatTn = null;
     groups.forEach(g => { g.style.opacity = '1'; g.style.filter = ''; });
+    // Reset button states
+    document.querySelectorAll('.cat-team-btn').forEach(b => {
+      b.style.opacity = '1';
+      b.classList.remove('active');
+    });
+    const allBtn = document.getElementById('catBtn_all');
+    if (allBtn) { allBtn.classList.add('active'); allBtn.style.background = '#334155'; allBtn.style.color = '#fff'; }
   } else {
     _selectedCatTn = tn;
     groups.forEach(g => {
@@ -601,6 +625,22 @@ window.selectCatTeam = function(tn) {
       g.style.opacity = active ? '1' : '0.08';
       g.style.filter  = active ? '' : 'blur(1.5px)';
     });
+    // Sync button states
+    document.querySelectorAll('.cat-team-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.opacity = '0.35';
+      b.style.background = 'transparent';
+    });
+    const allBtn = document.getElementById('catBtn_all');
+    if (allBtn) { allBtn.style.background = '#1e293b'; allBtn.style.color = '#e2e8f0'; }
+    const activeBtn = document.getElementById('catBtn_' + tn);
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+      activeBtn.style.opacity = '1';
+      const col = activeBtn.style.color;
+      activeBtn.style.background = col;
+      activeBtn.style.color = '#0f172a';
+    }
   }
 };
 

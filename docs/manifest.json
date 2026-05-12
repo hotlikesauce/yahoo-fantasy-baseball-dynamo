@@ -2,7 +2,7 @@
   "name": "Summertime Sadness Fantasy Baseball",
   "short_name": "Summertime Sadness",
   "description": "Fantasy baseball league stats, standings, and tools",
-  "start_url": "/docs/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
