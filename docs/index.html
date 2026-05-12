@@ -290,7 +290,7 @@
             <th>#</th>
             <th style="text-align:left">Team</th>
             <th>Score</th>
-            <th>Trend</th>
+            <th>Wk Chg</th>
           </tr>
         </thead>
         <tbody id="powerBody">
@@ -396,8 +396,12 @@
 
       // --- Power Rankings: season-to-date running power score (same as Season Trends page) ---
       if (lastWeek && trends && trends.teams && trends.runningPowerScores) {
+        const weeks   = trends.statWeeks || [];
+        const prevWeek = weeks.length >= 2 ? String(weeks[weeks.length - 2]) : null;
+
         const ranked = trends.teams.map(t => ({
-          name: t.name,
+          name:  t.name,
+          tn:    t.tn,
           score: (trends.runningPowerScores[t.tn] && trends.runningPowerScores[t.tn][lastWeek] != null)
             ? parseFloat(trends.runningPowerScores[t.tn][lastWeek]) : 0,
         })).sort((a, b) => b.score - a.score);
@@ -405,19 +409,21 @@
         const powerBody = document.getElementById('powerBody');
         powerBody.innerHTML = '';
         ranked.forEach((t, i) => {
-          const powerRank  = i + 1;
-          const actualRank = standingsRank[t.name];
-          let trendStr = '&mdash;';
-          if (actualRank != null) {
-            const diff = actualRank - powerRank;
-            if (diff > 0)      trendStr = `<span style="color:#ef4444">&#x2193;${diff}</span>`;
-            else if (diff < 0) trendStr = `<span style="color:#22c55e">&#x2191;${Math.abs(diff)}</span>`;
-            else               trendStr = `<span style="color:#64748b">&#8212;</span>`;
-          }
+          const curScore  = t.score;
+          const prevScore = prevWeek && trends.runningPowerScores[t.tn] && trends.runningPowerScores[t.tn][prevWeek] != null
+            ? parseFloat(trends.runningPowerScores[t.tn][prevWeek]) : null;
+          const delta = prevScore != null ? curScore - prevScore : null;
+
+          let trendStr;
+          if (delta == null)       trendStr = `<span style="color:#64748b">&mdash;</span>`;
+          else if (delta > 0.5)    trendStr = `<span style="color:#22c55e">+${delta.toFixed(0)}</span>`;
+          else if (delta < -0.5)   trendStr = `<span style="color:#ef4444">${delta.toFixed(0)}</span>`;
+          else                     trendStr = `<span style="color:#64748b">&mdash;</span>`;
+
           powerBody.innerHTML += `<tr>
-            <td class="rank-num">${powerRank}</td>
+            <td class="rank-num">${i + 1}</td>
             <td><span class="team-name">${t.name}</span></td>
-            <td>${t.score > 0 ? t.score.toFixed(0) : '&mdash;'}</td>
+            <td>${curScore > 0 ? curScore.toFixed(0) : '&mdash;'}</td>
             <td>${trendStr}</td>
           </tr>`;
         });
