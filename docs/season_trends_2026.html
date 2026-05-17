@@ -64,7 +64,24 @@ const API_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.o
 // =====================================================
 const legendOpts = {
   position: 'bottom',
-  labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
+  labels: {
+    color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle',
+    generateLabels(chart) {
+      const items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+      items.forEach(item => {
+        const visible = chart.isDatasetVisible(item.datasetIndex);
+        item.fontColor = visible ? '#e2e8f0' : '#475569';
+        item.hidden = false; // prevent Chart.js from applying globalAlpha dimming to text
+        if (!visible) { item.fillStyle = '#1e293b'; item.strokeStyle = '#334155'; item.lineWidth = 1; }
+      });
+      return items;
+    }
+  },
+  onClick(e, legendItem, legend) {
+    const idx = legendItem.datasetIndex;
+    const chart = legend.chart;
+    chart.isDatasetVisible(idx) ? chart.hide(idx) : chart.show(idx);
+  }
 };
 const tooltipBase = {
   backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
@@ -595,7 +612,7 @@ function renderCatDotChart(d) {
     teams.forEach(t => {
       const esc = t.name.replace(/'/g, '&#39;');
       const tn  = t.tn.replace(/'/g, '');
-      fb += `<button id="catBtn_${tn}" onclick="selectCatTeam('${tn}')" data-tn="${t.tn}"
+      fb += `<button id="catBtn_${tn}" onclick="selectCatTeam('${tn}')" data-tn="${t.tn}" data-color="${t.color}"
         style="padding:5px 13px;border-radius:20px;border:2px solid ${t.color};background:transparent;color:${t.color};font-size:0.82em;font-weight:600;cursor:pointer;transition:all 0.15s;"
         class="cat-team-btn">${esc}</button>`;
     });
@@ -630,6 +647,7 @@ window.selectCatTeam = function(tn) {
       b.classList.remove('active');
       b.style.opacity = '0.35';
       b.style.background = 'transparent';
+      if (b.dataset.color) b.style.color = b.dataset.color;
     });
     const allBtn = document.getElementById('catBtn_all');
     if (allBtn) { allBtn.style.background = '#1e293b'; allBtn.style.color = '#e2e8f0'; }

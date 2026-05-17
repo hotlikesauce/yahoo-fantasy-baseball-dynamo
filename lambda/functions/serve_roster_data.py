@@ -61,10 +61,11 @@ def lambda_handler(event, context) -> Dict[str, Any]:
             players_raw = json.loads(item.get('Players', '[]'))
             players = [
                 {
-                    'name':  p['name'],
-                    'pos':   p.get('pos', 'Util'),
-                    'rank':  p.get('rank'),
-                    'value': rank_to_value(p.get('rank')),
+                    'name':     p['name'],
+                    'pos':      p.get('pos', 'Util'),
+                    'eligible': p.get('eligible', []),
+                    'rank':     p.get('rank'),
+                    'value':    rank_to_value(p.get('rank')),
                 }
                 for p in players_raw
             ]

@@ -7,24 +7,6 @@
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness Fantasy Baseball</title>
 <style>
-  .year20-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #0f172a;
-    font-weight: 900;
-    font-size: 1.4em;
-    letter-spacing: 0.12em;
-    padding: 10px 32px;
-    border-radius: 50px;
-    margin-bottom: 20px;
-    box-shadow: 0 0 30px rgba(251, 191, 36, 0.3), 0 0 60px rgba(251, 191, 36, 0.1);
-    animation: glow20 3s ease-in-out infinite alternate;
-  }
-  @keyframes glow20 {
-    from { box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 0 40px rgba(251, 191, 36, 0.1); }
-    to { box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), 0 0 60px rgba(251, 191, 36, 0.15); }
-  }
-
   .hero {
     text-align: center;
     padding: 60px 24px 48px;
@@ -176,6 +158,9 @@
     display: block;
   }
 
+  a.stat-card { text-decoration: none; cursor: pointer; }
+  a.stat-card:hover { border-color: #3b82f6; }
+
   .coming-soon {
     text-align: center;
     padding: 40px;
@@ -212,11 +197,75 @@
   .standings-table .rank-num { color: #64748b; font-weight: 500; width: 30px; }
   .standings-table .team-name { font-size: 0.88em; white-space: nowrap; }
 
+  .quick-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 0 24px 36px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .quick-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 12px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.92em;
+    text-align: center;
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .quick-nav a:hover { transform: translateY(-3px); filter: brightness(1.15); }
+  .quick-nav .qn-standings {
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+    color: #dbeafe;
+    box-shadow: 0 4px 18px rgba(59,130,246,0.35);
+  }
+  .quick-nav .qn-trends {
+    background: linear-gradient(135deg, #047857, #10b981);
+    color: #d1fae5;
+    box-shadow: 0 4px 18px rgba(16,185,129,0.35);
+  }
+  .quick-nav .qn-luck {
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+    color: #ede9fe;
+    box-shadow: 0 4px 18px rgba(139,92,246,0.35);
+  }
+  .quick-nav .qn-trades {
+    background: linear-gradient(135deg, #92400e, #f59e0b);
+    color: #fef3c7;
+    box-shadow: 0 4px 18px rgba(245,158,11,0.35);
+  }
+  .quick-nav .qn-analyzer {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+    color: #cffafe;
+    box-shadow: 0 4px 18px rgba(6,182,212,0.35);
+  }
+  .quick-nav .qn-finder {
+    background: linear-gradient(135deg, #581c87, #9333ea);
+    color: #f3e8ff;
+    box-shadow: 0 4px 18px rgba(147,51,234,0.35);
+  }
+  .quick-nav .qn-finder .ql-beta {
+    font-size: 0.65em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
   @media (max-width: 768px) {
     .hero { padding: 24px 12px 20px; }
     .hero h1 { font-size: 1.7em; }
     .hero p { font-size: 0.95em; }
-    .year20-badge { font-size: 1.1em; padding: 8px 20px; }
+    .quick-nav { grid-template-columns: 1fr 1fr; padding: 0 16px 28px; }
 
     .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat-card { padding: 14px 12px; }
@@ -254,15 +303,23 @@
 <script src="nav.js"></script>
 
 <div class="hero">
-  <div class="year20-badge">YEAR 20</div>
   <h1>Summertime Sadness</h1>
   <p>Fantasy Baseball Analytics</p>
   <p class="est">Est. 2007 &middot; Entering Our 20th Year</p>
 </div>
 
+<div class="quick-nav">
+  <a href="live_standings_2026.html" class="qn-standings">📊 Live Standings</a>
+  <a href="season_trends_2026.html" class="qn-trends">📈 Season Trends</a>
+  <a href="luck_analysis_2026.html" class="qn-luck">🎲 Luck Analysis</a>
+  <a href="trade_grades_2026.html" class="qn-trades">🏷️ Trade Grades</a>
+  <a href="trade_analyzer.html" class="qn-analyzer">🔄 Trade Analyzer</a>
+  <a href="find_me_a_trade.html" class="qn-finder">🔍 Find A Trade <span class="ql-beta">Beta</span></a>
+</div>
+
 <div class="container">
 
-<div class="two-col">
+<div class="two-col" id="live-standings">
   <div>
     <h2 style="margin-top:0">2026 Standings</h2>
     <div class="panel">
@@ -436,26 +493,26 @@
 </script>
 
 <div class="stats-grid">
-  <div class="stat-card">
+  <a href="season_trends_2025.html" class="stat-card">
     <div class="label">2025 Champion</div>
     <div class="value gold">¯\_(ツ)_/¯</div>
     <div class="sub">Mike &middot; 4 career titles</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="manager_profiles.html" class="stat-card">
     <div class="label">Most Titles</div>
     <div class="value blue">Mike (4)</div>
     <div class="sub">Kevin (3), Stephen (2), Matt (2)</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="all_time_rankings.html" class="stat-card">
     <div class="label">All-Time Best Season</div>
     <div class="value green">1168</div>
     <div class="sub">¯\_(ツ)_/¯ &middot; Mike (2024)</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="manager_profiles.html" class="stat-card">
     <div class="label">League History</div>
     <div class="value purple">20th Year</div>
     <div class="sub">Est. 2007 &middot; 19 champions crowned</div>
-  </div>
+  </a>
 </div>
 
 <div class="two-col">

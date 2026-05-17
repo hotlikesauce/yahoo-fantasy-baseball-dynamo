@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Find Me a Trade — Summertime Sadness</title>
+<style>
+  body { min-height: 100vh; }
+
+  .beta-badge {
+    display: inline-block;
+    background: #7c3aed22;
+    border: 1px solid #7c3aed66;
+    color: #a78bfa;
+    font-size: 0.7em;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+
+  .finder-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .finder-label {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+  .team-select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    font-size: 0.95em;
+    cursor: pointer;
+  }
+  .team-select:focus { outline: none; border-color: #3b82f6; }
+
+  /* Offer panel */
+  .offer-panel {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .offer-panel-title {
+    font-size: 0.8em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
+    margin-bottom: 14px;
+  }
+  .section-label {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    color: #475569;
+    letter-spacing: 0.06em;
+    margin: 14px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #334155;
+    font-weight: 700;
+  }
+  .offer-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #0f172a;
+    border-radius: 8px;
+    margin-top: 14px;
+    font-size: 0.88em;
+    color: #94a3b8;
+  }
+  .offer-val { color: #3b82f6; font-weight: 800; font-size: 1.1em; }
+
+  /* Player list */
+  .player-list { max-height: 420px; overflow-y: auto; }
+  .player-row {
+    display: grid;
+    grid-template-columns: 26px 1fr 60px 70px;
+    align-items: center;
+    padding: 7px 8px;
+    border-radius: 6px;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .player-row:hover { background: #334155; }
+  .player-row.selected { background: #1e3a5f; border: 1px solid #3b82f6; }
+  .player-row input[type="checkbox"] { cursor: pointer; }
+  .player-name { font-size: 0.86em; }
+  .player-name .pos { color: #64748b; font-size: 0.85em; }
+  .player-value { text-align: right; font-weight: 600; font-size: 0.83em; color: #22c55e; }
+  .player-stats-mini { color: #64748b; font-size: 0.78em; text-align: right; }
+
+  /* Draft picks */
+  .draft-picks { max-height: 200px; overflow-y: auto; }
+  .pick-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .pick-row:hover { background: #334155; }
+  .pick-row.selected { background: #1e3a5f; border: 1px solid #3b82f6; }
+  .pick-round { font-size: 0.86em; }
+  .pick-value-label { color: #64748b; font-size: 0.78em; margin-left: auto; }
+
+  /* Run button */
+  .run-btn {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  .run-btn:hover { opacity: 0.9; }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Results */
+  .results-header {
+    font-size: 1em;
+    font-weight: 700;
+    color: #94a3b8;
+    margin: 28px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+  }
+  .result-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    transition: border-color 0.15s;
+  }
+  .result-card:hover { border-color: #475569; }
+  .result-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .result-team { font-weight: 700; color: #e2e8f0; font-size: 0.97em; }
+  .result-player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #0f172a;
+    gap: 12px;
+  }
+  .result-player-row:last-of-type { border-bottom: none; }
+  .result-player-name { font-size: 0.88em; color: #cbd5e1; }
+  .result-player-pos  { color: #64748b; font-size: 0.82em; }
+  .result-player-val  { font-size: 0.85em; font-weight: 600; color: #3b82f6; white-space: nowrap; }
+  .result-gap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .sug-pill {
+    font-size: 0.78em;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .sug-pill.fair     { background: #14532d; color: #86efac; }
+  .sug-pill.ask-pick { background: #4c1d95; color: #c4b5fd; }
+  .sug-pill.add-pick { background: #1e3a5f; color: #93c5fd; }
+  .sug-pill.big-gap  { background: #7f1d1d; color: #fca5a5; }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0f172a; }
+  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+  /* Loading overlay */
+  #loading-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+  }
+  #loading-box {
+    background: #1e293b; border: 1px solid #475569; border-radius: 16px;
+    padding: 44px 52px; text-align: center; max-width: 380px; width: 90%;
+  }
+  #loading-box p { color: #e2e8f0; font-size: 1.1em; font-weight: 600; margin-bottom: 8px; }
+  #loading-box .loading-sub { color: #64748b; font-size: 0.88em; font-weight: 400; margin-bottom: 0; }
+  .spinner {
+    width: 52px; height: 52px; border: 4px solid #334155; border-top-color: #3b82f6;
+    border-radius: 50%; animation: spin 0.85s linear infinite; margin: 0 auto 24px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .finder-controls { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading-overlay">
+  <div id="loading-box">
+    <div class="spinner"></div>
+    <p>Loading roster data</p>
+    <p class="loading-sub">Pulling live rosters and draft capital…</p>
+  </div>
+</div>
+
+<div id="nav"></div>
+<script src="nav.js"></script>
+
+<div class="container">
+  <h1>Summertime Sadness Fantasy Baseball</h1>
+  <p class="page-subtitle">Find Me a Trade <span class="beta-badge">Beta</span></p>
+  <p class="section-desc" style="margin-bottom:28px">
+    Pick your team and what position you want. Check off what you're willing to give up —
+    we'll rank every possible trade partner and tell you exactly what pick bridges the gap.
+  </p>
+
+  <div id="error-banner" style="display:none;background:#1e293b;border:1px solid #f59e0b;border-radius:12px;padding:20px;margin-bottom:24px;color:#fbbf24;text-align:center"></div>
+
+  <div id="main-ui" style="display:none">
+
+    <div class="finder-controls">
+      <div>
+        <div class="finder-label">My Team</div>
+        <select class="team-select" id="my-team">
+          <option value="">Select your team…</option>
+        </select>
+      </div>
+      <div>
+        <div class="finder-label">I Want to Acquire</div>
+        <select class="team-select" id="want-pos">
+          <option value="ANY">Any position</option>
+          <option value="C">C — Catcher</option>
+          <option value="1B">1B — First Base</option>
+          <option value="2B">2B — Second Base</option>
+          <option value="3B">3B — Third Base</option>
+          <option value="SS">SS — Shortstop</option>
+          <option value="OF">OF — Outfield</option>
+          <option value="SP">SP — Starting Pitcher</option>
+          <option value="RP">RP — Relief Pitcher</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="offer-panel" style="display:none">
+      <div class="offer-panel">
+        <div class="offer-panel-title">What I'm Willing to Give Up</div>
+        <div class="section-label">Players</div>
+        <div class="player-list" id="offer-players"></div>
+        <div class="section-label">Draft Picks (2027, Rd 3+)</div>
+        <div class="draft-picks" id="offer-picks"></div>
+        <div class="offer-summary">
+          <span>Total offer value:</span>
+          <span class="offer-val" id="offer-val">0.0</span>
+          <span>pts</span>
+          <span style="color:#475569;font-size:0.85em;margin-left:4px">(based on AR rank)</span>
+        </div>
+      </div>
+
+      <button class="run-btn" id="run-btn" onclick="runFinder()">
+        🔍 Find Trade Partners
+      </button>
+    </div>
+
+    <div id="finder-results"></div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  const POS_API_URL = 'https://s5kpsvzaeab7yqnnzdvvm6qeay0xtnld.lambda-url.us-west-2.on.aws/';
+  const CAPITAL_URL = 'data/draft_capital_2026.json';
+
+  const DECAY = 0.98, SCALE = 242;
+  const TOTAL_ROUNDS = 22;
+
+  function rankToValue(rank) {
+    if (!rank) return 0;
+    return Math.round(Math.max(SCALE * Math.pow(DECAY, rank - 1), 5) * 10) / 10;
+  }
+  function pickValue(round) {
+    const overallPick = (round - 1) * 12 + 6.5;
+    return Math.round(SCALE * Math.pow(DECAY, overallPick - 1) * 10) / 10;
+  }
+  function valueToRound(val) {
+    if (val <= 0 || val > SCALE) return null;
+    const x = Math.log(val / SCALE) / Math.log(DECAY);
+    const round = Math.round((x - 5.5) / 12 + 1);
+    return Math.max(3, Math.min(22, round));
+  }
+  // Returns array of {round, value} for picks a team actually owns (rounds 3+), or null if no data
+  function getAvailablePicks(teamName) {
+    const owned = PICKS[teamName];
+    if (!owned) return null;
+    const picks = [];
+    owned.forEach((count, idx) => {
+      const round = idx + 1;
+      if (round <= 2) return;
+      for (let k = 0; k < count; k++) picks.push({ round, value: pickValue(round) });
+    });
+    return picks;
+  }
+
+  // Find the best N picks from a team's actual holdings whose sum is closest to gap.
+  // Returns array of {round, value}, or null if no pick ownership data exists.
+  function bestPicksForGap(teamName, gap, count) {
+    const available = getAvailablePicks(teamName);
+    if (available === null) return null; // no data → caller uses theoretical
+    if (available.length < count) return available; // give what they have
+
+    if (count === 1) {
+      return [available.reduce((best, p) =>
+        Math.abs(p.value - gap) < Math.abs(best.value - gap) ? p : best)];
+    }
+
+    // Brute-force best combination of `count` picks
+    let bestCombo = null, bestDiff = Infinity;
+    function search(start, chosen) {
+      if (chosen.length === count) {
+        const sum  = chosen.reduce((s, p) => s + p.value, 0);
+        const diff = Math.abs(sum - gap);
+        if (diff < bestDiff) { bestDiff = diff; bestCombo = [...chosen]; }
+        return;
+      }
+      for (let i = start; i <= available.length - (count - chosen.length); i++) {
+        chosen.push(available[i]);
+        search(i + 1, chosen);
+        chosen.pop();
+      }
+    }
+    search(0, []);
+    return bestCombo || [];
+  }
+
+  // Theoretical fallback: N picks of the same round whose value ≈ gap
+  function theoreticalPickRound(gap, count) {
+    if (!count || gap <= 0) return null;
+    return Math.max(3, Math.min(22, valueToRound(gap / count) || 22));
+  }
+  function playerMatchesPos(player, pos) {
+    if (pos === 'ANY') return true;
+    const elig = (player.eligible && player.eligible.length) ? player.eligible : [player.pos];
+    return elig.some(e => e && e.toUpperCase().includes(pos));
+  }
+  function posDisplay(player) {
+    return (player.eligible && player.eligible.length) ? player.eligible.join('/') : (player.pos || '?');
+  }
+
+  let TEAMS = {};   // name -> { name, players }
+  let PICKS  = {};  // name -> picks array
+
+  function buildTeamMap(data) {
+    Object.entries(data.rosters).forEach(([name, players]) => {
+      const recalc = players.map(p => ({ ...p, value: rankToValue(p.rank) }));
+      recalc.sort((a, b) => b.value - a.value);
+      TEAMS[name] = { name, players: recalc };
+    });
+  }
+  function buildPicksMap(capData) {
+    if (!capData || !capData.teams) return;
+    capData.teams.forEach(t => { PICKS[t.name] = t.picks; });
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────────────
+  Promise.all([
+    fetch(POS_API_URL).then(r => r.json()),
+    fetch(CAPITAL_URL).then(r => r.json()).catch(() => null),
+  ])
+  .then(([posData, capData]) => {
+    if (!posData.rosters) throw new Error('No rosters in API response');
+    buildTeamMap(posData);
+    buildPicksMap(capData);
+    document.getElementById('loading-overlay').style.display = 'none';
+    document.getElementById('main-ui').style.display = 'block';
+    populateTeamDropdown();
+  })
+  .catch(err => {
+    document.getElementById('loading-overlay').style.display = 'none';
+    const eb = document.getElementById('error-banner');
+    eb.style.display = 'block';
+    eb.textContent = 'Failed to load roster data: ' + err.message;
+  });
+
+  function populateTeamDropdown() {
+    const sel = document.getElementById('my-team');
+    Object.keys(TEAMS).sort().forEach(name => {
+      sel.innerHTML += `<option value="${name}">${name}</option>`;
+    });
+    sel.addEventListener('change', onTeamChange);
+  }
+
+  // ── Team selection → render offer panel ────────────────────────────────────
+  function onTeamChange() {
+    const teamName = document.getElementById('my-team').value;
+    const panel = document.getElementById('offer-panel');
+    if (!teamName) { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
+    renderOfferPlayers(teamName);
+    renderOfferPicks(teamName);
+    updateOfferValue();
+    document.getElementById('finder-results').innerHTML = '';
+  }
+
+  function renderOfferPlayers(teamName) {
+    const team = TEAMS[teamName];
+    document.getElementById('offer-players').innerHTML = team
+      ? team.players.map((p, i) => `
+          <div class="player-row" data-idx="${i}" onclick="toggleRow(event,this)">
+            <input type="checkbox" data-idx="${i}" onchange="updateOfferValue()">
+            <div class="player-name">${p.name} <span class="pos">${posDisplay(p)}</span></div>
+            <div class="player-value">${p.value > 0 ? p.value.toFixed(1) : '—'}</div>
+            <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : 'unranked'}</div>
+          </div>`).join('')
+      : '<div style="color:#64748b;padding:16px;text-align:center">No players found</div>';
+  }
+
+  function renderOfferPicks(teamName) {
+    const picksDiv = document.getElementById('offer-picks');
+    const owned = PICKS[teamName];
+    if (owned) {
+      const rows = [];
+      owned.forEach((count, idx) => {
+        const round = idx + 1;
+        if (round <= 2) return;
+        for (let k = 0; k < count; k++) {
+          const val = pickValue(round);
+          const suffix = count > 1 ? ` (${k + 1}/${count})` : '';
+          rows.push(`<div class="pick-row" data-val="${val}" onclick="toggleRow(event,this)">
+            <input type="checkbox" data-val="${val}" onchange="updateOfferValue()">
+            <span class="pick-round">2027 Rd ${round}${suffix}</span>
+            <span class="pick-value-label">${val.toFixed(1)} pts</span>
+          </div>`);
+        }
+      });
+      picksDiv.innerHTML = rows.join('') ||
+        '<div style="color:#64748b;padding:10px;font-size:0.85em;text-align:center">No tradeable 2027 picks (Rd 3+)</div>';
+    } else {
+      picksDiv.innerHTML = Array.from({length: TOTAL_ROUNDS - 2}, (_, i) => i + 3).map(r => {
+        const val = pickValue(r);
+        return `<div class="pick-row" data-val="${val}" onclick="toggleRow(event,this)">
+          <input type="checkbox" data-val="${val}" onchange="updateOfferValue()">
+          <span class="pick-round">2027 Rd ${r}</span>
+          <span class="pick-value-label">${val.toFixed(1)} pts</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  window.toggleRow = function(e, row) {
+    if (e.target.type === 'checkbox') {
+      row.classList.toggle('selected', e.target.checked);
+      updateOfferValue();
+      return;
+    }
+    const cb = row.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    row.classList.toggle('selected', cb.checked);
+    updateOfferValue();
+  };
+
+  function updateOfferValue() {
+    document.getElementById('offer-val').textContent = getOfferValue().toFixed(1);
+  }
+
+  function getOfferValue() {
+    const teamName = document.getElementById('my-team').value;
+    const team = TEAMS[teamName];
+    let total = 0;
+    document.querySelectorAll('#offer-players input:checked').forEach(cb => {
+      if (team) total += (team.players[parseInt(cb.dataset.idx)] || {value: 0}).value;
+    });
+    document.querySelectorAll('#offer-picks input:checked').forEach(cb => {
+      total += parseFloat(cb.dataset.val) || 0;
+    });
+    return total;
+  }
+
+  // ── Finder ─────────────────────────────────────────────────────────────────
+  window.runFinder = function() {
+    const myTeam   = document.getElementById('my-team').value;
+    const wantPos  = document.getElementById('want-pos').value;
+    const offerVal = getOfferValue();
+    const numPicks = document.querySelectorAll('#offer-picks input:checked').length;
+    const out      = document.getElementById('finder-results');
+
+    if (!myTeam)       { out.innerHTML = '<p style="color:#ef4444;padding:8px">Select your team first.</p>'; return; }
+    if (offerVal <= 0) { out.innerHTML = '<p style="color:#f59e0b;padding:8px">Select at least one player or pick to offer.</p>'; return; }
+
+    const results = [];
+    Object.entries(TEAMS).forEach(([teamName, team]) => {
+      if (teamName === myTeam) return;
+      team.players
+        .filter(p => playerMatchesPos(p, wantPos) && p.value > 0)
+        .forEach(player => results.push({ teamName, player, gap: offerVal - player.value }));
+    });
+
+    results.sort((a, b) => Math.abs(a.gap) - Math.abs(b.gap));
+
+    if (!results.length) {
+      out.innerHTML = `<p style="color:#64748b;padding:20px;text-align:center">
+        No ${wantPos === 'ANY' ? '' : wantPos + ' '}players found on other teams.</p>`;
+      return;
+    }
+
+    const pickNote = numPicks > 0
+      ? ` — you're including ${numPicks} pick${numPicks > 1 ? 's' : ''}, they match with ${numPicks}`
+      : '';
+
+    out.innerHTML = `<div class="results-header">
+      ${results.length} potential trade partner${results.length !== 1 ? 's' : ''} — sorted closest to fair first${pickNote}
+    </div>` + results.map(({ teamName, player, gap }) => {
+      const absgap = Math.abs(gap);
+      const total  = offerVal + player.value;
+      const pct    = total > 0 ? absgap / total * 100 : 0;
+
+      let returnPickHtml = '';
+      let sugHtml = '';
+
+      if (numPicks > 0 && gap > 0) {
+        // Equal-pick exchange: find numPicks picks from their actual holdings (or theoretical)
+        const realPicks = bestPicksForGap(teamName, gap, numPicks);
+
+        let swapTotal, roundLabel, dataSource;
+        if (realPicks !== null) {
+          // Using their actual pick holdings
+          if (realPicks.length === 0) {
+            sugHtml = `<span class="sug-pill big-gap">🔴 They have no tradeable picks to give back</span>`;
+            // skip returnPickHtml
+          } else {
+            swapTotal  = realPicks.reduce((s, p) => s + p.value, 0);
+            roundLabel = realPicks.map(p => `Rd ${p.round}`).join(' + ');
+            dataSource = '';
+          }
+        } else {
+          // No ownership data — theoretical
+          const r = theoreticalPickRound(gap, numPicks);
+          swapTotal  = pickValue(r) * numPicks;
+          roundLabel = numPicks > 1 ? `${numPicks}× Rd ${r}` : `Rd ${r}`;
+          dataSource = ' <span style="color:#475569;font-size:0.85em">(est.)</span>';
+        }
+
+        if (swapTotal != null) {
+          const netGap  = gap - swapTotal;
+          const netPct  = total > 0 ? Math.abs(netGap) / total * 100 : 0;
+
+          returnPickHtml = `
+            <div class="result-player-row">
+              <span class="result-player-name" style="color:#a78bfa">+ 2027 ${roundLabel}${dataSource}</span>
+              <span class="result-player-val" style="color:#a78bfa">${swapTotal.toFixed(1)} pts</span>
+            </div>`;
+
+          if (netPct < 8) {
+            sugHtml = `<span class="sug-pill fair">✅ Fair with equal pick swap</span>`;
+          } else if (netGap > 0) {
+            sugHtml = `<span class="sug-pill ask-pick">🟣 Still overpaying ${netGap.toFixed(1)} pts after swap</span>`;
+          } else {
+            sugHtml = `<span class="sug-pill add-pick">🔵 You'd be ${(-netGap).toFixed(1)} pts ahead after swap</span>`;
+          }
+        }
+      } else if (pct < 5) {
+        sugHtml = `<span class="sug-pill fair">✅ Fair trade!</span>`;
+      } else if (gap > 0) {
+        const round = valueToRound(gap);
+        const txt   = round ? `ask for a 2027 Rd ${round} pick back` : 'ask for picks back';
+        sugHtml = `<span class="sug-pill ask-pick">🟣 You're overpaying by ${gap.toFixed(1)} pts</span>
+                   <span style="color:#94a3b8;font-size:0.8em">→ ${txt}</span>`;
+      } else {
+        const need  = -gap;
+        const round = valueToRound(need);
+        if (pct < 15) {
+          const txt = round ? `add a 2027 Rd ${round} pick` : 'add a pick';
+          sugHtml = `<span class="sug-pill add-pick">🔵 Short by ${need.toFixed(1)} pts</span>
+                     <span style="color:#94a3b8;font-size:0.8em">→ ${txt}</span>`;
+        } else {
+          const txt = round ? `add 2027 Rd ${round} or more` : 'add picks';
+          sugHtml = `<span class="sug-pill big-gap">🔴 Short by ${need.toFixed(1)} pts</span>
+                     <span style="color:#94a3b8;font-size:0.8em">→ ${txt}</span>`;
+        }
+      }
+
+      return `<div class="result-card">
+        <div class="result-card-header">
+          <span class="result-team">${teamName}</span>
+        </div>
+        <div class="result-player-row">
+          <span class="result-player-name">${player.name}
+            <span class="result-player-pos">${posDisplay(player)}</span>
+          </span>
+          <span class="result-player-val">${player.value.toFixed(1)} pts &middot; AR #${player.rank || '?'}</span>
+        </div>
+        ${returnPickHtml}
+        <div class="result-gap">
+          <span style="color:#64748b;font-size:0.8em">Your offer: ${offerVal.toFixed(1)} pts</span>
+          ${sugHtml}
+        </div>
+      </div>`;
+    }).join('');
+
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+})();
+</script>
+</body>
+</html>

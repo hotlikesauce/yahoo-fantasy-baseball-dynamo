@@ -1,7 +1,7 @@
 """
 Lambda: Pull yesterday's top MLB stat line for a rostered player.
 Creates the daily Stat Line Guesser puzzle stored in FantasyBaseball-DailyPuzzle.
-Scheduled: 8:30am MST = cron(30 15 * * ? *)
+Scheduled: 4:30am MST = cron(30 11 * * ? *)
 """
 
 import json
