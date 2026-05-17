@@ -306,11 +306,24 @@
   const CAPITAL_URL = 'data/draft_capital_2026.json';
 
   const DECAY = 0.98, SCALE = 242;
+  const ADP_DECAY  = 0.97;  // steeper — elite ADP ranks spread further apart
+  const ADP_WEIGHT = 0.55;  // player is worth at least this fraction of their ADP-based value
   const TOTAL_ROUNDS = 22;
 
   function rankToValue(rank) {
     if (!rank) return 0;
-    return Math.round(Math.max(SCALE * Math.pow(DECAY, rank - 1), 5) * 10) / 10;
+    return SCALE * Math.pow(DECAY, rank - 1);
+  }
+  function adpToValue(adp) {
+    if (!adp) return 0;
+    return SCALE * Math.pow(ADP_DECAY, adp - 1);
+  }
+  function playerValue(rank, adp) {
+    const arVal  = rank ? rankToValue(rank) : 0;
+    const adpVal = adp  ? adpToValue(adp)  : 0;
+    const raw = Math.max(arVal, adpVal * ADP_WEIGHT);
+    if (raw === 0) return 0;
+    return Math.round(Math.max(raw, 5) * 10) / 10;
   }
   function pickValue(round) {
     const overallPick = (round - 1) * 12 + 6.5;
@@ -385,7 +398,7 @@
 
   function buildTeamMap(data) {
     Object.entries(data.rosters).forEach(([name, players]) => {
-      const recalc = players.map(p => ({ ...p, value: rankToValue(p.rank) }));
+      const recalc = players.map(p => ({ ...p, value: playerValue(p.rank, p.adp) }));
       recalc.sort((a, b) => b.value - a.value);
       TEAMS[name] = { name, players: recalc };
     });
@@ -443,7 +456,7 @@
             <input type="checkbox" data-idx="${i}" onchange="updateOfferValue()">
             <div class="player-name">${p.name} <span class="pos">${posDisplay(p)}</span></div>
             <div class="player-value">${p.value > 0 ? p.value.toFixed(1) : '—'}</div>
-            <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : 'unranked'}</div>
+            <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : ''}${p.adp && p.adp < p.rank - 30 ? ' · ADP #' + p.adp : ''}</div>
           </div>`).join('')
       : '<div style="color:#64748b;padding:16px;text-align:center">No players found</div>';
   }
@@ -620,7 +633,7 @@
           <span class="result-player-name">${player.name}
             <span class="result-player-pos">${posDisplay(player)}</span>
           </span>
-          <span class="result-player-val">${player.value.toFixed(1)} pts &middot; AR #${player.rank || '?'}</span>
+          <span class="result-player-val">${player.value.toFixed(1)} pts &middot; AR #${player.rank || '?'}${player.adp && player.adp < (player.rank || 9999) - 30 ? ' · ADP #' + player.adp : ''}</span>
         </div>
         ${returnPickHtml}
         <div class="result-gap">

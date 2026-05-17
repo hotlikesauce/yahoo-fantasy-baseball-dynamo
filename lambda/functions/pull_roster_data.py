@@ -20,11 +20,12 @@ logger.setLevel(logging.INFO)
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('FantasyBaseball-RosterData')
 
-YEAR          = 2026
-LEAGUE_ID_KEY = 'YAHOO_LEAGUE_ID_2026'
-AR_FETCH_LIMIT = 1000
-POS_PRIORITY  = ['C', '1B', '2B', 'SS', '3B', 'OF', 'SP', 'RP']
-TRACKED       = set(POS_PRIORITY)
+YEAR           = 2026
+LEAGUE_ID_KEY  = 'YAHOO_LEAGUE_ID_2026'
+AR_FETCH_LIMIT  = 1000
+ADP_FETCH_LIMIT = 300   # ADP only covers drafted players (~250 in a 12-team 22-round league)
+POS_PRIORITY   = ['C', '1B', '2B', 'SS', '3B', 'OF', 'SP', 'RP']
+TRACKED        = set(POS_PRIORITY)
 
 
 def get_teams(token, league_key) -> Dict[str, dict]:
@@ -94,13 +95,13 @@ def get_roster(token, team_key) -> List[dict]:
         return []
 
 
-def get_ar_rank_map(token, league_key) -> Dict[str, int]:
+def _fetch_rank_map(token, league_key, sort: str, limit: int) -> Dict[str, int]:
     rank_map = {}
     CHUNK = 25
-    for start in range(0, AR_FETCH_LIMIT, CHUNK):
+    for start in range(0, limit, CHUNK):
         resp = yfl.api_get(
             token,
-            f"league/{league_key}/players;start={start};count={CHUNK};sort=AR",
+            f"league/{league_key}/players;start={start};count={CHUNK};sort={sort}",
             timeout=15,
         )
         if not resp:
@@ -119,9 +120,17 @@ def get_ar_rank_map(token, league_key) -> Dict[str, int]:
             if count < CHUNK:
                 break
         except Exception as e:
-            logger.warning(f"AR rank fetch start={start}: {e}")
+            logger.warning(f"{sort} rank fetch start={start}: {e}")
             break
     return rank_map
+
+
+def get_ar_rank_map(token, league_key) -> Dict[str, int]:
+    return _fetch_rank_map(token, league_key, 'AR', AR_FETCH_LIMIT)
+
+
+def get_adp_rank_map(token, league_key) -> Dict[str, int]:
+    return _fetch_rank_map(token, league_key, 'ADP', ADP_FETCH_LIMIT)
 
 
 def lambda_handler(event, context):
@@ -149,9 +158,10 @@ def lambda_handler(event, context):
             team_rosters[tk] = get_roster(token, tk)
             logger.info(f"  {meta['name']}: {len(team_rosters[tk])} players")
 
-        # 3. AR rank map (top 1000)
-        ar_rank_map = get_ar_rank_map(token, league_key)
-        logger.info(f"AR rank map: {len(ar_rank_map)} players")
+        # 3. AR rank map (top 1000) + ADP rank map (top 300)
+        ar_rank_map  = get_ar_rank_map(token, league_key)
+        adp_rank_map = get_adp_rank_map(token, league_key)
+        logger.info(f"AR rank map: {len(ar_rank_map)} players, ADP map: {len(adp_rank_map)} players")
 
         # 4. Store one item per team
         total_players = 0
@@ -159,6 +169,7 @@ def lambda_handler(event, context):
             players = []
             for p in team_rosters[tk]:
                 rank = ar_rank_map.get(p['player_key'])
+                adp  = adp_rank_map.get(p['player_key'])
                 elig = p['eligible']
                 pos  = next((pp for pp in POS_PRIORITY if pp in elig), elig[0] if elig else 'Util')
                 players.append({
@@ -167,6 +178,7 @@ def lambda_handler(event, context):
                     'pos':        pos,
                     'eligible':   elig,
                     'rank':       rank,
+                    'adp':        adp,
                 })
             total_players += len(players)
             table.put_item(Item={

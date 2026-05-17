@@ -27,14 +27,31 @@ CORS_HEADERS = {
     'Cache-Control':                'max-age=3600',
 }
 
-SCALE = 242.0
-DECAY = 0.98
+SCALE      = 242.0
+DECAY      = 0.98
+ADP_DECAY  = 0.97   # steeper curve so elite ADP ranks (top 10 vs top 20) spread further apart
+ADP_WEIGHT = 0.55   # a player is worth at least this fraction of their preseason ADP value
 
 
 def rank_to_value(rank) -> float:
     if rank is None:
         return 0.0
-    return round(SCALE * (DECAY ** (rank - 1)), 1)
+    return SCALE * (DECAY ** (rank - 1))
+
+
+def adp_to_value(adp) -> float:
+    if adp is None:
+        return 0.0
+    return SCALE * (ADP_DECAY ** (adp - 1))
+
+
+def blended_value(rank, adp) -> float:
+    ar_val  = rank_to_value(rank)
+    adp_val = adp_to_value(adp)
+    raw = max(ar_val, adp_val * ADP_WEIGHT)
+    if raw == 0.0:
+        return 0.0
+    return round(max(raw, 5.0), 1)
 
 
 def lambda_handler(event, context) -> Dict[str, Any]:
@@ -65,7 +82,8 @@ def lambda_handler(event, context) -> Dict[str, Any]:
                     'pos':      p.get('pos', 'Util'),
                     'eligible': p.get('eligible', []),
                     'rank':     p.get('rank'),
-                    'value':    rank_to_value(p.get('rank')),
+                    'adp':      p.get('adp'),
+                    'value':    blended_value(p.get('rank'), p.get('adp')),
                 }
                 for p in players_raw
             ]
