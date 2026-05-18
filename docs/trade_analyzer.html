@@ -262,12 +262,25 @@
 
 <script>
 (function() {
-  // Exponential decay value: rank 1 = 242, rank 600 ≈ 2. Matches draft_picks page.
-  const DECAY = 0.98;
-  const SCALE = 242;
+  const DECAY      = 0.98;
+  const ADP_DECAY  = 0.97;  // steeper — elite ADP ranks spread further apart
+  const ADP_WEIGHT = 0.55;  // player is worth at least this fraction of their ADP-based value
+  const SCALE      = 242;
+
   function rankToValue(rank) {
-    if (!rank || rank > 600) return 0;
-    return Math.round(SCALE * Math.pow(DECAY, rank - 1) * 10) / 10;
+    if (!rank) return 0;
+    return SCALE * Math.pow(DECAY, rank - 1);
+  }
+  function adpToValue(adp) {
+    if (!adp) return 0;
+    return SCALE * Math.pow(ADP_DECAY, adp - 1);
+  }
+  function playerValue(rank, adp) {
+    const arVal  = rank ? rankToValue(rank) : 0;
+    const adpVal = adp  ? adpToValue(adp)  : 0;
+    const raw = Math.max(arVal, adpVal * ADP_WEIGHT);
+    if (raw === 0) return 0;
+    return Math.round(Math.max(raw, 5) * 10) / 10;
   }
 
   // 2027 pick value: avg slot 6.5 → overall pick = (round-1)*12 + 6.5
@@ -306,9 +319,8 @@
 
   function buildTeamMap(data) {
     if (data.rosters) {
-      // Lambda returns linear 0-100 values — recompute with exponential decay to match pick scale
       Object.entries(data.rosters).forEach(([teamName, players]) => {
-        const recalc = players.map(p => ({ ...p, value: rankToValue(p.rank) }));
+        const recalc = players.map(p => ({ ...p, value: playerValue(p.rank, p.adp) }));
         recalc.sort((a, b) => b.value - a.value);
         TEAMS_BY_NAME[teamName] = { name: teamName, players: recalc };
       });
@@ -321,7 +333,7 @@
           (posInfo.players || []).forEach(p => {
             if (seen.has(p.name)) return;
             seen.add(p.name);
-            players.push({ name: p.name, pos, rank: p.current_rank, value: rankToValue(p.current_rank) });
+            players.push({ name: p.name, pos, rank: p.current_rank, value: playerValue(p.current_rank, null) });
           });
         });
         players.sort((a, b) => b.value - a.value);
@@ -363,7 +375,7 @@
         <input type="checkbox" data-side="${side}" data-idx="${i}">
         <div class="player-name">${p.name} <span class="pos">${p.pos}</span></div>
         <div class="player-value ${p.value > 0 ? 'positive' : ''}">${p.value > 0 ? p.value.toFixed(1) : '—'}</div>
-        <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : 'unranked'}</div>
+        <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : ''}${p.adp && p.adp < (p.rank || 9999) - 30 ? ' · ADP #' + p.adp : ''}</div>
       </div>`).join('') ||
       '<div style="color:#64748b;padding:16px;text-align:center;font-size:0.9em">No players found</div>';
 
