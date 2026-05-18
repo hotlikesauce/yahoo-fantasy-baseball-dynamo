@@ -129,8 +129,28 @@ def get_ar_rank_map(token, league_key) -> Dict[str, int]:
     return _fetch_rank_map(token, league_key, 'AR', AR_FETCH_LIMIT)
 
 
-def get_adp_rank_map(token, league_key) -> Dict[str, int]:
-    return _fetch_rank_map(token, league_key, 'ADP', ADP_FETCH_LIMIT)
+def get_draft_adp_map(token, league_key) -> Dict[str, int]:
+    """Build ADP map from actual league draft results. Overall pick # = ADP."""
+    resp = yfl.api_get(token, f"league/{league_key}/draftresults", timeout=15)
+    if not resp:
+        return {}
+    try:
+        draft_raw = resp['fantasy_content']['league'][1]['draft_results']
+        adp_map   = {}
+        count     = int(draft_raw.get('count', 0))
+        for i in range(count):
+            dr = draft_raw[str(i)].get('draft_result', {})
+            if isinstance(dr, list):
+                dr = dr[0]
+            pick       = int(dr.get('pick', 0))
+            player_key = dr.get('player_key', '')
+            if player_key and pick:
+                adp_map[player_key] = pick
+        logger.info(f"Draft ADP map: {len(adp_map)} picks")
+        return adp_map
+    except Exception as e:
+        logger.warning(f"Draft ADP fetch failed: {e}")
+        return {}
 
 
 def lambda_handler(event, context):
@@ -158,10 +178,10 @@ def lambda_handler(event, context):
             team_rosters[tk] = get_roster(token, tk)
             logger.info(f"  {meta['name']}: {len(team_rosters[tk])} players")
 
-        # 3. AR rank map (top 1000) + ADP rank map (top 300)
+        # 3. AR rank map (top 1000) + ADP from league draft results
         ar_rank_map  = get_ar_rank_map(token, league_key)
-        adp_rank_map = get_adp_rank_map(token, league_key)
-        logger.info(f"AR rank map: {len(ar_rank_map)} players, ADP map: {len(adp_rank_map)} players")
+        adp_rank_map = get_draft_adp_map(token, league_key)
+        logger.info(f"AR rank map: {len(ar_rank_map)} players, Draft ADP map: {len(adp_rank_map)} picks")
 
         # 4. Store one item per team
         total_players = 0
