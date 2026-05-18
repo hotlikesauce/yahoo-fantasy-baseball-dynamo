@@ -262,9 +262,9 @@
 
 <script>
 (function() {
-  const DECAY      = 0.98;
+  const DECAY      = 0.995;
   const ADP_DECAY  = 0.97;  // steeper — elite ADP ranks spread further apart
-  const ADP_WEIGHT = 0.55;  // player is worth at least this fraction of their ADP-based value
+  const ADP_WEIGHT = 0.45;  // ADP floor — reduced so current AR rank can dominate
   const SCALE      = 242;
 
   function rankToValue(rank) {

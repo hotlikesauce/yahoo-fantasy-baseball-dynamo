@@ -305,9 +305,9 @@
   const POS_API_URL = 'https://s5kpsvzaeab7yqnnzdvvm6qeay0xtnld.lambda-url.us-west-2.on.aws/';
   const CAPITAL_URL = 'data/draft_capital_2026.json';
 
-  const DECAY = 0.98, SCALE = 242;
+  const DECAY = 0.995, SCALE = 242;
   const ADP_DECAY  = 0.97;  // steeper — elite ADP ranks spread further apart
-  const ADP_WEIGHT = 0.55;  // player is worth at least this fraction of their ADP-based value
+  const ADP_WEIGHT = 0.45;  // ADP floor — reduced so current AR rank can dominate
   const TOTAL_ROUNDS = 22;
 
   function rankToValue(rank) {

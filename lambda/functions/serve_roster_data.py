@@ -24,13 +24,13 @@ CORS_HEADERS = {
     'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Cache-Control':                'max-age=3600',
+    'Cache-Control':                'max-age=300',
 }
 
 SCALE      = 242.0
-DECAY      = 0.98
+DECAY      = 0.995  # gentle enough that AR #200-400 still has real value
 ADP_DECAY  = 0.97   # steeper curve so elite ADP ranks (top 10 vs top 20) spread further apart
-ADP_WEIGHT = 0.55   # a player is worth at least this fraction of their preseason ADP value
+ADP_WEIGHT = 0.45   # ADP floor — reduced so current AR rank can dominate for active players
 
 
 def rank_to_value(rank) -> float:
