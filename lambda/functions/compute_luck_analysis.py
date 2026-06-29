@@ -98,11 +98,11 @@ def lambda_handler(event, context):
                 name_to_tn[name] = tn
                 tn_latest_name[tn] = name
 
-        # Supplement with power_ranks_live (handles name changes mid-season)
+        # Supplement the name->number map only. NEVER overwrite tn_latest_name:
+        # display names come ONLY from team_names#current, keyed by team number.
         for item in scan_by_prefix('power_ranks_live#'):
-            tn = item['TeamNumber']
-            name_to_tn[item['Team']] = tn
-            tn_latest_name[tn] = item['Team']
+            if item.get('Team'):
+                name_to_tn[item['Team']] = item['TeamNumber']
 
         # Pull matchup results from clean 2026-only table
         wr_by_week = defaultdict(list)
@@ -114,16 +114,16 @@ def lambda_handler(event, context):
         for item in matchups_items:
             wr_by_week[int(item['Week'])].append(item)
 
-        # Map names from matchup data
+        # Map names from matchup data into name->number only (display names stay
+        # canonical from team_names#current).
         for week_items in wr_by_week.values():
             for item in week_items:
                 name = item.get('Team', '')
                 tn = item.get('TeamNumber', '')
                 if name and tn:
-                    name_to_tn[name] = tn
-                    tn_latest_name[tn] = name
+                    name_to_tn.setdefault(name, tn)
 
-        # 2. Pull weekly_stats
+        # 2. Pull weekly_stats — key strictly by team number (stable), not name.
         weekly_stats = defaultdict(dict)
         ws_by_week = defaultdict(list)
         for item in scan_by_prefix('weekly_stats#'):
@@ -132,9 +132,11 @@ def lambda_handler(event, context):
             if len(items) < 12:
                 continue
             for item in items:
-                tn = name_to_tn.get(item.get('Team'))
-                if not tn:
+                tn = str(item.get('TeamNumber', ''))
+                if not tn.isdigit():
                     continue
+                if item.get('Team'):
+                    name_to_tn.setdefault(item['Team'], tn)
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
         # 3. Build actual_results from Matchups2026 table
@@ -148,12 +150,13 @@ def lambda_handler(event, context):
                 score = float(item['Score'])
                 opp_score = float(item['OpponentScore'])
                 diff = score - opp_score
+                opp_tn = item.get('OpponentTeamNumber')
                 actual_results[w][tn] = {
                     'won': diff > 0, 'tied': diff == 0,
                     'cats_won': score, 'cats_lost': opp_score,
-                    'opp_tn': item.get('OpponentTeamNumber'),
-                    'opp_name': item.get('Opponent', ''),
-                    'team_name': item.get('Team', ''),
+                    'opp_tn': opp_tn,
+                    'opp_name': tn_latest_name.get(opp_tn, item.get('Opponent', '')),
+                    'team_name': tn_latest_name.get(tn, item.get('Team', '')),
                     'diff': diff,
                 }
 

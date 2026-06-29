@@ -82,11 +82,89 @@
     .trade-sides { grid-template-columns: 1fr; }
     .trade-arrow-col { transform: rotate(90deg); padding: 8px 0; }
   }
+
+  /* "Say the magic word" gate (Austin demanded it) */
+  #magic-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(2, 6, 23, 0.86); backdrop-filter: blur(6px);
+    padding: 20px;
+  }
+  #magic-overlay.hidden { display: none; }
+  .magic-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+    padding: 32px 28px; max-width: 520px; width: 100%; text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  .magic-card h2 { margin: 0 0 8px; font-size: 1.45em; color: #e2e8f0; }
+  .magic-card p { color: #94a3b8; margin: 0 0 22px; font-size: 0.95em; }
+  .magic-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .magic-btn {
+    border: none; border-radius: 10px; padding: 12px 22px;
+    font-size: 1em; font-weight: 700; cursor: pointer; transition: transform 0.1s, filter 0.15s;
+  }
+  .magic-btn:hover { filter: brightness(1.12); }
+  .magic-btn:active { transform: scale(0.97); }
+  .magic-btn.yes { background: #334155; color: #cbd5e1; }
+  .magic-btn.please { background: #22c55e; color: #052e16; }
+  .magic-gif { max-width: 100%; border-radius: 12px; margin: 0 auto 20px; display: block; }
+  .magic-deny h2 { color: #f87171; }
 </style>
 </head>
 <body>
 <div id="nav"></div>
 <script src="nav.js"></script>
+
+<!-- "Say the magic word" gate -->
+<div id="magic-overlay" class="hidden">
+  <div class="magic-card">
+    <div id="magic-ask">
+      <h2>Would you like to see the updated draft capital?</h2>
+      <p>Per Austin (Moniebol &#128051;), there are rules now.</p>
+      <div class="magic-btns">
+        <button class="magic-btn yes" id="magic-yes">Yes</button>
+        <button class="magic-btn please" id="magic-please">Yes, Please</button>
+      </div>
+    </div>
+    <div id="magic-deny" class="magic-deny" style="display:none">
+      <img class="magic-gif"
+           src="https://media1.tenor.com/m/hYVsWvkpdrMAAAAd/you-didnt-say-the-magic-word-ah-ah.gif"
+           alt="You didn't say the magic word">
+      <h2>Ah ah ah! You didn't say the magic word!</h2>
+      <p>Try again&hellip; and mind your manners.</p>
+      <div class="magic-btns">
+        <button class="magic-btn yes" id="magic-retry">Okay&hellip;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById('magic-overlay');
+  var ask = document.getElementById('magic-ask');
+  var deny = document.getElementById('magic-deny');
+
+  // Once you've been polite, we remember it so it doesn't nag forever.
+  if (localStorage.getItem('draftCapitalPolite') === 'yes') return;
+
+  overlay.classList.remove('hidden');
+
+  document.getElementById('magic-yes').addEventListener('click', function () {
+    ask.style.display = 'none';
+    deny.style.display = 'block';
+  });
+  document.getElementById('magic-retry').addEventListener('click', function () {
+    deny.style.display = 'none';
+    ask.style.display = 'block';
+  });
+  document.getElementById('magic-please').addEventListener('click', function () {
+    localStorage.setItem('draftCapitalPolite', 'yes');
+    overlay.classList.add('hidden');
+  });
+})();
+</script>
+
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
 <p class="page-subtitle">2027 Draft Capital</p>
@@ -108,7 +186,7 @@
 </div>
 
 <script>
-const DATA_URL = 'data/draft_capital_2026.json';
+const DATA_URL = 'https://lkzcwrpxiem4pzdwn4txrqduae0exdlv.lambda-url.us-west-2.on.aws/';
 const TRADE_GRADES_URL = 'https://rkph7ymmhrqfwfr4f2stflrpii0hsphp.lambda-url.us-west-2.on.aws/';
 
 async function load() {

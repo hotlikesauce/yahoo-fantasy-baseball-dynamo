@@ -103,15 +103,20 @@ def lambda_handler(event, context):
                 name_to_tn[name] = tn
                 tn_latest_name[tn] = name
 
-        # Supplement with power_ranks_live for name mapping
+        # Supplement the name->number map with historical names teams have used
+        # (needed only to resolve weekly_results opponents stored by name).
+        # NEVER overwrite tn_latest_name here: display names come ONLY from the
+        # team_names#current table, keyed by team number. A team's frozen weekly
+        # name (e.g. "unsTATISfactory" from week 9) must never replace the live one.
         pr_by_week = defaultdict(list)
         for item in scan_by_prefix('power_ranks_live#'):
             tn = item['TeamNumber']
-            name_to_tn[item['Team']] = tn
-            tn_latest_name[tn] = item['Team']
+            if item.get('Team'):
+                name_to_tn[item['Team']] = tn
             pr_by_week[int(item.get('Week', 0))].append(item)
 
-        # 2. Pull weekly_stats
+        # 2. Pull weekly_stats — key strictly by team number (stable), not by the
+        # team's stale name on the row.
         weekly_stats = defaultdict(dict)
         ws_by_week = defaultdict(list)
         for item in scan_by_prefix('weekly_stats#'):
@@ -120,9 +125,11 @@ def lambda_handler(event, context):
             if len(items) < 12:
                 continue
             for item in items:
-                tn = name_to_tn.get(item.get('Team'))
-                if not tn:
+                tn = str(item.get('TeamNumber', ''))
+                if not tn.isdigit():
                     continue
+                if item.get('Team'):
+                    name_to_tn.setdefault(item['Team'], tn)
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
         stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
@@ -137,9 +144,9 @@ def lambda_handler(event, context):
             w = int(item.get('Week', 0))
             if w not in stat_weeks:
                 continue
-            tn = name_to_tn.get(item.get('Team'))
+            tn = str(item.get('TeamNumber', ''))
             opp_tn = name_to_tn.get(item.get('Opponent'))
-            if tn and opp_tn:
+            if tn.isdigit() and opp_tn:
                 matchup_pairs[(w, tn)] = opp_tn
         # Compute category W-L-T for each matchup pair
         for (w, tn), opp_tn in matchup_pairs.items():
