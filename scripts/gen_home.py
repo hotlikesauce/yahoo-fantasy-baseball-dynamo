@@ -345,6 +345,36 @@ html = f"""<!DOCTYPE html>
   .standings-table .mgr-link:hover {{ color: #3b82f6; text-decoration: underline; }}
   .standings-table .rank-num {{ color: #64748b; font-weight: 500; width: 30px; }}
   .standings-table .team-name {{ font-size: 0.88em; white-space: nowrap; }}
+
+  /* Yahoo Fantasy attribution - required by the Yahoo Fantasy Sports API
+     Access and Use Agreement. Logo must be shown unmodified: no recolor,
+     rotation, effects, or changes to proportion. */
+  .yahoo-attribution {{
+    margin-top: 56px;
+    padding: 32px 24px 12px;
+    border-top: 1px solid #1e293b;
+    text-align: center;
+  }}
+  .yahoo-attribution img {{
+    display: block;
+    margin: 0 auto 14px;
+    width: 260px;
+    max-width: 70%;
+    height: auto;
+    /* Clips the black JPEG fill outside the asset's own rounded card edge.
+       Does not alter the wordmark itself. */
+    border-radius: 6px;
+  }}
+  .yahoo-attribution p {{
+    color: #64748b;
+    font-size: 0.9em;
+    margin: 0;
+  }}
+  .yahoo-attribution a {{
+    color: #8b5cf6;
+    text-decoration: none;
+  }}
+  .yahoo-attribution a:hover {{ text-decoration: underline; }}
 </style>
 </head>
 <body>
@@ -541,6 +571,13 @@ html = f"""<!DOCTYPE html>
     <span class="arrow" style="color: #475569;">Coming soon</span>
   </div>
 </div>
+
+<footer class="yahoo-attribution">
+  <a href="https://baseball.fantasysports.yahoo.com/" target="_blank" rel="noopener noreferrer">
+    <img src="yahoo-fantasy-logo.jpg" alt="Yahoo Fantasy">
+  </a>
+  <p>Fantasy data provided by <a href="https://baseball.fantasysports.yahoo.com/" target="_blank" rel="noopener noreferrer">Yahoo Fantasy</a></p>
+</footer>
 
 </div>
 </body>
