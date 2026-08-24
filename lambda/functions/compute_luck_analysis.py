@@ -51,7 +51,7 @@ def scan_by_prefix(prefix, year=2026):
     return items
 
 
-def rank_xwins(stats_dict, cats):
+def rank_xwins(stats_dict, cats, forfeit_tns=frozenset()):
     """Rank-based xWins: 0 to 1/N per cat, max total = len(cats)/N (N = num teams).
     Normalized so total across all 12 cats = 0 to 1.0 per week."""
     tns = list(stats_dict.keys())
@@ -60,10 +60,20 @@ def rank_xwins(stats_dict, cats):
     if n < 2:
         return result
     for cat in cats:
-        vals = [(tn, stats_dict[tn][cat]) for tn in tns if cat in stats_dict[tn]]
+        reverse = cat not in LOW_CATS
+        vals = []
+        for tn in tns:
+            if cat not in stats_dict[tn]:
+                continue
+            if cat in PITCHING_CATS and tn in forfeit_tns:
+                # Pinned to last place: a forfeited pitching cat was never winnable,
+                # so it must not read as an unlucky loss. +/-inf sorts last either way
+                # and lets the existing tie-averaging share the bottom slots.
+                vals.append((tn, float('-inf') if reverse else float('inf')))
+            else:
+                vals.append((tn, stats_dict[tn][cat]))
         if not vals:
             continue
-        reverse = cat not in LOW_CATS
         vals.sort(key=lambda x: x[1], reverse=reverse)
         i = 0
         while i < len(vals):
@@ -182,6 +192,7 @@ def lambda_handler(event, context):
 
         # 2. Pull weekly_stats — key strictly by team number (stable), not name.
         weekly_stats = defaultdict(dict)
+        stored_forfeits = set()
         ws_by_week = defaultdict(list)
         for item in scan_by_prefix('weekly_stats#'):
             ws_by_week[int(item['Week'])].append(item)
@@ -195,6 +206,8 @@ def lambda_handler(event, context):
                 if item.get('Team'):
                     name_to_tn.setdefault(item['Team'], tn)
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
+                if item.get('MinIPForfeit'):
+                    stored_forfeits.add((week, tn))
 
         # 3. Build actual_results from Matchups2026 table
         actual_results = defaultdict(dict)
@@ -225,14 +238,15 @@ def lambda_handler(event, context):
             logger.warning("No completed weeks with both stats and matchup results")
             return {'statusCode': 200, 'body': 'No data to compute'}
 
-        forfeits = detect_forfeits(weekly_stats, actual_results)
+        forfeits = stored_forfeits | detect_forfeits(weekly_stats, actual_results)
         if forfeits:
             logger.info(f"min-IP forfeits detected: {sorted(forfeits)}")
 
         # 4. Compute xWins per team per week (rank-based, 0-1.0 per week)
         weekly_xwins = {}
         for week in weeks:
-            weekly_xwins[week] = rank_xwins(weekly_stats[week], ALL_CATS)
+            weekly_xwins[week] = rank_xwins(weekly_stats[week], ALL_CATS,
+                                            {tn for w, tn in forfeits if w == week})
 
         # 5. H2H all-play simulation (11 opponents, for all-play win% chart)
         weekly_allplay = defaultdict(lambda: defaultdict(lambda: {'w': 0, 'l': 0, 't': 0}))

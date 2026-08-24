@@ -34,8 +34,17 @@ YEAR = 2026
 TABLE_NAME = 'FantasyBaseball-SeasonTrends'
 ALL_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'K9', 'QS', 'SVH', 'ERA', 'WHIP', 'TB']
 
+# Miss this and Yahoo forfeits all six of your pitching categories.
+MIN_IP = 50.0
+
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table(TABLE_NAME)
+
+
+def ip_to_float(value):
+    """Baseball innings: 55.1 means 55 and one third, not 55.1."""
+    whole, _, outs = str(value).strip().partition('.')
+    return int(whole) + int(outs or 0) / 3.0
 
 
 def load_team_names():
@@ -93,6 +102,13 @@ def build_items(payload, tn_to_name):
         }
         for cat in ALL_CATS:
             item[cat] = Decimal(str(row[cat]))
+
+        # IP is not a scoring category, but it decides whether the pitching cats
+        # counted at all - store it and the flag the compute Lambdas read.
+        raw_ip = row.get('IP', row.get('_ip'))
+        if raw_ip is not None:
+            item['IP'] = str(raw_ip).strip()
+            item['MinIPForfeit'] = ip_to_float(raw_ip) < MIN_IP
         items.append(item)
 
     missing_teams = set(tn_to_name) - seen
@@ -106,12 +122,14 @@ def build_items(payload, tn_to_name):
 
 def preview(week, items):
     print(f"\nWeek {week} - {len(items)} teams\n")
-    header = f"{'TN':>3}  {'Team':<24}" + ''.join(f"{c:>8}" for c in ALL_CATS)
+    header = f"{'TN':>3}  {'Team':<24}" + ''.join(f"{c:>8}" for c in ALL_CATS) + f"{'IP':>8}"
     print(header)
     print('-' * len(header))
     for item in items:
         cells = ''.join(f"{str(item[c]):>8}" for c in ALL_CATS)
-        print(f"{item['TeamNumber']:>3}  {item['Team'][:24]:<24}{cells}")
+        ip = item.get('IP', '-')
+        flag = '  <-- under %g IP, forfeits pitching' % MIN_IP if item.get('MinIPForfeit') else ''
+        print(f"{item['TeamNumber']:>3}  {item['Team'][:24]:<24}{cells}{str(ip):>8}{flag}")
     print()
 
 

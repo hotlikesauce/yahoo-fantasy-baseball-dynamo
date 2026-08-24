@@ -29,6 +29,10 @@ LAST_REG_WEEK = 22
 BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
 PITCHER_HIGH = ['K9', 'QS', 'SVH']
 PITCHER_LOW = ['ERA', 'WHIP', 'TB']
+
+# Miss the weekly innings minimum and Yahoo forfeits all six of these, so the team
+# is ranked last in each rather than credited for stats that never counted.
+PITCHING_CATS = set(PITCHER_HIGH + PITCHER_LOW)
 LONG_WEEKS  = {17}
 SHORT_WEEKS = {1}
 
@@ -57,7 +61,7 @@ def scan_by_prefix(prefix, year=2026):
     return items
 
 
-def rank_xwins(stats_dict, cats):
+def rank_xwins(stats_dict, cats, forfeit_tns=frozenset()):
     """
     For each category, rank all teams linearly and assign 0 to 1/N xWins per cat.
     Rank 1 (best) = 1/N, rank N (worst) = 0, ties get the average of their positions.
@@ -72,11 +76,20 @@ def rank_xwins(stats_dict, cats):
     if n < 2:
         return result
     for cat in cats:
-        vals = [(tn, stats_dict[tn][cat]) for tn in tns if cat in stats_dict[tn]]
+        reverse = cat not in LOW_CATS
+        vals = []
+        for tn in tns:
+            if cat not in stats_dict[tn]:
+                continue
+            if cat in PITCHING_CATS and tn in forfeit_tns:
+                # Pinned to last place: a forfeited pitching cat was never winnable,
+                # so it must not read as an unlucky loss. +/-inf sorts last either way
+                # and lets the existing tie-averaging share the bottom slots.
+                vals.append((tn, float('-inf') if reverse else float('inf')))
+            else:
+                vals.append((tn, stats_dict[tn][cat]))
         if not vals:
             continue
-        # Sort: high cats descending, low cats ascending
-        reverse = cat not in LOW_CATS
         vals.sort(key=lambda x: x[1], reverse=reverse)
         # Assign linear scores 1/12 down to 0, handle ties by averaging
         i = 0
@@ -122,6 +135,7 @@ def lambda_handler(event, context):
         # 2. Pull weekly_stats — key strictly by team number (stable), not by the
         # team's stale name on the row.
         weekly_stats = defaultdict(dict)
+        forfeits = set()
         ws_by_week = defaultdict(list)
         for item in scan_by_prefix('weekly_stats#'):
             ws_by_week[int(item['Week'])].append(item)
@@ -135,6 +149,8 @@ def lambda_handler(event, context):
                 if item.get('Team'):
                     name_to_tn.setdefault(item['Team'], tn)
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
+                if item.get('MinIPForfeit'):
+                    forfeits.add((week, tn))
 
         stat_weeks = sorted(w for w in weekly_stats.keys() if w <= LAST_REG_WEEK)
 
@@ -190,12 +206,13 @@ def lambda_handler(event, context):
         season_pit = defaultdict(lambda: {'xw': 0.0})
 
         for week in stat_weeks:
-            xw = rank_xwins(weekly_stats[week], ALL_CATS)
+            wk_ff = {tn for w, tn in forfeits if w == week}
+            xw = rank_xwins(weekly_stats[week], ALL_CATS, wk_ff)
             for tn, val in xw.items():
                 weekly_xwins[week][tn] = round(val, 4)
 
-            bat_xw = rank_xwins(weekly_stats[week], BATTER_CATS)
-            pit_xw = rank_xwins(weekly_stats[week], PITCHER_HIGH + PITCHER_LOW)
+            bat_xw = rank_xwins(weekly_stats[week], BATTER_CATS, wk_ff)
+            pit_xw = rank_xwins(weekly_stats[week], PITCHER_HIGH + PITCHER_LOW, wk_ff)
             for tn in weekly_stats[week]:
                 season_bat[tn]['xw'] += bat_xw.get(tn, 0)
                 season_pit[tn]['xw'] += pit_xw.get(tn, 0)
