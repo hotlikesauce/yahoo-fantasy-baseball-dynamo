@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Playoff Scenarios</title>
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .board-col { position: sticky; top: 68px; }
+
+  /* Cut-line summary bar */
+  .cutbar {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 14px 18px; margin-bottom: 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+  }
+  .cutbar .lbl {
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #64748b; font-weight: 700;
+  }
+  .cutbar .slot { color: #e2e8f0; font-weight: 600; font-size: 0.95em; }
+  .cutbar .slot .seed { color: #22c55e; font-weight: 800; margin-right: 5px; }
+
+  /* Matchup cards */
+  .mu {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 16px 18px 18px; margin-bottom: 14px;
+  }
+  .mu.keygame { border-color: #3b82f6; }
+  .mu-stakes {
+    font-size: 0.74em; text-transform: uppercase; letter-spacing: 0.06em;
+    color: #64748b; font-weight: 700; margin-bottom: 10px;
+  }
+  .mu.keygame .mu-stakes { color: #60a5fa; }
+  .mu-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .mu-side { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+  .mu-side.r { align-items: flex-end; text-align: right; }
+  .mu-name { font-weight: 600; font-size: 0.92em; color: #e2e8f0; overflow-wrap: anywhere; }
+  .mu-pts {
+    font-size: 1.45em; font-weight: 800; font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .mu-side.l .mu-pts { color: #60a5fa; }
+  .mu-side.r .mu-pts { color: #c4b5fd; }
+  .mu-final { font-size: 0.76em; color: #64748b; font-variant-numeric: tabular-nums; }
+
+  /* Tug-of-war bar doubles as the slider track */
+  .tug {
+    position: relative; height: 22px; margin: 14px 0 2px;
+    border-radius: 6px; background: #8b5cf6;
+  }
+  .tug-fill {
+    position: absolute; top: 0; bottom: 0; left: 0; background: #3b82f6;
+    border-radius: 6px 0 0 6px;
+  }
+  .tug-handle {
+    position: absolute; top: -5px; width: 12px; height: 32px; margin-left: -6px;
+    background: #e2e8f0; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.5);
+    pointer-events: none;
+  }
+  .tug:focus-within .tug-handle { box-shadow: 0 0 0 3px #38bdf8; }
+  .tug-input {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y;
+  }
+  .tug-ticks {
+    display: flex; justify-content: space-between;
+    font-size: 0.68em; color: #475569; font-variant-numeric: tabular-nums;
+  }
+
+  /* Status chips */
+  .chip {
+    display: inline-block; font-size: 0.66em; font-weight: 800;
+    letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px;
+    text-transform: uppercase; white-space: nowrap;
+  }
+  .chip.in     { background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }
+  .chip.out    { background: #ef444422; color: #f87171; border: 1px solid #ef444455; }
+  .chip.locked { background: #fbbf2422; color: #fbbf24; border: 1px solid #fbbf2455; }
+  .chip.dead   { background: #47556922; color: #64748b; border: 1px solid #47556955; }
+  .chip.tie    { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b66; }
+
+  /* Standings board */
+  .board { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 6px 0 0; }
+  .board table { margin-bottom: 0; }
+  .board th { background: transparent; border-bottom: 1px solid #334155; }
+  .board td { border-bottom: 1px solid #0f172a55; font-variant-numeric: tabular-nums; }
+  .board tr.playoff td { background: #22c55e0f; }
+  .board tr.cutrow td {
+    background: #0f172a; border-bottom: 2px solid #ef4444;
+    color: #f87171; font-size: 0.68em; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px;
+    text-align: center;
+  }
+  .board tr.cutrow:hover td { background: #0f172a; }
+  .board .tm { font-weight: 600; color: #e2e8f0; }
+  .board .pts { font-weight: 800; color: #34d399; }
+  .mv-up { color: #4ade80; font-weight: 700; }
+  .mv-dn { color: #f87171; font-weight: 700; }
+  .mv-none { color: #475569; }
+
+  .warn {
+    background: #f59e0b18; border: 1px solid #f59e0b66; border-radius: 10px;
+    padding: 11px 14px; margin-bottom: 14px; color: #fbbf24; font-size: 0.87em;
+  }
+  .warn.hidden { display: none; }
+
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .btn {
+    background: #1e293b; color: #cbd5e1; border: 1px solid #334155;
+    border-radius: 8px; padding: 8px 14px; font-size: 0.85em; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+  .btn:hover { background: #334155; color: #e2e8f0; }
+  .btn:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+  .magic td:first-child { font-weight: 600; color: #e2e8f0; }
+  .magic .num { font-weight: 800; color: #fbbf24; font-variant-numeric: tabular-nums; }
+  .magic .none { color: #64748b; }
+
+  .intro { text-align: center; max-width: 780px; margin: 0 auto 22px; }
+
+  .table-scroll { overflow-x: auto; margin-bottom: 24px; }
+  .table-scroll table { margin-bottom: 0; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 20px; }
+    .board-col { position: static; }
+    /* Keep the answer on screen while you drag the sliders below it. */
+    .cutbar {
+      position: sticky; top: 52px; z-index: 900;
+      margin-bottom: 14px; padding: 11px 14px; gap: 6px 14px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .cutbar { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .cutbar .slot { font-size: 0.9em; }
+
+    .mu { padding: 13px 14px 15px; }
+    .mu-head { gap: 8px; }
+    .mu-name { font-size: 0.85em; }
+    .mu-pts { font-size: 1.25em; }
+    .mu-final { font-size: 0.71em; }
+    .mu-stakes { font-size: 0.68em; }
+
+    /* Thumb-sized hit area without fattening the bar itself */
+    .tug { height: 26px; margin: 16px 0 2px; }
+    .tug-handle { top: -6px; height: 38px; width: 14px; margin-left: -7px; }
+    .tug-input { top: -12px; height: calc(100% + 24px); }
+
+    /* Pct and the rank-move arrow are the first things to go */
+    .board th:nth-child(4), .board td:nth-child(4),
+    .board th:nth-child(5), .board td:nth-child(5) { display: none; }
+    .board td { padding: 7px 8px; font-size: 0.86em; }
+    .board th { padding: 8px 8px; font-size: 0.72em; }
+    .board .tm { font-size: 0.95em; }
+
+    .btn { flex: 1 1 auto; text-align: center; }
+    .magic td, .magic th { white-space: nowrap; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Playoff Scenarios</p>
+
+<p class="section-desc intro">
+Standings are final through week 21. One week remains &mdash; 12 categories per matchup.
+Drag any matchup to split those 12 categories and the board re-sorts live.
+Spots <strong>1&ndash;4 are already clinched</strong>; you are playing for the last two.
+</p>
+
+<div id="tiewarn" class="warn hidden"></div>
+
+<div class="cutbar">
+  <span class="lbl">Last two in</span>
+  <span class="slot" id="slot5"></span>
+  <span class="slot" id="slot6"></span>
+</div>
+
+<div class="btnrow">
+  <button class="btn" id="bEven">Reset to 6&ndash;6</button>
+  <button class="btn" id="bChalk">Higher seed wins 8&ndash;4</button>
+  <button class="btn" id="bRandom">Randomize</button>
+</div>
+
+<div class="layout">
+  <div>
+    <h3 style="margin-top:0;">Week 22 Matchups</h3>
+    <p class="section-desc">A tie counts as half a category for each side, so every slider moves in half steps and the two totals always add to 12.</p>
+    <div id="matchups"></div>
+  </div>
+
+  <div class="board-col">
+    <h3 style="margin-top:0;">Final Standings</h3>
+    <p class="section-desc">Points = category wins + &frac12; per tie, which matches Yahoo's Pct column exactly.
+      Teams level on points are separated by the categories they won head-to-head.</p>
+    <div class="board">
+      <table>
+        <thead><tr>
+          <th style="width:38px;">#</th><th>Team</th>
+          <th style="text-align:right;">Pts</th>
+          <th style="text-align:right;">Pct</th>
+          <th style="text-align:center;width:44px;">Mv</th>
+          <th style="text-align:right;">Status</th>
+        </tr></thead>
+        <tbody id="boardBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h3>Magic Numbers</h3>
+<p class="section-desc">
+Category points needed in week 22, out of 12. <strong>To clinch</strong> means in regardless of every other result, with ties broken by the
+categories the tied teams won head-to-head. <strong>To stay alive</strong> is the least
+that still leaves a path.
+</p>
+<div class="table-scroll"><table class="magic">
+<thead><tr><th>Team</th><th>Pts now</th><th>To clinch</th><th>To stay alive</th><th>Week 22 opponent</th></tr></thead>
+<tbody id="magicBody"></tbody>
+</table></div>
+
+<h3>The Tiebreaker</h3>
+<p class="section-desc" style="max-width:900px;">
+Teams finishing level on points are separated by the <strong>categories they won head-to-head</strong>
+&mdash; add up the categories each took in the weeks those two actually played, week 22 included if they
+meet in it. This is not the same as who won more of those matchups: two meetings of 7&ndash;5 and
+4&ndash;8 look like a 1&ndash;1 split, but on categories they are 11&ndash;13. The categories decide it.
+</p>
+<div class="table-scroll">
+<table class="magic" style="max-width:660px;">
+<thead><tr><th>Pairing</th><th>H2H categories</th><th>As matchups</th><th>Takes the spot</th></tr></thead>
+<tbody>
+  <tr><td>SCOOPSKI &ndash; Rosa Parks</td><td>20&ndash;4</td><td>2&ndash;0</td><td class="green">SCOOPSKI</td></tr>
+  <tr><td>SCOOPSKI &ndash; OG</td><td>13&ndash;9</td><td>1&ndash;0&ndash;1</td><td class="green">SCOOPSKI</td></tr>
+  <tr><td>SCOOPSKI &ndash; Rickie Flower</td><td>11&ndash;12</td><td class="gold">1&ndash;1 split</td><td class="green">Rickie Flower</td></tr>
+  <tr><td>Rickie Flower &ndash; OG</td><td>14&ndash;10</td><td class="gold">1&ndash;1 split</td><td class="green">Rickie Flower</td></tr>
+  <tr><td>Rickie Flower &ndash; Rosa Parks</td><td>16&ndash;8</td><td>2&ndash;0</td><td class="green">Rickie Flower</td></tr>
+  <tr><td>Rickie Flower &ndash; Ian Cumsler</td><td>8&ndash;15</td><td>0&ndash;1&ndash;1</td><td class="green">Ian Cumsler</td></tr>
+  <tr><td>Rosa Parks &ndash; OG</td><td>12&ndash;11</td><td>1&ndash;0&ndash;1</td><td class="green">Rosa Parks</td></tr>
+  <tr><td>Rosa Parks &ndash; Ian Cumsler</td><td>16&ndash;7</td><td>2&ndash;0</td><td class="green">Rosa Parks</td></tr>
+</tbody>
+</table></div>
+<p class="section-desc" style="max-width:900px;">
+<strong>Every tie that can happen at the cut line is decided</strong> &mdash; there is no scenario where
+two teams end level on points and level on head-to-head categories.
+</p>
+<p class="section-desc" style="max-width:900px;">
+<strong>Rickie Flower is why the clinch numbers are what they are.</strong> Rickie split the season series
+with both SCOOPSKI and OG as matchups, but wins both on categories &mdash; 12&ndash;11 and 14&ndash;10.
+So SCOOPSKI taking 6.0 in week 22 leaves them level with Rickie's ceiling of 133.5 and <em>losing</em> the
+tiebreak, and OG taking 11.0 does the same. Half a category more and the tie never happens, which is
+exactly why the numbers are 6.5 and 11.5.
+</p>
+
+<h3>Who Is Already Out</h3>
+<p class="section-desc" style="max-width:900px;">
+Hatfield, Shatnermouth and Moniebol cannot reach the top six under any combination of results.
+Hatfield is the close one, and the reason is the coupling between matchups. Their ceiling is 122.5,
+and SCOOPSKI's floor of 127.5 already sits above it &mdash; that is one team. For a second, note that OG
+and Cumsler play each other, so their point gains must add to exactly 12: if OG stalls at 122.5 then
+Cumsler necessarily lands on 125. <strong>At least one of those two finishes above 122.5 no matter what</strong>,
+which is the second team above Hatfield's ceiling. Drag every slider to its extreme and you will find no
+arrangement that puts them in.
+</p>
+
+</div>
+
+<script>
+// Final standings through week 21
+var TEAMS = {
+  rost:   { name: 'The Rosterbation Station',           w: 149, l: 94,  t: 9  },
+  basu:   { name: 'Los Basureros',                      w: 147, l: 93,  t: 12 },
+  mash:   { name: 'M*A*S*H*D PO*TA*TOES',               w: 141, l: 104, t: 7  },
+  shrug:  { name: '¯\\_(ツ)_/¯',          w: 135, l: 102, t: 15 },
+  scoop:  { name: 'SCOOPSKI POTATOES',                  w: 122, l: 119, t: 11 },
+  og:     { name: 'OG 8️⃣ & an extra',        w: 117, l: 124, t: 11 },
+  rickie: { name: 'Rickie Flower',                      w: 119, l: 128, t: 5  },
+  rosa:   { name: 'Rosa Parks’ Bus Seat',          w: 115, l: 130, t: 7  },
+  cums:   { name: 'Ian Cumsler',                        w: 105, l: 131, t: 16 },
+  hat:    { name: 'Hatfield Hurlers',                   w: 104, l: 135, t: 13 },
+  shat:   { name: 'William Shatnermouth',               w: 100, l: 142, t: 10 },
+  mon:    { name: 'Moniebol 🐳 (DA BI ASS)',  w: 92,  l: 144, t: 16 }
+};
+Object.keys(TEAMS).forEach(function (k) { TEAMS[k].pts = TEAMS[k].w + TEAMS[k].t * 0.5; });
+
+// Week 22 pairings, ordered by how much they matter to the race
+var MATCHUPS = [
+  { l: 'basu',   r: 'scoop', key: true,  stakes: 'SCOOPSKI clinches with 6.5 of 12' },
+  { l: 'cums',   r: 'og',    key: true,  stakes: 'Elimination game — Cumsler must take 11' },
+  { l: 'rickie', r: 'shat',  key: true,  stakes: 'Rickie needs 2.5 just to stay alive' },
+  { l: 'rosa',   r: 'hat',   key: true,  stakes: 'Rosa needs 5.5 to stay alive' },
+  { l: 'mash',   r: 'mon',   key: false, stakes: 'No bearing on the race' },
+  { l: 'rost',   r: 'shrug', key: false, stakes: 'Both clinched — seeding only' }
+];
+
+var CLINCHED = ['rost', 'basu', 'mash', 'shrug'];
+var ELIMINATED = ['hat', 'shat', 'mon'];
+var PLAYOFF_SPOTS = 6;
+var CATS = 12;
+var GAMES_AFTER = 264;   // 22 weeks x 12 categories
+
+// Solved separately: least points that clinch a spot / that keep a path open
+var MAGIC = {
+  scoop:  { clinch: 6.5,  alive: 0    },
+  og:     { clinch: 11.5, alive: 1.5  },
+  rickie: { clinch: null, alive: 2.5  },
+  rosa:   { clinch: null, alive: 5.5  },
+  cums:   { clinch: null, alive: 11.0 },
+  hat:    { clinch: null, alive: null },
+  shat:   { clinch: null, alive: null },
+  mon:    { clinch: null, alive: null }
+};
+
+var state = MATCHUPS.map(function () { return 6; });
+
+var currentRank = {};
+Object.keys(TEAMS)
+  .sort(function (a, b) { return TEAMS[b].pts - TEAMS[a].pts; })
+  .forEach(function (k, i) { currentRank[k] = i + 1; });
+
+function fmt(n) { return n % 1 === 0 ? n.toFixed(0) : n.toFixed(1); }
+
+function ordinal(n) {
+  var s = ['th', 'st', 'nd', 'rd'], v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+// Head-to-head CATEGORY totals, weeks 1-21: [row team's cats, column team's cats]
+// summed over the weeks those two played. The tiebreaker is categories won in
+// those meetings, not the matchup record - two 7-5 / 4-8 meetings read 1-1 as
+// matchups but 11-13 on categories, and the categories are what counts.
+// Ties inside a matchup are shared, so crediting half to each side would move
+// both totals equally and can never change who is ahead.
+var H2H = {
+  rost:   { basu: [10,11], mash: [15,9], shrug: [7,3], scoop: [19,5], og: [9,14], rickie: [19,5], rosa: [12,12], cums: [12,10], hat: [12,12], shat: [16,8], mon: [18,5] },
+  basu:   { rost: [11,10], mash: [9,14], shrug: [14,8], scoop: [10,1], og: [14,10], rickie: [13,11], rosa: [9,14], cums: [21,2], hat: [12,11], shat: [19,4], mon: [15,8] },
+  mash:   { rost: [9,15], basu: [14,9], shrug: [16,6], scoop: [18,5], og: [9,15], rickie: [14,10], rosa: [10,14], cums: [18,6], hat: [16,8], shat: [10,13], mon: [7,3] },
+  shrug:  { rost: [3,7], basu: [8,14], mash: [6,16], scoop: [16,7], og: [11,11], rickie: [14,10], rosa: [12,11], cums: [13,7], hat: [13,10], shat: [20,4], mon: [19,5] },
+  scoop:  { rost: [5,19], basu: [1,10], mash: [5,18], shrug: [7,16], og: [13,9], rickie: [11,12], rosa: [20,4], cums: [10,14], hat: [18,6], shat: [17,6], mon: [15,5] },
+  og:     { rost: [14,9], basu: [10,14], mash: [15,9], shrug: [11,11], scoop: [9,13], rickie: [10,14], rosa: [11,12], cums: [4,8], hat: [15,6], shat: [10,12], mon: [8,16] },
+  rickie: { rost: [5,19], basu: [11,13], mash: [10,14], shrug: [10,14], scoop: [12,11], og: [14,10], rosa: [16,8], cums: [8,15], hat: [12,11], shat: [5,7], mon: [16,6] },
+  rosa:   { rost: [12,12], basu: [14,9], mash: [14,10], shrug: [11,12], scoop: [4,20], og: [12,11], rickie: [8,16], cums: [16,7], hat: [2,9], shat: [8,15], mon: [14,9] },
+  cums:   { rost: [10,12], basu: [2,21], mash: [6,18], shrug: [7,13], scoop: [14,10], og: [8,4], rickie: [15,8], rosa: [7,16], hat: [15,6], shat: [12,10], mon: [9,13] },
+  hat:    { rost: [12,12], basu: [11,12], mash: [8,16], shrug: [10,13], scoop: [6,18], og: [6,15], rickie: [11,12], rosa: [9,2], cums: [6,15], shat: [14,9], mon: [11,11] },
+  shat:   { rost: [8,16], basu: [4,19], mash: [13,10], shrug: [4,20], scoop: [6,17], og: [12,10], rickie: [7,5], rosa: [15,8], cums: [10,12], hat: [9,14], mon: [12,11] },
+  mon:    { rost: [5,18], basu: [8,15], mash: [3,7], shrug: [5,19], scoop: [5,15], og: [16,8], rickie: [6,16], rosa: [9,14], cums: [13,9], hat: [11,11], shat: [11,12] }
+};
+
+// Which way the head-to-head falls between two teams, including their week 22
+// meeting if they happen to play each other. -1 = a ahead, 1 = b ahead, 0 = level.
+function h2hCats(a, b) {
+  var rec = (H2H[a] && H2H[a][b]) ? H2H[a][b].slice() : [0, 0];
+  var mi = -1;
+  MATCHUPS.forEach(function (m, i) {
+    if ((m.l === a && m.r === b) || (m.l === b && m.r === a)) mi = i;
+  });
+  if (mi !== -1) {                       // they also meet in week 22
+    var aCats = MATCHUPS[mi].l === a ? state[mi] : CATS - state[mi];
+    rec[0] += aCats;
+    rec[1] += CATS - aCats;
+  }
+  return rec;
+}
+
+// -1 = a ahead on head-to-head categories, 1 = b ahead, 0 = dead level.
+function h2hEdge(a, b) {
+  var rec = h2hCats(a, b);
+  if (!(rec[0] + rec[1])) return 0;
+  return rec[0] > rec[1] ? -1 : rec[0] < rec[1] ? 1 : 0;
+}
+
+function h2hLabel(a, b) {
+  var rec = h2hCats(a, b);
+  return fmt(rec[0]) + '-' + fmt(rec[1]);
+}
+
+function standings() {
+  var f = {};
+  Object.keys(TEAMS).forEach(function (k) { f[k] = TEAMS[k].pts; });
+  MATCHUPS.forEach(function (m, i) {
+    f[m.l] = TEAMS[m.l].pts + state[i];
+    f[m.r] = TEAMS[m.r].pts + (CATS - state[i]);
+  });
+  return Object.keys(TEAMS)
+    .map(function (k) { return { k: k, pts: f[k] }; })
+    .sort(function (a, b) {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      var e = h2hEdge(a.k, b.k);
+      if (e !== 0) return e;
+      return TEAMS[b.k].pts - TEAMS[a.k].pts;   // level on both - order is unresolved
+    });
+}
+
+// Teams level on points whose head-to-head is also level: the league rule does
+// not separate them, so neither can be shown as In or Out.
+var unresolved = [];
+
+function statusOf(k, rank) {
+  if (CLINCHED.indexOf(k) !== -1) return { cls: 'locked', txt: 'Clinched' };
+  if (ELIMINATED.indexOf(k) !== -1) return { cls: 'dead', txt: 'Eliminated' };
+  if (unresolved.indexOf(k) !== -1) return { cls: 'tie', txt: 'Tied' };
+  return rank <= PLAYOFF_SPOTS ? { cls: 'in', txt: 'In' } : { cls: 'out', txt: 'Out' };
+}
+
+// Build the matchup cards once; render() keeps their numbers in sync
+var muWrap = document.getElementById('matchups');
+MATCHUPS.forEach(function (m, i) {
+  var card = document.createElement('div');
+  card.className = 'mu' + (m.key ? ' keygame' : '');
+  card.innerHTML =
+    '<div class="mu-stakes">' + m.stakes + '</div>' +
+    '<div class="mu-head">' +
+      '<div class="mu-side l">' +
+        '<span class="mu-name">' + TEAMS[m.l].name + '</span>' +
+        '<span class="mu-pts" id="p' + i + 'l">6</span>' +
+        '<span class="mu-final" id="f' + i + 'l"></span>' +
+        '<span id="c' + i + 'l"></span>' +
+      '</div>' +
+      '<div class="mu-side r">' +
+        '<span class="mu-name">' + TEAMS[m.r].name + '</span>' +
+        '<span class="mu-pts" id="p' + i + 'r">6</span>' +
+        '<span class="mu-final" id="f' + i + 'r"></span>' +
+        '<span id="c' + i + 'r"></span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="tug">' +
+      '<div class="tug-fill" id="fill' + i + '"></div>' +
+      '<div class="tug-handle" id="h' + i + '"></div>' +
+      '<input class="tug-input" type="range" min="0" max="12" step="0.5" value="6" id="s' + i + '" ' +
+        'aria-label="Categories won by ' + TEAMS[m.l].name + ' against ' + TEAMS[m.r].name + '">' +
+    '</div>' +
+    '<div class="tug-ticks"><span>0</span><span>6</span><span>12</span></div>';
+  muWrap.appendChild(card);
+  card.querySelector('#s' + i).addEventListener('input', function (e) {
+    state[i] = parseFloat(e.target.value);
+    render();
+  });
+});
+
+function render() {
+  var table = standings();
+  unresolved = (table[5].pts === table[6].pts && h2hEdge(table[5].k, table[6].k) === 0)
+    ? [table[5].k, table[6].k] : [];
+  var rankOf = {};
+  table.forEach(function (row, idx) { rankOf[row.k] = idx + 1; });
+
+  MATCHUPS.forEach(function (m, i) {
+    var lv = state[i], rv = CATS - state[i];
+    document.getElementById('p' + i + 'l').textContent = fmt(lv);
+    document.getElementById('p' + i + 'r').textContent = fmt(rv);
+    document.getElementById('fill' + i).style.width = (lv / CATS * 100) + '%';
+    document.getElementById('h' + i).style.left = (lv / CATS * 100) + '%';
+    document.getElementById('s' + i).value = state[i];
+    [['l', m.l, lv], ['r', m.r, rv]].forEach(function (side) {
+      var st = statusOf(side[1], rankOf[side[1]]);
+      document.getElementById('c' + i + side[0]).innerHTML =
+        '<span class="chip ' + st.cls + '">' + st.txt + '</span>';
+      document.getElementById('f' + i + side[0]).textContent =
+        'finishes ' + fmt(TEAMS[side[1]].pts + side[2]) + ' — ' + ordinal(rankOf[side[1]]);
+    });
+  });
+
+  var body = document.getElementById('boardBody');
+  body.innerHTML = '';
+  table.forEach(function (row, idx) {
+    var rank = idx + 1;
+    var st = statusOf(row.k, rank);
+    var mv = currentRank[row.k] - rank;
+    var mvHtml = mv > 0 ? '<span class="mv-up">▲' + mv + '</span>'
+               : mv < 0 ? '<span class="mv-dn">▼' + (-mv) + '</span>'
+               : '<span class="mv-none">–</span>';
+    var tr = document.createElement('tr');
+    if (rank <= PLAYOFF_SPOTS) tr.className = 'playoff';
+    tr.innerHTML =
+      '<td class="rank">' + rank + '</td>' +
+      '<td class="tm">' + TEAMS[row.k].name + '</td>' +
+      '<td class="pts" style="text-align:right;">' + fmt(row.pts) + '</td>' +
+      '<td style="text-align:right;color:#94a3b8;">' +
+        (row.pts / GAMES_AFTER).toFixed(3).replace(/^0/, '') + '</td>' +
+      '<td style="text-align:center;">' + mvHtml + '</td>' +
+      '<td style="text-align:right;"><span class="chip ' + st.cls + '">' + st.txt + '</span></td>';
+    body.appendChild(tr);
+    if (rank === PLAYOFF_SPOTS) {
+      var cut = document.createElement('tr');
+      cut.className = 'cutrow';
+      cut.innerHTML = '<td colspan="6">Playoff cut line</td>';
+      body.appendChild(cut);
+    }
+  });
+
+  document.getElementById('slot5').innerHTML =
+    '<span class="seed">5</span>' + TEAMS[table[4].k].name;
+  document.getElementById('slot6').innerHTML =
+    '<span class="seed">6</span>' + TEAMS[table[5].k].name;
+
+  var warn = document.getElementById('tiewarn');
+  if (table[5].pts === table[6].pts) {
+    var inTm = table[5], outTm = table[6];
+    var edge = h2hEdge(inTm.k, outTm.k);
+    warn.classList.remove('hidden');
+    if (edge === 0) {
+      warn.innerHTML = '<strong>Head-to-head does not separate them.</strong> ' +
+        TEAMS[inTm.k].name + ' and ' + TEAMS[outTm.k].name + ' both finish on ' +
+        fmt(inTm.pts) + ' points and are dead level on head-to-head categories at ' +
+        h2hLabel(inTm.k, outTm.k) + ', so the last spot would need a further tiebreaker.';
+    } else {
+      warn.innerHTML = '<strong>The tiebreaker decides it.</strong> ' + TEAMS[inTm.k].name +
+        ' and ' + TEAMS[outTm.k].name + ' both finish on ' + fmt(inTm.pts) + ' points. ' +
+        TEAMS[inTm.k].name + ' takes the last spot on head-to-head categories, ' +
+        h2hLabel(inTm.k, outTm.k) + '.';
+    }
+  } else {
+    warn.classList.add('hidden');
+  }
+}
+
+document.getElementById('bEven').addEventListener('click', function () {
+  MATCHUPS.forEach(function (m, i) { state[i] = 6; });
+  render();
+});
+document.getElementById('bChalk').addEventListener('click', function () {
+  MATCHUPS.forEach(function (m, i) { state[i] = TEAMS[m.l].pts >= TEAMS[m.r].pts ? 8 : 4; });
+  render();
+});
+document.getElementById('bRandom').addEventListener('click', function () {
+  MATCHUPS.forEach(function (m, i) { state[i] = Math.round(Math.random() * 24) / 2; });
+  render();
+});
+
+var oppOf = {};
+MATCHUPS.forEach(function (m) { oppOf[m.l] = m.r; oppOf[m.r] = m.l; });
+var magicBody = document.getElementById('magicBody');
+Object.keys(MAGIC)
+  .sort(function (a, b) { return TEAMS[b].pts - TEAMS[a].pts; })
+  .forEach(function (k) {
+    var m = MAGIC[k];
+    var dead = m.alive === null;
+    var clinch = dead ? '<span class="none">—</span>'
+      : m.clinch === null ? '<span class="none">cannot clinch alone</span>'
+      : '<span class="num">' + fmt(m.clinch) + '</span>';
+    var alive = dead ? '<span class="none">eliminated</span>'
+      : m.alive === 0 ? '<span class="none">alive at 0</span>'
+      : '<span class="num">' + fmt(m.alive) + '</span>';
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + TEAMS[k].name + '</td>' +
+      '<td style="font-variant-numeric:tabular-nums;color:#94a3b8;">' + fmt(TEAMS[k].pts) + '</td>' +
+      '<td>' + clinch + '</td><td>' + alive + '</td>' +
+      '<td style="color:#94a3b8;">' + TEAMS[oppOf[k]].name + '</td>';
+    magicBody.appendChild(tr);
+  });
+
+render();
+</script>
+</body>
+</html>
