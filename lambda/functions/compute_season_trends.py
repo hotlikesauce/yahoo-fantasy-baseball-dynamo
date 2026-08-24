@@ -22,6 +22,10 @@ table = dynamodb.Table('FantasyBaseball-SeasonTrends')
 HIGH_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'K9', 'QS', 'SVH']
 LOW_CATS = ['ERA', 'WHIP', 'TB']
 ALL_CATS = HIGH_CATS + LOW_CATS
+
+# Regular season is weeks 1-22; playoffs start week 23 and are excluded so that
+# all-play, xWins and luck stay regular-season measures.
+LAST_REG_WEEK = 22
 BATTER_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
 PITCHER_HIGH = ['K9', 'QS', 'SVH']
 PITCHER_LOW = ['ERA', 'WHIP', 'TB']
@@ -132,7 +136,7 @@ def lambda_handler(event, context):
                     name_to_tn.setdefault(item['Team'], tn)
                 weekly_stats[week][tn] = {c: float(item[c]) for c in ALL_CATS if c in item}
 
-        stat_weeks = sorted(w for w in weekly_stats.keys() if w <= 20)
+        stat_weeks = sorted(w for w in weekly_stats.keys() if w <= LAST_REG_WEEK)
 
         # WLT: compute category wins from weekly_stats using actual matchup pairings in weekly_results
         latest_wlt = defaultdict(lambda: {'wins': 0, 'losses': 0, 'ties': 0})

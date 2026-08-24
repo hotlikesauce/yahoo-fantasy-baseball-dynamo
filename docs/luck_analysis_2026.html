@@ -16,6 +16,9 @@
   .upset-highlight td { background: #f59e0b12; }
   .upset-tag { background: #f59e0b; color: #0f172a; font-size: 0.7em; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.05em; }
   .score { color: #e2e8f0; font-weight: 600; }
+  .forfeit-star { color: #ef4444; font-weight: 900; cursor: help; }
+  .forfeit-highlight td { background: #ef444422; }
+  .forfeit-count { color: #ef4444; font-weight: 800; }
   .weekly-table { max-height: 700px; overflow-y: auto; margin-bottom: 24px; }
   .weekly-table table { margin-bottom: 0; }
   .weekly-table th { position: sticky; top: 0; background: #0f172a; z-index: 1; }
@@ -79,6 +82,12 @@ function fmtWlt(w, l, t) {
   return s;
 }
 
+// Red star = missed the weekly innings minimum and forfeited all 6 pitching cats.
+const MIN_IP_NOTE = 'Missed the weekly innings minimum (50 IP) — forfeited all 6 pitching categories';
+function star(on) {
+  return on ? ` <span class="forfeit-star" title="${MIN_IP_NOTE}">&#42;</span>` : '';
+}
+
 // =====================================================
 // Load & Render
 // =====================================================
@@ -113,12 +122,12 @@ function render(d) {
   // Luck table
   html += `
 <h3>Luck Score</h3>
-<p class="section-desc">xWins = expected category wins based on how your stats ranked against every opponent that week. Luck Score = actual category wins minus xWins. <span class="lucky">&#x2191; Lucky Win</span> = won your matchup despite lower xWins than your opponent. <span class="unlucky">&#x2193; Unlucky Loss</span> = lost despite higher xWins.</p>
+<p class="section-desc">xWins = expected category wins based on how your stats ranked against every opponent that week. Luck Score = actual category wins minus xWins. <span class="lucky">&#x2191; Lucky Win</span> = won your matchup despite lower xWins than your opponent. <span class="unlucky">&#x2193; Unlucky Loss</span> = lost despite higher xWins. <span class="forfeit-star">&#42;</span> <strong>Min IP</strong> = weeks you failed to reach 50 innings pitched and forfeited all six pitching categories. Your stats and all-play record still count them — the league standings don't.</p>
 <table id="luckTable">
 <thead><tr>
   ${th('#','0','num')}${th('Team','1','str')}${th('Matchup W-L-T','2','wlt')}
   ${th('Cat Wins','3','num')}${th('xWins','4','num')}${th('Luck Score','5','num')}
-  ${th('Lucky W','6','num')}${th('Unlucky L','7','num')}
+  ${th('Lucky W','6','num')}${th('Unlucky L','7','num')}${th('Min IP &#42;','8','num')}
 </tr></thead>
 <tbody id="luckBody"></tbody>
 </table>
@@ -138,7 +147,7 @@ function render(d) {
   // Weekly breakdown
   html += `
 <h3>Weekly Breakdown</h3>
-<p class="section-desc">Every matchup by week. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (won despite lower xWins). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (lost despite higher xWins).</p>
+<p class="section-desc">Every matchup by week. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (won despite lower xWins). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (lost despite higher xWins). <span class="forfeit-star">&#42;</span> = missed the 50 IP minimum and forfeited all six pitching categories.</p>
 <div class="weekly-table">
 <table id="weeklyTable">
 <thead><tr>${th('Week','0','num')}${th('Team','1','str')}${th('xWins','2','num')}${th('Opp xWins','3','num')}${th('Result','4','wlt')}${th('Opponent','5','str')}<th></th></tr></thead>
@@ -149,7 +158,7 @@ function render(d) {
   // Matchup xWins
   html += `
 <h3>Matchup xWins vs Actual</h3>
-<p class="section-desc">Both teams' xWins side-by-side with the actual result. <span class="upset-tag">UPSET</span> = winner had lower xWins than their opponent.</p>
+<p class="section-desc">Both teams' xWins side-by-side with the actual result. <span class="upset-tag">UPSET</span> = winner had lower xWins than their opponent. <span class="forfeit-star">&#42;</span> = missed the 50 IP minimum, which is usually why the xWins look nothing like the score.</p>
 <div class="weekly-table">
 <table id="matchupXwTable">
 <thead><tr>${th('Week','0','num')}${th('Winner','1','str')}${th('W xWins','2','num')}${th('Score','3','wlt')}${th('Loser','4','str')}${th('L xWins','5','num')}<th></th></tr></thead>
@@ -245,8 +254,10 @@ function render(d) {
     const luckStr = s.cum_luck != null ? (s.cum_luck > 0 ? '+' + s.cum_luck.toFixed(1) : s.cum_luck.toFixed(1)) : '—';
     const lw = luckyWins[s.tn] || 0;
     const ul = unluckyL[s.tn] || 0;
+    const ff = s.forfeits || 0;
+    const ffCell = ff ? `<span class="forfeit-count" title="${MIN_IP_NOTE}">${ff}&#42;</span>` : '<span style="color:#475569">0</span>';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td class="lucky">${lw}</td><td class="unlucky">${ul}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td class="lucky">${lw}</td><td class="unlucky">${ul}</td><td>${ffCell}</td>`;
     luckBody.appendChild(tr);
   });
 
@@ -259,11 +270,12 @@ function render(d) {
     let luckIcon = '';
     if (entry.luck_tag === 'lucky_win') { rowClass = 'lucky-highlight'; luckIcon = '<span class="lucky">&#x2191;</span>'; }
     else if (entry.luck_tag === 'unlucky_loss') { rowClass = 'unlucky-highlight'; luckIcon = '<span class="unlucky">&#x2193;</span>'; }
+    if (entry.forfeit) { rowClass = 'forfeit-highlight'; luckIcon += star(true); }
     const color = colorMap && colorMap[entry.tn] ? colorMap[entry.tn] : '#94a3b8';
     const opp = entry.opp_name.length > 22 ? entry.opp_name.slice(0, 22) : entry.opp_name;
     const tr = document.createElement('tr');
     if (rowClass) tr.className = rowClass;
-    tr.innerHTML = `<td class="year">Wk ${entry.week}</td><td><span style="color:${color}">&#9679;</span> ${entry.name}</td><td class="lucky">${entry.xw_cats != null ? entry.xw_cats.toFixed(1) : '—'}</td><td class="unlucky">${entry.opp_xw != null ? entry.opp_xw.toFixed(1) : '—'}</td><td class="${resultClass}">${resultStr}</td><td>vs ${opp}</td><td>${luckIcon}</td>`;
+    tr.innerHTML = `<td class="year">Wk ${entry.week}</td><td><span style="color:${color}">&#9679;</span> ${entry.name}${star(entry.forfeit)}</td><td class="lucky">${entry.xw_cats != null ? entry.xw_cats.toFixed(1) : '—'}</td><td class="unlucky">${entry.opp_xw != null ? entry.opp_xw.toFixed(1) : '—'}</td><td class="${resultClass}">${resultStr}</td><td>vs ${opp}</td><td>${luckIcon}</td>`;
     weeklyBody.appendChild(tr);
   });
 
@@ -276,7 +288,8 @@ function render(d) {
       const upsetTag = m.upset ? '<span class="upset-tag">UPSET</span>' : '';
       const tr = document.createElement('tr');
       if (m.upset) tr.className = 'upset-highlight';
-      tr.innerHTML = `<td class="year">Wk ${m.week}</td><td><span style="color:${wc}">&#9679;</span> ${m.winner}</td><td class="lucky">${m.w_xw.toFixed(1)}</td><td class="score">${m.score}</td><td><span style="color:${lc}">&#9679;</span> ${m.loser}</td><td class="unlucky">${m.l_xw.toFixed(1)}</td><td>${upsetTag}</td>`;
+      if (m.w_forfeit || m.l_forfeit) tr.className = 'forfeit-highlight';
+      tr.innerHTML = `<td class="year">Wk ${m.week}</td><td><span style="color:${wc}">&#9679;</span> ${m.winner}${star(m.w_forfeit)}</td><td class="lucky">${m.w_xw.toFixed(1)}</td><td class="score">${m.score}</td><td><span style="color:${lc}">&#9679;</span> ${m.loser}${star(m.l_forfeit)}</td><td class="unlucky">${m.l_xw.toFixed(1)}</td><td>${upsetTag}</td>`;
       mxBody.appendChild(tr);
     });
     initSortable(document.getElementById('matchupXwTable'));

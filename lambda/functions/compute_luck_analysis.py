@@ -25,6 +25,13 @@ HIGH_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'K9', 'QS', 'SVH']
 LOW_CATS = ['ERA', 'WHIP', 'TB']
 ALL_CATS = HIGH_CATS + LOW_CATS
 
+# A team that misses the weekly innings minimum forfeits every pitching category.
+PITCHING_CATS = {'K9', 'QS', 'SVH', 'ERA', 'WHIP', 'TB'}
+
+# Regular season is weeks 1-22; playoffs start week 23 and are excluded so that
+# all-play, xWins and luck stay regular-season measures.
+LAST_REG_WEEK = 22
+
 COLORS = [
     '#ef4444', '#f97316', '#eab308', '#22c55e', '#14b8a6', '#3b82f6',
     '#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b', '#10b981', '#a855f7',
@@ -70,17 +77,67 @@ def rank_xwins(stats_dict, cats):
     return result
 
 
-def h2h_result(a, b):
+def h2h_result(a, b, a_forfeit=False, b_forfeit=False):
+    """Category W-L for a vs b. A forfeiting team hands over every pitching cat.
+
+    The all-play simulation calls this with no forfeit flags on purpose: all-play
+    asks how the stats stack up, not how the matchup was officially scored.
+    """
     wa = wb = 0
-    for c in HIGH_CATS:
-        if c in a and c in b:
-            if a[c] > b[c]: wa += 1
-            elif b[c] > a[c]: wb += 1
-    for c in LOW_CATS:
-        if c in a and c in b:
-            if a[c] < b[c]: wa += 1
-            elif b[c] < a[c]: wb += 1
+    for c in ALL_CATS:
+        if c not in a or c not in b:
+            continue
+        a_out = a_forfeit and c in PITCHING_CATS
+        b_out = b_forfeit and c in PITCHING_CATS
+        if a_out and b_out:
+            continue
+        if a_out:
+            wb += 1
+        elif b_out:
+            wa += 1
+        elif a[c] == b[c]:
+            continue
+        elif (a[c] > b[c]) == (c in HIGH_CATS):
+            wa += 1
+        else:
+            wb += 1
     return wa, wb
+
+
+def detect_forfeits(weekly_stats, actual_results):
+    """Infer which team-weeks missed the innings minimum.
+
+    Innings pitched were never stored, so a forfeit has to be reverse-engineered:
+    recompute each matchup from weekly_stats and, where that disagrees with the
+    score Yahoo recorded, check whether one side surrendering all six pitching
+    categories reproduces the recorded score exactly.
+
+    Returns a set of (week, team_number).
+    """
+    forfeits = set()
+    for week, results in actual_results.items():
+        stats = weekly_stats.get(week)
+        if not stats:
+            continue
+        seen = set()
+        for tn, res in results.items():
+            opp = res.get('opp_tn')
+            if not opp or tn not in stats or opp not in stats:
+                continue
+            pair = tuple(sorted([tn, opp]))
+            if pair in seen:
+                continue
+            seen.add(pair)
+            recorded = (int(res['cats_won']), int(res['cats_lost']))
+            if h2h_result(stats[tn], stats[opp]) == recorded:
+                continue
+            for a_f, b_f, who in ((True, False, (tn,)),
+                                  (False, True, (opp,)),
+                                  (True, True, (tn, opp))):
+                if h2h_result(stats[tn], stats[opp], a_f, b_f) == recorded:
+                    forfeits.update((week, t) for t in who)
+                    break
+    return forfeits
 
 
 def lambda_handler(event, context):
@@ -162,11 +219,15 @@ def lambda_handler(event, context):
 
         # Only compute weeks where both stats AND matchup results exist (completed weeks only)
         completed_weeks = set(actual_results.keys())
-        weeks = sorted(w for w in weekly_stats.keys() if w in completed_weeks and w <= 20)
+        weeks = sorted(w for w in weekly_stats.keys() if w in completed_weeks and w <= LAST_REG_WEEK)
 
         if not weeks:
             logger.warning("No completed weeks with both stats and matchup results")
             return {'statusCode': 200, 'body': 'No data to compute'}
+
+        forfeits = detect_forfeits(weekly_stats, actual_results)
+        if forfeits:
+            logger.info(f"min-IP forfeits detected: {sorted(forfeits)}")
 
         # 4. Compute xWins per team per week (rank-based, 0-1.0 per week)
         weekly_xwins = {}
@@ -243,6 +304,7 @@ def lambda_handler(event, context):
                         'opp_xw': round(opp_xw, 2),
                         'luck_score': luck_score,
                         'luck_tag': luck_tag,
+                        'forfeit': (week, tn) in forfeits,
                         'won': won, 'opp_name': actual['opp_name'],
                     })
 
@@ -269,6 +331,7 @@ def lambda_handler(event, context):
                 'matchup_w': lt['matchup_w'], 'matchup_l': lt['matchup_l'], 'matchup_t': lt['matchup_t'],
                 'allplay_w': total_ap_w, 'allplay_l': total_ap_l, 'allplay_t': total_ap_t,
                 'ap_pct': round(ap_pct, 3),
+                'forfeits': sum(1 for w in weeks if (w, tn) in forfeits),
             })
 
         team_summary.sort(key=lambda x: x['cum_luck'], reverse=True)
@@ -479,6 +542,8 @@ def lambda_handler(event, context):
                     'winner': w_name, 'winner_tn': w_tn, 'w_xw': w_xw,
                     'loser': l_name,  'loser_tn': l_tn,  'l_xw': l_xw,
                     'score': score, 'upset': upset,
+                    'w_forfeit': (week, w_tn) in forfeits,
+                    'l_forfeit': (week, l_tn) in forfeits,
                 })
         matchup_xwins.sort(key=lambda x: (x['week'], x['winner']))
 

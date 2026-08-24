@@ -355,15 +355,22 @@ html = f"""<!DOCTYPE html>
     border-top: 1px solid #1e293b;
     text-align: center;
   }}
+  /* The official SVG draws "fantasy" in black, which would be illegible on the
+     dark page, so the mark sits on a light plate. The plate is a background
+     behind the logo - the logo itself is untouched. */
+  .yahoo-attribution .logo-plate {{
+    display: inline-block;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 14px 22px;
+    margin-bottom: 14px;
+    line-height: 0;
+  }}
   .yahoo-attribution img {{
     display: block;
-    margin: 0 auto 14px;
-    width: 260px;
-    max-width: 70%;
+    width: 240px;
+    max-width: 100%;
     height: auto;
-    /* Clips the black JPEG fill outside the asset's own rounded card edge.
-       Does not alter the wordmark itself. */
-    border-radius: 6px;
   }}
   .yahoo-attribution p {{
     color: #64748b;
@@ -573,8 +580,8 @@ html = f"""<!DOCTYPE html>
 </div>
 
 <footer class="yahoo-attribution">
-  <a href="https://baseball.fantasysports.yahoo.com/" target="_blank" rel="noopener noreferrer">
-    <img src="yahoo-fantasy-logo.jpg" alt="Yahoo Fantasy">
+  <a class="logo-plate" href="https://baseball.fantasysports.yahoo.com/" target="_blank" rel="noopener noreferrer">
+    <img src="yahoo-fantasy-logo.svg" alt="Yahoo Fantasy">
   </a>
   <p>Fantasy data provided by <a href="https://baseball.fantasysports.yahoo.com/" target="_blank" rel="noopener noreferrer">Yahoo Fantasy</a></p>
 </footer>

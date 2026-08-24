@@ -24,6 +24,13 @@
       document.head.appendChild(meta);
     }
   })();
+
+  // Captured during synchronous load: document.currentScript is null inside
+  // deferred callbacks, so the attribution footer cannot compute this itself.
+  const ASSET_BASE = document.currentScript
+    ? document.currentScript.src.replace(/nav\.js.*$/, '')
+    : '';
+
   const style = document.createElement('style');
   style.textContent = `
     /* ── Shared ─────────────────────────────────────────────────────────── */
@@ -248,8 +255,74 @@
       .ss-nav-links { display: none; }
       .ss-hamburger { display: flex; }
     }
+
+    /* ── Yahoo Fantasy attribution ───────────────────────────────────────── */
+    /* Required by the Yahoo Fantasy Sports API Access and Use Agreement.
+       The logo must stay unmodified: no recolor, rotation, effects, or change
+       to proportion. The white plate is a background behind it, not a change to
+       it - the official SVG draws "fantasy" in black, which would be illegible
+       on the dark page. index.html carries an identical copy of these rules
+       inline so its footer survives even if this script fails to load. */
+    .yahoo-attribution {
+      margin: 56px auto 0;
+      padding: 32px 24px 24px;
+      border-top: 1px solid #1e293b;
+      text-align: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .yahoo-attribution .logo-plate {
+      display: inline-block;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 14px 22px;
+      margin-bottom: 14px;
+      line-height: 0;
+    }
+    .yahoo-attribution img {
+      display: block;
+      width: 240px;
+      max-width: 100%;
+      height: auto;
+    }
+    .yahoo-attribution p {
+      color: #64748b;
+      font-size: 0.9em;
+      margin: 0;
+    }
+    .yahoo-attribution a { color: #8b5cf6; text-decoration: none; }
+    .yahoo-attribution a:hover { text-decoration: underline; }
   `;
   document.head.appendChild(style);
+
+  // ── Yahoo Fantasy attribution footer ──────────────────────────────────────
+  // The API Access and Use Agreement requires attribution in the footer of
+  // EVERY page displaying Yahoo Fantasy Information, with a hyperlink to an
+  // official Yahoo Fantasy page. Injected centrally so no page can be missed,
+  // including ones added later. Runs before the #nav guard below so a page
+  // without a nav container still gets its footer.
+  (function injectAttribution() {
+    function build() {
+      // index.html already has this markup inline - never add a second copy.
+      if (document.querySelector('.yahoo-attribution')) return;
+      const footer = document.createElement('footer');
+      footer.className = 'yahoo-attribution';
+      footer.innerHTML =
+        '<a class="logo-plate" href="https://baseball.fantasysports.yahoo.com/" ' +
+        'target="_blank" rel="noopener noreferrer">' +
+        '<img src="' + ASSET_BASE + 'yahoo-fantasy-logo.svg" alt="Yahoo Fantasy"></a>' +
+        '<p>Fantasy data provided by ' +
+        '<a href="https://baseball.fantasysports.yahoo.com/" target="_blank" ' +
+        'rel="noopener noreferrer">Yahoo Fantasy</a></p>';
+      document.body.appendChild(footer);
+    }
+    // This script runs partway through <body>, so appending immediately would
+    // drop the footer into the middle of the page. Wait for a parsed document.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', build);
+    } else {
+      build();
+    }
+  })();
 
   const path = window.location.pathname.split('/').pop() || 'index.html';
   function isActive(page) { return path === page ? ' active' : ''; }
