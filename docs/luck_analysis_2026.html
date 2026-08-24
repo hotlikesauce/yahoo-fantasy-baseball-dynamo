@@ -122,7 +122,7 @@ function render(d) {
   // Luck table
   html += `
 <h3>Luck Score</h3>
-<p class="section-desc">xWins = expected category wins based on how your stats ranked against every opponent that week. Luck Score = actual category wins minus xWins. <span class="lucky">&#x2191; Lucky Win</span> = won your matchup despite lower xWins than your opponent. <span class="unlucky">&#x2193; Unlucky Loss</span> = lost despite higher xWins. <span class="forfeit-star">&#42;</span> <strong>Min IP</strong> = weeks you failed to reach 50 innings pitched and forfeited all six pitching categories. Your stats and all-play record still count them — the league standings don't.</p>
+<p class="section-desc">xWins = expected category wins based on how your stats ranked against every opponent that week. Luck Score = category wins minus xWins, with a tied category counting as half a win for each side (the same way xWins splits a tie). Across the league Luck Score sums to zero, so 0 is genuinely average — positive means you banked more category wins than your weekly stats earned. <span class="lucky">&#x2191; Lucky Win</span> = won your matchup despite lower xWins than your opponent. <span class="unlucky">&#x2193; Unlucky Loss</span> = lost despite higher xWins. <span class="forfeit-star">&#42;</span> <strong>Min IP</strong> = weeks you failed to reach 50 innings pitched and forfeited all six pitching categories. Your stats and all-play record still count them — the league standings don't.</p>
 <table id="luckTable">
 <thead><tr>
   ${th('#','0','num')}${th('Team','1','str')}${th('Matchup W-L-T','2','wlt')}

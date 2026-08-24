@@ -265,9 +265,13 @@ def lambda_handler(event, context):
                     else:
                         weekly_allplay[week][tn_a]['t'] += 1
 
-        # 6. Weekly luck data: luck = actual_cats_won - xwins (0-12 scale)
+        # 6. Weekly luck data: luck = category wins - xwins (0-12 scale).
+        # A tied category counts as half a win here because rank_xwins already
+        # splits a tie between both teams. Scoring it as zero on one side and a
+        # half on the other biased every luck score down by the league's tie
+        # count, which made 11 of 12 teams look unlucky.
         weekly_luck_data = []
-        team_luck_totals = defaultdict(lambda: {'actual_cats': 0, 'xwins_cats': 0.0, 'matchup_w': 0, 'matchup_l': 0, 'matchup_t': 0})
+        team_luck_totals = defaultdict(lambda: {'actual_cats': 0, 'luck_cats': 0.0, 'xwins_cats': 0.0, 'matchup_w': 0, 'matchup_l': 0, 'matchup_t': 0})
 
         for week in weeks:
             # Compute ap_pct per team for ranking
@@ -290,7 +294,9 @@ def lambda_handler(event, context):
                     cats_w = int(actual['cats_won'])
                     cats_l = int(actual['cats_lost'])
                     won = actual['won']
-                    luck_score = round(cats_w - xw_cats, 2)
+                    cats_t = len(ALL_CATS) - cats_w - cats_l
+                    luck_cats = cats_w + cats_t * 0.5
+                    luck_score = round(luck_cats - xw_cats, 2)
                     # lucky win = won matchup but had lower xWins than opponent
                     # unlucky loss = lost matchup but had higher xWins than opponent
                     opp_tn = actual.get('opp_tn')
@@ -302,6 +308,7 @@ def lambda_handler(event, context):
                         luck_tag = 'unlucky_loss'
 
                     team_luck_totals[tn]['actual_cats'] += cats_w
+                    team_luck_totals[tn]['luck_cats'] += luck_cats
                     team_luck_totals[tn]['xwins_cats'] += xw_cats
                     if won:
                         team_luck_totals[tn]['matchup_w'] += 1
@@ -322,11 +329,11 @@ def lambda_handler(event, context):
                         'won': won, 'opp_name': actual['opp_name'],
                     })
 
-        # 7. Team summary: cumulative luck = actual_cats - xwins_cats
+        # 7. Team summary: cumulative luck = tie-adjusted cat wins - xwins_cats
         team_summary = []
         for tn in sorted(tn_latest_name.keys(), key=lambda x: int(x)):
             lt = team_luck_totals[tn]
-            cum_luck = round(lt['actual_cats'] - lt['xwins_cats'], 2)
+            cum_luck = round(lt['luck_cats'] - lt['xwins_cats'], 2)
 
             total_ap_w = sum(weekly_allplay[w][tn]['w'] for w in weeks)
             total_ap_l = sum(weekly_allplay[w][tn]['l'] for w in weeks)
