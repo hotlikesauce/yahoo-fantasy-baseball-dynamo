@@ -2,359 +2,447 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Standings - 2026 Season</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
+<title>Live Standings - 2026 Season</title>
 <style>
-  .matchup-card {
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    border: 1px solid #334155;
+  .banner {
+    background: #1e293b; border: 1px solid #334155; border-left: 3px solid #38bdf8;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: 0.85em; color: #94a3b8; line-height: 1.5;
   }
-  .matchup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    gap: 12px;
+  .banner strong { color: #e2e8f0; }
+
+  .pf-row {
+    display: grid; grid-template-columns: 42px 1fr 160px 130px;
+    align-items: center; gap: 12px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 6px;
   }
-  .matchup-team {
-    font-weight: 700;
-    font-size: 1.05em;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .matchup-team.left { text-align: left; }
-  .matchup-team.right { text-align: right; }
-  .matchup-score {
-    font-size: 1.6em;
-    font-weight: 800;
-    text-align: center;
-    min-width: 120px;
-    white-space: nowrap;
-  }
-  .matchup-score .winner { color: #22c55e; }
-  .matchup-score .loser { color: #ef4444; }
-  .matchup-score .tied { color: #fbbf24; }
-  .matchup-score .sep { color: #64748b; margin: 0 6px; }
-  .cat-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 4px;
-    font-size: 0.78em;
-  }
-  .cat-cell {
-    text-align: center;
-    padding: 6px 2px;
-    border-radius: 6px;
-    background: #0f172a;
-  }
-  .cat-cell .cat-name {
-    color: #64748b;
-    font-size: 0.82em;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-  .cat-cell .cat-val { font-weight: 600; font-size: 0.95em; }
-  .cat-cell .cat-val.bottom { opacity: 0.5; font-size: 0.85em; }
-  .cat-cell.win-a .cat-val:first-of-type { color: #22c55e; }
-  .cat-cell.win-a .cat-val.bottom { color: #ef4444; }
-  .cat-cell.win-b .cat-val:first-of-type { color: #ef4444; }
-  .cat-cell.win-b .cat-val.bottom { color: #22c55e; }
-  .cat-cell.tie .cat-val { color: #fbbf24; }
-  .cat-cell.none .cat-val { color: #475569; }
-  .blowout-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.55em;
-    font-weight: 700;
-    vertical-align: middle;
-    margin-left: 6px;
-    letter-spacing: 0.03em;
-  }
-  .blowout-tag.domination { background: #22c55e22; color: #22c55e; }
-  .blowout-tag.close { background: #fbbf2422; color: #fbbf24; }
-  .blowout-tag.sweep { background: #a855f722; color: #a855f7; }
-  .blowout-tag.shutout { background: #ef444422; color: #ef4444; }
-  .standings-table td.team-name { font-weight: 600; color: #e2e8f0; }
-  .standings-table .manager { color: #64748b; font-size: 0.85em; font-weight: 400; }
-  .standings-table td.gb { color: #64748b; }
-  .status-badge {
-    display: inline-block;
-    padding: 1px 8px;
-    border-radius: 10px;
-    font-size: 0.6em;
-    font-weight: 600;
-    vertical-align: middle;
-    margin-left: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .status-badge.live { background: #22c55e22; color: #22c55e; }
-  .status-badge.final { background: #3b82f622; color: #3b82f6; }
-  .status-badge.pre { background: #64748b22; color: #64748b; }
-  .refresh-bar {
-    text-align: center;
-    color: #475569;
-    font-size: 0.82em;
-    margin-top: 16px;
-    padding: 8px;
-  }
-  .refresh-bar .countdown { color: #3b82f6; font-weight: 600; }
-  .refresh-bar .timestamp { color: #64748b; }
-  .loading {
-    text-align: center;
-    padding: 60px 20px;
-    color: #64748b;
-    font-size: 1.1em;
-  }
-  .loading .spinner {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border: 3px solid #334155;
-    border-top-color: #3b82f6;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error-msg {
-    text-align: center;
-    padding: 40px 20px;
+  .pf-row.cutline { margin-bottom: 18px; position: relative; }
+  .pf-row.cutline::after {
+    content: 'PLAYOFF CUT LINE'; position: absolute; left: 0; right: 0; bottom: -14px;
+    text-align: center; font-size: 0.6em; font-weight: 800; letter-spacing: .14em;
     color: #ef4444;
-    background: #ef444411;
-    border-radius: 12px;
-    margin: 20px 0;
   }
-  .record { font-variant-numeric: tabular-nums; }
-  @media (max-width: 900px) {
-    .cat-grid { grid-template-columns: repeat(6, 1fr); }
-    .matchup-header { flex-wrap: wrap; }
-    .matchup-team { min-width: 100%; text-align: center !important; }
-    .matchup-score { min-width: 100%; }
+  .pf-row.clinched { border-color: #22c55e55; }
+  .pf-row.out { opacity: .62; }
+  .pf-seed { font-size: 1.3em; font-weight: 800; color: #64748b; text-align: center; }
+  .pf-name { font-weight: 600; }
+  .pf-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
+  .pf-note { font-size: .78em; color: #64748b; margin-top: 2px; }
+  .pf-bar { height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
+  .pf-bar span { display: block; height: 100%; background: linear-gradient(90deg,#3b82f6,#22c55e); }
+  .pf-pct { font-size: .78em; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .pf-chip { text-align: right; }
+
+  .chip {
+    display: inline-block; font-size: .62em; font-weight: 800; letter-spacing: .06em;
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase; white-space: nowrap;
+  }
+  .chip.clinched { background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }
+  .chip.in       { background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf855; }
+  .chip.bubble   { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b55; }
+  .chip.out      { background: #ef444422; color: #f87171; border: 1px solid #ef444455; }
+
+  table.standings td { font-variant-numeric: tabular-nums; }
+  table.standings tr.out td { opacity: .62; }
+  .team-name { text-align: left; font-weight: 600; }
+  .team-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
+  td.pts { font-weight: 700; color: #34d399; }
+  td.live { color: #fbbf24; font-weight: 600; }
+  td.ceil, td.gb { color: #94a3b8; font-size: .9em; }
+  td.odds { font-weight: 700; }
+
+  .mu-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }
+  .mu { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 16px; }
+  .mu.key { border-color: #3b82f6; }
+  .mu-stakes { font-size: .72em; text-transform: uppercase; letter-spacing: .06em;
+                color: #64748b; font-weight: 700; margin-bottom: 10px; }
+  .mu.key .mu-stakes { color: #60a5fa; }
+  .mu-head { display: flex; align-items: center; gap: 10px; }
+  .mu-side { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .mu-side.r { align-items: flex-end; text-align: right; }
+  .mu-name { font-size: .92em; font-weight: 600; overflow-wrap: anywhere; }
+  .mu-rec { font-size: .74em; color: #64748b; }
+  .mu-score { font-size: 1.5em; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .mu-score .winner { color: #22c55e; }
+  .mu-score .loser { color: #ef4444; }
+  .mu-score .tied { color: #fbbf24; }
+  .mu-score .sep { color: #64748b; margin: 0 5px; }
+  .mu-foot { margin-top: 10px; font-size: .74em; color: #64748b; }
+
+  @media (max-width: 720px) {
+    .pf-row { grid-template-columns: 32px 1fr 90px; }
+    .pf-chip { display: none; }
   }
 </style>
 </head>
 <body>
-<div id="nav"></div>
 <div class="container">
   <h1>Live Standings</h1>
-  <p class="page-subtitle">2026 Season &mdash; Week <span id="week-num">...</span></p>
+  <div class="page-subtitle">Week 22 · In progress ·
+    6-team playoff field</div>
 
-  <h2>League Standings</h2>
-  <p class="section-desc">Win = 1 pt, Tie = 0.5 pts, Loss = 0 pts. Sorted by total score.</p>
-  <div id="standings-section">
-    <div class="loading"><span class="spinner"></span>Loading standings...</div>
+  <div class="banner">
+    <strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late July,
+    so this page is scraped from the public league page instead. Standings are Yahoo's through
+    week 21 (Mon Aug 24 04:21am EDT); the <strong>Live</strong> column is
+    week 22's categories won so far. Playoff odds simulate every undecided category
+    20,000 times, weighting each one by the two teams' season category win rates.
+    <br><strong>Playoff format:</strong> 6 teams - Week 23, 24 and 25.
+    Built Mon Aug 24, 08:28 PM.
   </div>
 
-  <h2>Current Matchups &mdash; Week <span id="matchup-week">...</span></h2>
-  <p class="section-desc">Live category-by-category breakdown. Top value = left team, bottom = right team. Sorted by blowout margin.</p>
-  <div id="matchups-container">
-    <div class="loading"><span class="spinner"></span>Loading matchups...</div>
+  <h2>Playoff Picture</h2>
+  <div class="section-desc">In as of right now: The Rosterbation Station, Los Basureros, M*A*S*H*D PO*TA*TOES, ¯\_(ツ)_/¯, SCOOPSKI POTATOES, OG 8️⃣ &amp; an extra</div>
+  <div class="pf-row clinched">
+  <div class="pf-seed">1</div>
+  <div class="pf-main">
+    <div class="pf-name">The Rosterbation Station <span class="mgr">Kevin</span></div>
+    <div class="pf-note">Locked in — playing for seeding</div>
   </div>
-
-  <div class="refresh-bar">
-    <span class="timestamp">Last updated: <span id="last-updated">never</span></span>
-    &nbsp;&middot;&nbsp;
-    <span>Next refresh in <span class="countdown" id="countdown">5:00</span></span>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:100.0%"></span></div>
+    <div class="pf-pct">100%</div>
   </div>
+  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
+</div><div class="pf-row clinched">
+  <div class="pf-seed">2</div>
+  <div class="pf-main">
+    <div class="pf-name">Los Basureros <span class="mgr">Josh</span></div>
+    <div class="pf-note">Locked in — playing for seeding</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:100.0%"></span></div>
+    <div class="pf-pct">100%</div>
+  </div>
+  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
+</div><div class="pf-row clinched">
+  <div class="pf-seed">3</div>
+  <div class="pf-main">
+    <div class="pf-name">M*A*S*H*D PO*TA*TOES <span class="mgr">Taylor</span></div>
+    <div class="pf-note">Locked in — playing for seeding</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:100.0%"></span></div>
+    <div class="pf-pct">100%</div>
+  </div>
+  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
+</div><div class="pf-row clinched">
+  <div class="pf-seed">4</div>
+  <div class="pf-main">
+    <div class="pf-name">¯\_(ツ)_/¯ <span class="mgr">Mike</span></div>
+    <div class="pf-note">Locked in — playing for seeding</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:100.0%"></span></div>
+    <div class="pf-pct">100%</div>
+  </div>
+  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
+</div><div class="pf-row clinched">
+  <div class="pf-seed">5</div>
+  <div class="pf-main">
+    <div class="pf-name">SCOOPSKI POTATOES <span class="mgr">Michael</span></div>
+    <div class="pf-note">Locked in — playing for seeding</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:100.0%"></span></div>
+    <div class="pf-pct">100%</div>
+  </div>
+  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
+</div><div class="pf-row bubble cutline">
+  <div class="pf-seed">6</div>
+  <div class="pf-main">
+    <div class="pf-name">OG 8️⃣ &amp; an extra <span class="mgr">Greg</span></div>
+    <div class="pf-note">Needs 0 of 2 just to stay alive</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:47.9%"></span></div>
+    <div class="pf-pct">48%</div>
+  </div>
+  <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
+</div><div class="pf-row bubble">
+  <div class="pf-seed">7</div>
+  <div class="pf-main">
+    <div class="pf-name">Rosa Parks’ Bus Seat <span class="mgr">James</span></div>
+    <div class="pf-note">Needs 1 of 3 just to stay alive</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:25.6%"></span></div>
+    <div class="pf-pct">26%</div>
+  </div>
+  <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
+</div><div class="pf-row bubble">
+  <div class="pf-seed">8</div>
+  <div class="pf-main">
+    <div class="pf-name">Rickie Flower <span class="mgr">Bryant</span></div>
+    <div class="pf-note">Clinches with 7 of the 8 categories still open</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:26.5%"></span></div>
+    <div class="pf-pct">26%</div>
+  </div>
+  <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
+</div><div class="pf-row out">
+  <div class="pf-seed">9</div>
+  <div class="pf-main">
+    <div class="pf-name">Ian Cumsler <span class="mgr">Eric</span></div>
+    <div class="pf-note">Eliminated from the playoff race</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:0.0%"></span></div>
+    <div class="pf-pct">0%</div>
+  </div>
+  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
+</div><div class="pf-row out">
+  <div class="pf-seed">10</div>
+  <div class="pf-main">
+    <div class="pf-name">Hatfield Hurlers <span class="mgr">Mark</span></div>
+    <div class="pf-note">Eliminated from the playoff race</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:0.0%"></span></div>
+    <div class="pf-pct">0%</div>
+  </div>
+  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
+</div><div class="pf-row out">
+  <div class="pf-seed">11</div>
+  <div class="pf-main">
+    <div class="pf-name">William Shatnermouth <span class="mgr">Kurtis</span></div>
+    <div class="pf-note">Eliminated from the playoff race</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:0.0%"></span></div>
+    <div class="pf-pct">0%</div>
+  </div>
+  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
+</div><div class="pf-row out">
+  <div class="pf-seed">12</div>
+  <div class="pf-main">
+    <div class="pf-name">Moniebol 🐳 (DA BI ASS) <span class="mgr">Austin</span></div>
+    <div class="pf-note">Eliminated from the playoff race</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:0.0%"></span></div>
+    <div class="pf-pct">0%</div>
+  </div>
+  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
 </div>
 
+  <h2>Standings</h2>
+  <div style="overflow-x:auto;">
+  <table class="standings">
+    <thead><tr>
+      <th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>
+      <th title="Categories won in week 22 so far">Live</th>
+      <th title="Category points: wins + half a point per tie">Pts</th>
+      <th>GB</th>
+      <th title="Worst case - best case finish">Range</th>
+      <th title="Chance of finishing in the top 6">Playoff&nbsp;%</th>
+      <th>Status</th>
+    </tr></thead>
+    <tbody><tr class="clinched">
+  <td class="rank">1</td>
+  <td class="team-name">The Rosterbation Station <span class="mgr">Kevin</span></td>
+  <td>149-94-9</td>
+  <td class="live">+5</td>
+  <td class="pts">158.5</td>
+  <td class="gb">—</td>
+  <td class="ceil">158.5 – 164.5</td>
+  <td class="odds">100%</td>
+  <td><span class="chip clinched">CLINCHED</span></td>
+</tr><tr class="clinched">
+  <td class="rank">2</td>
+  <td class="team-name">Los Basureros <span class="mgr">Josh</span></td>
+  <td>147-93-12</td>
+  <td class="live">+4</td>
+  <td class="pts">157</td>
+  <td class="gb">1.5</td>
+  <td class="ceil">157 – 157</td>
+  <td class="odds">100%</td>
+  <td><span class="chip clinched">CLINCHED</span></td>
+</tr><tr class="clinched">
+  <td class="rank">3</td>
+  <td class="team-name">M*A*S*H*D PO*TA*TOES <span class="mgr">Taylor</span></td>
+  <td>141-104-7</td>
+  <td class="live">+6</td>
+  <td class="pts">150.5</td>
+  <td class="gb">8</td>
+  <td class="ceil">150.5 – 150.5</td>
+  <td class="odds">100%</td>
+  <td><span class="chip clinched">CLINCHED</span></td>
+</tr><tr class="clinched">
+  <td class="rank">4</td>
+  <td class="team-name">¯\_(ツ)_/¯ <span class="mgr">Mike</span></td>
+  <td>135-102-15</td>
+  <td class="live">+1</td>
+  <td class="pts">143.5</td>
+  <td class="gb">15</td>
+  <td class="ceil">143.5 – 149.5</td>
+  <td class="odds">100%</td>
+  <td><span class="chip clinched">CLINCHED</span></td>
+</tr><tr class="clinched">
+  <td class="rank">5</td>
+  <td class="team-name">SCOOPSKI POTATOES <span class="mgr">Michael</span></td>
+  <td>122-119-11</td>
+  <td class="live">+8</td>
+  <td class="pts">135.5</td>
+  <td class="gb">23</td>
+  <td class="ceil">135.5 – 135.5</td>
+  <td class="odds">100%</td>
+  <td><span class="chip clinched">CLINCHED</span></td>
+</tr><tr class="bubble">
+  <td class="rank">6</td>
+  <td class="team-name">OG 8️⃣ &amp; an extra <span class="mgr">Greg</span></td>
+  <td>117-124-11</td>
+  <td class="live">+3</td>
+  <td class="pts">125.5</td>
+  <td class="gb">33</td>
+  <td class="ceil">125.5 – 127.5</td>
+  <td class="odds">48%</td>
+  <td><span class="chip bubble">ON THE BUBBLE</span></td>
+</tr><tr class="bubble">
+  <td class="rank">7</td>
+  <td class="team-name">Rosa Parks’ Bus Seat <span class="mgr">James</span></td>
+  <td>115-130-7</td>
+  <td class="live">+6</td>
+  <td class="pts">124.5</td>
+  <td class="gb">34</td>
+  <td class="ceil">124.5 – 127.5</td>
+  <td class="odds">26%</td>
+  <td><span class="chip bubble">ON THE BUBBLE</span></td>
+</tr><tr class="bubble">
+  <td class="rank">8</td>
+  <td class="team-name">Rickie Flower <span class="mgr">Bryant</span></td>
+  <td>119-128-5</td>
+  <td class="live">—</td>
+  <td class="pts">121.5</td>
+  <td class="gb">37</td>
+  <td class="ceil">121.5 – 129.5</td>
+  <td class="odds">26%</td>
+  <td><span class="chip bubble">ON THE BUBBLE</span></td>
+</tr><tr class="out">
+  <td class="rank">9</td>
+  <td class="team-name">Ian Cumsler <span class="mgr">Eric</span></td>
+  <td>105-131-16</td>
+  <td class="live">+7</td>
+  <td class="pts">120</td>
+  <td class="gb">38.5</td>
+  <td class="ceil">120 – 122</td>
+  <td class="odds">0%</td>
+  <td><span class="chip out">ELIMINATED</span></td>
+</tr><tr class="out">
+  <td class="rank">10</td>
+  <td class="team-name">Hatfield Hurlers <span class="mgr">Mark</span></td>
+  <td>104-135-13</td>
+  <td class="live">+3</td>
+  <td class="pts">113.5</td>
+  <td class="gb">45</td>
+  <td class="ceil">113.5 – 116.5</td>
+  <td class="odds">0%</td>
+  <td><span class="chip out">ELIMINATED</span></td>
+</tr><tr class="out">
+  <td class="rank">11</td>
+  <td class="team-name">William Shatnermouth <span class="mgr">Kurtis</span></td>
+  <td>100-142-10</td>
+  <td class="live">+4</td>
+  <td class="pts">109</td>
+  <td class="gb">49.5</td>
+  <td class="ceil">109 – 117</td>
+  <td class="odds">0%</td>
+  <td><span class="chip out">ELIMINATED</span></td>
+</tr><tr class="out">
+  <td class="rank">12</td>
+  <td class="team-name">Moniebol 🐳 (DA BI ASS) <span class="mgr">Austin</span></td>
+  <td>92-144-16</td>
+  <td class="live">+6</td>
+  <td class="pts">106</td>
+  <td class="gb">52.5</td>
+  <td class="ceil">106 – 106</td>
+  <td class="odds">0%</td>
+  <td><span class="chip out">ELIMINATED</span></td>
+</tr></tbody>
+  </table>
+  </div>
+
+  <h2>Week 22 Matchups</h2>
+  <div class="section-desc">Live category scores — In progress</div>
+  <div class="mu-grid"><div class="mu">
+  <div class="mu-stakes">No bearing on the cut line</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">M*A*S*H*D PO*TA*TOES</span>
+      <span class="mu-rec">141-104-7</span></div>
+    <div class="mu-score"><span class="tied">6</span>
+      <span class="sep">–</span><span class="tied">6</span></div>
+    <div class="mu-side r"><span class="mu-name">Moniebol 🐳 (DA BI ASS)</span>
+      <span class="mu-rec">92-144-16</span></div>
+  </div>
+  <div class="mu-foot">12 of 12 categories decided ·
+    0 still up for grabs</div>
+</div><div class="mu key">
+  <div class="mu-stakes">Rosa Parks’ Bus Seat needs 1 to stay alive</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">Rosa Parks’ Bus Seat</span>
+      <span class="mu-rec">115-130-7</span></div>
+    <div class="mu-score"><span class="winner">6</span>
+      <span class="sep">–</span><span class="loser">3</span></div>
+    <div class="mu-side r"><span class="mu-name">Hatfield Hurlers</span>
+      <span class="mu-rec">104-135-13</span></div>
+  </div>
+  <div class="mu-foot">9 of 12 categories decided ·
+    3 still up for grabs</div>
+</div><div class="mu">
+  <div class="mu-stakes">No bearing on the cut line</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">Los Basureros</span>
+      <span class="mu-rec">147-93-12</span></div>
+    <div class="mu-score"><span class="loser">4</span>
+      <span class="sep">–</span><span class="winner">8</span></div>
+    <div class="mu-side r"><span class="mu-name">SCOOPSKI POTATOES</span>
+      <span class="mu-rec">122-119-11</span></div>
+  </div>
+  <div class="mu-foot">12 of 12 categories decided ·
+    0 still up for grabs</div>
+</div><div class="mu key">
+  <div class="mu-stakes">Rickie Flower clinches with 7</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">Rickie Flower</span>
+      <span class="mu-rec">119-128-5</span></div>
+    <div class="mu-score"><span class="loser">0</span>
+      <span class="sep">–</span><span class="winner">4</span></div>
+    <div class="mu-side r"><span class="mu-name">William Shatnermouth</span>
+      <span class="mu-rec">100-142-10</span></div>
+  </div>
+  <div class="mu-foot">4 of 12 categories decided ·
+    8 still up for grabs</div>
+</div><div class="mu key">
+  <div class="mu-stakes">OG 8️⃣ &amp; an extra needs 0 to stay alive</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">Ian Cumsler</span>
+      <span class="mu-rec">105-131-16</span></div>
+    <div class="mu-score"><span class="winner">7</span>
+      <span class="sep">–</span><span class="loser">3</span></div>
+    <div class="mu-side r"><span class="mu-name">OG 8️⃣ &amp; an extra</span>
+      <span class="mu-rec">117-124-11</span></div>
+  </div>
+  <div class="mu-foot">10 of 12 categories decided ·
+    2 still up for grabs</div>
+</div><div class="mu">
+  <div class="mu-stakes">No bearing on the cut line</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">The Rosterbation Station</span>
+      <span class="mu-rec">149-94-9</span></div>
+    <div class="mu-score"><span class="winner">5</span>
+      <span class="sep">–</span><span class="loser">1</span></div>
+    <div class="mu-side r"><span class="mu-name">¯\_(ツ)_/¯</span>
+      <span class="mu-rec">135-102-15</span></div>
+  </div>
+  <div class="mu-foot">6 of 12 categories decided ·
+    6 still up for grabs</div>
+</div></div>
+</div>
 <script src="nav.js"></script>
-<script>
-// =====================================================
-// CONFIG - Set your Lambda Function URL here
-// =====================================================
-const API_URL = 'https://1lno31b57l.execute-api.us-west-2.amazonaws.com/live-standings';
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
-
-// =====================================================
-// State
-// =====================================================
-let nextRefresh = Date.now() + REFRESH_INTERVAL;
-
-// =====================================================
-// Fetch & Render
-// =====================================================
-async function fetchAndRender() {
-  try {
-    const resp = await fetch(API_URL);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
-
-    document.getElementById('week-num').textContent = data.week;
-    document.getElementById('matchup-week').textContent = data.week;
-    document.getElementById('last-updated').textContent = new Date(data.timestamp).toLocaleString();
-
-    renderStandings(data.standings);
-    renderMatchups(data.matchups);
-
-    nextRefresh = Date.now() + REFRESH_INTERVAL;
-  } catch (err) {
-    console.error('Fetch error:', err);
-    // Only show error if we have no data yet
-    if (document.querySelector('.loading')) {
-      document.getElementById('standings-section').innerHTML =
-        '<div class="error-msg">Failed to load standings. Check that the Lambda Function URL is configured.<br><br><code>' +
-        err.message + '</code></div>';
-      document.getElementById('matchups-container').innerHTML = '';
-    }
-  }
-}
-
-function renderStandings(standings) {
-  var rows = standings.map(function(row) {
-    var gb = row.gb === 0 ? '\u2014' : row.gb.toFixed(1);
-    return '<tr>' +
-      '<td class="rank">' + row.rank + '</td>' +
-      '<td class="team-name">' + row.name + ' <span class="manager">' + row.manager + '</span></td>' +
-      '<td>' + row.wins + '</td>' +
-      '<td>' + row.losses + '</td>' +
-      '<td>' + row.ties + '</td>' +
-      '<td style="font-weight:700;color:#34d399">' + row.pts.toFixed(1) + '</td>' +
-      '<td class="gb">' + gb + '</td>' +
-    '</tr>';
-  }).join('');
-
-  document.getElementById('standings-section').innerHTML =
-    '<div style="overflow-x:auto;">' +
-    '<table class="standings-table" id="standings-table">' +
-      '<thead><tr>' +
-        '<th class="sortable" data-col="rank">#</th>' +
-        '<th class="sortable" data-col="name">Team</th>' +
-        '<th class="sortable" data-col="w">W</th>' +
-        '<th class="sortable" data-col="l">L</th>' +
-        '<th class="sortable" data-col="t">T</th>' +
-        '<th class="sortable" data-col="pts">Pts</th>' +
-        '<th class="sortable" data-col="gb">GB</th>' +
-      '</tr></thead>' +
-      '<tbody id="standings-body">' + rows + '</tbody>' +
-    '</table></div>';
-  attachSortHandlers();
-}
-
-function renderMatchups(matchups) {
-  var container = document.getElementById('matchups-container');
-  container.innerHTML = '';
-
-  matchups.forEach(function(m) {
-    var card = document.createElement('div');
-    card.className = 'matchup-card';
-
-    var margin = Math.abs(m.scoreA - m.scoreB);
-    var tag = '';
-    if (m.scoreA === 12 || m.scoreB === 12)
-      tag = '<span class="blowout-tag sweep">PERFECT</span>';
-    else if (m.scoreA === 0 || m.scoreB === 0)
-      tag = '<span class="blowout-tag shutout">SHUTOUT</span>';
-    else if (margin >= 8)
-      tag = '<span class="blowout-tag domination">DOMINATION</span>';
-    else if (margin <= 2)
-      tag = '<span class="blowout-tag close">CLOSE</span>';
-
-    var statusBadge = '';
-    if (m.status === 'midevent') statusBadge = '<span class="status-badge live">LIVE</span>';
-    else if (m.status === 'postevent') statusBadge = '<span class="status-badge final">FINAL</span>';
-    else statusBadge = '<span class="status-badge pre">PRE</span>';
-
-    var aClass = m.scoreA > m.scoreB ? 'winner' : m.scoreA < m.scoreB ? 'loser' : 'tied';
-    var bClass = m.scoreB > m.scoreA ? 'winner' : m.scoreB < m.scoreA ? 'loser' : 'tied';
-
-    var fmt = function(v, cat) {
-      if (v === null || v === undefined) return '\u2014';
-      if (['OPS','ERA','WHIP'].indexOf(cat) >= 0) return v.toFixed(3);
-      if (cat === 'K/9') return v.toFixed(2);
-      return Math.round(v).toString();
-    };
-
-    var catCells = '';
-    m.cats.forEach(function(c) {
-      var cls = c.winner === 'a' ? 'win-a' : c.winner === 'b' ? 'win-b' : c.winner === 'tie' ? 'tie' : 'none';
-      catCells +=
-        '<div class="cat-cell ' + cls + '">' +
-          '<div class="cat-name">' + c.cat + '</div>' +
-          '<div class="cat-val">' + fmt(c.a, c.cat) + '</div>' +
-          '<div class="cat-val bottom">' + fmt(c.b, c.cat) + '</div>' +
-        '</div>';
-    });
-
-    card.innerHTML =
-      '<div class="matchup-header">' +
-        '<div class="matchup-team left">' + m.teamA + '</div>' +
-        '<div class="matchup-score">' +
-          '<span class="' + aClass + '">' + m.scoreA + '</span>' +
-          '<span class="sep">-</span>' +
-          '<span class="' + bClass + '">' + m.scoreB + '</span>' +
-          tag + statusBadge +
-        '</div>' +
-        '<div class="matchup-team right">' + m.teamB + '</div>' +
-      '</div>' +
-      '<div class="cat-grid">' + catCells + '</div>';
-    container.appendChild(card);
-  });
-}
-
-// =====================================================
-// Sortable table
-// =====================================================
-function attachSortHandlers() {
-  var tbody = document.getElementById('standings-body');
-  if (!tbody) return;
-  document.querySelectorAll('.sortable').forEach(function(th) {
-    th.addEventListener('click', function() {
-      var col = th.dataset.col;
-      var wasAsc = th.classList.contains('asc');
-      document.querySelectorAll('.sortable').forEach(function(h) { h.classList.remove('asc','desc'); });
-      th.classList.add(wasAsc ? 'desc' : 'asc');
-      var dir = wasAsc ? -1 : 1;
-      var rows = Array.from(tbody.querySelectorAll('tr'));
-      rows.sort(function(a, b) {
-        var ca = a.querySelectorAll('td');
-        var cb = b.querySelectorAll('td');
-        var av, bv;
-        switch(col) {
-          case 'rank': av = parseInt(ca[0].textContent); bv = parseInt(cb[0].textContent); break;
-          case 'name': av = ca[1].textContent.toLowerCase(); bv = cb[1].textContent.toLowerCase(); return av < bv ? -dir : av > bv ? dir : 0;
-          case 'w': av = parseInt(ca[2].textContent); bv = parseInt(cb[2].textContent); break;
-          case 'l': av = parseInt(ca[3].textContent); bv = parseInt(cb[3].textContent); break;
-          case 't': av = parseInt(ca[4].textContent); bv = parseInt(cb[4].textContent); break;
-          case 'pts': av = parseFloat(ca[5].textContent); bv = parseFloat(cb[5].textContent); break;
-          case 'gb': av = ca[6].textContent === '\u2014' ? 0 : parseFloat(ca[6].textContent); bv = cb[6].textContent === '\u2014' ? 0 : parseFloat(cb[6].textContent); break;
-        }
-        return (av - bv) * dir;
-      });
-      rows.forEach(function(r) { tbody.appendChild(r); });
-    });
-  });
-}
-
-// =====================================================
-// Countdown timer + auto-refresh
-// =====================================================
-function updateCountdown() {
-  var remaining = Math.max(0, nextRefresh - Date.now());
-  var min = Math.floor(remaining / 60000);
-  var sec = Math.floor((remaining % 60000) / 1000);
-  document.getElementById('countdown').textContent = min + ':' + String(sec).padStart(2, '0');
-
-  if (remaining <= 0) {
-    fetchAndRender();
-  }
-}
-
-// =====================================================
-// Init
-// =====================================================
-fetchAndRender();
-setInterval(updateCountdown, 1000);
-</script>
 </body>
 </html>

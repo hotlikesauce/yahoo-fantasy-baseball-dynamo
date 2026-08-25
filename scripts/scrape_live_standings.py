@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+"""
+Scrape live standings + current-week matchups from the PUBLIC Yahoo league page
+and generate docs/live_standings_2026.html.
+
+The Yahoo Fantasy API has been dead app-wide since ~2026-07-26 (every endpoint
+403s, refresh tokens are gone), so pull_live_standings / serve_live_standings
+Lambdas return {"error": "Failed to get access token"}. The league is set to
+"Make League Publicly Viewable: Yes", so the league home page renders standings
+and the live scoreboard to anonymous requests - that is what this scrapes.
+
+Only the league HOME page (/b1/<id>) renders anonymously; /standings, /matchup
+and /scoreboard come back as empty shells. Manager names are not public either,
+so they come from DynamoDB FantasyBaseball-TeamInfo-2026.
+
+Usage:
+    python scripts/scrape_live_standings.py            # scrape + write page
+    python scripts/scrape_live_standings.py --dry-run  # scrape + print, no write
+"""
+
+import os, sys, io, re, json, html, math, random, argparse
+from datetime import datetime, timezone
+
+import requests
+from dotenv import load_dotenv
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+load_dotenv()
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DOCS = os.path.join(REPO, 'docs')
+
+UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36')
+
+CATS_PER_WEEK = 12          # 6 batting + 6 pitching categories
+SIMS = 20000                # Monte Carlo runs for playoff odds
+YEAR = 2026
+
+
+# ==============================================================
+# Fetch
+# ==============================================================
+def league_id():
+    pairs = os.getenv('YAHOO_LEAGUE_IDS', '')
+    for pair in pairs.split(','):
+        if pair.startswith(f'{YEAR}:'):
+            return pair.split(':')[1]
+    sys.exit(f'ERROR: no {YEAR} league id in .env YAHOO_LEAGUE_IDS')
+
+
+def get(url):
+    r = requests.get(url, headers={'User-Agent': UA}, timeout=30)
+    r.raise_for_status()
+    return r.text
+
+
+def clean(s):
+    """Unescape entities and collapse whitespace in scraped text."""
+    return re.sub(r'\s+', ' ', html.unescape(s)).strip()
+
+
+# ==============================================================
+# Parse: league home page
+# ==============================================================
+def parse_standings(page, lid):
+    """Standings table: rank (* = Yahoo says clinched), team, W-L-T, pct, GB."""
+    rows = []
+    row_re = re.compile(
+        r'<tr class="Linkable[^"]*"[^>]*data-target="/b1/%s/(\d+)">(.*?)</tr>' % lid,
+        re.S)
+    for m in row_re.finditer(page):
+        tid, body = int(m.group(1)), m.group(2)
+        cells = [clean(re.sub(r'<[^>]+>', ' ', c))
+                 for c in re.findall(r'<td[^>]*>(.*?)</td>', body, re.S)]
+        if len(cells) < 5:
+            continue
+        rank_txt = cells[0]
+        wlt = re.match(r'(\d+)-(\d+)-(\d+)', cells[2])
+        if not wlt:
+            continue
+        name_m = re.search(r'/b1/%s/%d">([^<]+)</a>' % (lid, tid), body)
+        w, l, t = (int(x) for x in wlt.groups())
+        rows.append({
+            'team_id': tid,
+            'name': clean(name_m.group(1)) if name_m else f'Team {tid}',
+            'rank': int(re.sub(r'\D', '', rank_txt) or 0),
+            'yahoo_clinched': '*' in rank_txt,
+            'wins': w, 'losses': l, 'ties': t,
+            'pct': cells[3],
+            'gb': cells[4],
+            'last_week': cells[5] if len(cells) > 5 else '',
+        })
+    rows.sort(key=lambda r: r['rank'])
+    return rows
+
+
+def parse_matchups(page, lid):
+    """Current-week scoreboard: team ids, names, records and live category wins."""
+    blocks = re.split(r"data-target='/b1/%s/matchup\?" % lid, page)[1:]
+    week = None
+    matchups = []
+    for b in blocks:
+        head = re.match(r'week=(\d+)&mid1=(\d+)&mid2=(\d+)', b)
+        if not head:
+            continue
+        week = int(head.group(1))
+        body = b[:6000]
+        names = re.findall(r'/b1/%s/(\d+)">([^<]+)</a>' % lid, body)
+        scores = re.findall(r"Fz-lg ?'>\s*(\d+)\s*</div>", body)
+        if len(names) < 2 or len(scores) < 2:
+            continue
+        # records come from the standings table, not the scoreboard card
+        sides = [{'team_id': int(names[i][0]),
+                  'name': clean(names[i][1]),
+                  'live': int(scores[i])} for i in (0, 1)]
+        decided = sides[0]['live'] + sides[1]['live']
+        matchups.append({
+            'week': week,
+            'a': sides[0], 'b': sides[1],
+            'decided': decided,
+            'remaining': max(0, CATS_PER_WEEK - decided),
+        })
+    return week, matchups
+
+
+def parse_meta(page):
+    status = 'unknown'
+    m = re.search(r"""Ta-end Fz-xxs["']>\s*<span[^>]*>([^<]+)</span>""", page, re.S)
+    if m:
+        status = clean(m.group(1))
+    updated = ''
+    m = re.search(r'Last standings update:\s*([^<]+)<', page)
+    if m:
+        updated = clean(m.group(1))
+    name = ''
+    m = re.search(r'<title>([^<]*?)\s*\|', page)
+    if m:
+        name = clean(m.group(1))
+    return {'status': status, 'yahoo_updated': updated, 'league_name': name}
+
+
+def parse_playoff_settings(settings_page):
+    """'Playoffs: 6 teams - Week 23, 24 and 25 (ends Sunday, Sep 20)'"""
+    txt = re.sub(r'(?s)<script.*?</script>', '', settings_page)
+    txt = clean(re.sub(r'<[^>]+>', ' ', txt))
+    m = re.search(r'Playoffs:\s*(\d+)\s*teams?\s*-\s*Week\s*([\d,\s and]+)', txt)
+    if not m:
+        return {'spots': 6, 'first_playoff_week': None, 'raw': ''}
+    weeks = [int(x) for x in re.findall(r'\d+', m.group(2))]
+    return {
+        'spots': int(m.group(1)),
+        'first_playoff_week': min(weeks) if weeks else None,
+        'playoff_weeks': weeks,
+        'raw': clean(m.group(0)).replace('Playoffs:', '').strip(),
+    }
+
+
+# ==============================================================
+# Managers (DynamoDB - Yahoo does not expose them publicly)
+# ==============================================================
+def load_managers():
+    try:
+        import boto3
+        tbl = boto3.resource('dynamodb', region_name='us-west-2') \
+                   .Table(f'FantasyBaseball-TeamInfo-{YEAR}')
+        out = {}
+        for item in tbl.scan().get('Items', []):
+            mgr = (item.get('ManagerName') or '').strip()
+            if mgr:
+                out[int(item['TeamNumber'])] = mgr.split()[0].capitalize()
+        return out
+    except Exception as e:
+        print(f'  (no manager names: {e})')
+        return {}
+
+
+# ==============================================================
+# Playoff math
+# ==============================================================
+def build_teams(standings, matchups, weeks_left_after, spots):
+    """Merge season record with this week's live score; add floors and ceilings."""
+    opp, live, rem = {}, {}, {}
+    for m in matchups:
+        for side, other in ((m['a'], m['b']), (m['b'], m['a'])):
+            opp[side['team_id']] = other['team_id']
+            live[side['team_id']] = side['live']
+            rem[side['team_id']] = m['remaining']
+
+    teams = {}
+    for row in standings:
+        tid = row['team_id']
+        pts = row['wins'] + 0.5 * row['ties']
+        games = row['wins'] + row['losses'] + row['ties']
+        pool = rem.get(tid, 0)                      # undecided cats in this matchup
+        free = weeks_left_after * CATS_PER_WEEK     # later weeks (opponents unknown)
+        teams[tid] = dict(row,
+                          pts=pts,
+                          games=games,
+                          cat_pct=pts / games if games else 0.5,
+                          live=live.get(tid, 0),
+                          pool=pool,
+                          free=free,
+                          remaining=pool + free,
+                          opponent=opp.get(tid),
+                          floor=pts + live.get(tid, 0),
+                          ceiling=pts + live.get(tid, 0) + pool + free)
+    return teams
+
+
+def teams_above(teams, tid, final, mode):
+    """
+    How many teams can finish above `final` if everything else breaks the worst
+    way ('max') or the best way ('min') for team `tid`.
+
+    A matchup only moves its own two teams, so the extreme can be taken matchup
+    by matchup instead of enumerating the whole league. Categories in weeks
+    after this one ('free') have no known opponent, so they swing the full
+    amount in max mode and none of it in min mode.
+    """
+    # clinch math counts a tie as a team above (the tiebreak could go either
+    # way); elimination math gives the tie to the team being tested.
+    beats = (lambda x: x >= final) if mode == 'max' else (lambda x: x > final)
+    me = teams[tid]
+    my_share = final - me['floor']          # cats I take out of my own matchup
+
+    seen, total = set(), 0
+    for a in teams.values():
+        aid = a['team_id']
+        if aid == tid or aid in seen:
+            continue
+        seen.add(aid)
+        bonus = a['free'] if mode == 'max' else 0
+        b = teams.get(a['opponent'])
+
+        if b is None:                        # no matchup this week
+            if beats(a['floor'] + (a['pool'] if mode == 'max' else 0) + bonus):
+                total += 1
+            continue
+
+        if b['team_id'] == tid:              # a is my opponent - its share is forced
+            if beats(a['floor'] + max(0, a['pool'] - my_share) + bonus):
+                total += 1
+            continue
+
+        seen.add(b['team_id'])
+        pool = a['pool']
+        b_bonus = b['free'] if mode == 'max' else 0
+        counts = [int(beats(a['floor'] + share + bonus)) +
+                  int(beats(b['floor'] + pool - share + b_bonus))
+                  for share in range(pool + 1)]
+        total += max(counts) if mode == 'max' else min(counts)
+    return total
+
+
+def clinched(teams, tid, final, spots):
+    return teams_above(teams, tid, final, 'max') <= spots - 1
+
+
+def alive(teams, tid, final, spots):
+    return teams_above(teams, tid, final, 'min') <= spots - 1
+
+
+def playoff_status(teams, spots):
+    """Clinched / eliminated / bubble, plus 'cats needed this week' numbers."""
+    for t in teams.values():
+        tid = t['team_id']
+        t['clinched'] = clinched(teams, tid, t['floor'], spots)
+        t['eliminated'] = not alive(teams, tid, t['ceiling'], spots)
+
+        # smallest number of the still-undecided categories that locks a spot /
+        # that keeps a path alive
+        t['magic'] = t['need_alive'] = None
+        for extra in range(t['remaining'] + 1):
+            if t['magic'] is None and clinched(teams, tid, t['floor'] + extra, spots):
+                t['magic'] = extra
+            if t['need_alive'] is None and alive(teams, tid, t['floor'] + extra, spots):
+                t['need_alive'] = extra
+            if t['magic'] is not None and t['need_alive'] is not None:
+                break
+        if t['eliminated']:
+            t['magic'] = t['need_alive'] = None
+        if t['clinched']:
+            t['need_alive'] = 0
+
+
+def simulate(teams, spots, sims=SIMS, seed=17):
+    """
+    Monte Carlo the undecided categories. Each contested one goes to a team with
+    probability proportional to the two teams' season category win rates
+    (Bradley-Terry style), so a .600 team is not a coin flip against a .400 one.
+    Categories in later weeks have no known opponent, so they are drawn against
+    the league instead.
+    """
+    rng = random.Random(seed)
+    ids = list(teams)
+    made = {tid: 0 for tid in ids}
+    seed_counts = {tid: [0] * len(ids) for tid in ids}
+
+    pairs, seen = [], set()
+    for t in teams.values():
+        o = teams.get(t['opponent'])
+        if o is None or t['team_id'] in seen:
+            continue
+        seen.update({t['team_id'], o['team_id']})
+        sa, sb = t['cat_pct'], o['cat_pct']
+        pairs.append((t['team_id'], o['team_id'], t['pool'],
+                      sa / (sa + sb) if (sa + sb) else 0.5))
+
+    for _ in range(sims):
+        final = {tid: teams[tid]['floor'] for tid in ids}
+        for a, b, pool, p in pairs:
+            won = sum(1 for _ in range(pool) if rng.random() < p)
+            final[a] += won
+            final[b] += pool - won
+        for tid in ids:
+            t = teams[tid]
+            if t['free']:
+                final[tid] += sum(1 for _ in range(t['free'])
+                                  if rng.random() < t['cat_pct'])
+        # ties at the cut line go to a coin flip here (the real rule is
+        # head-to-head categories, which we cannot see without the API)
+        order = sorted(ids, key=lambda x: (-final[x], rng.random()))
+        for i, tid in enumerate(order):
+            seed_counts[tid][i] += 1
+            if i < spots:
+                made[tid] += 1
+
+    for tid in ids:
+        teams[tid]['odds'] = 100.0 * made[tid] / sims
+        teams[tid]['avg_seed'] = sum((i + 1) * c for i, c in enumerate(seed_counts[tid])) / sims
+        teams[tid]['seed_counts'] = seed_counts[tid]
+
+
+# ==============================================================
+# Render
+# ==============================================================
+def fmt_pts(v):
+    return f'{v:.0f}' if float(v) % 1 == 0 else f'{v:.1f}'
+
+
+def status_chip(t):
+    if t['clinched']:
+        return ('clinched', 'CLINCHED')
+    if t['eliminated']:
+        return ('out', 'ELIMINATED')
+    if t['odds'] >= 50:
+        return ('in', 'IN THE HUNT')
+    return ('bubble', 'ON THE BUBBLE')
+
+
+def render(data, teams, spots, week, meta, playoff_raw, matchups):
+    order = sorted(teams.values(), key=lambda t: (-t['pts'] - t['live'], -t['odds']))
+    leader = order[0]['pts'] + order[0]['live']
+
+    # --- playoff picture cards ---
+    cards = []
+    for i, t in enumerate(order):
+        cls, label = status_chip(t)
+        seed = i + 1
+        cut = ' cutline' if seed == spots else ''
+        mgr = f' <span class="mgr">{html.escape(t["manager"])}</span>' if t.get('manager') else ''
+        if t['clinched']:
+            note = 'Locked in — playing for seeding'
+        elif t['eliminated']:
+            note = 'Eliminated from the playoff race'
+        elif t['magic'] is not None:
+            note = (f'Clinches with {t["magic"]} of the {t["remaining"]} '
+                    f'categor{"y" if t["remaining"] == 1 else "ies"} still open')
+        elif t['need_alive'] is not None:
+            note = f'Needs {t["need_alive"]} of {t["remaining"]} just to stay alive'
+        else:
+            note = 'Needs help'
+        cards.append(
+            f'''<div class="pf-row {cls}{cut}">
+  <div class="pf-seed">{seed}</div>
+  <div class="pf-main">
+    <div class="pf-name">{html.escape(t["name"])}{mgr}</div>
+    <div class="pf-note">{html.escape(note)}</div>
+  </div>
+  <div class="pf-odds">
+    <div class="pf-bar"><span style="width:{t["odds"]:.1f}%"></span></div>
+    <div class="pf-pct">{t["odds"]:.0f}%</div>
+  </div>
+  <div class="pf-chip"><span class="chip {cls}">{label}</span></div>
+</div>''')
+
+    # --- standings table ---
+    rows = []
+    for i, t in enumerate(order):
+        cls, label = status_chip(t)
+        gb = leader - (t['pts'] + t['live'])
+        mgr = f'<span class="mgr">{html.escape(t["manager"])}</span>' if t.get('manager') else ''
+        live_txt = f'+{t["live"]}' if t['live'] else '—'
+        rows.append(
+            f'''<tr class="{cls}">
+  <td class="rank">{i + 1}</td>
+  <td class="team-name">{html.escape(t["name"])} {mgr}</td>
+  <td>{t["wins"]}-{t["losses"]}-{t["ties"]}</td>
+  <td class="live">{live_txt}</td>
+  <td class="pts">{fmt_pts(t["pts"] + t["live"])}</td>
+  <td class="gb">{"—" if gb == 0 else fmt_pts(gb)}</td>
+  <td class="ceil">{fmt_pts(t["floor"])} – {fmt_pts(t["ceiling"])}</td>
+  <td class="odds">{t["odds"]:.0f}%</td>
+  <td><span class="chip {cls}">{label}</span></td>
+</tr>''')
+
+    # --- live matchup cards ---
+    mus = []
+    for m in matchups:
+        a, b = teams[m['a']['team_id']], teams[m['b']['team_id']]
+        stakes = []
+        for t in (a, b):
+            if t['clinched'] or t['eliminated']:
+                continue
+            if t['magic'] is not None:
+                stakes.append(f'{t["name"]} clinches with {t["magic"]}')
+            elif t['need_alive'] is not None:
+                stakes.append(f'{t["name"]} needs {t["need_alive"]} to stay alive')
+        stake_txt = ' · '.join(stakes) if stakes else 'No bearing on the cut line'
+        key = ' key' if stakes else ''
+        acls = 'winner' if a['live'] > b['live'] else 'loser' if a['live'] < b['live'] else 'tied'
+        bcls = 'winner' if b['live'] > a['live'] else 'loser' if b['live'] < a['live'] else 'tied'
+        mus.append(
+            f'''<div class="mu{key}">
+  <div class="mu-stakes">{html.escape(stake_txt)}</div>
+  <div class="mu-head">
+    <div class="mu-side"><span class="mu-name">{html.escape(a["name"])}</span>
+      <span class="mu-rec">{a["wins"]}-{a["losses"]}-{a["ties"]}</span></div>
+    <div class="mu-score"><span class="{acls}">{a["live"]}</span>
+      <span class="sep">–</span><span class="{bcls}">{b["live"]}</span></div>
+    <div class="mu-side r"><span class="mu-name">{html.escape(b["name"])}</span>
+      <span class="mu-rec">{b["wins"]}-{b["losses"]}-{b["ties"]}</span></div>
+  </div>
+  <div class="mu-foot">{m["decided"]} of {CATS_PER_WEEK} categories decided ·
+    {m["remaining"]} still up for grabs</div>
+</div>''')
+
+    built = datetime.now().strftime('%a %b %-d, %-I:%M %p' if os.name != 'nt'
+                                    else '%a %b %d, %I:%M %p')
+    cutline_teams = ', '.join(html.escape(t['name']) for t in order[:spots])
+
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Live Standings - {YEAR} Season</title>
+<style>
+  .banner {{
+    background: #1e293b; border: 1px solid #334155; border-left: 3px solid #38bdf8;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: 0.85em; color: #94a3b8; line-height: 1.5;
+  }}
+  .banner strong {{ color: #e2e8f0; }}
+
+  .pf-row {{
+    display: grid; grid-template-columns: 42px 1fr 160px 130px;
+    align-items: center; gap: 12px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 6px;
+  }}
+  .pf-row.cutline {{ margin-bottom: 18px; position: relative; }}
+  .pf-row.cutline::after {{
+    content: 'PLAYOFF CUT LINE'; position: absolute; left: 0; right: 0; bottom: -14px;
+    text-align: center; font-size: 0.6em; font-weight: 800; letter-spacing: .14em;
+    color: #ef4444;
+  }}
+  .pf-row.clinched {{ border-color: #22c55e55; }}
+  .pf-row.out {{ opacity: .62; }}
+  .pf-seed {{ font-size: 1.3em; font-weight: 800; color: #64748b; text-align: center; }}
+  .pf-name {{ font-weight: 600; }}
+  .pf-name .mgr {{ color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }}
+  .pf-note {{ font-size: .78em; color: #64748b; margin-top: 2px; }}
+  .pf-bar {{ height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }}
+  .pf-bar span {{ display: block; height: 100%; background: linear-gradient(90deg,#3b82f6,#22c55e); }}
+  .pf-pct {{ font-size: .78em; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }}
+  .pf-chip {{ text-align: right; }}
+
+  .chip {{
+    display: inline-block; font-size: .62em; font-weight: 800; letter-spacing: .06em;
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase; white-space: nowrap;
+  }}
+  .chip.clinched {{ background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }}
+  .chip.in       {{ background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf855; }}
+  .chip.bubble   {{ background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b55; }}
+  .chip.out      {{ background: #ef444422; color: #f87171; border: 1px solid #ef444455; }}
+
+  table.standings td {{ font-variant-numeric: tabular-nums; }}
+  table.standings tr.out td {{ opacity: .62; }}
+  .team-name {{ text-align: left; font-weight: 600; }}
+  .team-name .mgr {{ color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }}
+  td.pts {{ font-weight: 700; color: #34d399; }}
+  td.live {{ color: #fbbf24; font-weight: 600; }}
+  td.ceil, td.gb {{ color: #94a3b8; font-size: .9em; }}
+  td.odds {{ font-weight: 700; }}
+
+  .mu-grid {{ display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }}
+  .mu {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 16px; }}
+  .mu.key {{ border-color: #3b82f6; }}
+  .mu-stakes {{ font-size: .72em; text-transform: uppercase; letter-spacing: .06em;
+                color: #64748b; font-weight: 700; margin-bottom: 10px; }}
+  .mu.key .mu-stakes {{ color: #60a5fa; }}
+  .mu-head {{ display: flex; align-items: center; gap: 10px; }}
+  .mu-side {{ display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }}
+  .mu-side.r {{ align-items: flex-end; text-align: right; }}
+  .mu-name {{ font-size: .92em; font-weight: 600; overflow-wrap: anywhere; }}
+  .mu-rec {{ font-size: .74em; color: #64748b; }}
+  .mu-score {{ font-size: 1.5em; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }}
+  .mu-score .winner {{ color: #22c55e; }}
+  .mu-score .loser {{ color: #ef4444; }}
+  .mu-score .tied {{ color: #fbbf24; }}
+  .mu-score .sep {{ color: #64748b; margin: 0 5px; }}
+  .mu-foot {{ margin-top: 10px; font-size: .74em; color: #64748b; }}
+
+  @media (max-width: 720px) {{
+    .pf-row {{ grid-template-columns: 32px 1fr 90px; }}
+    .pf-chip {{ display: none; }}
+  }}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Live Standings</h1>
+  <div class="page-subtitle">Week {week} · {html.escape(meta["status"])} ·
+    {spots}-team playoff field</div>
+
+  <div class="banner">
+    <strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late July,
+    so this page is scraped from the public league page instead. Standings are Yahoo's through
+    week {week - 1} ({html.escape(meta["yahoo_updated"])}); the <strong>Live</strong> column is
+    week {week}'s categories won so far. Playoff odds simulate every undecided category
+    {SIMS:,} times, weighting each one by the two teams' season category win rates.
+    <br><strong>Playoff format:</strong> {html.escape(playoff_raw)}.
+    Built {built}.
+  </div>
+
+  <h2>Playoff Picture</h2>
+  <div class="section-desc">In as of right now: {cutline_teams}</div>
+  {''.join(cards)}
+
+  <h2>Standings</h2>
+  <div style="overflow-x:auto;">
+  <table class="standings">
+    <thead><tr>
+      <th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>
+      <th title="Categories won in week {week} so far">Live</th>
+      <th title="Category points: wins + half a point per tie">Pts</th>
+      <th>GB</th>
+      <th title="Worst case - best case finish">Range</th>
+      <th title="Chance of finishing in the top {spots}">Playoff&nbsp;%</th>
+      <th>Status</th>
+    </tr></thead>
+    <tbody>{''.join(rows)}</tbody>
+  </table>
+  </div>
+
+  <h2>Week {week} Matchups</h2>
+  <div class="section-desc">Live category scores — {html.escape(meta["status"])}</div>
+  <div class="mu-grid">{''.join(mus)}</div>
+</div>
+<script src="nav.js"></script>
+</body>
+</html>
+'''
+
+
+# ==============================================================
+# Main
+# ==============================================================
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--dry-run', action='store_true', help='print, do not write')
+    ap.add_argument('--skip-unchanged', action='store_true',
+                    help='do not rewrite the page when the data is identical')
+    args = ap.parse_args()
+
+    lid = league_id()
+    base = f'https://baseball.fantasysports.yahoo.com/b1/{lid}'
+    print(f'Scraping public league page: {base}')
+
+    home = get(base)
+    meta = parse_meta(home)
+    standings = parse_standings(home, lid)
+    week, matchups = parse_matchups(home, lid)
+    if not standings or not matchups:
+        sys.exit('ERROR: could not parse standings/matchups — Yahoo markup may have changed')
+
+    settings = parse_playoff_settings(get(f'{base}/settings'))
+    spots = settings['spots']
+    first_po = settings.get('first_playoff_week')
+    last_reg_week = (first_po - 1) if first_po else week
+    weeks_left_after = max(0, last_reg_week - week)
+
+    print(f'  {meta["league_name"]} · week {week} ({meta["status"]}) · '
+          f'{len(standings)} teams · {len(matchups)} matchups')
+    print(f'  Playoffs: {settings["raw"]} → regular season ends week {last_reg_week}, '
+          f'{weeks_left_after} week(s) after this one')
+
+    teams = build_teams(standings, matchups, weeks_left_after, spots)
+    for tid, mgr in load_managers().items():
+        if tid in teams:
+            teams[tid]['manager'] = mgr
+
+    playoff_status(teams, spots)
+    simulate(teams, spots)
+
+    order = sorted(teams.values(), key=lambda t: -(t['pts'] + t['live']))
+    print(f'\n{"#":>2} {"team":<28} {"rec":>12} {"live":>4} {"pts":>6} '
+          f'{"range":>13} {"odds":>6}  status')
+    for i, t in enumerate(order, 1):
+        _, label = status_chip(t)
+        print(f'{i:>2} {t["name"][:28]:<28} '
+              f'{t["wins"]}-{t["losses"]}-{t["ties"]:<6} {t["live"]:>4} '
+              f'{fmt_pts(t["pts"] + t["live"]):>6} '
+              f'{fmt_pts(t["floor"]) + "-" + fmt_pts(t["ceiling"]):>13} '
+              f'{t["odds"]:>5.1f}%  {label}'
+              + (f'  (clinch w/ {t["magic"]})' if t.get('magic') else ''))
+
+    payload = {
+        'year': YEAR,
+        'week': week,
+        'status': meta['status'],
+        'yahoo_updated': meta['yahoo_updated'],
+        'scraped_at': datetime.now(timezone.utc).isoformat(),
+        'source': base,
+        'playoff_spots': spots,
+        'playoff_format': settings['raw'],
+        'last_regular_week': last_reg_week,
+        'sims': SIMS,
+        'teams': [{k: v for k, v in t.items() if k != 'seed_counts'}
+                  for t in order],
+        'matchups': matchups,
+    }
+
+    if args.dry_run:
+        print('\n(dry run — nothing written)')
+        return
+
+    os.makedirs(os.path.join(DOCS, 'data'), exist_ok=True)
+    json_path = os.path.join(DOCS, 'data', f'live_standings_{YEAR}.json')
+
+    # Nothing but the clock moved? Leave the files alone so the scheduled run
+    # does not churn out a commit every 10 minutes.
+    if args.skip_unchanged and os.path.exists(json_path):
+        try:
+            with open(json_path, encoding='utf-8') as f:
+                prev = json.load(f)
+            drop = ('scraped_at',)
+            if ({k: v for k, v in prev.items() if k not in drop} ==
+                    {k: v for k, v in payload.items() if k not in drop}):
+                print('No change since last scrape - nothing written')
+                return
+        except (OSError, ValueError):
+            pass
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    html_path = os.path.join(DOCS, f'live_standings_{YEAR}.html')
+    with open(html_path, 'w', encoding='utf-8') as f:
+        f.write(render(payload, teams, spots, week, meta, settings['raw'], matchups))
+
+    print(f'\nWrote {json_path}')
+    print(f'Wrote {html_path}')
+
+
+if __name__ == '__main__':
+    main()
