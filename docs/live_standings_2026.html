@@ -6,6 +6,7 @@
 <meta http-equiv="refresh" content="600">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Live Standings - 2026 Season</title>
 <style>
   .banner {
@@ -60,6 +61,12 @@
   td.proj { color: #c4b5fd; font-weight: 600; }
   td.odds { font-weight: 700; }
 
+  .chart-wrap {
+    height: 380px; background: #1e293b; border: 1px solid #334155;
+    border-radius: 12px; padding: 18px 18px 14px; margin-bottom: 8px;
+  }
+  @media (max-width: 720px) { .chart-wrap { height: 320px; padding: 12px 10px 10px; } }
+
   .mu-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }
   .mu { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 16px; }
   .mu.key { border-color: #3b82f6; }
@@ -100,7 +107,7 @@
     each current lead in proportion to the 24% of the week already played and
     playing out the rest on each team's season category win rate.
     <br><strong>Playoff format:</strong> 6 teams - Week 23, 24 and 25.
-    Built Tue Aug 25, 04:43 PM — this page rescrapes and republishes itself every 10 minutes.
+    Built Tue Aug 25, 05:03 PM — this page rescrapes and republishes itself every 10 minutes.
   </div>
 
   <h2>Playoff Picture</h2>
@@ -113,7 +120,7 @@
   </div>
   <div class="pf-odds">
     <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">99.9%</div>
+    <div class="pf-pct">100%</div>
   </div>
   <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
 </div><div class="pf-row clinched">
@@ -124,7 +131,7 @@
   </div>
   <div class="pf-odds">
     <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">99.9%</div>
+    <div class="pf-pct">100%</div>
   </div>
   <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
 </div><div class="pf-row clinched">
@@ -135,7 +142,7 @@
   </div>
   <div class="pf-odds">
     <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">99.9%</div>
+    <div class="pf-pct">100%</div>
   </div>
   <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
 </div><div class="pf-row clinched">
@@ -146,7 +153,7 @@
   </div>
   <div class="pf-odds">
     <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">99.9%</div>
+    <div class="pf-pct">100%</div>
   </div>
   <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
 </div><div class="pf-row in">
@@ -167,8 +174,8 @@
     <div class="pf-note">Clinches with 12 of the 12 categories left this week</div>
   </div>
   <div class="pf-odds">
-    <div class="pf-bar"><span style="width:55.2%"></span></div>
-    <div class="pf-pct">55.2%</div>
+    <div class="pf-bar"><span style="width:56.5%"></span></div>
+    <div class="pf-pct">56.5%</div>
   </div>
   <div class="pf-chip"><span class="chip in">IN THE HUNT</span></div>
 </div><div class="pf-row bubble">
@@ -178,8 +185,8 @@
     <div class="pf-note">Needs 6 of the 12 left this week just to stay alive</div>
   </div>
   <div class="pf-odds">
-    <div class="pf-bar"><span style="width:3.7%"></span></div>
-    <div class="pf-pct">3.7%</div>
+    <div class="pf-bar"><span style="width:4.4%"></span></div>
+    <div class="pf-pct">4.4%</div>
   </div>
   <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
 </div><div class="pf-row bubble">
@@ -189,8 +196,8 @@
     <div class="pf-note">Needs 3 of the 12 left this week just to stay alive</div>
   </div>
   <div class="pf-odds">
-    <div class="pf-bar"><span style="width:41.3%"></span></div>
-    <div class="pf-pct">41.3%</div>
+    <div class="pf-bar"><span style="width:39.2%"></span></div>
+    <div class="pf-pct">39.2%</div>
   </div>
   <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
 </div><div class="pf-row longshot">
@@ -239,6 +246,52 @@
   <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
 </div>
 
+  <h2>Race for the Last Playoff Spots</h2>
+  <div class="section-desc">SCOOPSKI POTATOES, OG 8️⃣ &amp; an extra, Rickie Flower, Rosa Parks’ Bus Seat, Ian Cumsler — chasing the 6-team field. Snapshotted at midnight, noon, 3pm, 6pm and 9pm every day · 1 snapshot so far — the line fills in from here</div>
+  <div class="chart-wrap"><canvas id="raceChart"></canvas></div>
+
+<script>
+(function () {
+  const points = ["8/25 3p · week 22"];
+  new Chart(document.getElementById('raceChart'), {
+    type: 'line',
+    data: { labels: ["8/25 3p"], datasets: [{"label": "SCOOPSKI POTATOES (Michael)", "data": [99.9], "borderColor": "#38bdf8", "backgroundColor": "#38bdf8", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "OG 8️⃣ & an extra (Greg)", "data": [56.54], "borderColor": "#a78bfa", "backgroundColor": "#a78bfa", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Rickie Flower (Bryant)", "data": [39.17], "borderColor": "#fbbf24", "backgroundColor": "#fbbf24", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Rosa Parks’ Bus Seat (James)", "data": [4.39], "borderColor": "#34d399", "backgroundColor": "#34d399", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Ian Cumsler (Eric)", "data": [0.0], "borderColor": "#f87171", "backgroundColor": "#f87171", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      // Room above 100 and below 0 for the dots to sit whole: the datasets
+      // turn clipping off, so this padding is what they spill into.
+      layout: { padding: { top: 14, bottom: 14, left: 4, right: 10 } },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          ticks: { color: '#64748b', stepSize: 20, padding: 8, callback: v => v + '%' },
+          grid: { color: '#1e293b' }
+        },
+        x: {
+          ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 16 },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'line', boxWidth: 26 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => points[items[0].dataIndex] || '',
+            label: c => c.dataset.label + ': ' +
+                        (c.parsed.y == null ? 'n/a' : c.parsed.y.toFixed(1) + '%')
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+
+
   <h2>Standings</h2>
   <div style="overflow-x:auto;">
   <table class="standings">
@@ -256,12 +309,12 @@
   <td class="rank">1</td>
   <td class="team-name">The Rosterbation Station <span class="mgr">Kevin</span></td>
   <td>149-94-9</td>
-  <td class="live">+7</td>
-  <td class="pts">160.5</td>
+  <td class="live">+8</td>
+  <td class="pts">161.5</td>
   <td class="gb">—</td>
-  <td class="proj">160.2</td>
+  <td class="proj">160.3</td>
   <td class="ceil">153.5 – 165.5</td>
-  <td class="odds">99.9%</td>
+  <td class="odds">100%</td>
   <td><span class="chip clinched">CLINCHED</span></td>
 </tr><tr class="clinched">
   <td class="rank">2</td>
@@ -269,10 +322,10 @@
   <td>147-93-12</td>
   <td class="live">+3</td>
   <td class="pts">156</td>
-  <td class="gb">4.5</td>
+  <td class="gb">5.5</td>
   <td class="proj">158.8</td>
   <td class="ceil">153 – 165</td>
-  <td class="odds">99.9%</td>
+  <td class="odds">100%</td>
   <td><span class="chip clinched">CLINCHED</span></td>
 </tr><tr class="clinched">
   <td class="rank">3</td>
@@ -280,10 +333,10 @@
   <td>141-104-7</td>
   <td class="live">+5</td>
   <td class="pts">149.5</td>
-  <td class="gb">11</td>
+  <td class="gb">12</td>
   <td class="proj">151.1</td>
   <td class="ceil">144.5 – 156.5</td>
-  <td class="odds">99.9%</td>
+  <td class="odds">100%</td>
   <td><span class="chip clinched">CLINCHED</span></td>
 </tr><tr class="clinched">
   <td class="rank">4</td>
@@ -291,10 +344,10 @@
   <td>135-102-15</td>
   <td class="live">+3</td>
   <td class="pts">145.5</td>
-  <td class="gb">15</td>
-  <td class="proj">147.8</td>
+  <td class="gb">16</td>
+  <td class="proj">147.7</td>
   <td class="ceil">142.5 – 154.5</td>
-  <td class="odds">99.9%</td>
+  <td class="odds">100%</td>
   <td><span class="chip clinched">CLINCHED</span></td>
 </tr><tr class="in">
   <td class="rank">5</td>
@@ -302,7 +355,7 @@
   <td>122-119-11</td>
   <td class="live">+8</td>
   <td class="pts">135.5</td>
-  <td class="gb">25</td>
+  <td class="gb">26</td>
   <td class="proj">133.7</td>
   <td class="ceil">127.5 – 139.5</td>
   <td class="odds">99.9%</td>
@@ -313,10 +366,10 @@
   <td>117-124-11</td>
   <td class="live">+3</td>
   <td class="pts">125.5</td>
-  <td class="gb">35</td>
+  <td class="gb">36</td>
   <td class="proj">128.2</td>
   <td class="ceil">122.5 – 134.5</td>
-  <td class="odds">55.2%</td>
+  <td class="odds">56.5%</td>
   <td><span class="chip in">IN THE HUNT</span></td>
 </tr><tr class="bubble">
   <td class="rank">7</td>
@@ -324,21 +377,21 @@
   <td>115-130-7</td>
   <td class="live">+7</td>
   <td class="pts">125.5</td>
-  <td class="gb">35</td>
-  <td class="proj">125.0</td>
+  <td class="gb">36</td>
+  <td class="proj">125.2</td>
   <td class="ceil">118.5 – 130.5</td>
-  <td class="odds">3.7%</td>
+  <td class="odds">4.4%</td>
   <td><span class="chip bubble">ON THE BUBBLE</span></td>
 </tr><tr class="bubble">
   <td class="rank">8</td>
   <td class="team-name">Rickie Flower <span class="mgr">Bryant</span></td>
   <td>119-128-5</td>
-  <td class="live">+3</td>
-  <td class="pts">124.5</td>
-  <td class="gb">36</td>
-  <td class="proj">127.8</td>
+  <td class="live">+2</td>
+  <td class="pts">123.5</td>
+  <td class="gb">38</td>
+  <td class="proj">127.6</td>
   <td class="ceil">121.5 – 133.5</td>
-  <td class="odds">41.3%</td>
+  <td class="odds">39.2%</td>
   <td><span class="chip bubble">ON THE BUBBLE</span></td>
 </tr><tr class="longshot">
   <td class="rank">9</td>
@@ -346,7 +399,7 @@
   <td>105-131-16</td>
   <td class="live">+7</td>
   <td class="pts">120</td>
-  <td class="gb">40.5</td>
+  <td class="gb">41.5</td>
   <td class="proj">119.3</td>
   <td class="ceil">113 – 125</td>
   <td class="odds">&lt;0.1%</td>
@@ -355,10 +408,10 @@
   <td class="rank">10</td>
   <td class="team-name">Hatfield Hurlers <span class="mgr">Mark</span></td>
   <td>104-135-13</td>
-  <td class="live">+4</td>
-  <td class="pts">114.5</td>
-  <td class="gb">46</td>
-  <td class="proj">116.0</td>
+  <td class="live">+3</td>
+  <td class="pts">113.5</td>
+  <td class="gb">48</td>
+  <td class="proj">115.8</td>
   <td class="ceil">110.5 – 122.5</td>
   <td class="odds">0.0%</td>
   <td><span class="chip out">ELIMINATED</span></td>
@@ -368,8 +421,8 @@
   <td>100-142-10</td>
   <td class="live">+4</td>
   <td class="pts">109</td>
-  <td class="gb">51.5</td>
-  <td class="proj">110.7</td>
+  <td class="gb">52.5</td>
+  <td class="proj">110.9</td>
   <td class="ceil">105 – 117</td>
   <td class="odds">0.0%</td>
   <td><span class="chip out">ELIMINATED</span></td>
@@ -379,7 +432,7 @@
   <td>92-144-16</td>
   <td class="live">+7</td>
   <td class="pts">107</td>
-  <td class="gb">53.5</td>
+  <td class="gb">54.5</td>
   <td class="proj">105.4</td>
   <td class="ceil">100 – 112</td>
   <td class="odds">0.0%</td>
@@ -408,11 +461,11 @@
     <div class="mu-side"><span class="mu-name">Rosa Parks’ Bus Seat</span>
       <span class="mu-rec">115-130-7</span></div>
     <div class="mu-score"><span class="winner">7</span>
-      <span class="sep">–</span><span class="loser">4</span></div>
+      <span class="sep">–</span><span class="loser">3</span></div>
     <div class="mu-side r"><span class="mu-name">Hatfield Hurlers</span>
       <span class="mu-rec">104-135-13</span></div>
   </div>
-  <div class="mu-foot">Leading 11 of 12 categories between them ·
+  <div class="mu-foot">Leading 10 of 12 categories between them ·
     24% of the week played · nothing banked until it ends</div>
 </div><div class="mu key">
   <div class="mu-stakes">SCOOPSKI POTATOES clinches with 7 of 12</div>
@@ -431,12 +484,12 @@
   <div class="mu-head">
     <div class="mu-side"><span class="mu-name">Rickie Flower</span>
       <span class="mu-rec">119-128-5</span></div>
-    <div class="mu-score"><span class="loser">3</span>
+    <div class="mu-score"><span class="loser">2</span>
       <span class="sep">–</span><span class="winner">4</span></div>
     <div class="mu-side r"><span class="mu-name">William Shatnermouth</span>
       <span class="mu-rec">100-142-10</span></div>
   </div>
-  <div class="mu-foot">Leading 7 of 12 categories between them ·
+  <div class="mu-foot">Leading 6 of 12 categories between them ·
     24% of the week played · nothing banked until it ends</div>
 </div><div class="mu key">
   <div class="mu-stakes">Ian Cumsler needs 11 to stay alive · OG 8️⃣ &amp; an extra clinches with 12 of 12</div>
@@ -455,12 +508,12 @@
   <div class="mu-head">
     <div class="mu-side"><span class="mu-name">The Rosterbation Station</span>
       <span class="mu-rec">149-94-9</span></div>
-    <div class="mu-score"><span class="winner">7</span>
+    <div class="mu-score"><span class="winner">8</span>
       <span class="sep">–</span><span class="loser">3</span></div>
     <div class="mu-side r"><span class="mu-name">¯\_(ツ)_/¯</span>
       <span class="mu-rec">135-102-15</span></div>
   </div>
-  <div class="mu-foot">Leading 10 of 12 categories between them ·
+  <div class="mu-foot">Leading 11 of 12 categories between them ·
     24% of the week played · nothing banked until it ends</div>
 </div></div>
 </div>
