@@ -379,20 +379,113 @@ def simulate(teams, spots, progress, sims=SIMS, seed=17):
 
 
 # ==============================================================
+# Snapshot history (feeds the race chart)
+# ==============================================================
+SLOT_HOURS = (0, 12, 15, 18, 21)      # midnight, noon, 3pm, 6pm, 9pm - local clock
+HISTORY_PATH = os.path.join(DOCS, 'data', f'playoff_odds_history_{YEAR}.json')
+
+
+def odds_value(t):
+    """
+    The single number the page shows and the chart plots.
+
+    Only the clinch maths earns a round 100: the simulation coming back
+    100,000-for-100,000 is not the same thing as being unable to miss, so
+    everyone else is held at 99.9 no matter how the rounding falls.
+    """
+    if t['eliminated']:
+        return 0.0
+    if t['clinched']:
+        return 100.0
+    return min(t['odds'], 99.9)
+
+
+def current_slot(now=None):
+    """The most recent noon / 3 / 6 / 9 / midnight boundary that has passed."""
+    now = now or datetime.now()
+    hour = max(h for h in SLOT_HOURS if h <= now.hour)   # 0 is always eligible
+    return now.replace(hour=hour, minute=0, second=0, microsecond=0)
+
+
+def slot_label(dt):
+    hour = dt.hour
+    clock = '12a' if hour == 0 else '12p' if hour == 12 else             (f'{hour - 12}p' if hour > 12 else f'{hour}a')
+    return f'{dt.month}/{dt.day} {clock}'
+
+
+def pick_tracked(teams, spots):
+    """
+    The teams fighting for the last spots - everyone still alive who has not
+    already locked one up. Worked out once and then frozen in the history file,
+    so a team that clinches mid-race stays on the chart (pinned at 100) instead
+    of disappearing off it, and one that gets eliminated flatlines at 0 in view.
+    """
+    race = [t for t in teams.values() if not t['clinched'] and not t['eliminated']]
+    if not race:                                   # everything already decided
+        order = sorted(teams.values(), key=lambda t: -odds_value(t))
+        race = order[max(0, spots - 2):spots + 2]
+    return [t['team_id'] for t in sorted(race, key=lambda t: -odds_value(t))]
+
+
+def load_history():
+    hist = {'year': YEAR, 'slot_hours': list(SLOT_HOURS), 'tracked': [], 'points': []}
+    if os.path.exists(HISTORY_PATH):
+        try:
+            with io.open(HISTORY_PATH, encoding='utf-8') as f:
+                hist.update(json.load(f))
+        except (OSError, ValueError):
+            pass
+    return hist
+
+
+def record_history(teams, spots, week, write=True):
+    """
+    Keep one snapshot per slot. The scrape runs every 10 minutes but only the
+    first run after a boundary is kept, so the chart is five evenly spaced
+    points a day instead of 144 jittery ones.
+
+    Returns (new_point_written, history).
+    """
+    hist = load_history()
+    if not hist['tracked']:
+        hist['tracked'] = pick_tracked(teams, spots)
+
+    slot = current_slot()
+    key = slot.strftime('%Y-%m-%dT%H')
+    if any(p['slot'] == key for p in hist['points']):
+        return False, hist
+
+    hist['points'].append({
+        'slot': key,
+        'label': slot_label(slot),
+        'recorded_at': datetime.now().isoformat(timespec='seconds'),
+        'week': week,
+        'odds': {str(tid): round(odds_value(t), 2) for tid, t in teams.items()},
+    })
+    hist['points'].sort(key=lambda p: p['slot'])
+
+    if write:
+        os.makedirs(os.path.dirname(HISTORY_PATH), exist_ok=True)
+        with io.open(HISTORY_PATH, 'w', encoding='utf-8') as f:
+            json.dump(hist, f, indent=2, ensure_ascii=False)
+    return True, hist
+
+
+# ==============================================================
 # Render
 # ==============================================================
 def fmt_odds(t):
     """
-    One decimal for everyone, and never a bare 100 or 0 while a team is still
-    playing: a locked-in team tops out at 99.9 (the CLINCHED chip carries the
-    certainty) and a team that is alive but never made the playoffs in any
-    simulation reads <0.1 rather than a flat zero.
+    A clinched team reads a flat 100% - it cannot miss, so the number should not
+    hedge. Nobody else gets there: a team the simulation likes at 99.96 is still
+    held at 99.9 until the maths locks it in, and a team that is alive but never
+    made the playoffs in any run reads <0.1 rather than a flat zero.
     """
-    o = t['odds']
+    o = odds_value(t)
     if t['eliminated']:
         return '0.0%'
-    if t['clinched'] or o >= 99.9:
-        return '99.9%'
+    if t['clinched']:
+        return '100%'
     if o < 0.05:
         return '&lt;0.1%'          # escaped: this lands straight in the markup
     return f'{o:.1f}%'
@@ -414,8 +507,116 @@ def status_chip(t):
     return ('bubble', 'ON THE BUBBLE')
 
 
-def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
+RACE_COLORS = ['#38bdf8', '#a78bfa', '#fbbf24', '#34d399', '#f87171', '#f472b6']
+
+# The JS half of the race chart. Kept out of render()'s f-string so the braces
+# can stay braces; the two placeholders are filled by json.dumps below.
+RACE_JS = """
+<script>
+(function () {
+  const points = __POINTS__;
+  new Chart(document.getElementById('raceChart'), {
+    type: 'line',
+    data: { labels: __LABELS__, datasets: __SETS__ },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      // Room above 100 and below 0 for the dots to sit whole: the datasets
+      // turn clipping off, so this padding is what they spill into.
+      layout: { padding: { top: 14, bottom: 14, left: 4, right: 10 } },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          ticks: { color: '#64748b', stepSize: 20, padding: 8, callback: v => v + '%' },
+          grid: { color: '#1e293b' }
+        },
+        x: {
+          ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 16 },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'line', boxWidth: 26 }
+        },
+        tooltip: {
+          callbacks: {
+            title: items => points[items[0].dataIndex] || '',
+            label: c => c.dataset.label + ': ' +
+                        (c.parsed.y == null ? 'n/a' : c.parsed.y.toFixed(1) + '%')
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+"""
+
+
+def render_race_chart(teams, hist, spots):
+    """
+    The last-spots race, snapshotted at midnight / noon / 3 / 6 / 9 every day.
+
+    The tracked teams are frozen in the history file, so the lines do not
+    reshuffle underneath the chart - a team that clinches stays on it at a flat
+    100, and one that gets eliminated stays on it at a flat 0.
+    """
+    tracked = [tid for tid in hist.get('tracked', []) if tid in teams]
+    points = hist.get('points', [])
+    if not tracked or not points:
+        return ''
+
+    datasets = []
+    for i, tid in enumerate(sorted(tracked, key=lambda x: -odds_value(teams[x]))):
+        t = teams[tid]
+        name = t['name'] + (f' ({t["manager"]})' if t.get('manager') else '')
+        datasets.append({
+            'label': name,
+            'data': [p['odds'].get(str(tid)) for p in points],
+            'borderColor': RACE_COLORS[i % len(RACE_COLORS)],
+            'backgroundColor': RACE_COLORS[i % len(RACE_COLORS)],
+            'borderWidth': 2.5,
+            # monotone rounds the corners without letting the curve overshoot -
+            # plain tension would arc a 100-to-100 stretch up past 100, which
+            # would be drawing a lie now that clipping is off
+            'cubicInterpolationMode': 'monotone',
+            'borderJoinStyle': 'round',
+            'borderCapStyle': 'round',
+            'pointRadius': 3,
+            'pointHoverRadius': 6,
+            'spanGaps': True,
+            'clip': False,          # a dot at 0% or 100% draws whole
+        })
+
+    def js(obj):
+        # </script> inside a team name would end the block early
+        return json.dumps(obj, ensure_ascii=False).replace('</', '<\\/')
+
+    script = (RACE_JS
+              .replace('__LABELS__', js([p['label'] for p in points]))
+              .replace('__POINTS__', js([f'{p["label"]} · week {p["week"]}' for p in points]))
+              .replace('__SETS__', js(datasets)))
+
+    names = ', '.join(html.escape(teams[tid]['name']) for tid in tracked)
+    note = (f'Snapshotted at midnight, noon, 3pm, 6pm and 9pm every day · '
+            f'{len(points)} snapshot{"" if len(points) == 1 else "s"} so far')
+    if len(points) < 2:
+        note += ' — the line fills in from here'
+
+    return f'''
+  <h2>Race for the Last Playoff Spots</h2>
+  <div class="section-desc">{names} — chasing the {spots}-team field. {note}</div>
+  <div class="chart-wrap"><canvas id="raceChart"></canvas></div>
+{script}
+'''
+
+
+def render(data, teams, spots, week, meta, playoff_raw, matchups,
+           progress, hist):
     week_pct = f'{progress * 100:.0f}%'
+    race_chart = render_race_chart(teams, hist, spots)
     order = sorted(teams.values(), key=lambda t: (-t['pts'] - t['live'], -t['odds']))
     leader = order[0]['pts'] + order[0]['live']
 
@@ -520,6 +721,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
 <meta http-equiv="refresh" content="600">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Live Standings - {YEAR} Season</title>
 <style>
   .banner {{
@@ -574,6 +776,12 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
   td.proj {{ color: #c4b5fd; font-weight: 600; }}
   td.odds {{ font-weight: 700; }}
 
+  .chart-wrap {{
+    height: 380px; background: #1e293b; border: 1px solid #334155;
+    border-radius: 12px; padding: 18px 18px 14px; margin-bottom: 8px;
+  }}
+  @media (max-width: 720px) {{ .chart-wrap {{ height: 320px; padding: 12px 10px 10px; }} }}
+
   .mu-grid {{ display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }}
   .mu {{ background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 16px; }}
   .mu.key {{ border-color: #3b82f6; }}
@@ -620,7 +828,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
   <h2>Playoff Picture</h2>
   <div class="section-desc">In as of right now: {cutline_teams}</div>
   {''.join(cards)}
-
+{race_chart}
   <h2>Standings</h2>
   <div style="overflow-x:auto;">
   <table class="standings">
@@ -719,6 +927,13 @@ def main():
         'matchups': matchups,
     }
 
+    new_point, hist = record_history(teams, spots, week, write=not args.dry_run)
+    tracked = ', '.join(teams[t]['name'] for t in hist['tracked'] if t in teams)
+    print(f'\nRace chart tracks: {tracked}')
+    print(f"  {len(hist['points'])} snapshot(s) on file"
+          + (f" — logged {hist['points'][-1]['label']}"
+             if new_point else " — none due yet"))
+
     if args.dry_run:
         print('\n(dry run — nothing written)')
         return
@@ -728,7 +943,7 @@ def main():
 
     # Nothing but the clock moved? Leave the files alone so the scheduled run
     # does not churn out a commit every 10 minutes.
-    if args.skip_unchanged and os.path.exists(json_path):
+    if args.skip_unchanged and not new_point and os.path.exists(json_path):
         try:
             with open(json_path, encoding='utf-8') as f:
                 prev = json.load(f)
@@ -745,7 +960,7 @@ def main():
     html_path = os.path.join(DOCS, f'live_standings_{YEAR}.html')
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(render(payload, teams, spots, week, meta, settings['raw'],
-                       matchups, progress))
+                       matchups, progress, hist))
 
     print(f'\nWrote {json_path}')
     print(f'Wrote {html_path}')

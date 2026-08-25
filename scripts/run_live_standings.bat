@@ -17,7 +17,7 @@ if errorlevel 1 (
 )
 
 REM Nothing rewritten means nothing to publish.
-set FILES=docs/live_standings_2026.html docs/data/live_standings_2026.json
+set FILES=docs/live_standings_2026.html docs/data/live_standings_2026.json docs/data/playoff_odds_history_2026.json
 for /f %%i in ('git status --porcelain -- %FILES%') do goto :publish
 echo no change - skipping commit >> "%LOG%"
 REM still push anything committed by hand that has not gone out yet
