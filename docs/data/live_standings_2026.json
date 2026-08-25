@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Tue Aug 25 04:05am EDT",
-  "scraped_at": "2026-08-25T20:53:51.637154+00:00",
+  "scraped_at": "2026-08-25T21:03:51.922788+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.2314,
+  "week_progress": 0.2324,
   "teams": [
     {
       "team_id": 11,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 160.14686,
-      "avg_seed": 1.29237
+      "projected": 160.14839,
+      "avg_seed": 1.29157
     },
     {
       "team_id": 3,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 158.85,
-      "avg_seed": 1.70797
+      "projected": 158.84654,
+      "avg_seed": 1.70879
     },
     {
       "team_id": 1,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.10199,
-      "avg_seed": 3.08989
+      "projected": 151.10028,
+      "avg_seed": 3.08984
     },
     {
       "team_id": 12,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 147.85314,
-      "avg_seed": 3.90977
+      "projected": 147.85161,
+      "avg_seed": 3.9098
     },
     {
       "team_id": 10,
@@ -167,9 +167,9 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.871,
-      "projected": 133.65,
-      "avg_seed": 5.01949
+      "odds": 99.874,
+      "projected": 133.65346,
+      "avg_seed": 5.01944
     },
     {
       "team_id": 9,
@@ -199,9 +199,9 @@
       "eliminated": false,
       "magic": 12,
       "need_alive": 2,
-      "odds": 55.485,
-      "projected": 128.22831,
-      "avg_seed": 6.51213
+      "odds": 55.467,
+      "projected": 128.22617,
+      "avg_seed": 6.51241
     },
     {
       "team_id": 2,
@@ -231,9 +231,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 3.568,
-      "projected": 125.01287,
-      "avg_seed": 7.78765
+      "odds": 3.576,
+      "projected": 125.01389,
+      "avg_seed": 7.78731
     },
     {
       "team_id": 4,
@@ -263,9 +263,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 41.075,
-      "projected": 127.76661,
-      "avg_seed": 6.69625
+      "odds": 41.082,
+      "projected": 127.76585,
+      "avg_seed": 6.6963
     },
     {
       "team_id": 7,
@@ -296,8 +296,8 @@
       "magic": null,
       "need_alive": 11,
       "odds": 0.001,
-      "projected": 119.27169,
-      "avg_seed": 9.07409
+      "projected": 119.27383,
+      "avg_seed": 9.07372
     },
     {
       "team_id": 6,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 115.98713,
-      "avg_seed": 9.92384
+      "projected": 115.98611,
+      "avg_seed": 9.92426
     },
     {
       "team_id": 5,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.73339,
-      "avg_seed": 11.00015
+      "projected": 110.73415,
+      "avg_seed": 11.00018
     },
     {
       "team_id": 8,
@@ -392,8 +392,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.39801,
-      "avg_seed": 11.9864
+      "projected": 105.39972,
+      "avg_seed": 11.98638
     }
   ],
   "matchups": [
