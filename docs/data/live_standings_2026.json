@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Tue Aug 25 04:05am EDT",
-  "scraped_at": "2026-08-25T23:23:51.188451+00:00",
+  "scraped_at": "2026-08-25T23:33:51.096497+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.2463,
+  "week_progress": 0.2473,
   "teams": [
     {
       "team_id": 11,
@@ -25,8 +25,8 @@
       "pts": 153.5,
       "games": 252,
       "cat_pct": 0.6091269841269841,
-      "live": 7,
-      "decided": 10,
+      "live": 8,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 160.1745,
-      "avg_seed": 1.28049
+      "projected": 160.29436,
+      "avg_seed": 1.28239
     },
     {
       "team_id": 3,
@@ -58,7 +58,7 @@
       "games": 252,
       "cat_pct": 0.6071428571428571,
       "live": 3,
-      "decided": 11,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 158.80501,
-      "avg_seed": 1.71985
+      "projected": 158.93802,
+      "avg_seed": 1.71784
     },
     {
       "team_id": 1,
@@ -89,7 +89,7 @@
       "pts": 144.5,
       "games": 252,
       "cat_pct": 0.5734126984126984,
-      "live": 5,
+      "live": 4,
       "decided": 12,
       "banked": 0,
       "pool": 12,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.07284,
-      "avg_seed": 3.08914
+      "projected": 150.82393,
+      "avg_seed": 3.09765
     },
     {
       "team_id": 12,
@@ -122,7 +122,7 @@
       "games": 252,
       "cat_pct": 0.5654761904761905,
       "live": 3,
-      "decided": 10,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 147.8255,
-      "avg_seed": 3.91052
+      "projected": 147.70564,
+      "avg_seed": 3.90212
     },
     {
       "team_id": 10,
@@ -153,8 +153,8 @@
       "pts": 127.5,
       "games": 252,
       "cat_pct": 0.5059523809523809,
-      "live": 8,
-      "decided": 11,
+      "live": 7,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -167,9 +167,73 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.914,
-      "projected": 133.69499,
-      "avg_seed": 5.01435
+      "odds": 99.844,
+      "projected": 133.56198,
+      "avg_seed": 5.02263
+    },
+    {
+      "team_id": 4,
+      "name": "Rickie Flower",
+      "rank": 7,
+      "yahoo_clinched": false,
+      "wins": 119,
+      "losses": 128,
+      "ties": 5,
+      "pct": ".482",
+      "gb": "32",
+      "last_week": "5-7-0",
+      "pts": 121.5,
+      "games": 252,
+      "cat_pct": 0.48214285714285715,
+      "live": 5,
+      "decided": 9,
+      "banked": 0,
+      "pool": 12,
+      "free": 0,
+      "remaining": 12,
+      "opponent": 5,
+      "floor": 121.5,
+      "ceiling": 133.5,
+      "manager": "Bryant",
+      "clinched": false,
+      "eliminated": false,
+      "magic": null,
+      "need_alive": 3,
+      "odds": 44.844,
+      "projected": 127.98243,
+      "avg_seed": 6.64798
+    },
+    {
+      "team_id": 9,
+      "name": "OG 8️⃣ & an extra",
+      "rank": 6,
+      "yahoo_clinched": false,
+      "wins": 117,
+      "losses": 124,
+      "ties": 11,
+      "pct": ".486",
+      "gb": "31",
+      "last_week": "7-5-0",
+      "pts": 122.5,
+      "games": 252,
+      "cat_pct": 0.4861111111111111,
+      "live": 3,
+      "decided": 10,
+      "banked": 0,
+      "pool": 12,
+      "free": 0,
+      "remaining": 12,
+      "opponent": 7,
+      "floor": 122.5,
+      "ceiling": 134.5,
+      "manager": "Greg",
+      "clinched": false,
+      "eliminated": false,
+      "magic": 12,
+      "need_alive": 2,
+      "odds": 51.521,
+      "projected": 128.1933,
+      "avg_seed": 6.56288
     },
     {
       "team_id": 2,
@@ -199,73 +263,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 5.192,
-      "projected": 125.15968,
-      "avg_seed": 7.73142
-    },
-    {
-      "team_id": 9,
-      "name": "OG 8️⃣ & an extra",
-      "rank": 6,
-      "yahoo_clinched": false,
-      "wins": 117,
-      "losses": 124,
-      "ties": 11,
-      "pct": ".486",
-      "gb": "31",
-      "last_week": "7-5-0",
-      "pts": 122.5,
-      "games": 252,
-      "cat_pct": 0.4861111111111111,
-      "live": 2,
-      "decided": 11,
-      "banked": 0,
-      "pool": 12,
-      "free": 0,
-      "remaining": 12,
-      "opponent": 7,
-      "floor": 122.5,
-      "ceiling": 134.5,
-      "manager": "Greg",
-      "clinched": false,
-      "eliminated": false,
-      "magic": 12,
-      "need_alive": 2,
-      "odds": 48.218,
-      "projected": 127.82004,
-      "avg_seed": 6.63052
-    },
-    {
-      "team_id": 4,
-      "name": "Rickie Flower",
-      "rank": 7,
-      "yahoo_clinched": false,
-      "wins": 119,
-      "losses": 128,
-      "ties": 5,
-      "pct": ".482",
-      "gb": "32",
-      "last_week": "5-7-0",
-      "pts": 121.5,
-      "games": 252,
-      "cat_pct": 0.48214285714285715,
-      "live": 3,
-      "decided": 7,
-      "banked": 0,
-      "pool": 12,
-      "free": 0,
-      "remaining": 12,
-      "opponent": 5,
-      "floor": 121.5,
-      "ceiling": 133.5,
-      "manager": "Bryant",
-      "clinched": false,
-      "eliminated": false,
-      "magic": null,
-      "need_alive": 3,
-      "odds": 46.674,
-      "projected": 127.75483,
-      "avg_seed": 6.64514
+      "odds": 3.791,
+      "projected": 125.16127,
+      "avg_seed": 7.78012
     },
     {
       "team_id": 7,
@@ -281,8 +281,8 @@
       "pts": 113.0,
       "games": 252,
       "cat_pct": 0.44841269841269843,
-      "live": 9,
-      "decided": 11,
+      "live": 7,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -295,9 +295,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 11,
-      "odds": 0.002,
-      "projected": 119.67996,
-      "avg_seed": 9.03613
+      "odds": 0.0,
+      "projected": 119.3067,
+      "avg_seed": 9.06271
     },
     {
       "team_id": 6,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 115.84032,
-      "avg_seed": 9.95816
+      "projected": 115.83873,
+      "avg_seed": 9.93576
     },
     {
       "team_id": 5,
@@ -346,7 +346,7 @@
       "games": 252,
       "cat_pct": 0.4166666666666667,
       "live": 4,
-      "decided": 7,
+      "decided": 9,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.74517,
-      "avg_seed": 10.99788
+      "projected": 110.51757,
+      "avg_seed": 11.00983
     },
     {
       "team_id": 8,
@@ -377,7 +377,7 @@
       "pts": 100.0,
       "games": 252,
       "cat_pct": 0.3968253968253968,
-      "live": 7,
+      "live": 8,
       "decided": 12,
       "banked": 0,
       "pool": 12,
@@ -392,8 +392,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.42716,
-      "avg_seed": 11.9864
+      "projected": 105.67607,
+      "avg_seed": 11.97809
     }
   ],
   "matchups": [
@@ -402,12 +402,12 @@
       "a": {
         "team_id": 1,
         "name": "M*A*S*H*D PO*TA*TOES",
-        "live": 5
+        "live": 4
       },
       "b": {
         "team_id": 8,
         "name": "Moniebol 🐳 (DA BI ASS)",
-        "live": 7
+        "live": 8
       },
       "decided": 12,
       "remaining": 0
@@ -437,55 +437,55 @@
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
-        "live": 8
+        "live": 7
       },
-      "decided": 11,
-      "remaining": 1
+      "decided": 10,
+      "remaining": 2
     },
     {
       "week": 22,
       "a": {
         "team_id": 4,
         "name": "Rickie Flower",
-        "live": 3
+        "live": 5
       },
       "b": {
         "team_id": 5,
         "name": "William Shatnermouth",
         "live": 4
       },
-      "decided": 7,
-      "remaining": 5
+      "decided": 9,
+      "remaining": 3
     },
     {
       "week": 22,
       "a": {
         "team_id": 7,
         "name": "Ian Cumsler",
-        "live": 9
+        "live": 7
       },
       "b": {
         "team_id": 9,
         "name": "OG 8️⃣ & an extra",
-        "live": 2
+        "live": 3
       },
-      "decided": 11,
-      "remaining": 1
+      "decided": 10,
+      "remaining": 2
     },
     {
       "week": 22,
       "a": {
         "team_id": 11,
         "name": "The Rosterbation Station",
-        "live": 7
+        "live": 8
       },
       "b": {
         "team_id": 12,
         "name": "¯\\_(ツ)_/¯",
         "live": 3
       },
-      "decided": 10,
-      "remaining": 2
+      "decided": 11,
+      "remaining": 1
     }
   ]
 }
