@@ -20,6 +20,15 @@ REM Nothing rewritten means nothing to publish.
 set FILES=docs/live_standings_2026.html docs/data/live_standings_2026.json
 for /f %%i in ('git status --porcelain -- %FILES%') do goto :publish
 echo no change - skipping commit >> "%LOG%"
+REM still push anything committed by hand that has not gone out yet
+for /f %%i in ('git rev-list --count @{u}..HEAD') do set AHEAD=%%i
+if not "%AHEAD%"=="0" goto :pushonly
+exit /b 0
+
+:pushonly
+if "%LIVE_STANDINGS_NO_PUSH%"=="1" exit /b 0
+echo pushing %AHEAD% pending commit(s) >> "%LOG%"
+git push >> "%LOG%" 2>&1
 exit /b 0
 
 :publish
