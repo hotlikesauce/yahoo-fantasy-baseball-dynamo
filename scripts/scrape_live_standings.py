@@ -178,33 +178,59 @@ def load_managers():
 # ==============================================================
 # Playoff math
 # ==============================================================
-def build_teams(standings, matchups, weeks_left_after, spots):
-    """Merge season record with this week's live score; add floors and ceilings."""
-    opp, live, rem = {}, {}, {}
+def week_progress(status, now=None):
+    """
+    How much of the scoring week is in the books, 0..1. Yahoo weeks run Monday
+    through Sunday. Nothing is banked until the week closes: a team up 8-3 on
+    Monday night can be down 3-8 by Sunday, so a live lead only counts for as
+    much of the week as has actually been played.
+    """
+    if status.lower().startswith('final') or status.lower() == 'postevent':
+        return 1.0
+    if 'coming up' in status.lower() or 'pre' in status.lower():
+        return 0.0
+    now = now or datetime.now()
+    elapsed = now.weekday() * 24 + now.hour + now.minute / 60.0
+    return min(1.0, max(0.0, elapsed / (7 * 24)))
+
+
+def build_teams(standings, matchups, weeks_left_after, spots, progress):
+    """
+    Merge the season record with this week's live score.
+
+    `progress` is the share of the week already played. While the week is live
+    every one of its 12 categories is still winnable, so the floor/ceiling range
+    stays wide - only a finished week banks its categories.
+    """
+    opp, live, decided = {}, {}, {}
     for m in matchups:
         for side, other in ((m['a'], m['b']), (m['b'], m['a'])):
             opp[side['team_id']] = other['team_id']
             live[side['team_id']] = side['live']
-            rem[side['team_id']] = m['remaining']
+            decided[side['team_id']] = m['decided']
 
+    week_over = progress >= 1.0
     teams = {}
     for row in standings:
         tid = row['team_id']
         pts = row['wins'] + 0.5 * row['ties']
         games = row['wins'] + row['losses'] + row['ties']
-        pool = rem.get(tid, 0)                      # undecided cats in this matchup
+        banked = live.get(tid, 0) if week_over else 0
+        pool = 0 if week_over else CATS_PER_WEEK    # all 12 stay in play
         free = weeks_left_after * CATS_PER_WEEK     # later weeks (opponents unknown)
         teams[tid] = dict(row,
                           pts=pts,
                           games=games,
                           cat_pct=pts / games if games else 0.5,
                           live=live.get(tid, 0),
+                          decided=decided.get(tid, 0),
+                          banked=banked,
                           pool=pool,
                           free=free,
                           remaining=pool + free,
                           opponent=opp.get(tid),
-                          floor=pts + live.get(tid, 0),
-                          ceiling=pts + live.get(tid, 0) + pool + free)
+                          floor=pts + banked,
+                          ceiling=pts + banked + pool + free)
     return teams
 
 
@@ -284,18 +310,22 @@ def playoff_status(teams, spots):
             t['need_alive'] = 0
 
 
-def simulate(teams, spots, sims=SIMS, seed=17):
+def simulate(teams, spots, progress, sims=SIMS, seed=17):
     """
-    Monte Carlo the undecided categories. Each contested one goes to a team with
-    probability proportional to the two teams' season category win rates
-    (Bradley-Terry style), so a .600 team is not a coin flip against a .400 one.
-    Categories in later weeks have no known opponent, so they are drawn against
-    the league instead.
+    Monte Carlo the season out.
+
+    A category currently led is treated as locked in proportion to how much of
+    the week has been played, and played out on form for the rest: on Monday
+    night an 8-3 lead is barely worth more than a coin flip, by Sunday night it
+    is worth almost exactly 8-3. Form is each team's season category win rate,
+    compared Bradley-Terry style so a .600 team is not a coin flip against a
+    .400 team.
     """
     rng = random.Random(seed)
     ids = list(teams)
     made = {tid: 0 for tid in ids}
     seed_counts = {tid: [0] * len(ids) for tid in ids}
+    totals = {tid: 0.0 for tid in ids}
 
     pairs, seen = [], set()
     for t in teams.values():
@@ -304,20 +334,31 @@ def simulate(teams, spots, sims=SIMS, seed=17):
             continue
         seen.update({t['team_id'], o['team_id']})
         sa, sb = t['cat_pct'], o['cat_pct']
+        form = sa / (sa + sb) if (sa + sb) else 0.5
+        held = progress + (1 - progress) * form        # cats this team leads now
+        stolen = (1 - progress) * form                 # cats the opponent leads
+        tied = t['pool'] - t['live'] - o['live']
         pairs.append((t['team_id'], o['team_id'], t['pool'],
-                      sa / (sa + sb) if (sa + sb) else 0.5))
+                      t['live'] if t['pool'] else 0,
+                      o['live'] if t['pool'] else 0,
+                      max(0, tied) if t['pool'] else 0,
+                      held, stolen, form))
+
+    def draw(n, p):
+        return sum(1 for _ in range(n) if rng.random() < p)
 
     for _ in range(sims):
         final = {tid: teams[tid]['floor'] for tid in ids}
-        for a, b, pool, p in pairs:
-            won = sum(1 for _ in range(pool) if rng.random() < p)
+        for a, b, pool, a_lead, b_lead, tied, held, stolen, form in pairs:
+            if not pool:
+                continue
+            won = draw(a_lead, held) + draw(b_lead, stolen) + draw(tied, form)
             final[a] += won
             final[b] += pool - won
         for tid in ids:
             t = teams[tid]
             if t['free']:
-                final[tid] += sum(1 for _ in range(t['free'])
-                                  if rng.random() < t['cat_pct'])
+                final[tid] += draw(t['free'], t['cat_pct'])
         # ties at the cut line go to a coin flip here (the real rule is
         # head-to-head categories, which we cannot see without the API)
         order = sorted(ids, key=lambda x: (-final[x], rng.random()))
@@ -325,9 +366,12 @@ def simulate(teams, spots, sims=SIMS, seed=17):
             seed_counts[tid][i] += 1
             if i < spots:
                 made[tid] += 1
+        for tid in ids:
+            totals[tid] += final[tid]
 
     for tid in ids:
         teams[tid]['odds'] = 100.0 * made[tid] / sims
+        teams[tid]['projected'] = totals[tid] / sims
         teams[tid]['avg_seed'] = sum((i + 1) * c for i, c in enumerate(seed_counts[tid])) / sims
         teams[tid]['seed_counts'] = seed_counts[tid]
 
@@ -346,10 +390,13 @@ def status_chip(t):
         return ('out', 'ELIMINATED')
     if t['odds'] >= 50:
         return ('in', 'IN THE HUNT')
+    if t['odds'] < 1:
+        return ('longshot', 'ALIVE ON PAPER')
     return ('bubble', 'ON THE BUBBLE')
 
 
-def render(data, teams, spots, week, meta, playoff_raw, matchups):
+def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
+    week_pct = f'{progress * 100:.0f}%'
     order = sorted(teams.values(), key=lambda t: (-t['pts'] - t['live'], -t['odds']))
     leader = order[0]['pts'] + order[0]['live']
 
@@ -366,11 +413,14 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
             note = 'Eliminated from the playoff race'
         elif t['magic'] is not None:
             note = (f'Clinches with {t["magic"]} of the {t["remaining"]} '
-                    f'categor{"y" if t["remaining"] == 1 else "ies"} still open')
-        elif t['need_alive'] is not None:
-            note = f'Needs {t["need_alive"]} of {t["remaining"]} just to stay alive'
+                    f'categor{"y" if t["remaining"] == 1 else "ies"} left this week')
+        elif t['need_alive']:
+            note = (f'Needs {t["need_alive"]} of the {t["remaining"]} left this week '
+                    f'just to stay alive')
+        elif t['need_alive'] == 0:
+            note = 'Cannot be caught by the maths yet — but cannot lock it up either'
         else:
-            note = 'Needs help'
+            note = 'Needs help elsewhere'
         cards.append(
             f'''<div class="pf-row {cls}{cut}">
   <div class="pf-seed">{seed}</div>
@@ -400,6 +450,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
   <td class="live">{live_txt}</td>
   <td class="pts">{fmt_pts(t["pts"] + t["live"])}</td>
   <td class="gb">{"—" if gb == 0 else fmt_pts(gb)}</td>
+  <td class="proj">{t["projected"]:.1f}</td>
   <td class="ceil">{fmt_pts(t["floor"])} – {fmt_pts(t["ceiling"])}</td>
   <td class="odds">{t["odds"]:.0f}%</td>
   <td><span class="chip {cls}">{label}</span></td>
@@ -414,9 +465,11 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
             if t['clinched'] or t['eliminated']:
                 continue
             if t['magic'] is not None:
-                stakes.append(f'{t["name"]} clinches with {t["magic"]}')
-            elif t['need_alive'] is not None:
+                stakes.append(f'{t["name"]} clinches with {t["magic"]} of {t["remaining"]}')
+            elif t['need_alive']:
                 stakes.append(f'{t["name"]} needs {t["need_alive"]} to stay alive')
+            else:
+                stakes.append(f'{t["name"]} is fighting for the last spot')
         stake_txt = ' · '.join(stakes) if stakes else 'No bearing on the cut line'
         key = ' key' if stakes else ''
         acls = 'winner' if a['live'] > b['live'] else 'loser' if a['live'] < b['live'] else 'tied'
@@ -432,8 +485,8 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
     <div class="mu-side r"><span class="mu-name">{html.escape(b["name"])}</span>
       <span class="mu-rec">{b["wins"]}-{b["losses"]}-{b["ties"]}</span></div>
   </div>
-  <div class="mu-foot">{m["decided"]} of {CATS_PER_WEEK} categories decided ·
-    {m["remaining"]} still up for grabs</div>
+  <div class="mu-foot">Leading {m["decided"]} of {CATS_PER_WEEK} categories between them ·
+    {week_pct} of the week played · nothing banked until it ends</div>
 </div>''')
 
     built = datetime.now().strftime('%a %b %-d, %-I:%M %p' if os.name != 'nt'
@@ -445,6 +498,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="600">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Live Standings - {YEAR} Season</title>
@@ -470,6 +524,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
   }}
   .pf-row.clinched {{ border-color: #22c55e55; }}
   .pf-row.out {{ opacity: .62; }}
+  .pf-row.longshot {{ opacity: .82; }}
   .pf-seed {{ font-size: 1.3em; font-weight: 800; color: #64748b; text-align: center; }}
   .pf-name {{ font-weight: 600; }}
   .pf-name .mgr {{ color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }}
@@ -486,15 +541,18 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
   .chip.clinched {{ background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }}
   .chip.in       {{ background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf855; }}
   .chip.bubble   {{ background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b55; }}
+  .chip.longshot {{ background: #94a3b822; color: #94a3b8; border: 1px solid #94a3b855; }}
   .chip.out      {{ background: #ef444422; color: #f87171; border: 1px solid #ef444455; }}
 
   table.standings td {{ font-variant-numeric: tabular-nums; }}
   table.standings tr.out td {{ opacity: .62; }}
+  table.standings tr.longshot td {{ opacity: .82; }}
   .team-name {{ text-align: left; font-weight: 600; }}
   .team-name .mgr {{ color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }}
   td.pts {{ font-weight: 700; color: #34d399; }}
   td.live {{ color: #fbbf24; font-weight: 600; }}
   td.ceil, td.gb {{ color: #94a3b8; font-size: .9em; }}
+  td.proj {{ color: #c4b5fd; font-weight: 600; }}
   td.odds {{ font-weight: 700; }}
 
   .mu-grid {{ display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }}
@@ -531,10 +589,13 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
     <strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late July,
     so this page is scraped from the public league page instead. Standings are Yahoo's through
     week {week - 1} ({html.escape(meta["yahoo_updated"])}); the <strong>Live</strong> column is
-    week {week}'s categories won so far. Playoff odds simulate every undecided category
-    {SIMS:,} times, weighting each one by the two teams' season category win rates.
+    week {week}'s category leads <em>right now</em> — none of that is banked, a category
+    can flip any day until the week closes, so every live category is still treated as
+    winnable in the maths. Playoff odds run the rest of the season {SIMS:,} times, holding
+    each current lead in proportion to the {week_pct} of the week already played and
+    playing out the rest on each team's season category win rate.
     <br><strong>Playoff format:</strong> {html.escape(playoff_raw)}.
-    Built {built}.
+    Built {built} — this page rescrapes and republishes itself every 10 minutes.
   </div>
 
   <h2>Playoff Picture</h2>
@@ -549,7 +610,8 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups):
       <th title="Categories won in week {week} so far">Live</th>
       <th title="Category points: wins + half a point per tie">Pts</th>
       <th>GB</th>
-      <th title="Worst case - best case finish">Range</th>
+      <th title="Average finish across the simulations">Proj</th>
+      <th title="Worst case - best case finish, with every live category still winnable">Range</th>
       <th title="Chance of finishing in the top {spots}">Playoff&nbsp;%</th>
       <th>Status</th>
     </tr></thead>
@@ -599,13 +661,15 @@ def main():
     print(f'  Playoffs: {settings["raw"]} → regular season ends week {last_reg_week}, '
           f'{weeks_left_after} week(s) after this one')
 
-    teams = build_teams(standings, matchups, weeks_left_after, spots)
+    progress = week_progress(meta['status'])
+    print(f'  Week {week} is {progress * 100:.0f}% played — live category leads are weighted, not banked')
+    teams = build_teams(standings, matchups, weeks_left_after, spots, progress)
     for tid, mgr in load_managers().items():
         if tid in teams:
             teams[tid]['manager'] = mgr
 
     playoff_status(teams, spots)
-    simulate(teams, spots)
+    simulate(teams, spots, progress)
 
     order = sorted(teams.values(), key=lambda t: -(t['pts'] + t['live']))
     print(f'\n{"#":>2} {"team":<28} {"rec":>12} {"live":>4} {"pts":>6} '
@@ -630,6 +694,7 @@ def main():
         'playoff_format': settings['raw'],
         'last_regular_week': last_reg_week,
         'sims': SIMS,
+        'week_progress': round(progress, 4),
         'teams': [{k: v for k, v in t.items() if k != 'seed_counts'}
                   for t in order],
         'matchups': matchups,
@@ -660,7 +725,8 @@ def main():
 
     html_path = os.path.join(DOCS, f'live_standings_{YEAR}.html')
     with open(html_path, 'w', encoding='utf-8') as f:
-        f.write(render(payload, teams, spots, week, meta, settings['raw'], matchups))
+        f.write(render(payload, teams, spots, week, meta, settings['raw'],
+                       matchups, progress))
 
     print(f'\nWrote {json_path}')
     print(f'Wrote {html_path}')
