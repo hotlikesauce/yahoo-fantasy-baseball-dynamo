@@ -3,7 +3,7 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Mon Aug 24 04:21am EDT",
-  "scraped_at": "2026-08-25T02:28:45.484607+00:00",
+  "scraped_at": "2026-08-25T02:43:48.535299+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
@@ -24,12 +24,12 @@
       "pts": 153.5,
       "games": 252,
       "cat_pct": 0.6091269841269841,
-      "live": 5,
-      "pool": 6,
+      "live": 6,
+      "pool": 5,
       "free": 0,
-      "remaining": 6,
+      "remaining": 5,
       "opponent": 12,
-      "floor": 158.5,
+      "floor": 159.5,
       "ceiling": 164.5,
       "manager": "Kevin",
       "clinched": true,
@@ -53,13 +53,13 @@
       "pts": 153.0,
       "games": 252,
       "cat_pct": 0.6071428571428571,
-      "live": 4,
+      "live": 5,
       "pool": 0,
       "free": 0,
       "remaining": 0,
       "opponent": 10,
-      "floor": 157.0,
-      "ceiling": 157.0,
+      "floor": 158.0,
+      "ceiling": 158.0,
       "manager": "Josh",
       "clinched": true,
       "eliminated": false,
@@ -112,12 +112,12 @@
       "games": 252,
       "cat_pct": 0.5654761904761905,
       "live": 1,
-      "pool": 6,
+      "pool": 5,
       "free": 0,
-      "remaining": 6,
+      "remaining": 5,
       "opponent": 11,
       "floor": 143.5,
-      "ceiling": 149.5,
+      "ceiling": 148.5,
       "manager": "Mike",
       "clinched": true,
       "eliminated": false,
@@ -140,13 +140,13 @@
       "pts": 127.5,
       "games": 252,
       "cat_pct": 0.5059523809523809,
-      "live": 8,
+      "live": 7,
       "pool": 0,
       "free": 0,
       "remaining": 0,
       "opponent": 3,
-      "floor": 135.5,
-      "ceiling": 135.5,
+      "floor": 134.5,
+      "ceiling": 134.5,
       "manager": "Michael",
       "clinched": true,
       "eliminated": false,
@@ -181,8 +181,8 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 0,
-      "odds": 47.925,
-      "avg_seed": 6.6788
+      "odds": 58.185,
+      "avg_seed": 6.51605
     },
     {
       "team_id": 2,
@@ -199,19 +199,19 @@
       "games": 252,
       "cat_pct": 0.47023809523809523,
       "live": 6,
-      "pool": 3,
+      "pool": 2,
       "free": 0,
-      "remaining": 3,
+      "remaining": 2,
       "opponent": 6,
       "floor": 124.5,
-      "ceiling": 127.5,
+      "ceiling": 126.5,
       "manager": "James",
       "clinched": false,
       "eliminated": false,
       "magic": null,
       "need_alive": 1,
-      "odds": 25.575,
-      "avg_seed": 7.09535
+      "odds": 11.89,
+      "avg_seed": 7.3692
     },
     {
       "team_id": 4,
@@ -239,8 +239,8 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 4,
-      "odds": 26.5,
-      "avg_seed": 7.2263
+      "odds": 29.925,
+      "avg_seed": 7.11515
     },
     {
       "team_id": 7,
@@ -269,7 +269,7 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "avg_seed": 8.99955
+      "avg_seed": 8.9996
     },
     {
       "team_id": 6,
@@ -285,12 +285,12 @@
       "pts": 110.5,
       "games": 252,
       "cat_pct": 0.4384920634920635,
-      "live": 3,
-      "pool": 3,
+      "live": 4,
+      "pool": 2,
       "free": 0,
-      "remaining": 3,
+      "remaining": 2,
       "opponent": 2,
-      "floor": 113.5,
+      "floor": 114.5,
       "ceiling": 116.5,
       "manager": "Mark",
       "clinched": false,
@@ -298,7 +298,7 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "avg_seed": 10.08815
+      "avg_seed": 10.03715
     },
     {
       "team_id": 5,
@@ -327,7 +327,7 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "avg_seed": 10.91185
+      "avg_seed": 10.96285
     },
     {
       "team_id": 8,
@@ -385,22 +385,22 @@
       "b": {
         "team_id": 6,
         "name": "Hatfield Hurlers",
-        "live": 3
+        "live": 4
       },
-      "decided": 9,
-      "remaining": 3
+      "decided": 10,
+      "remaining": 2
     },
     {
       "week": 22,
       "a": {
         "team_id": 3,
         "name": "Los Basureros",
-        "live": 4
+        "live": 5
       },
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
-        "live": 8
+        "live": 7
       },
       "decided": 12,
       "remaining": 0
@@ -440,15 +440,15 @@
       "a": {
         "team_id": 11,
         "name": "The Rosterbation Station",
-        "live": 5
+        "live": 6
       },
       "b": {
         "team_id": 12,
         "name": "¯\\_(ツ)_/¯",
         "live": 1
       },
-      "decided": 6,
-      "remaining": 6
+      "decided": 7,
+      "remaining": 5
     }
   ]
 }
