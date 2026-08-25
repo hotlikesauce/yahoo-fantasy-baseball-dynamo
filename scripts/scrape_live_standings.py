@@ -34,7 +34,9 @@ UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36')
 
 CATS_PER_WEEK = 12          # 6 batting + 6 pitching categories
-SIMS = 20000                # Monte Carlo runs for playoff odds
+SIMS = 100000               # Monte Carlo runs (enough to make a tenth of a
+                            # percent mean something; the seed is fixed so the
+                            # digit only moves when the data does)
 YEAR = 2026
 
 
@@ -379,6 +381,23 @@ def simulate(teams, spots, progress, sims=SIMS, seed=17):
 # ==============================================================
 # Render
 # ==============================================================
+def fmt_odds(t):
+    """
+    One decimal for everyone, and never a bare 100 or 0 while a team is still
+    playing: a locked-in team tops out at 99.9 (the CLINCHED chip carries the
+    certainty) and a team that is alive but never made the playoffs in any
+    simulation reads <0.1 rather than a flat zero.
+    """
+    o = t['odds']
+    if t['eliminated']:
+        return '0.0%'
+    if t['clinched'] or o >= 99.9:
+        return '99.9%'
+    if o < 0.05:
+        return '&lt;0.1%'          # escaped: this lands straight in the markup
+    return f'{o:.1f}%'
+
+
 def fmt_pts(v):
     return f'{v:.0f}' if float(v) % 1 == 0 else f'{v:.1f}'
 
@@ -430,7 +449,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
   </div>
   <div class="pf-odds">
     <div class="pf-bar"><span style="width:{t["odds"]:.1f}%"></span></div>
-    <div class="pf-pct">{t["odds"]:.0f}%</div>
+    <div class="pf-pct">{fmt_odds(t)}</div>
   </div>
   <div class="pf-chip"><span class="chip {cls}">{label}</span></div>
 </div>''')
@@ -452,7 +471,7 @@ def render(data, teams, spots, week, meta, playoff_raw, matchups, progress):
   <td class="gb">{"—" if gb == 0 else fmt_pts(gb)}</td>
   <td class="proj">{t["projected"]:.1f}</td>
   <td class="ceil">{fmt_pts(t["floor"])} – {fmt_pts(t["ceiling"])}</td>
-  <td class="odds">{t["odds"]:.0f}%</td>
+  <td class="odds">{fmt_odds(t)}</td>
   <td><span class="chip {cls}">{label}</span></td>
 </tr>''')
 
