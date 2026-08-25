@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Mon Aug 24 04:21am EDT",
-  "scraped_at": "2026-08-25T02:48:33.263959+00:00",
+  "scraped_at": "2026-08-25T02:53:49.158857+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 20000,
-  "week_progress": 0.1238,
+  "week_progress": 0.1243,
   "teams": [
     {
       "team_id": 11,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 160.0922,
-      "avg_seed": 1.36235
+      "projected": 160.09385,
+      "avg_seed": 1.362
     },
     {
       "team_id": 3,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 159.22445,
-      "avg_seed": 1.6381
+      "projected": 159.22275,
+      "avg_seed": 1.63845
     },
     {
       "team_id": 1,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.4527,
-      "avg_seed": 3.0737
+      "projected": 151.45205,
+      "avg_seed": 3.07365
     },
     {
       "team_id": 12,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 147.9078,
-      "avg_seed": 3.92585
+      "projected": 147.90615,
+      "avg_seed": 3.9259
     },
     {
       "team_id": 10,
@@ -168,8 +168,8 @@
       "magic": 7,
       "need_alive": 0,
       "odds": 99.795,
-      "projected": 133.27555,
-      "avg_seed": 5.03385
+      "projected": 133.27725,
+      "avg_seed": 5.0337
     },
     {
       "team_id": 9,
@@ -199,9 +199,9 @@
       "eliminated": false,
       "magic": 12,
       "need_alive": 2,
-      "odds": 60.165,
-      "projected": 128.45835,
-      "avg_seed": 6.43155
+      "odds": 59.945,
+      "projected": 128.45715,
+      "avg_seed": 6.43875
     },
     {
       "team_id": 2,
@@ -217,7 +217,7 @@
       "pts": 118.5,
       "games": 252,
       "cat_pct": 0.47023809523809523,
-      "live": 6,
+      "live": 7,
       "decided": 10,
       "banked": 0,
       "pool": 12,
@@ -231,9 +231,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 2.865,
-      "projected": 124.80765,
-      "avg_seed": 7.82095
+      "odds": 3.255,
+      "projected": 124.93255,
+      "avg_seed": 7.80145
     },
     {
       "team_id": 4,
@@ -263,9 +263,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 37.17,
-      "projected": 127.6903,
-      "avg_seed": 6.7318
+      "odds": 37.0,
+      "projected": 127.6895,
+      "avg_seed": 6.74255
     },
     {
       "team_id": 7,
@@ -296,8 +296,8 @@
       "magic": null,
       "need_alive": 11,
       "odds": 0.005,
-      "projected": 119.04165,
-      "avg_seed": 9.1129
+      "projected": 119.04285,
+      "avg_seed": 9.10295
     },
     {
       "team_id": 6,
@@ -313,7 +313,7 @@
       "pts": 110.5,
       "games": 252,
       "cat_pct": 0.4384920634920635,
-      "live": 4,
+      "live": 3,
       "decided": 10,
       "banked": 0,
       "pool": 12,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 116.19235,
-      "avg_seed": 9.88125
+      "projected": 116.06745,
+      "avg_seed": 9.89485
     },
     {
       "team_id": 5,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.8097,
-      "avg_seed": 10.99745
+      "projected": 110.8105,
+      "avg_seed": 10.9955
     },
     {
       "team_id": 8,
@@ -392,7 +392,7 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.0473,
+      "projected": 105.04795,
       "avg_seed": 11.99025
     }
   ],
@@ -417,12 +417,12 @@
       "a": {
         "team_id": 2,
         "name": "Rosa Parks’ Bus Seat",
-        "live": 6
+        "live": 7
       },
       "b": {
         "team_id": 6,
         "name": "Hatfield Hurlers",
-        "live": 4
+        "live": 3
       },
       "decided": 10,
       "remaining": 2
