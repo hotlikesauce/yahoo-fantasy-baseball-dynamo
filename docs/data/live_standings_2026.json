@@ -2,14 +2,14 @@
   "year": 2026,
   "week": 22,
   "status": "In progress",
-  "yahoo_updated": "Mon Aug 24 04:21am EDT",
-  "scraped_at": "2026-08-25T03:03:50.393771+00:00",
+  "yahoo_updated": "Tue Aug 25 04:05am EDT",
+  "scraped_at": "2026-08-25T12:51:28.899648+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.1253,
+  "week_progress": 0.1836,
   "teams": [
     {
       "team_id": 11,
@@ -26,7 +26,7 @@
       "games": 252,
       "cat_pct": 0.6091269841269841,
       "live": 7,
-      "decided": 8,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 160.08399,
-      "avg_seed": 1.36266
+      "projected": 160.06021,
+      "avg_seed": 1.32836
     },
     {
       "team_id": 3,
@@ -57,8 +57,8 @@
       "pts": 153.0,
       "games": 252,
       "cat_pct": 0.6071428571428571,
-      "live": 4,
-      "decided": 12,
+      "live": 3,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 159.22499,
-      "avg_seed": 1.63785
+      "projected": 158.99224,
+      "avg_seed": 1.67196
     },
     {
       "team_id": 1,
@@ -89,7 +89,7 @@
       "pts": 144.5,
       "games": 252,
       "cat_pct": 0.5734126984126984,
-      "live": 6,
+      "live": 5,
       "decided": 12,
       "banked": 0,
       "pool": 12,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.44985,
-      "avg_seed": 3.07529
+      "projected": 151.20355,
+      "avg_seed": 3.08984
     },
     {
       "team_id": 12,
@@ -121,8 +121,8 @@
       "pts": 142.5,
       "games": 252,
       "cat_pct": 0.5654761904761905,
-      "live": 1,
-      "decided": 8,
+      "live": 3,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 147.91601,
-      "avg_seed": 3.9242
+      "projected": 147.93979,
+      "avg_seed": 3.90984
     },
     {
       "team_id": 10,
@@ -154,7 +154,7 @@
       "games": 252,
       "cat_pct": 0.5059523809523809,
       "live": 8,
-      "decided": 12,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -167,9 +167,9 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.744,
-      "projected": 133.27501,
-      "avg_seed": 5.03547
+      "odds": 99.809,
+      "projected": 133.50776,
+      "avg_seed": 5.02603
     },
     {
       "team_id": 9,
@@ -199,9 +199,9 @@
       "eliminated": false,
       "magic": 12,
       "need_alive": 2,
-      "odds": 60.56,
-      "projected": 128.46284,
-      "avg_seed": 6.43227
+      "odds": 56.787,
+      "projected": 128.33088,
+      "avg_seed": 6.48668
     },
     {
       "team_id": 2,
@@ -218,7 +218,7 @@
       "games": 252,
       "cat_pct": 0.47023809523809523,
       "live": 7,
-      "decided": 10,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -231,9 +231,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 3.252,
-      "projected": 124.9411,
-      "avg_seed": 7.79894
+      "odds": 3.243,
+      "projected": 124.95154,
+      "avg_seed": 7.8035
     },
     {
       "team_id": 4,
@@ -249,8 +249,8 @@
       "pts": 121.5,
       "games": 252,
       "cat_pct": 0.48214285714285715,
-      "live": 0,
-      "decided": 4,
+      "live": 3,
+      "decided": 7,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -263,9 +263,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 36.442,
-      "projected": 127.673,
-      "avg_seed": 6.74861
+      "odds": 40.159,
+      "projected": 127.80134,
+      "avg_seed": 6.69962
     },
     {
       "team_id": 7,
@@ -296,8 +296,8 @@
       "magic": null,
       "need_alive": 11,
       "odds": 0.002,
-      "projected": 119.03716,
-      "avg_seed": 9.10155
+      "projected": 119.16912,
+      "avg_seed": 9.0881
     },
     {
       "team_id": 6,
@@ -313,8 +313,8 @@
       "pts": 110.5,
       "games": 252,
       "cat_pct": 0.4384920634920635,
-      "live": 3,
-      "decided": 10,
+      "live": 4,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 116.0589,
-      "avg_seed": 9.89865
+      "projected": 116.04846,
+      "avg_seed": 9.90883
     },
     {
       "team_id": 5,
@@ -346,7 +346,7 @@
       "games": 252,
       "cat_pct": 0.4166666666666667,
       "live": 4,
-      "decided": 4,
+      "decided": 7,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.827,
-      "avg_seed": 10.99395
+      "projected": 110.69866,
+      "avg_seed": 11.00033
     },
     {
       "team_id": 8,
@@ -377,7 +377,7 @@
       "pts": 100.0,
       "games": 252,
       "cat_pct": 0.3968253968253968,
-      "live": 6,
+      "live": 7,
       "decided": 12,
       "banked": 0,
       "pool": 12,
@@ -392,8 +392,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.05015,
-      "avg_seed": 11.99056
+      "projected": 105.29645,
+      "avg_seed": 11.98691
     }
   ],
   "matchups": [
@@ -402,12 +402,12 @@
       "a": {
         "team_id": 1,
         "name": "M*A*S*H*D PO*TA*TOES",
-        "live": 6
+        "live": 5
       },
       "b": {
         "team_id": 8,
         "name": "Moniebol 🐳 (DA BI ASS)",
-        "live": 6
+        "live": 7
       },
       "decided": 12,
       "remaining": 0
@@ -422,40 +422,40 @@
       "b": {
         "team_id": 6,
         "name": "Hatfield Hurlers",
-        "live": 3
+        "live": 4
       },
-      "decided": 10,
-      "remaining": 2
+      "decided": 11,
+      "remaining": 1
     },
     {
       "week": 22,
       "a": {
         "team_id": 3,
         "name": "Los Basureros",
-        "live": 4
+        "live": 3
       },
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
         "live": 8
       },
-      "decided": 12,
-      "remaining": 0
+      "decided": 11,
+      "remaining": 1
     },
     {
       "week": 22,
       "a": {
         "team_id": 4,
         "name": "Rickie Flower",
-        "live": 0
+        "live": 3
       },
       "b": {
         "team_id": 5,
         "name": "William Shatnermouth",
         "live": 4
       },
-      "decided": 4,
-      "remaining": 8
+      "decided": 7,
+      "remaining": 5
     },
     {
       "week": 22,
@@ -482,10 +482,10 @@
       "b": {
         "team_id": 12,
         "name": "¯\\_(ツ)_/¯",
-        "live": 1
+        "live": 3
       },
-      "decided": 8,
-      "remaining": 4
+      "decided": 10,
+      "remaining": 2
     }
   ]
 }
