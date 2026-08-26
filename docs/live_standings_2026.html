@@ -408,22 +408,29 @@
         '<div class="chart-wrap"><canvas id="raceChart"></canvas></div>';
     }
 
-    document.getElementById('page').innerHTML =
+    // The methodology sits at the FOOT of the page. It is reference material —
+    // it should not stand between the reader and the numbers they came for.
+    var footnotes =
       '<div class="banner">' +
         '<strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late ' +
         'July, so this is scraped from the public league page by a scheduled AWS job. Standings ' +
         'are Yahoo\'s through week ' + (cur.week - 1) + ' (' + esc(cur.yahoo_updated) + '); the ' +
-        '<strong>Live</strong> column is week ' + cur.week + '\'s category leads <em>right now</em> ' +
+        '<strong>Leading</strong> column is week ' + cur.week + '\'s category leads <em>right now</em> ' +
         '— none of that is banked, a category can flip any day until the week closes, so every ' +
         'live category is still treated as winnable in the maths. Playoff odds run the rest of ' +
         'the season ' + cur.sims.toLocaleString() + ' times, holding each current lead in ' +
         'proportion to the ' + weekPct + ' of the week already played and playing out the rest ' +
         'on each team\'s season category win rate.' +
-        '<br><strong>Bank vs Live:</strong> the table sorts on Bank + Live, but only Bank is actually banked. A team can show inside the cut line on a live lead and still carry low odds, because the odds start from Bank and treat the live lead as worth only the share of the week already played.' +
+        '<br><strong>Bank vs Leading:</strong> the standings sort on Bank + Leading, but only ' +
+        'Bank is actually banked. A team can show inside the cut line on a live lead and still ' +
+        'carry low odds, because the odds start from Bank and treat the live lead as worth only ' +
+        'the share of the week already played.' +
         '<br><strong>Playoff format:</strong> ' + esc(cur.playoff_format) + '. ' +
         'Data refreshes every 10 minutes; the race chart gains a point at midnight, noon, 3pm, ' +
         '6pm and 9pm. Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
-      '</div>' +
+      '</div>';
+
+    document.getElementById('page').innerHTML =
       '<h2>Playoff Picture</h2>' +
       '<div class="section-desc">Ordered by odds of making the field, which is not the ' +
         'same as the live order below — each row shows the live score driving it.</div>' +
@@ -439,7 +446,9 @@
       renderTable(teams, cur.week, spots) +
       '<h2>Week ' + cur.week + ' Matchups</h2>' +
       '<div class="section-desc">Live category scores — ' + esc(cur.status) + '</div>' +
-      '<div class="mu-grid">' + renderMatchups(cur.matchups, byId, weekPct) + '</div>';
+      '<div class="mu-grid">' + renderMatchups(cur.matchups, byId, weekPct) + '</div>' +
+      '<h2>How this is worked out</h2>' +
+      footnotes;
 
     if (chartSection) drawChart(data.points, tracked, byId);
   }
