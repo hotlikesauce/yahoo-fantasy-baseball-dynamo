@@ -41,6 +41,9 @@
   .pf-seed { font-size: 1.3em; font-weight: 800; color: #64748b; text-align: center; }
   .pf-name { font-weight: 600; }
   .pf-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
+  .pf-live { font-size: .8em; color: #94a3b8; margin-top: 3px; }
+  .pf-live .sc { color: #fbbf24; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .pf-live .dim { color: #64748b; }
   .pf-note { font-size: .78em; color: #64748b; margin-top: 2px; }
   .pf-bar { height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
   .pf-bar span { display: block; height: 100%; background: linear-gradient(90deg,#3b82f6,#22c55e); }
@@ -64,6 +67,7 @@
   .team-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
   td.pts { font-weight: 700; color: #34d399; }
   td.live { color: #fbbf24; font-weight: 600; }
+  td.live .of { color: #64748b; font-weight: 400; font-size: .82em; }
   td.bank { color: #e2e8f0; font-weight: 600; }
   td.ceil, td.gb { color: #94a3b8; font-size: .9em; }
   td.proj { color: #c4b5fd; font-weight: 600; }
@@ -202,13 +206,20 @@
     return t.manager ? ' <span class="mgr">' + esc(t.manager) + '</span>' : '';
   }
 
-  function renderCards(order, spots) {
+  function renderCards(order, spots, byId) {
     return order.map(function (t, i) {
       var cs = statusChip(t), seed = i + 1;
+      var opp = byId[t.opponent];
+      var live = opp
+        ? '<span class="sc">' + t.live + '–' + opp.live + '</span> vs ' + esc(opp.name) +
+          '<span class="dim"> · ' + fmtPts(t.pts) + ' banked → ' +
+          fmtPts(t.pts + t.live) + ' live</span>'
+        : '<span class="dim">no matchup this week · ' + fmtPts(t.pts) + ' banked</span>';
       return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
         '<div class="pf-seed">' + seed + '</div>' +
         '<div class="pf-main">' +
           '<div class="pf-name">' + esc(t.name) + mgrSpan(t) + '</div>' +
+          '<div class="pf-live">' + live + '</div>' +
           '<div class="pf-note">' + esc(noteFor(t)) + '</div>' +
         '</div>' +
         '<div class="pf-odds">' +
@@ -221,7 +232,7 @@
   }
 
   function renderTable(order, week, spots) {
-    var leader = order[0].pts + order[0].live;
+    var leader = order[0].pts + order[0].live;   // live, same basis as the ranking
     var rows = order.map(function (t, i) {
       var cs = statusChip(t), gb = leader - (t.pts + t.live);
       return '<tr class="' + cs[0] + '">' +
@@ -229,7 +240,7 @@
         '<td class="team-name">' + esc(t.name) + mgrSpan(t) + '</td>' +
         '<td>' + t.wins + '-' + t.losses + '-' + t.ties + '</td>' +
         '<td class="bank">' + fmtPts(t.pts) + '</td>' +
-        '<td class="live">' + (t.live ? '+' + t.live : '—') + '</td>' +
+        '<td class="live">' + t.live + '<span class="of">/' + CATS + '</span></td>' +
         '<td class="pts">' + fmtPts(t.pts + t.live) + '</td>' +
         '<td class="gb">' + (gb === 0 ? '—' : fmtPts(gb)) + '</td>' +
         '<td class="proj">' + t.projected.toFixed(1) + '</td>' +
@@ -243,8 +254,9 @@
       '<th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>' +
       '<th title="Category points actually banked through week ' + (week - 1) +
         ' — this is what Yahoo ranks on, and what the playoff odds start from">Bank</th>' +
-      '<th title="Categories led in week ' + week + ' so far — NOT banked, and worth ' +
-        'only as much as the week is played">Live</th>' +
+      '<th title="Of this week\'s 12 categories, how many this team leads right now. ' +
+        'Both teams in a matchup have some — they split the 12. None of it has banked.">' +
+        'Leading</th>' +
       '<th title="Bank + Live. The table sorts on this, but the odds do not treat ' +
         'the Live half as real yet">Pts</th>' +
       '<th>GB</th>' +
@@ -364,8 +376,11 @@
     // them is what made Greg show below Bryant while being likelier to make it.
     //   byBank - what Yahoo ranks on. Banked categories only, no live lead.
     //   byOdds - who actually makes the field, which is not the same thing.
+    // This is the LIVE standings page: rank on what a team has right now,
+    // banked plus the categories it is currently leading. The Bank column is
+    // there so the difference is visible, not so the table hides behind it.
     var teams = cur.teams.slice().sort(function (x, y) {
-      return y.pts - x.pts || (y.pts + y.live) - (x.pts + x.live);
+      return (y.pts + y.live) - (x.pts + x.live) || y.pts - x.pts;
     });
     var byOdds = cur.teams.slice().sort(function (x, y) {
       return oddsValue(y) - oddsValue(x) || y.pts - x.pts;
@@ -410,14 +425,17 @@
         '6pm and 9pm. Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
       '</div>' +
       '<h2>Playoff Picture</h2>' +
-      '<div class="section-desc">Most likely ' + spots + ': ' +
-        byOdds.slice(0, spots).map(function (t) { return esc(t.name); }).join(', ') +
-        ' — ordered by odds, not by the standings' + '</div>' +
-      renderCards(byOdds, spots) +
+      '<div class="section-desc">Ordered by odds of making the field, which is not the ' +
+        'same as the live order below — each row shows the live score driving it.</div>' +
+      renderCards(byOdds, spots, byId) +
       chartSection +
       '<h2>Standings</h2>' +
-      '<div class="section-desc">Ranked on Bank — banked categories only, the same ' +
-      'order Yahoo shows. Live is this week\'s leads, which have not banked.</div>' +
+      '<div class="section-desc">Live order — Bank + Leading, where everyone stands ' +
+      'right now. <strong>Bank</strong> is what has actually banked (the order Yahoo ' +
+      'shows). <strong>Leading</strong> is how many of this week\'s 12 categories a ' +
+      'team is ahead in; the two teams in a matchup split those 12, so everyone has ' +
+      'some. Playoff % starts from Bank, which is why it can disagree with this order.' +
+      '</div>' +
       renderTable(teams, cur.week, spots) +
       '<h2>Week ' + cur.week + ' Matchups</h2>' +
       '<div class="section-desc">Live category scores — ' + esc(cur.status) + '</div>' +
