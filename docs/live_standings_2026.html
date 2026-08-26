@@ -133,20 +133,30 @@
     });
   }
 
-  // Only the clinch maths earns a round 100 - the simulation agreeing
-  // 100,000 times out of 100,000 is not the same as being unable to miss.
+  // Only the clinch maths earns a round 100 - the simulation agreeing 99,945
+  // times out of 100,000 is not the same thing as being unable to miss.
   function oddsValue(t) {
     if (t.eliminated) return 0;
     if (t.clinched) return 100;
-    return Math.min(t.odds, 99.9);
+    return t.odds;
+  }
+
+  // Print the real number, with however many decimals it takes to stay honestly
+  // below 100. Clamping to 99.9 instead would invent a value: a team sitting at
+  // 99.96 is not at 99.9, it just is not clinched.
+  function fmtPct(o) {
+    for (var dp = 1; dp <= 4; dp++) {
+      var s = o.toFixed(dp);
+      if (parseFloat(s) < 100) return s + '%';
+    }
+    return '>99.99%';
   }
 
   function fmtOdds(t) {
-    var o = oddsValue(t);
     if (t.eliminated) return '0.0%';
     if (t.clinched) return '100%';
-    if (o < 0.05) return '<0.1%';
-    return o.toFixed(1) + '%';
+    if (t.odds < 0.05) return '<0.1%';   // alive, but never got there in 100,000 runs
+    return fmtPct(t.odds);
   }
 
   function fmtPts(v) {
@@ -359,7 +369,8 @@
               title: function (items) { return titles[items[0].dataIndex] || ''; },
               label: function (c) {
                 return c.dataset.label + ': ' +
-                       (c.parsed.y == null ? 'n/a' : c.parsed.y.toFixed(1) + '%');
+                       (c.parsed.y == null ? 'n/a'
+                        : c.parsed.y >= 100 ? '100%' : fmtPct(c.parsed.y));
               }
             }
           }
