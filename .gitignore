@@ -16,3 +16,5 @@ nul
 # Lambda layer dependencies (pip-installed packages, not source code)
 lambda/python/
 lambda/*.zip
+# Lambda build artifacts - rebuilt by the redeploy commands in lambda/DEPLOYMENT.md
+lambda/functions/*.zip

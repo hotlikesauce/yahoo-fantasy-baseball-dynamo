@@ -51,12 +51,14 @@ def lambda_handler(event, context):
     }
     return {
         'statusCode': 200,
+        # Deliberately NO Access-Control-Allow-Origin here: the Function URL's
+        # own CORS config already sends one, and a second copy makes the browser
+        # reject the response outright ("Failed to fetch"). curl does not
+        # enforce CORS, so this only ever shows up in a real browser.
         'headers': {
             'Content-Type': 'application/json; charset=utf-8',
-            'Access-Control-Allow-Origin': '*',
-            # the snapshot only moves five times a day; let the browser and the
-            # CDN sit on it for a few minutes rather than re-reading every load
-            'Cache-Control': 'public, max-age=300',
+            # the page polls every 5 minutes and the data moves every 10
+            'Cache-Control': 'public, max-age=120',
         },
         'body': json.dumps(body, cls=DecimalEncoder, ensure_ascii=False),
     }

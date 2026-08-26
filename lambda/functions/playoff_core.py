@@ -2,9 +2,9 @@
 Shared engine for the live playoff race: fetch the public Yahoo league page,
 parse it, work out who has clinched, and simulate the rest of the season.
 
-Imported by two callers that must agree to the decimal point:
-  * scripts/scrape_live_standings.py - renders docs/live_standings_2026.html
-  * lambda/functions/snapshot_playoff_odds.py - the scheduled AWS snapshot
+Imported by snapshot_playoff_odds, the scheduled AWS function that is now the
+only thing that computes any of this. The page renders client-side from what
+this writes to DynamoDB.
 
 Deliberately dependency-free (urllib + boto3, both already in the Lambda
 runtime) so the same file runs locally and in Lambda with no layer attached.
