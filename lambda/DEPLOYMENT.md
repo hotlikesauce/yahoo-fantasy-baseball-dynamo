@@ -428,3 +428,99 @@ aws lambda update-function-code \
 - DynamoDB auto-scales on-demand, so no provisioning needed
 - Secrets are automatically refreshed on each invocation
 - serve-trade-grades needs 60s timeout (makes 5 Yahoo API calls per request)
+
+---
+
+## Playoff Race (snapshot + publish, fully cloud-side)
+
+The live standings page is built and published entirely in AWS. Nothing on a
+laptop is involved, and the odds-over-time chart gains a point on a fixed
+schedule whether or not any machine is awake.
+
+```
+EventBridge Scheduler  playoff-odds-snapshots
+  cron(0 0,12,15,18,21 * * ? *)  tz America/Denver
+        │
+        ▼
+Lambda  snapshot-playoff-odds
+  ├── scrape the public Yahoo league page (no OAuth - the API is dead)
+  ├── clinch maths + 100k Monte Carlo          [playoff_core.py]
+  ├── DynamoDB  FantasyBaseball-PlayoffOdds
+  │     Slot="current"        the whole live picture
+  │     Slot="meta"           which 5 teams the chart follows (frozen)
+  │     Slot="2026-08-25T18"  one immutable point, written once
+  ├── render the page                          [playoff_render.py]
+  └── commit to GitHub via the Contents API    [github_publish.py]
+            │
+            ▼
+      GitHub Pages
+
+Lambda  serve-playoff-odds  (Function URL, public, CORS)
+  └── reads the same table for anything that wants the JSON
+```
+
+### Shared modules
+
+`playoff_core.py`, `playoff_render.py` and `github_publish.py` are zipped into
+the function. `scripts/scrape_live_standings.py` imports the same two modules
+off disk, so the manual path and the scheduled path cannot drift - there is one
+copy of the maths and one copy of the markup.
+
+Timezone lives in `playoff_core.now_local()` (America/Denver via `zoneinfo`).
+Lambda runs in UTC, so without it the "noon" snapshot would land at 6am. The
+scheduler is given the same zone, so the DST flip moves neither.
+
+### One-time setup
+
+```bash
+# Table
+aws dynamodb create-table \
+  --table-name FantasyBaseball-PlayoffOdds \
+  --attribute-definitions AttributeName=Year,AttributeType=S AttributeName=Slot,AttributeType=S \
+  --key-schema AttributeName=Year,KeyType=HASH AttributeName=Slot,KeyType=RANGE \
+  --billing-mode PAY_PER_REQUEST --region us-west-2
+
+# GitHub token for the publisher. The name must start with
+# "yahoo-fantasy-baseball" - that is what the Lambda role's existing
+# secretsmanager grant covers, so no IAM change is needed.
+# Token needs: Contents read+write on this repo only.
+aws secretsmanager create-secret \
+  --name yahoo-fantasy-baseball-github \
+  --secret-string '{"GITHUB_TOKEN":"ghp_xxx"}' \
+  --region us-west-2
+
+# Scheduler role
+aws iam create-role --role-name playoff-odds-scheduler-role \
+  --assume-role-policy-document file://lambda/scheduler-trust-policy.json
+aws iam put-role-policy --role-name playoff-odds-scheduler-role \
+  --policy-name InvokeSnapshotPlayoffOdds \
+  --policy-document file://lambda/scheduler-invoke-policy.json
+
+# Schedule
+aws scheduler create-schedule --name playoff-odds-snapshots \
+  --schedule-expression "cron(0 0,12,15,18,21 * * ? *)" \
+  --schedule-expression-timezone "America/Denver" \
+  --flexible-time-window '{"Mode":"OFF"}' \
+  --target '{"Arn":"arn:aws:lambda:us-west-2:426188442298:function:snapshot-playoff-odds","RoleArn":"arn:aws:iam::426188442298:role/playoff-odds-scheduler-role","RetryPolicy":{"MaximumRetryAttempts":3,"MaximumEventAgeInSeconds":3600}}' \
+  --region us-west-2
+```
+
+### Redeploy after a code change
+
+```bash
+cd lambda/functions
+python -c "import zipfile; z=zipfile.ZipFile('snapshot_playoff_odds.zip','w',zipfile.ZIP_DEFLATED); [z.write(f) for f in ['snapshot_playoff_odds.py','playoff_core.py','playoff_render.py','github_publish.py']]; z.close()"
+aws lambda update-function-code --function-name snapshot-playoff-odds \
+  --zip-file fileb://snapshot_playoff_odds.zip --region us-west-2
+```
+
+### Notes
+
+- A snapshot row is written with `attribute_not_exists(Slot)`, so a retry, a
+  catch-up run or a manual invoke can never bend a point already on the chart.
+- Publishing is wrapped in try/except: if GitHub is down the snapshot is still
+  safe in DynamoDB and the next run publishes it.
+- `github_publish.normalize()` strips the build stamp and timestamps before
+  comparing, so an unchanged page produces no commit.
+- Set `PUBLISH=0` on the function to snapshot without touching the repo.
+- Function URL: `https://q4v6yvzalnkcvr6sppapaxd3ze0eidiz.lambda-url.us-west-2.on.aws/`

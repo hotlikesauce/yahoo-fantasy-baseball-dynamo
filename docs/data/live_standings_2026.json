@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Tue Aug 25 04:05am EDT",
-  "scraped_at": "2026-08-26T02:13:52.892265+00:00",
+  "scraped_at": "2026-08-26T02:29:39.000991+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.2632,
+  "week_progress": 0.2648,
   "teams": [
     {
       "team_id": 11,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 159.80677,
-      "avg_seed": 1.31054
+      "projected": 159.80682,
+      "avg_seed": 1.27234
     },
     {
       "team_id": 3,
@@ -57,7 +57,7 @@
       "pts": 153.0,
       "games": 252,
       "cat_pct": 0.6071428571428571,
-      "live": 2,
+      "live": 1,
       "decided": 10,
       "banked": 0,
       "pool": 12,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 158.63657,
-      "avg_seed": 1.68992
+      "projected": 158.36765,
+      "avg_seed": 1.72819
     },
     {
       "team_id": 1,
@@ -89,8 +89,8 @@
       "pts": 144.5,
       "games": 252,
       "cat_pct": 0.5734126984126984,
-      "live": 5,
-      "decided": 12,
+      "live": 4,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.03671,
-      "avg_seed": 3.11778
+      "projected": 150.92708,
+      "avg_seed": 3.12695
     },
     {
       "team_id": 12,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 148.19323,
-      "avg_seed": 3.88176
+      "projected": 148.19318,
+      "avg_seed": 3.87252
     },
     {
       "team_id": 10,
@@ -153,7 +153,7 @@
       "pts": 127.5,
       "games": 252,
       "cat_pct": 0.5059523809523809,
-      "live": 8,
+      "live": 9,
       "decided": 10,
       "banked": 0,
       "pool": 12,
@@ -167,9 +167,9 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.914,
-      "projected": 133.86343,
-      "avg_seed": 5.01385
+      "odds": 99.943,
+      "projected": 134.13235,
+      "avg_seed": 5.01108
     },
     {
       "team_id": 2,
@@ -199,9 +199,41 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 6.44,
-      "projected": 125.58222,
-      "avg_seed": 7.67095
+      "odds": 6.068,
+      "projected": 125.58749,
+      "avg_seed": 7.68136
+    },
+    {
+      "team_id": 9,
+      "name": "OG 8️⃣ & an extra",
+      "rank": 6,
+      "yahoo_clinched": false,
+      "wins": 117,
+      "losses": 124,
+      "ties": 11,
+      "pct": ".486",
+      "gb": "31",
+      "last_week": "7-5-0",
+      "pts": 122.5,
+      "games": 252,
+      "cat_pct": 0.4861111111111111,
+      "live": 4,
+      "decided": 11,
+      "banked": 0,
+      "pool": 12,
+      "free": 0,
+      "remaining": 12,
+      "opponent": 7,
+      "floor": 122.5,
+      "ceiling": 134.5,
+      "manager": "Greg",
+      "clinched": false,
+      "eliminated": false,
+      "magic": 12,
+      "need_alive": 2,
+      "odds": 56.06,
+      "projected": 128.27988,
+      "avg_seed": 6.53405
     },
     {
       "team_id": 4,
@@ -231,41 +263,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 39.61,
-      "projected": 127.70563,
-      "avg_seed": 6.76135
-    },
-    {
-      "team_id": 9,
-      "name": "OG 8️⃣ & an extra",
-      "rank": 6,
-      "yahoo_clinched": false,
-      "wins": 117,
-      "losses": 124,
-      "ties": 11,
-      "pct": ".486",
-      "gb": "31",
-      "last_week": "7-5-0",
-      "pts": 122.5,
-      "games": 252,
-      "cat_pct": 0.4861111111111111,
-      "live": 3,
-      "decided": 10,
-      "banked": 0,
-      "pool": 12,
-      "free": 0,
-      "remaining": 12,
-      "opponent": 7,
-      "floor": 122.5,
-      "ceiling": 134.5,
-      "manager": "Greg",
-      "clinched": false,
-      "eliminated": false,
-      "magic": 12,
-      "need_alive": 2,
-      "odds": 54.035,
-      "projected": 128.15844,
-      "avg_seed": 6.56372
+      "odds": 37.928,
+      "projected": 127.7039,
+      "avg_seed": 6.78208
     },
     {
       "team_id": 7,
@@ -282,7 +282,7 @@
       "games": 252,
       "cat_pct": 0.44841269841269843,
       "live": 7,
-      "decided": 10,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -296,8 +296,8 @@
       "magic": null,
       "need_alive": 11,
       "odds": 0.001,
-      "projected": 119.34156,
-      "avg_seed": 9.04159
+      "projected": 119.22012,
+      "avg_seed": 9.04691
     },
     {
       "team_id": 6,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 115.41778,
-      "avg_seed": 9.97191
+      "projected": 115.41251,
+      "avg_seed": 9.96808
     },
     {
       "team_id": 5,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.79437,
-      "avg_seed": 10.98869
+      "projected": 110.7961,
+      "avg_seed": 10.99025
     },
     {
       "team_id": 8,
@@ -378,7 +378,7 @@
       "games": 252,
       "cat_pct": 0.3968253968253968,
       "live": 7,
-      "decided": 12,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -392,8 +392,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.46329,
-      "avg_seed": 11.98794
+      "projected": 105.57292,
+      "avg_seed": 11.98619
     }
   ],
   "matchups": [
@@ -402,15 +402,15 @@
       "a": {
         "team_id": 1,
         "name": "M*A*S*H*D PO*TA*TOES",
-        "live": 5
+        "live": 4
       },
       "b": {
         "team_id": 8,
         "name": "Moniebol 🐳 (DA BI ASS)",
         "live": 7
       },
-      "decided": 12,
-      "remaining": 0
+      "decided": 11,
+      "remaining": 1
     },
     {
       "week": 22,
@@ -432,12 +432,12 @@
       "a": {
         "team_id": 3,
         "name": "Los Basureros",
-        "live": 2
+        "live": 1
       },
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
-        "live": 8
+        "live": 9
       },
       "decided": 10,
       "remaining": 2
@@ -467,10 +467,10 @@
       "b": {
         "team_id": 9,
         "name": "OG 8️⃣ & an extra",
-        "live": 3
+        "live": 4
       },
-      "decided": 10,
-      "remaining": 2
+      "decided": 11,
+      "remaining": 1
     },
     {
       "week": 22,
