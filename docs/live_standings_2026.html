@@ -3,11 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="600">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Live Standings - 2026 Season</title>
+<!--
+  This page is a static shell. Every number on it is read at load time from
+  serve-playoff-odds, which reads DynamoDB, which is filled by
+  snapshot-playoff-odds on an EventBridge schedule.
+
+  Nothing regenerates this file. Editing it is a hand-edit and a commit; the
+  data underneath moves on its own.
+-->
 <style>
   .banner {
     background: #1e293b; border: 1px solid #334155; border-left: 3px solid #38bdf8;
@@ -57,6 +64,7 @@
   .team-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
   td.pts { font-weight: 700; color: #34d399; }
   td.live { color: #fbbf24; font-weight: 600; }
+  td.bank { color: #e2e8f0; font-weight: 600; }
   td.ceil, td.gb { color: #94a3b8; font-size: .9em; }
   td.proj { color: #c4b5fd; font-weight: 600; }
   td.odds { font-weight: 700; }
@@ -85,6 +93,14 @@
   .mu-score .sep { color: #64748b; margin: 0 5px; }
   .mu-foot { margin-top: 10px; font-size: .74em; color: #64748b; }
 
+  .state { color: #64748b; text-align: center; padding: 40px 16px; font-size: .95em; }
+  .state.err { color: #f87171; }
+  .state .again {
+    display: inline-block; margin-top: 12px; padding: 6px 14px; cursor: pointer;
+    background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;
+    font: inherit; font-size: .9em;
+  }
+
   @media (max-width: 720px) {
     .pf-row { grid-template-columns: 32px 1fr 90px; }
     .pf-chip { display: none; }
@@ -94,430 +110,346 @@
 <body>
 <div class="container">
   <h1>Live Standings</h1>
-  <div class="page-subtitle">Week 22 · In progress ·
-    6-team playoff field</div>
-
-  <div class="banner">
-    <strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late July,
-    so this page is scraped from the public league page instead. Standings are Yahoo's through
-    week 21 (Tue Aug 25 04:05am EDT); the <strong>Live</strong> column is
-    week 22's category leads <em>right now</em> — none of that is banked, a category
-    can flip any day until the week closes, so every live category is still treated as
-    winnable in the maths. Playoff odds run the rest of the season 100,000 times, holding
-    each current lead in proportion to the 27% of the week already played and
-    playing out the rest on each team's season category win rate.
-    <br><strong>Playoff format:</strong> 6 teams - Week 23, 24 and 25.
-    Built Tue Aug 25, 09:23 PM — a scheduled AWS job rescrapes and republishes this page, and pins
-    a new point on the race chart at midnight, noon, 3pm, 6pm and 9pm.
-  </div>
-
-  <h2>Playoff Picture</h2>
-  <div class="section-desc">In as of right now: The Rosterbation Station, Los Basureros, M*A*S*H*D PO*TA*TOES, ¯\_(ツ)_/¯, SCOOPSKI POTATOES, Rickie Flower</div>
-  <div class="pf-row clinched">
-  <div class="pf-seed">1</div>
-  <div class="pf-main">
-    <div class="pf-name">The Rosterbation Station <span class="mgr">Kevin</span></div>
-    <div class="pf-note">Locked in — playing for seeding</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">100%</div>
-  </div>
-  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
-</div><div class="pf-row clinched">
-  <div class="pf-seed">2</div>
-  <div class="pf-main">
-    <div class="pf-name">Los Basureros <span class="mgr">Josh</span></div>
-    <div class="pf-note">Locked in — playing for seeding</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">100%</div>
-  </div>
-  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
-</div><div class="pf-row clinched">
-  <div class="pf-seed">3</div>
-  <div class="pf-main">
-    <div class="pf-name">M*A*S*H*D PO*TA*TOES <span class="mgr">Taylor</span></div>
-    <div class="pf-note">Locked in — playing for seeding</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">100%</div>
-  </div>
-  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
-</div><div class="pf-row clinched">
-  <div class="pf-seed">4</div>
-  <div class="pf-main">
-    <div class="pf-name">¯\_(ツ)_/¯ <span class="mgr">Mike</span></div>
-    <div class="pf-note">Locked in — playing for seeding</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:100.0%"></span></div>
-    <div class="pf-pct">100%</div>
-  </div>
-  <div class="pf-chip"><span class="chip clinched">CLINCHED</span></div>
-</div><div class="pf-row in">
-  <div class="pf-seed">5</div>
-  <div class="pf-main">
-    <div class="pf-name">SCOOPSKI POTATOES <span class="mgr">Michael</span></div>
-    <div class="pf-note">Clinches with 7 of the 12 categories left this week — leading enough right now</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:99.9%"></span></div>
-    <div class="pf-pct">99.9%</div>
-  </div>
-  <div class="pf-chip"><span class="chip in">IN THE HUNT</span></div>
-</div><div class="pf-row bubble cutline">
-  <div class="pf-seed">6</div>
-  <div class="pf-main">
-    <div class="pf-name">Rickie Flower <span class="mgr">Bryant</span></div>
-    <div class="pf-note">Needs 3 of the 12 left this week just to stay alive — leading enough right now</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:40.4%"></span></div>
-    <div class="pf-pct">40.4%</div>
-  </div>
-  <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
-</div><div class="pf-row in">
-  <div class="pf-seed">7</div>
-  <div class="pf-main">
-    <div class="pf-name">OG 8️⃣ &amp; an extra <span class="mgr">Greg</span></div>
-    <div class="pf-note">Clinches with 12 of the 12 categories left this week — leading 4</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:54.4%"></span></div>
-    <div class="pf-pct">54.4%</div>
-  </div>
-  <div class="pf-chip"><span class="chip in">IN THE HUNT</span></div>
-</div><div class="pf-row bubble">
-  <div class="pf-seed">8</div>
-  <div class="pf-main">
-    <div class="pf-name">Rosa Parks’ Bus Seat <span class="mgr">James</span></div>
-    <div class="pf-note">Needs 6 of the 12 left this week just to stay alive — leading enough right now</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:5.2%"></span></div>
-    <div class="pf-pct">5.2%</div>
-  </div>
-  <div class="pf-chip"><span class="chip bubble">ON THE BUBBLE</span></div>
-</div><div class="pf-row longshot">
-  <div class="pf-seed">9</div>
-  <div class="pf-main">
-    <div class="pf-name">Ian Cumsler <span class="mgr">Eric</span></div>
-    <div class="pf-note">Needs 11 of the 12 left this week just to stay alive — leading 7</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:0.0%"></span></div>
-    <div class="pf-pct">&lt;0.1%</div>
-  </div>
-  <div class="pf-chip"><span class="chip longshot">ALIVE ON PAPER</span></div>
-</div><div class="pf-row out">
-  <div class="pf-seed">10</div>
-  <div class="pf-main">
-    <div class="pf-name">Hatfield Hurlers <span class="mgr">Mark</span></div>
-    <div class="pf-note">Eliminated from the playoff race</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:0.0%"></span></div>
-    <div class="pf-pct">0.0%</div>
-  </div>
-  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
-</div><div class="pf-row out">
-  <div class="pf-seed">11</div>
-  <div class="pf-main">
-    <div class="pf-name">William Shatnermouth <span class="mgr">Kurtis</span></div>
-    <div class="pf-note">Eliminated from the playoff race</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:0.0%"></span></div>
-    <div class="pf-pct">0.0%</div>
-  </div>
-  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
-</div><div class="pf-row out">
-  <div class="pf-seed">12</div>
-  <div class="pf-main">
-    <div class="pf-name">Moniebol 🐳 (DA BI ASS) <span class="mgr">Austin</span></div>
-    <div class="pf-note">Eliminated from the playoff race</div>
-  </div>
-  <div class="pf-odds">
-    <div class="pf-bar"><span style="width:0.0%"></span></div>
-    <div class="pf-pct">0.0%</div>
-  </div>
-  <div class="pf-chip"><span class="chip out">ELIMINATED</span></div>
+  <div class="page-subtitle" id="subtitle">Loading…</div>
+  <div id="page"><div class="state">Fetching the live picture…</div></div>
 </div>
-
-  <h2>Race for the Last Playoff Spots</h2>
-  <div class="section-desc">SCOOPSKI POTATOES, OG 8️⃣ &amp; an extra, Rickie Flower, Rosa Parks’ Bus Seat, Ian Cumsler — chasing the 6-team field. Snapshotted at midnight, noon, 3pm, 6pm and 9pm every day · 3 snapshots so far</div>
-  <div class="chart-wrap"><canvas id="raceChart"></canvas></div>
 
 <script>
 (function () {
-  const points = ["8/25 3p · week 22", "8/25 6p · week 22", "8/25 9p · week 22"];
-  new Chart(document.getElementById('raceChart'), {
-    type: 'line',
-    data: { labels: ["8/25 3p", "8/25 6p", "8/25 9p"], datasets: [{"label": "SCOOPSKI POTATOES (Michael)", "data": [99.9, 99.9, 99.9], "borderColor": "#38bdf8", "backgroundColor": "#38bdf8", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "OG 8️⃣ & an extra (Greg)", "data": [56.54, 53.62, 56.69], "borderColor": "#a78bfa", "backgroundColor": "#a78bfa", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Rickie Flower (Bryant)", "data": [39.17, 39.25, 38.55], "borderColor": "#fbbf24", "backgroundColor": "#fbbf24", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Rosa Parks’ Bus Seat (James)", "data": [4.39, 7.19, 4.81], "borderColor": "#34d399", "backgroundColor": "#34d399", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}, {"label": "Ian Cumsler (Eric)", "data": [0.0, 0.0, 0.0], "borderColor": "#f87171", "backgroundColor": "#f87171", "borderWidth": 2.5, "cubicInterpolationMode": "monotone", "borderJoinStyle": "round", "borderCapStyle": "round", "pointRadius": 3, "pointHoverRadius": 6, "spanGaps": true, "clip": false}] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      // Room above 100 and below 0 for the dots to sit whole: the datasets
-      // turn clipping off, so this padding is what they spill into.
-      layout: { padding: { top: 14, bottom: 14, left: 4, right: 10 } },
-      scales: {
-        y: {
-          min: 0, max: 100,
-          ticks: { color: '#64748b', stepSize: 20, padding: 8, callback: v => v + '%' },
-          grid: { color: '#1e293b' }
+  'use strict';
+
+  var ENDPOINT = 'https://q4v6yvzalnkcvr6sppapaxd3ze0eidiz.lambda-url.us-west-2.on.aws/';
+  var CATS = 12;
+  var RACE_COLORS = ['#38bdf8', '#a78bfa', '#fbbf24', '#34d399', '#f87171', '#f472b6'];
+  var chart = null;
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  // Only the clinch maths earns a round 100 - the simulation agreeing
+  // 100,000 times out of 100,000 is not the same as being unable to miss.
+  function oddsValue(t) {
+    if (t.eliminated) return 0;
+    if (t.clinched) return 100;
+    return Math.min(t.odds, 99.9);
+  }
+
+  function fmtOdds(t) {
+    var o = oddsValue(t);
+    if (t.eliminated) return '0.0%';
+    if (t.clinched) return '100%';
+    if (o < 0.05) return '<0.1%';
+    return o.toFixed(1) + '%';
+  }
+
+  function fmtPts(v) {
+    return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
+  }
+
+  function statusChip(t) {
+    if (t.clinched) return ['clinched', 'CLINCHED'];
+    if (t.eliminated) return ['out', 'ELIMINATED'];
+    if (t.odds >= 50) return ['in', 'IN THE HUNT'];
+    if (t.odds < 1) return ['longshot', 'ALIVE ON PAPER'];
+    return ['bubble', 'ON THE BUBBLE'];
+  }
+
+  // The requirement and the live score have to be quoted on the same basis, or
+  // the card lies by juxtaposition: "needs 6" beside a 9-2 lead reads as "needs
+  // 6 more", when 6 is the target and the 9 already clears it.
+  function stakeLine(t) {
+    if (t.clinched || t.eliminated) return '';
+    var need, verb;
+    if (t.magic !== null && t.magic !== undefined) {
+      need = t.magic; verb = 'clinches with';
+    } else if (t.need_alive) {
+      need = t.need_alive; verb = 'needs';
+    } else {
+      return t.name + ' is fighting for the last spot';
+    }
+    var target = need >= t.remaining
+      ? 'needs all ' + t.remaining + ' this week ' +
+        (verb === 'clinches with' ? 'to clinch' : 'to stay alive')
+      : verb + ' ' + need + " of this week's " + t.remaining;
+    var pace = t.live >= need ? 'already there' : 'leads ' + t.live;
+    return t.name + ' ' + target + ' — ' + pace;
+  }
+
+  function noteFor(t) {
+    if (t.clinched) return 'Locked in — playing for seeding';
+    if (t.eliminated) return 'Eliminated from the playoff race';
+    var word = t.remaining === 1 ? 'category' : 'categories';
+    if (t.magic !== null && t.magic !== undefined) {
+      return 'Clinches with ' + t.magic + ' of the ' + t.remaining + ' ' + word +
+             ' left this week — ' +
+             (t.live >= t.magic ? 'leading enough right now' : 'leading ' + t.live);
+    }
+    if (t.need_alive) {
+      return 'Needs ' + t.need_alive + ' of the ' + t.remaining +
+             ' left this week just to stay alive — ' +
+             (t.live >= t.need_alive ? 'leading enough right now' : 'leading ' + t.live);
+    }
+    if (t.need_alive === 0) {
+      return 'Cannot be caught by the maths yet — but cannot lock it up either';
+    }
+    return 'Needs help elsewhere';
+  }
+
+  function mgrSpan(t) {
+    return t.manager ? ' <span class="mgr">' + esc(t.manager) + '</span>' : '';
+  }
+
+  function renderCards(order, spots) {
+    return order.map(function (t, i) {
+      var cs = statusChip(t), seed = i + 1;
+      return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
+        '<div class="pf-seed">' + seed + '</div>' +
+        '<div class="pf-main">' +
+          '<div class="pf-name">' + esc(t.name) + mgrSpan(t) + '</div>' +
+          '<div class="pf-note">' + esc(noteFor(t)) + '</div>' +
+        '</div>' +
+        '<div class="pf-odds">' +
+          '<div class="pf-bar"><span style="width:' + oddsValue(t).toFixed(1) + '%"></span></div>' +
+          '<div class="pf-pct">' + esc(fmtOdds(t)) + '</div>' +
+        '</div>' +
+        '<div class="pf-chip"><span class="chip ' + cs[0] + '">' + cs[1] + '</span></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderTable(order, week, spots) {
+    var leader = order[0].pts + order[0].live;
+    var rows = order.map(function (t, i) {
+      var cs = statusChip(t), gb = leader - (t.pts + t.live);
+      return '<tr class="' + cs[0] + '">' +
+        '<td class="rank">' + (i + 1) + '</td>' +
+        '<td class="team-name">' + esc(t.name) + mgrSpan(t) + '</td>' +
+        '<td>' + t.wins + '-' + t.losses + '-' + t.ties + '</td>' +
+        '<td class="bank">' + fmtPts(t.pts) + '</td>' +
+        '<td class="live">' + (t.live ? '+' + t.live : '—') + '</td>' +
+        '<td class="pts">' + fmtPts(t.pts + t.live) + '</td>' +
+        '<td class="gb">' + (gb === 0 ? '—' : fmtPts(gb)) + '</td>' +
+        '<td class="proj">' + t.projected.toFixed(1) + '</td>' +
+        '<td class="ceil">' + fmtPts(t.floor) + ' – ' + fmtPts(t.ceiling) + '</td>' +
+        '<td class="odds">' + esc(fmtOdds(t)) + '</td>' +
+        '<td><span class="chip ' + cs[0] + '">' + cs[1] + '</span></td>' +
+      '</tr>';
+    }).join('');
+
+    return '<div style="overflow-x:auto;"><table class="standings"><thead><tr>' +
+      '<th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>' +
+      '<th title="Category points actually banked through week ' + (week - 1) +
+        ' — this is what Yahoo ranks on, and what the playoff odds start from">Bank</th>' +
+      '<th title="Categories led in week ' + week + ' so far — NOT banked, and worth ' +
+        'only as much as the week is played">Live</th>' +
+      '<th title="Bank + Live. The table sorts on this, but the odds do not treat ' +
+        'the Live half as real yet">Pts</th>' +
+      '<th>GB</th>' +
+      '<th title="Average finish across the simulations">Proj</th>' +
+      '<th title="Worst case - best case finish, with every live category still winnable">Range</th>' +
+      '<th title="Chance of finishing in the top ' + spots + '">Playoff&nbsp;%</th>' +
+      '<th>Status</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function renderMatchups(matchups, byId, weekPct) {
+    return matchups.map(function (m) {
+      var a = byId[m.a.team_id], b = byId[m.b.team_id];
+      if (!a || !b) return '';
+      var stakes = [stakeLine(a), stakeLine(b)].filter(Boolean);
+      var stakeTxt = stakes.length ? stakes.join(' · ') : 'No bearing on the cut line';
+
+      // decided counts the categories that currently have a leader, so the only
+      // thing it tells the reader is how many are still level
+      var tied = CATS - m.decided;
+      var tiedTxt = tied
+        ? tied + ' categor' + (tied === 1 ? 'y' : 'ies') + ' still level'
+        : 'All ' + CATS + ' categories have a leader';
+
+      function cls(x, y) { return x > y ? 'winner' : x < y ? 'loser' : 'tied'; }
+
+      return '<div class="mu' + (stakes.length ? ' key' : '') + '">' +
+        '<div class="mu-stakes">' + esc(stakeTxt) + '</div>' +
+        '<div class="mu-head">' +
+          '<div class="mu-side"><span class="mu-name">' + esc(a.name) + '</span>' +
+            '<span class="mu-rec">' + a.wins + '-' + a.losses + '-' + a.ties + '</span></div>' +
+          '<div class="mu-score"><span class="' + cls(a.live, b.live) + '">' + a.live + '</span>' +
+            '<span class="sep">–</span><span class="' + cls(b.live, a.live) + '">' + b.live + '</span></div>' +
+          '<div class="mu-side r"><span class="mu-name">' + esc(b.name) + '</span>' +
+            '<span class="mu-rec">' + b.wins + '-' + b.losses + '-' + b.ties + '</span></div>' +
+        '</div>' +
+        '<div class="mu-foot">' + tiedTxt + ' · ' + weekPct +
+          ' of the week played · nothing banks until the week ends</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function drawChart(points, tracked, byId) {
+    var ids = tracked.filter(function (id) { return byId[id]; })
+                     .sort(function (x, y) { return oddsValue(byId[y]) - oddsValue(byId[x]); });
+    if (!ids.length || !points.length) return;
+
+    var datasets = ids.map(function (id, i) {
+      var t = byId[id];
+      return {
+        label: t.name + (t.manager ? ' (' + t.manager + ')' : ''),
+        data: points.map(function (p) {
+          var v = p.odds[String(id)];
+          return v === undefined ? null : v;
+        }),
+        borderColor: RACE_COLORS[i % RACE_COLORS.length],
+        backgroundColor: RACE_COLORS[i % RACE_COLORS.length],
+        borderWidth: 2.5,
+        // monotone rounds the corners without letting the curve overshoot -
+        // plain tension would arc a 100-to-100 stretch up past 100, and with
+        // clipping off that overshoot would actually be visible
+        cubicInterpolationMode: 'monotone',
+        borderJoinStyle: 'round',
+        borderCapStyle: 'round',
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        spanGaps: true,
+        clip: false
+      };
+    });
+
+    var titles = points.map(function (p) { return p.label + ' · week ' + p.week; });
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById('raceChart'), {
+      type: 'line',
+      data: { labels: points.map(function (p) { return p.label; }), datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        // room above 100 and below 0 for the dots to sit whole
+        layout: { padding: { top: 14, bottom: 14, left: 4, right: 10 } },
+        scales: {
+          y: {
+            min: 0, max: 100,
+            ticks: { color: '#64748b', stepSize: 20, padding: 8,
+                     callback: function (v) { return v + '%'; } },
+            grid: { color: '#1e293b' }
+          },
+          x: {
+            ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 16 },
+            grid: { display: false }
+          }
         },
-        x: {
-          ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 16 },
-          grid: { display: false }
-        }
-      },
-      plugins: {
-        legend: {
-          labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'line', boxWidth: 26 }
-        },
-        tooltip: {
-          callbacks: {
-            title: items => points[items[0].dataIndex] || '',
-            label: c => c.dataset.label + ': ' +
-                        (c.parsed.y == null ? 'n/a' : c.parsed.y.toFixed(1) + '%')
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', usePointStyle: true,
+                              pointStyle: 'line', boxWidth: 26 } },
+          tooltip: {
+            callbacks: {
+              title: function (items) { return titles[items[0].dataIndex] || ''; },
+              label: function (c) {
+                return c.dataset.label + ': ' +
+                       (c.parsed.y == null ? 'n/a' : c.parsed.y.toFixed(1) + '%');
+              }
+            }
           }
         }
       }
+    });
+  }
+
+  function render(data) {
+    var cur = data.current;
+    if (!cur) throw new Error('no current standings in the response');
+
+    // Two orderings, because they answer two different questions and mixing
+    // them is what made Greg show below Bryant while being likelier to make it.
+    //   byBank - what Yahoo ranks on. Banked categories only, no live lead.
+    //   byOdds - who actually makes the field, which is not the same thing.
+    var teams = cur.teams.slice().sort(function (x, y) {
+      return y.pts - x.pts || (y.pts + y.live) - (x.pts + x.live);
+    });
+    var byOdds = cur.teams.slice().sort(function (x, y) {
+      return oddsValue(y) - oddsValue(x) || y.pts - x.pts;
+    });
+    var byId = {};
+    teams.forEach(function (t) { byId[t.team_id] = t; });
+
+    var spots = cur.playoff_spots;
+    var weekPct = Math.round(cur.week_progress * 100) + '%';
+    var tracked = (data.tracked || []).filter(function (id) { return byId[id]; });
+
+    document.getElementById('subtitle').textContent =
+      'Week ' + cur.week + ' · ' + cur.status + ' · ' + spots + '-team playoff field';
+
+    var chartSection = '';
+    if (tracked.length && data.points.length) {
+      var names = tracked.map(function (id) { return esc(byId[id].name); }).join(', ');
+      var n = data.points.length;
+      chartSection =
+        '<h2>Race for the Last Playoff Spots</h2>' +
+        '<div class="section-desc">' + names + ' — chasing the ' + spots +
+        '-team field. Snapshotted at midnight, noon, 3pm, 6pm and 9pm every day · ' +
+        n + ' snapshot' + (n === 1 ? '' : 's') + ' so far' +
+        (n < 2 ? ' — the line fills in from here' : '') + '</div>' +
+        '<div class="chart-wrap"><canvas id="raceChart"></canvas></div>';
     }
-  });
+
+    document.getElementById('page').innerHTML =
+      '<div class="banner">' +
+        '<strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late ' +
+        'July, so this is scraped from the public league page by a scheduled AWS job. Standings ' +
+        'are Yahoo\'s through week ' + (cur.week - 1) + ' (' + esc(cur.yahoo_updated) + '); the ' +
+        '<strong>Live</strong> column is week ' + cur.week + '\'s category leads <em>right now</em> ' +
+        '— none of that is banked, a category can flip any day until the week closes, so every ' +
+        'live category is still treated as winnable in the maths. Playoff odds run the rest of ' +
+        'the season ' + cur.sims.toLocaleString() + ' times, holding each current lead in ' +
+        'proportion to the ' + weekPct + ' of the week already played and playing out the rest ' +
+        'on each team\'s season category win rate.' +
+        '<br><strong>Bank vs Live:</strong> the table sorts on Bank + Live, but only Bank is actually banked. A team can show inside the cut line on a live lead and still carry low odds, because the odds start from Bank and treat the live lead as worth only the share of the week already played.' +
+        '<br><strong>Playoff format:</strong> ' + esc(cur.playoff_format) + '. ' +
+        'Data refreshes every 10 minutes; the race chart gains a point at midnight, noon, 3pm, ' +
+        '6pm and 9pm. Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
+      '</div>' +
+      '<h2>Playoff Picture</h2>' +
+      '<div class="section-desc">Most likely ' + spots + ': ' +
+        byOdds.slice(0, spots).map(function (t) { return esc(t.name); }).join(', ') +
+        ' — ordered by odds, not by the standings' + '</div>' +
+      renderCards(byOdds, spots) +
+      chartSection +
+      '<h2>Standings</h2>' +
+      '<div class="section-desc">Ranked on Bank — banked categories only, the same ' +
+      'order Yahoo shows. Live is this week\'s leads, which have not banked.</div>' +
+      renderTable(teams, cur.week, spots) +
+      '<h2>Week ' + cur.week + ' Matchups</h2>' +
+      '<div class="section-desc">Live category scores — ' + esc(cur.status) + '</div>' +
+      '<div class="mu-grid">' + renderMatchups(cur.matchups, byId, weekPct) + '</div>';
+
+    if (chartSection) drawChart(data.points, tracked, byId);
+  }
+
+  function fail(msg) {
+    if (chart) { chart.destroy(); chart = null; }
+    document.getElementById('subtitle').textContent = '2026 Season';
+    document.getElementById('page').innerHTML =
+      '<div class="state err">Could not load the live standings.<br>' + esc(msg) +
+      '<br><button class="again" id="again">Try again</button></div>';
+    document.getElementById('again').onclick = load;
+  }
+
+  function load() {
+    // cache-bust so a refresh never shows the copy the browser already had
+    fetch(ENDPOINT + '?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(render)
+      .catch(function (e) { fail(e.message || String(e)); });
+  }
+
+  load();
+  setInterval(load, 5 * 60 * 1000);   // the data behind it moves every 10
 })();
 </script>
-
-
-  <h2>Standings</h2>
-  <div style="overflow-x:auto;">
-  <table class="standings">
-    <thead><tr>
-      <th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>
-      <th title="Categories won in week 22 so far">Live</th>
-      <th title="Category points: wins + half a point per tie">Pts</th>
-      <th>GB</th>
-      <th title="Average finish across the simulations">Proj</th>
-      <th title="Worst case - best case finish, with every live category still winnable">Range</th>
-      <th title="Chance of finishing in the top 6">Playoff&nbsp;%</th>
-      <th>Status</th>
-    </tr></thead>
-    <tbody><tr class="clinched">
-  <td class="rank">1</td>
-  <td class="team-name">The Rosterbation Station <span class="mgr">Kevin</span></td>
-  <td>149-94-9</td>
-  <td class="live">+6</td>
-  <td class="pts">159.5</td>
-  <td class="gb">—</td>
-  <td class="proj">159.9</td>
-  <td class="ceil">153.5 – 165.5</td>
-  <td class="odds">100%</td>
-  <td><span class="chip clinched">CLINCHED</span></td>
-</tr><tr class="clinched">
-  <td class="rank">2</td>
-  <td class="team-name">Los Basureros <span class="mgr">Josh</span></td>
-  <td>147-93-12</td>
-  <td class="live">+1</td>
-  <td class="pts">154</td>
-  <td class="gb">5.5</td>
-  <td class="proj">158.2</td>
-  <td class="ceil">153 – 165</td>
-  <td class="odds">100%</td>
-  <td><span class="chip clinched">CLINCHED</span></td>
-</tr><tr class="clinched">
-  <td class="rank">3</td>
-  <td class="team-name">M*A*S*H*D PO*TA*TOES <span class="mgr">Taylor</span></td>
-  <td>141-104-7</td>
-  <td class="live">+5</td>
-  <td class="pts">149.5</td>
-  <td class="gb">10</td>
-  <td class="proj">151.0</td>
-  <td class="ceil">144.5 – 156.5</td>
-  <td class="odds">100%</td>
-  <td><span class="chip clinched">CLINCHED</span></td>
-</tr><tr class="clinched">
-  <td class="rank">4</td>
-  <td class="team-name">¯\_(ツ)_/¯ <span class="mgr">Mike</span></td>
-  <td>135-102-15</td>
-  <td class="live">+4</td>
-  <td class="pts">146.5</td>
-  <td class="gb">13</td>
-  <td class="proj">148.1</td>
-  <td class="ceil">142.5 – 154.5</td>
-  <td class="odds">100%</td>
-  <td><span class="chip clinched">CLINCHED</span></td>
-</tr><tr class="in">
-  <td class="rank">5</td>
-  <td class="team-name">SCOOPSKI POTATOES <span class="mgr">Michael</span></td>
-  <td>122-119-11</td>
-  <td class="live">+10</td>
-  <td class="pts">137.5</td>
-  <td class="gb">22</td>
-  <td class="proj">134.3</td>
-  <td class="ceil">127.5 – 139.5</td>
-  <td class="odds">99.9%</td>
-  <td><span class="chip in">IN THE HUNT</span></td>
-</tr><tr class="bubble">
-  <td class="rank">6</td>
-  <td class="team-name">Rickie Flower <span class="mgr">Bryant</span></td>
-  <td>119-128-5</td>
-  <td class="live">+6</td>
-  <td class="pts">127.5</td>
-  <td class="gb">32</td>
-  <td class="proj">127.8</td>
-  <td class="ceil">121.5 – 133.5</td>
-  <td class="odds">40.4%</td>
-  <td><span class="chip bubble">ON THE BUBBLE</span></td>
-</tr><tr class="in">
-  <td class="rank">7</td>
-  <td class="team-name">OG 8️⃣ &amp; an extra <span class="mgr">Greg</span></td>
-  <td>117-124-11</td>
-  <td class="live">+4</td>
-  <td class="pts">126.5</td>
-  <td class="gb">33</td>
-  <td class="proj">128.3</td>
-  <td class="ceil">122.5 – 134.5</td>
-  <td class="odds">54.4%</td>
-  <td><span class="chip in">IN THE HUNT</span></td>
-</tr><tr class="bubble">
-  <td class="rank">8</td>
-  <td class="team-name">Rosa Parks’ Bus Seat <span class="mgr">James</span></td>
-  <td>115-130-7</td>
-  <td class="live">+8</td>
-  <td class="pts">126.5</td>
-  <td class="gb">33</td>
-  <td class="proj">125.5</td>
-  <td class="ceil">118.5 – 130.5</td>
-  <td class="odds">5.2%</td>
-  <td><span class="chip bubble">ON THE BUBBLE</span></td>
-</tr><tr class="longshot">
-  <td class="rank">9</td>
-  <td class="team-name">Ian Cumsler <span class="mgr">Eric</span></td>
-  <td>105-131-16</td>
-  <td class="live">+7</td>
-  <td class="pts">120</td>
-  <td class="gb">39.5</td>
-  <td class="proj">119.2</td>
-  <td class="ceil">113 – 125</td>
-  <td class="odds">&lt;0.1%</td>
-  <td><span class="chip longshot">ALIVE ON PAPER</span></td>
-</tr><tr class="out">
-  <td class="rank">10</td>
-  <td class="team-name">Hatfield Hurlers <span class="mgr">Mark</span></td>
-  <td>104-135-13</td>
-  <td class="live">+2</td>
-  <td class="pts">112.5</td>
-  <td class="gb">47</td>
-  <td class="proj">115.5</td>
-  <td class="ceil">110.5 – 122.5</td>
-  <td class="odds">0.0%</td>
-  <td><span class="chip out">ELIMINATED</span></td>
-</tr><tr class="out">
-  <td class="rank">11</td>
-  <td class="team-name">William Shatnermouth <span class="mgr">Kurtis</span></td>
-  <td>100-142-10</td>
-  <td class="live">+6</td>
-  <td class="pts">111</td>
-  <td class="gb">48.5</td>
-  <td class="proj">110.7</td>
-  <td class="ceil">105 – 117</td>
-  <td class="odds">0.0%</td>
-  <td><span class="chip out">ELIMINATED</span></td>
-</tr><tr class="out">
-  <td class="rank">12</td>
-  <td class="team-name">Moniebol 🐳 (DA BI ASS) <span class="mgr">Austin</span></td>
-  <td>92-144-16</td>
-  <td class="live">+7</td>
-  <td class="pts">107</td>
-  <td class="gb">52.5</td>
-  <td class="proj">105.5</td>
-  <td class="ceil">100 – 112</td>
-  <td class="odds">0.0%</td>
-  <td><span class="chip out">ELIMINATED</span></td>
-</tr></tbody>
-  </table>
-  </div>
-
-  <h2>Week 22 Matchups</h2>
-  <div class="section-desc">Live category scores — In progress</div>
-  <div class="mu-grid"><div class="mu">
-  <div class="mu-stakes">No bearing on the cut line</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">M*A*S*H*D PO*TA*TOES</span>
-      <span class="mu-rec">141-104-7</span></div>
-    <div class="mu-score"><span class="loser">5</span>
-      <span class="sep">–</span><span class="winner">7</span></div>
-    <div class="mu-side r"><span class="mu-name">Moniebol 🐳 (DA BI ASS)</span>
-      <span class="mu-rec">92-144-16</span></div>
-  </div>
-  <div class="mu-foot">All 12 categories have a leader · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div><div class="mu key">
-  <div class="mu-stakes">Rosa Parks’ Bus Seat needs 6 of this week&#x27;s 12 — already there</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">Rosa Parks’ Bus Seat</span>
-      <span class="mu-rec">115-130-7</span></div>
-    <div class="mu-score"><span class="winner">8</span>
-      <span class="sep">–</span><span class="loser">2</span></div>
-    <div class="mu-side r"><span class="mu-name">Hatfield Hurlers</span>
-      <span class="mu-rec">104-135-13</span></div>
-  </div>
-  <div class="mu-foot">2 categories still level · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div><div class="mu key">
-  <div class="mu-stakes">SCOOPSKI POTATOES clinches with 7 of this week&#x27;s 12 — already there</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">Los Basureros</span>
-      <span class="mu-rec">147-93-12</span></div>
-    <div class="mu-score"><span class="loser">1</span>
-      <span class="sep">–</span><span class="winner">10</span></div>
-    <div class="mu-side r"><span class="mu-name">SCOOPSKI POTATOES</span>
-      <span class="mu-rec">122-119-11</span></div>
-  </div>
-  <div class="mu-foot">1 category still level · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div><div class="mu key">
-  <div class="mu-stakes">Rickie Flower needs 3 of this week&#x27;s 12 — already there</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">Rickie Flower</span>
-      <span class="mu-rec">119-128-5</span></div>
-    <div class="mu-score"><span class="tied">6</span>
-      <span class="sep">–</span><span class="tied">6</span></div>
-    <div class="mu-side r"><span class="mu-name">William Shatnermouth</span>
-      <span class="mu-rec">100-142-10</span></div>
-  </div>
-  <div class="mu-foot">All 12 categories have a leader · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div><div class="mu key">
-  <div class="mu-stakes">Ian Cumsler needs 11 of this week&#x27;s 12 — leads 7 · OG 8️⃣ &amp; an extra needs all 12 this week to clinch — leads 4</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">Ian Cumsler</span>
-      <span class="mu-rec">105-131-16</span></div>
-    <div class="mu-score"><span class="winner">7</span>
-      <span class="sep">–</span><span class="loser">4</span></div>
-    <div class="mu-side r"><span class="mu-name">OG 8️⃣ &amp; an extra</span>
-      <span class="mu-rec">117-124-11</span></div>
-  </div>
-  <div class="mu-foot">1 category still level · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div><div class="mu">
-  <div class="mu-stakes">No bearing on the cut line</div>
-  <div class="mu-head">
-    <div class="mu-side"><span class="mu-name">The Rosterbation Station</span>
-      <span class="mu-rec">149-94-9</span></div>
-    <div class="mu-score"><span class="winner">6</span>
-      <span class="sep">–</span><span class="loser">4</span></div>
-    <div class="mu-side r"><span class="mu-name">¯\_(ツ)_/¯</span>
-      <span class="mu-rec">135-102-15</span></div>
-  </div>
-  <div class="mu-foot">2 categories still level · 27% of the week played ·
-    nothing banks until the week ends</div>
-</div></div>
-</div>
 <script src="nav.js"></script>
 </body>
 </html>

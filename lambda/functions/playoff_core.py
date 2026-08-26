@@ -379,6 +379,23 @@ def odds_value(t):
         return 100.0
     return min(t['odds'], 99.9)
 
+def chart_value(t):
+    """
+    What the odds-over-time chart plots - the RAW simulated number.
+
+    odds_value() caps a non-clinched team at 99.9 so the table never shows a
+    lock a team has not earned. That is a display rule, and baking it into the
+    stored series was a mistake: a team sitting at 99.88 -> 99.94 -> 99.91 got
+    written as 99.9 three times running and drew a dead-flat line. Clinched and
+    eliminated stay pinned, because those two are maths, not presentation.
+    """
+    if t['eliminated']:
+        return 0.0
+    if t['clinched']:
+        return 100.0
+    return t['odds']
+
+
 def current_slot(now=None):
     """The most recent noon / 3 / 6 / 9 / midnight boundary that has passed."""
     now = now or now_local()

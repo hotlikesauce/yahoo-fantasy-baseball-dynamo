@@ -19,9 +19,11 @@ from urllib.error import HTTPError
 API = 'https://api.github.com'
 REPO = os.environ.get('GITHUB_REPO', 'hotlikesauce/yahoo-fantasy-baseball-dynamo')
 BRANCH = os.environ.get('GITHUB_BRANCH', 'main')
-# named to fall inside the role's existing yahoo-fantasy-baseball* grant, so
-# publishing needed no new IAM
-SECRET = os.environ.get('GITHUB_SECRET_NAME', 'yahoo-fantasy-baseball-github')
+# The GITHUB_TOKEN key rides in the league's existing secret rather than a new
+# one - same secret the Yahoo credentials live in, already covered by the
+# Lambda role's grant, so publishing needed no new secret and no new IAM.
+SECRET = os.environ.get('GITHUB_SECRET_NAME', 'yahoo-fantasy-baseball')
+SECRET_KEY = os.environ.get('GITHUB_SECRET_KEY', 'GITHUB_TOKEN')
 
 # Everything here moves on its own every render; none of it is a real change.
 VOLATILE = [
@@ -43,10 +45,24 @@ def token():
         'secretsmanager',
         region_name=os.environ.get('AWS_REGION', 'us-west-2')
     ).get_secret_value(SecretId=SECRET)['SecretString']
+
+    # This secret was saved with a UTF-8 BOM that was decoded as Latin-1 on the
+    # way in, so the value literally starts with the three characters ï»¿ and
+    # not a real U+FEFF - stripping the proper BOM alone does not touch it.
+    # Skipping to the first brace handles both spellings and anything else that
+    # ever gets prepended by a careless editor.
+    raw = raw.strip().lstrip('﻿ï»¿').strip()
+    if not raw.startswith('{') and '{' in raw:
+        raw = raw[raw.index('{'):]
+
     try:
-        _token = json.loads(raw)['GITHUB_TOKEN']
-    except (ValueError, KeyError):
-        _token = raw.strip()        # a bare token string is fine too
+        _token = json.loads(raw)[SECRET_KEY]
+    except ValueError:
+        _token = raw                # a bare token string is fine too
+    except KeyError:
+        raise RuntimeError(
+            f'secret "{SECRET}" has no {SECRET_KEY} key - add one with '
+            f'scripts/set_github_token.ps1')
     return _token
 
 
