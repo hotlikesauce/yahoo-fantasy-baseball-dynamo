@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Tue Aug 25 04:05am EDT",
-  "scraped_at": "2026-08-26T02:07:50.583183+00:00",
+  "scraped_at": "2026-08-26T02:13:52.892265+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.2626,
+  "week_progress": 0.2632,
   "teams": [
     {
       "team_id": 11,
@@ -41,7 +41,7 @@
       "need_alive": 0,
       "odds": 100.0,
       "projected": 159.80677,
-      "avg_seed": 1.33278
+      "avg_seed": 1.31054
     },
     {
       "team_id": 3,
@@ -58,7 +58,7 @@
       "games": 252,
       "cat_pct": 0.6071428571428571,
       "live": 2,
-      "decided": 9,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 158.78224,
-      "avg_seed": 1.66764
+      "projected": 158.63657,
+      "avg_seed": 1.68992
     },
     {
       "team_id": 1,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 151.03783,
-      "avg_seed": 3.11771
+      "projected": 151.03671,
+      "avg_seed": 3.11778
     },
     {
       "team_id": 12,
@@ -137,7 +137,7 @@
       "need_alive": 0,
       "odds": 100.0,
       "projected": 148.19323,
-      "avg_seed": 3.88187
+      "avg_seed": 3.88176
     },
     {
       "team_id": 10,
@@ -153,8 +153,8 @@
       "pts": 127.5,
       "games": 252,
       "cat_pct": 0.5059523809523809,
-      "live": 7,
-      "decided": 9,
+      "live": 8,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -167,9 +167,9 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.89,
-      "projected": 133.71776,
-      "avg_seed": 5.01662
+      "odds": 99.914,
+      "projected": 133.86343,
+      "avg_seed": 5.01385
     },
     {
       "team_id": 2,
@@ -199,9 +199,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 6,
-      "odds": 6.431,
-      "projected": 125.58062,
-      "avg_seed": 7.67119
+      "odds": 6.44,
+      "projected": 125.58222,
+      "avg_seed": 7.67095
     },
     {
       "team_id": 4,
@@ -231,9 +231,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 39.608,
-      "projected": 127.7062,
-      "avg_seed": 6.76037
+      "odds": 39.61,
+      "projected": 127.70563,
+      "avg_seed": 6.76135
     },
     {
       "team_id": 9,
@@ -263,9 +263,9 @@
       "eliminated": false,
       "magic": 12,
       "need_alive": 2,
-      "odds": 54.07,
-      "projected": 128.15949,
-      "avg_seed": 6.56169
+      "odds": 54.035,
+      "projected": 128.15844,
+      "avg_seed": 6.56372
     },
     {
       "team_id": 7,
@@ -296,8 +296,8 @@
       "magic": null,
       "need_alive": 11,
       "odds": 0.001,
-      "projected": 119.34051,
-      "avg_seed": 9.04165
+      "projected": 119.34156,
+      "avg_seed": 9.04159
     },
     {
       "team_id": 6,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 115.41938,
-      "avg_seed": 9.97175
+      "projected": 115.41778,
+      "avg_seed": 9.97191
     },
     {
       "team_id": 5,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.7938,
-      "avg_seed": 10.98879
+      "projected": 110.79437,
+      "avg_seed": 10.98869
     },
     {
       "team_id": 8,
@@ -392,7 +392,7 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.46217,
+      "projected": 105.46329,
       "avg_seed": 11.98794
     }
   ],
@@ -437,10 +437,10 @@
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
-        "live": 7
+        "live": 8
       },
-      "decided": 9,
-      "remaining": 3
+      "decided": 10,
+      "remaining": 2
     },
     {
       "week": 22,
