@@ -393,7 +393,10 @@ def chart_value(t):
         return 0.0
     if t['clinched']:
         return 100.0
-    return t['odds']
+    # A stored 100.0 has to mean "clinched" and nothing else, or the chart
+    # cannot tell a proof from 100,000 lucky samples. Hold everyone else a
+    # hair below it; the reader sees four decimals, not a rounded lie.
+    return min(t['odds'], 99.9999)
 
 
 def current_slot(now=None):
