@@ -3,13 +3,13 @@
   "week": 22,
   "status": "In progress",
   "yahoo_updated": "Tue Aug 25 04:05am EDT",
-  "scraped_at": "2026-08-25T23:44:39.486514+00:00",
+  "scraped_at": "2026-08-26T02:07:50.583183+00:00",
   "source": "https://baseball.fantasysports.yahoo.com/b1/8614",
   "playoff_spots": 6,
   "playoff_format": "6 teams - Week 23, 24 and 25",
   "last_regular_week": 22,
   "sims": 100000,
-  "week_progress": 0.2484,
+  "week_progress": 0.2626,
   "teams": [
     {
       "team_id": 11,
@@ -25,7 +25,7 @@
       "pts": 153.5,
       "games": 252,
       "cat_pct": 0.6091269841269841,
-      "live": 8,
+      "live": 6,
       "decided": 11,
       "banked": 0,
       "pool": 12,
@@ -40,8 +40,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 160.29723,
-      "avg_seed": 1.28168
+      "projected": 159.80677,
+      "avg_seed": 1.33278
     },
     {
       "team_id": 3,
@@ -57,8 +57,8 @@
       "pts": 153.0,
       "games": 252,
       "cat_pct": 0.6071428571428571,
-      "live": 3,
-      "decided": 10,
+      "live": 2,
+      "decided": 9,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -72,8 +72,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 158.9355,
-      "avg_seed": 1.7186
+      "projected": 158.78224,
+      "avg_seed": 1.66764
     },
     {
       "team_id": 1,
@@ -89,8 +89,8 @@
       "pts": 144.5,
       "games": 252,
       "cat_pct": 0.5734126984126984,
-      "live": 4,
-      "decided": 11,
+      "live": 5,
+      "decided": 12,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -104,8 +104,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 150.96804,
-      "avg_seed": 3.08778
+      "projected": 151.03783,
+      "avg_seed": 3.11771
     },
     {
       "team_id": 12,
@@ -121,7 +121,7 @@
       "pts": 142.5,
       "games": 252,
       "cat_pct": 0.5654761904761905,
-      "live": 3,
+      "live": 5,
       "decided": 11,
       "banked": 0,
       "pool": 12,
@@ -136,8 +136,8 @@
       "magic": 0,
       "need_alive": 0,
       "odds": 100.0,
-      "projected": 147.70277,
-      "avg_seed": 3.91194
+      "projected": 148.19323,
+      "avg_seed": 3.88187
     },
     {
       "team_id": 10,
@@ -154,7 +154,7 @@
       "games": 252,
       "cat_pct": 0.5059523809523809,
       "live": 7,
-      "decided": 10,
+      "decided": 9,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -167,9 +167,41 @@
       "eliminated": false,
       "magic": 7,
       "need_alive": 0,
-      "odds": 99.851,
-      "projected": 133.5645,
-      "avg_seed": 5.02289
+      "odds": 99.89,
+      "projected": 133.71776,
+      "avg_seed": 5.01662
+    },
+    {
+      "team_id": 2,
+      "name": "Rosa Parks’ Bus Seat",
+      "rank": 8,
+      "yahoo_clinched": false,
+      "wins": 115,
+      "losses": 130,
+      "ties": 7,
+      "pct": ".470",
+      "gb": "35",
+      "last_week": "5-6-1",
+      "pts": 118.5,
+      "games": 252,
+      "cat_pct": 0.47023809523809523,
+      "live": 9,
+      "decided": 11,
+      "banked": 0,
+      "pool": 12,
+      "free": 0,
+      "remaining": 12,
+      "opponent": 6,
+      "floor": 118.5,
+      "ceiling": 130.5,
+      "manager": "James",
+      "clinched": false,
+      "eliminated": false,
+      "magic": null,
+      "need_alive": 6,
+      "odds": 6.431,
+      "projected": 125.58062,
+      "avg_seed": 7.67119
     },
     {
       "team_id": 4,
@@ -186,7 +218,7 @@
       "games": 252,
       "cat_pct": 0.48214285714285715,
       "live": 5,
-      "decided": 10,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -199,9 +231,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 3,
-      "odds": 40.605,
-      "projected": 127.84962,
-      "avg_seed": 6.70432
+      "odds": 39.608,
+      "projected": 127.7062,
+      "avg_seed": 6.76037
     },
     {
       "team_id": 9,
@@ -218,7 +250,7 @@
       "games": 252,
       "cat_pct": 0.4861111111111111,
       "live": 3,
-      "decided": 9,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -231,41 +263,9 @@
       "eliminated": false,
       "magic": 12,
       "need_alive": 2,
-      "odds": 55.731,
-      "projected": 128.32099,
-      "avg_seed": 6.50845
-    },
-    {
-      "team_id": 2,
-      "name": "Rosa Parks’ Bus Seat",
-      "rank": 8,
-      "yahoo_clinched": false,
-      "wins": 115,
-      "losses": 130,
-      "ties": 7,
-      "pct": ".470",
-      "gb": "35",
-      "last_week": "5-6-1",
-      "pts": 118.5,
-      "games": 252,
-      "cat_pct": 0.47023809523809523,
-      "live": 7,
-      "decided": 10,
-      "banked": 0,
-      "pool": 12,
-      "free": 0,
-      "remaining": 12,
-      "opponent": 6,
-      "floor": 118.5,
-      "ceiling": 130.5,
-      "manager": "James",
-      "clinched": false,
-      "eliminated": false,
-      "magic": null,
-      "need_alive": 6,
-      "odds": 3.813,
-      "projected": 125.16351,
-      "avg_seed": 7.77616
+      "odds": 54.07,
+      "projected": 128.15949,
+      "avg_seed": 6.56169
     },
     {
       "team_id": 7,
@@ -281,8 +281,8 @@
       "pts": 113.0,
       "games": 252,
       "cat_pct": 0.44841269841269843,
-      "live": 6,
-      "decided": 9,
+      "live": 7,
+      "decided": 10,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -295,9 +295,9 @@
       "eliminated": false,
       "magic": null,
       "need_alive": 11,
-      "odds": 0.0,
-      "projected": 119.17901,
-      "avg_seed": 9.07192
+      "odds": 0.001,
+      "projected": 119.34051,
+      "avg_seed": 9.04165
     },
     {
       "team_id": 6,
@@ -313,8 +313,8 @@
       "pts": 110.5,
       "games": 252,
       "cat_pct": 0.4384920634920635,
-      "live": 3,
-      "decided": 10,
+      "live": 2,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -328,8 +328,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 115.83649,
-      "avg_seed": 9.93023
+      "projected": 115.41938,
+      "avg_seed": 9.97175
     },
     {
       "team_id": 5,
@@ -345,8 +345,8 @@
       "pts": 105.0,
       "games": 252,
       "cat_pct": 0.4166666666666667,
-      "live": 5,
-      "decided": 10,
+      "live": 6,
+      "decided": 11,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -360,8 +360,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 110.65038,
-      "avg_seed": 11.00193
+      "projected": 110.7938,
+      "avg_seed": 10.98879
     },
     {
       "team_id": 8,
@@ -378,7 +378,7 @@
       "games": 252,
       "cat_pct": 0.3968253968253968,
       "live": 7,
-      "decided": 11,
+      "decided": 12,
       "banked": 0,
       "pool": 12,
       "free": 0,
@@ -392,8 +392,8 @@
       "magic": null,
       "need_alive": null,
       "odds": 0.0,
-      "projected": 105.53196,
-      "avg_seed": 11.9841
+      "projected": 105.46217,
+      "avg_seed": 11.98794
     }
   ],
   "matchups": [
@@ -402,12 +402,27 @@
       "a": {
         "team_id": 1,
         "name": "M*A*S*H*D PO*TA*TOES",
-        "live": 4
+        "live": 5
       },
       "b": {
         "team_id": 8,
         "name": "Moniebol 🐳 (DA BI ASS)",
         "live": 7
+      },
+      "decided": 12,
+      "remaining": 0
+    },
+    {
+      "week": 22,
+      "a": {
+        "team_id": 2,
+        "name": "Rosa Parks’ Bus Seat",
+        "live": 9
+      },
+      "b": {
+        "team_id": 6,
+        "name": "Hatfield Hurlers",
+        "live": 2
       },
       "decided": 11,
       "remaining": 1
@@ -415,32 +430,17 @@
     {
       "week": 22,
       "a": {
-        "team_id": 2,
-        "name": "Rosa Parks’ Bus Seat",
-        "live": 7
-      },
-      "b": {
-        "team_id": 6,
-        "name": "Hatfield Hurlers",
-        "live": 3
-      },
-      "decided": 10,
-      "remaining": 2
-    },
-    {
-      "week": 22,
-      "a": {
         "team_id": 3,
         "name": "Los Basureros",
-        "live": 3
+        "live": 2
       },
       "b": {
         "team_id": 10,
         "name": "SCOOPSKI POTATOES",
         "live": 7
       },
-      "decided": 10,
-      "remaining": 2
+      "decided": 9,
+      "remaining": 3
     },
     {
       "week": 22,
@@ -452,7 +452,22 @@
       "b": {
         "team_id": 5,
         "name": "William Shatnermouth",
-        "live": 5
+        "live": 6
+      },
+      "decided": 11,
+      "remaining": 1
+    },
+    {
+      "week": 22,
+      "a": {
+        "team_id": 7,
+        "name": "Ian Cumsler",
+        "live": 7
+      },
+      "b": {
+        "team_id": 9,
+        "name": "OG 8️⃣ & an extra",
+        "live": 3
       },
       "decided": 10,
       "remaining": 2
@@ -460,29 +475,14 @@
     {
       "week": 22,
       "a": {
-        "team_id": 7,
-        "name": "Ian Cumsler",
-        "live": 6
-      },
-      "b": {
-        "team_id": 9,
-        "name": "OG 8️⃣ & an extra",
-        "live": 3
-      },
-      "decided": 9,
-      "remaining": 3
-    },
-    {
-      "week": 22,
-      "a": {
         "team_id": 11,
         "name": "The Rosterbation Station",
-        "live": 8
+        "live": 6
       },
       "b": {
         "team_id": 12,
         "name": "¯\\_(ツ)_/¯",
-        "live": 3
+        "live": 5
       },
       "decided": 11,
       "remaining": 1
