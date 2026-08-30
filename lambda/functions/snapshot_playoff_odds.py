@@ -102,6 +102,8 @@ def lambda_handler(event, context):
         'candidates': r['candidates'],
         'candidate_info': r['candidate_info'],
         'all_key': r['all_key'],
+        'ip_source': r['ip_source'],
+        'ip_as_of': r['ip_as_of'],
         'scenario_keys': KEYS,
         # Back-compat: a page that predates the scenario split reads teams and
         # matchups off the top level, and an intermediate one read .now.
@@ -148,6 +150,8 @@ def lambda_handler(event, context):
         'point_written': written,
         'week': r['week'],
         'status': r['meta']['status'],
+        'ip_source': r['ip_source'],
+        'ip_as_of': r['ip_as_of'],
         'candidates': [(c['manager'] or c['name']) for c in r['candidate_info']],
         'scenarios': len(KEYS),
         'odds': {(now_t[t].get('manager') or now_t[t]['name']):

@@ -636,6 +636,50 @@ def collect_details(base, week, matchups, lid):
     return detail, pairs
 
 
+def _detail_cache_key(week):
+    return f'ipcache#{week}'
+
+
+def cache_detail(detail, week, region=None):
+    """
+    Keep the last good matchup scrape.
+
+    Yahoo serves the current week's /matchup pages only intermittently - they
+    worked at 08:00 and were empty shells by 10:50 - and that page is the only
+    source of per-category values and innings pitched. Losing it must not turn
+    every team into "0 IP, 50 short", which is what an empty dict does.
+    """
+    if not detail:
+        return
+    try:
+        odds_table(region).put_item(Item=json.loads(json.dumps({
+            'Year': str(YEAR), 'Slot': _detail_cache_key(week),
+            'cached_at': now_local().isoformat(timespec='seconds'),
+            'detail': {str(k): v for k, v in detail.items()},
+        }, ensure_ascii=False), parse_float=__import__('decimal').Decimal))
+    except Exception as e:
+        print(f'  (could not cache matchup detail: {e})')
+
+
+def load_cached_detail(week, region=None):
+    """The last good scrape, or ({}, '') when there has never been one."""
+    try:
+        item = odds_table(region).get_item(
+            Key={'Year': str(YEAR), 'Slot': _detail_cache_key(week)}).get('Item')
+        if not item:
+            return {}, ''
+        out = {}
+        for k, v in item['detail'].items():
+            v = dict(v)
+            v['ip'] = float(v.get('ip', 0) or 0)
+            v['team_id'] = int(v.get('team_id', k))
+            out[int(k)] = v
+        return out, item.get('cached_at', '')
+    except Exception as e:
+        print(f'  (could not read cached matchup detail: {e})')
+        return {}, ''
+
+
 def combo_key(ids):
     """Stable name for a set of forfeiting teams. Empty set is 'none'."""
     return '-'.join(str(i) for i in sorted(ids)) or 'none'
@@ -668,6 +712,23 @@ def collect_both(lid, sims=SIMS):
     managers = load_managers()
 
     detail, pairs = collect_details(base, week, matchups, lid)
+    if detail:
+        ip_source, ip_as_of = 'live', now_local().isoformat(timespec='seconds')
+        cache_detail(detail, week)
+    else:
+        detail, ip_as_of = load_cached_detail(week)
+        ip_source = 'cached' if detail else 'unavailable'
+        print(f'  matchup pages returned no data; IP source = {ip_source}'
+              + (f' (from {ip_as_of})' if ip_as_of else ''))
+        # rebuild the pairs from cached rows so scoring still works
+        pairs = []
+        seen = set()
+        for m in matchups:
+            a, b = detail.get(m['a']['team_id']), detail.get(m['b']['team_id'])
+            if a and b and a['team_id'] not in seen:
+                seen.update({a['team_id'], b['team_id']})
+                pairs.append((a, b))
+
     per_cat = {}
     for a, b in pairs:
         _, cats = score_matchup(a, b)
@@ -676,7 +737,8 @@ def collect_both(lid, sims=SIMS):
 
     # who is even a candidate to forfeit
     candidates = sorted(t['team_id'] for t in detail.values()
-                        if MIN_IP - t['ip'] > UNREACHABLE_GAP)
+                        if t.get('IP*') not in (None, '')
+                        and MIN_IP - t['ip'] > UNREACHABLE_GAP)
     if len(candidates) > 4:                     # keep the powerset sane
         candidates = candidates[:4]
 
@@ -705,16 +767,19 @@ def collect_both(lid, sims=SIMS):
             if tid in teams:
                 teams[tid]['manager'] = mgr
         for tid, t in teams.items():
-            d = detail.get(tid, {})
-            gap = MIN_IP - d.get('ip', 0.0)
-            t['ip'] = d.get('ip', 0.0)
-            t['ip_raw'] = d.get('IP*', '')
-            t['ip_short'] = round(max(0.0, gap), 2)
-            t['meets_min_ip'] = d.get('ip', 0.0) >= MIN_IP
-            t['ip_reachable'] = gap <= UNREACHABLE_GAP
+            d = detail.get(tid)
+            known = d is not None and d.get('IP*') not in (None, '')
+            gap = (MIN_IP - d['ip']) if known else None
+            # None, not 0. An unknown innings count is not "zero innings", and
+            # rendering it as 50-short libels every manager in the league.
+            t['ip'] = d['ip'] if known else None
+            t['ip_raw'] = d.get('IP*', '') if known else ''
+            t['ip_short'] = round(max(0.0, gap), 2) if known else None
+            t['meets_min_ip'] = (d['ip'] >= MIN_IP) if known else None
+            t['ip_reachable'] = (gap <= UNREACHABLE_GAP) if known else None
             t['is_candidate'] = tid in candidates
             t['forfeits'] = tid in shorts
-            t['cats'] = {c: d.get(c, '') for c in ALL_CATS}
+            t['cats'] = {c: (d or {}).get(c, '') for c in ALL_CATS}
             t['cats_led'] = [c for c, w in per_cat.get(tid, {}).items() if w == tid]
             t['pit_led'] = [c for c in PITCHING_CATS
                             if per_cat.get(tid, {}).get(c) == tid]
@@ -740,6 +805,7 @@ def collect_both(lid, sims=SIMS):
         'progress': progress, 'min_ip': MIN_IP,
         'unreachable_gap': UNREACHABLE_GAP,
         'candidates': candidates, 'candidate_info': cand_info,
+        'ip_source': ip_source, 'ip_as_of': ip_as_of,
         'all_key': combo_key(candidates),
         'scenarios': scenarios,
     }

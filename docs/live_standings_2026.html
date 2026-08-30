@@ -54,6 +54,9 @@
   td.ip { font-variant-numeric: tabular-nums; }
   td.ip.short { color: #f87171; font-weight: 700; }
   td.ip.okay { color: #4ade80; }
+  td.ip.unk { color: #475569; }
+  .pf-ip.unk { color: #475569; }
+  .short-list .unk { color: #64748b; }
   td.delta.up { color: #4ade80; font-weight: 700; }
   td.delta.down { color: #f87171; font-weight: 700; }
   td.delta.same { color: #475569; }
@@ -256,7 +259,8 @@
       var d = p ? (t.pts + t.live) - (p.pts + p.live) : 0;
       var dcls = d > 0 ? 'up' : d < 0 ? 'down' : 'same';
       var dtxt = d === 0 ? '—' : (d > 0 ? '+' : '') + fmtPts(d);
-      var ipCls = t.meets_min_ip ? 'okay' : 'short';
+      var ipKnown = t.meets_min_ip !== null && t.meets_min_ip !== undefined;
+      var ipCls = !ipKnown ? 'unk' : t.meets_min_ip ? 'okay' : 'short';
       return '<tr class="' + (t.eliminated ? 'out ' : '') + (i + 1 === spots ? 'cut' : '') + '">' +
         '<td>' + (i + 1) + '</td>' +
         '<td class="team-name">' + esc(t.name) + mgrSpan(t) + '</td>' +
@@ -265,8 +269,10 @@
         '<td class="live">' + t.live + '<span class="of">/' + CATS + '</span></td>' +
         '<td class="pts">' + fmtPts(t.pts + t.live) + '</td>' +
         '<td class="gb">' + (gb === 0 ? '—' : fmtPts(gb)) + '</td>' +
-        '<td class="ip ' + ipCls + '">' + esc(t.ip_raw) +
-          (t.meets_min_ip ? '' : ' <span style="font-size:.85em">(−' + t.ip_short + ')</span>') +
+        '<td class="ip ' + ipCls + '">' +
+          (!ipKnown ? '—'
+            : esc(t.ip_raw) + (t.meets_min_ip ? ''
+                : ' <span style="font-size:.85em">(−' + t.ip_short + ')</span>')) +
         '</td>' +
         '<td class="delta ' + dcls + '">' + dtxt + '</td>' +
         '<td><span class="chip ' + cs[0] + '">' + cs[1] + '</span></td>' +
@@ -318,10 +324,12 @@
       var opp = A[a.opponent];
       var oppB = B[a.opponent];
       var moved = Math.abs(oddsValue(b) - oddsValue(a)) >= 0.05;
-      var ipTxt = a.meets_min_ip
-        ? 'IP ' + esc(a.ip_raw) + ' — over the ' + DATA.current.min_ip + ' minimum'
-        : 'IP ' + esc(a.ip_raw) + ' — <b>' + a.ip_short + ' short</b>' +
-          (a.is_candidate ? ' (cannot reach it today)' : ' (reachable)');
+      var ipTxt = (a.meets_min_ip === null || a.meets_min_ip === undefined)
+        ? 'IP not published for the live week'
+        : a.meets_min_ip
+          ? 'IP ' + esc(a.ip_raw) + ' — over the ' + DATA.current.min_ip + ' minimum'
+          : 'IP ' + esc(a.ip_raw) + ' — <b>' + a.ip_short + ' short</b>' +
+            (a.is_candidate ? ' (cannot reach it today)' : ' (reachable)');
       return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
         '<div class="pf-seed">' + seed + '</div>' +
         '<div class="pf-main">' +
@@ -332,7 +340,8 @@
             (moved && oppB ? '<span class="dim"> → ' + b.live + '–' + oppB.live +
                              ' with forfeits</span>' : '') +
           '</div>' +
-          '<div class="pf-ip ' + (a.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +
+          '<div class="pf-ip ' + (a.meets_min_ip === null || a.meets_min_ip === undefined
+              ? 'unk' : a.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +
           '<div class="pf-note">' + esc(noteFor(a)) + '</div>' +
         '</div>' +
         '<div class="pf-odds">' +
@@ -461,6 +470,7 @@
       var tied = CATS - m.decided;
       function cls(x, y) { return x > y ? 'winner' : x < y ? 'loser' : 'tied'; }
       function ipTag(t) {
+        if (t.meets_min_ip === null || t.meets_min_ip === undefined) return '';
         return '<span class="mu-ip ' + (t.meets_min_ip ? 'okay' : 'short') + '">IP ' +
                esc(t.ip_raw) + (t.meets_min_ip ? '' : ' (−' + t.ip_short + ')') + '</span>';
       }
@@ -493,6 +503,21 @@
   // to clear them. Independent, because the three are separate events.
   function filterBar(sel, id) {
     var cur = DATA.current;
+    // No innings data means no forfeit model. Say that, rather than offering
+    // controls that silently do nothing.
+    if (cur.ip_source === 'unavailable' || !cur.candidate_info ||
+        !cur.candidate_info.length) {
+      return '<div class="toolbar"><span class="lbl">' + cur.min_ip +
+        '-IP forfeits:</span><span class="hint">' +
+        (cur.ip_source === 'unavailable'
+          ? 'Innings data unavailable — Yahoo has stopped serving the current ' +
+            'week&rsquo;s matchup pages, which is the only place IP is published. ' +
+            'Retrying every 10 minutes; the controls return the moment it does. ' +
+            'Everything else on this page is unaffected.'
+          : 'Nobody is far enough short of ' + cur.min_ip +
+            ' to be worth modelling right now.') +
+        '</span></div>';
+    }
     var on = keyOf(sel) !== 'none';
     var btns = '<button class="seg' + (on ? '' : ' on') + '" data-sel="' + id +
                '" data-team="">As-is</button>';
@@ -548,15 +573,28 @@
     document.getElementById('subtitle').textContent =
       'Week ' + cur.week + ' · ' + cur.status + ' · ' + spots + '-team playoff field';
 
-    var short = teams.filter(function (t) { return !t.meets_min_ip; });
-    var shortTxt = short.length
-      ? '<b>' + short.length + '</b> team' + (short.length === 1 ? '' : 's') +
+    // meets_min_ip is null when IP is unknown - only count actual shortfalls
+    var short = teams.filter(function (t) { return t.meets_min_ip === false; });
+    var known = teams.filter(function (t) { return t.meets_min_ip !== null &&
+                                                   t.meets_min_ip !== undefined; });
+    var shortTxt;
+    if (!known.length) {
+      shortTxt = '<span class="unk">Innings pitched unknown — not published for ' +
+                 'the live week right now, so no team is being called short.</span>';
+    } else if (short.length) {
+      shortTxt = '<b>' + short.length + '</b> team' + (short.length === 1 ? '' : 's') +
         ' short of ' + cur.min_ip + ' IP: ' +
         short.sort(function (x, y) { return x.ip_short - y.ip_short; })
              .map(function (t) {
                return esc(t.manager || t.name) + ' <b>−' + t.ip_short + '</b>';
-             }).join(', ')
-      : '<span class="ok">Every team has cleared ' + cur.min_ip + ' innings.</span>';
+             }).join(', ') +
+        (cur.ip_source === 'cached'
+          ? ' <span class="unk">(as of ' + esc(cur.ip_as_of || '').replace('T', ' ') +
+            ' — Yahoo is not serving live IP right now, so these are a floor)</span>'
+          : '');
+    } else {
+      shortTxt = '<span class="ok">Every team has cleared ' + cur.min_ip + ' innings.</span>';
+    }
 
     var toolbar = filterBar(pick, 'f1') +
       '<div class="short-list">' + shortTxt + '</div>';
