@@ -102,6 +102,11 @@ def lambda_handler(event, context):
         'scraped_at': pc.now_local().isoformat(timespec='seconds'),
         'unreachable_gap': r['unreachable_gap'],
         'modes': list(MODES),
+        # Back-compat: a page that predates the scenario split reads teams and
+        # matchups off the top level. Keep mirroring the unadjusted view there
+        # so an older deploy keeps rendering instead of throwing on undefined.
+        'teams': slim(now_t),
+        'matchups': r['scenarios']['now']['matchups'],
         **{m: {'teams': slim(r['scenarios'][m]['teams']),
                'matchups': r['scenarios'][m]['matchups'],
                'short_ids': r['scenarios'][m]['short_ids']} for m in MODES},
@@ -124,6 +129,8 @@ def lambda_handler(event, context):
                     'pts': t['pts'] + t['live'],
                     'live': t['live'],
                 }
+        # same back-compat: the old chart reads a flat odds map off the point
+        point['odds'] = {tid: v['odds'] for tid, v in point['now'].items()}
         try:
             table.put_item(Item=to_dynamo(point),
                            ConditionExpression='attribute_not_exists(#s)',
