@@ -497,13 +497,20 @@
     var btns = '<button class="seg' + (on ? '' : ' on') + '" data-sel="' + id +
                '" data-team="">As-is</button>';
     cur.candidate_info.forEach(function (c) {
+      // No "(no effect)" label here. Whether a forfeit matters depends on which
+      // categories that team leads AT THE END of the week, and it is the last
+      // day - a manager leading nothing this minute can be leading three by
+      // tea time. The tooltip reports the current position and says so.
       var lost = c.pit_led.length;
       btns += '<button class="seg' + (sel[c.team_id] ? ' on' : '') +
               '" data-sel="' + id + '" data-team="' + c.team_id + '"' +
               ' title="' + esc(c.name) + ' — IP ' + esc(c.ip_raw) + ', ' + c.ip_short +
-              ' short. Forfeits ' + (lost ? c.pit_led.join(', ') : 'no pitching categories') +
-              '">' + esc(c.manager || c.name) + ' forfeits' +
-              (lost ? '' : ' (no effect)') + '</button>';
+              ' short of ' + cur.min_ip + '. Right now leads ' +
+              (lost ? c.pit_led.length + ' pitching categor' + (lost === 1 ? 'y' : 'ies') +
+                      ' (' + c.pit_led.join(', ') + ')'
+                    : 'no pitching categories') +
+              ', but that can change while games are still being played.' +
+              '">' + esc(c.manager || c.name) + ' forfeits</button>';
     });
     return '<div class="toolbar">' +
       '<span class="lbl">' + cur.min_ip + '-IP forfeits:</span>' + btns +
