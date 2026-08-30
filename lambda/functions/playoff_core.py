@@ -45,49 +45,8 @@ def now_local():
 # ==============================================================
 # Fetch
 # ==============================================================
-_cookie = None
-_cookie_tried = False
-
-
-def yahoo_cookie():
-    """
-    A logged-in Yahoo session, if one has been stored.
-
-    Yahoo serves the stat table on the CURRENT week's /matchup page only to
-    signed-in users - anonymously it returns HTTP 200 with that section simply
-    absent. Finished weeks render for anyone, which is why week 21 worked and
-    week 22 did not. Innings pitched is published nowhere else, so without a
-    session there is no IP data at all.
-    """
-    global _cookie, _cookie_tried
-    if _cookie_tried:
-        return _cookie
-    _cookie_tried = True
-    name = os.environ.get('YAHOO_COOKIE_SECRET', 'yahoo-fantasy-baseball')
-    try:
-        import boto3
-        raw = boto3.client(
-            'secretsmanager', region_name=os.environ.get('AWS_REGION', 'us-west-2')
-        ).get_secret_value(SecretId=name)['SecretString']
-        raw = raw.strip().lstrip('﻿ï»¿').strip()
-        if not raw.startswith('{') and '{' in raw:
-            raw = raw[raw.index('{'):]
-        _cookie = (json.loads(raw).get('YAHOO_COOKIE') or '').strip() or None
-    except Exception as e:
-        print(f'  (no Yahoo cookie available: {type(e).__name__})')
-        _cookie = None
-    if _cookie:
-        print('  using a stored Yahoo session for matchup pages')
-    return _cookie
-
-
-def get(url, authed=False):
-    headers = {'User-Agent': UA}
-    if authed:
-        c = yahoo_cookie()
-        if c:
-            headers['Cookie'] = c
-    req = Request(url, headers=headers)
+def get(url):
+    req = Request(url, headers={'User-Agent': UA})
     with urlopen(req, timeout=30) as r:
         return r.read().decode('utf-8', 'replace')
 
@@ -661,19 +620,88 @@ def score_matchup(a, b, apply_min_ip=False, short_ids=None):
     return score, per_cat
 
 
+# ==============================================================
+# Yahoo's public fantasy API
+# ==============================================================
+# The OAuth API has been dead app-wide since July, but this is a different
+# door: an unauthenticated read of a publicly-viewable league. No consumer key,
+# no token, no cookie. It also survives what killed the HTML scrape - during
+# live games Yahoo stops server-rendering the matchup stat table (it becomes a
+# React component fed by something the Network panel cannot even search), so
+# the numbers vanish from the page while staying perfectly available here.
+#
+# One request replaces six page fetches, and it arrives as JSON rather than
+# regex over a megabyte of markup.
+PUB_API = 'https://pub-api-rw.fantasysports.yahoo.com/fantasy/v2'
+GAME_KEYS = {2026: 469, 2025: 458, 2024: 431, 2023: 422, 2022: 412}
+
+# Yahoo identifies categories by number; these are this league's twelve plus
+# H/AB and IP, which are displayed but not scored.
+STAT_IDS = {
+    60: 'H/AB*', 7: 'R', 8: 'H', 12: 'HR', 13: 'RBI', 16: 'SB', 55: 'OPS',
+    50: 'IP*', 49: 'TB', 26: 'ERA', 27: 'WHIP', 57: 'K/9', 83: 'QS', 89: 'SV+H',
+}
+
+
+def league_key(lid, year=None):
+    year = year or YEAR
+    gk = int(os.environ.get('YAHOO_GAME_KEY') or GAME_KEYS.get(year, 0))
+    if not gk:
+        raise RuntimeError(f'no Yahoo game key known for {year}')
+    return f'{gk}.l.{lid}'
+
+
+def _flatten(block):
+    """Yahoo nests team metadata as a list of one-key dicts."""
+    out = {}
+    for item in block:
+        if isinstance(item, dict):
+            out.update(item)
+    return out
+
+
 def collect_details(base, week, matchups, lid):
-    """Fetch every matchup page once and index the stat rows by team id."""
+    """
+    Every category value and innings pitched for both sides of all six
+    matchups, from one API call. Falls back to nothing rather than guessing;
+    the caller then reaches for the cache.
+    """
+    url = f'{PUB_API}/league/{league_key(lid)}/scoreboard;week={week}?format=json'
+    try:
+        payload = json.loads(get(url))
+    except Exception as e:
+        print(f'  scoreboard API failed: {type(e).__name__}: {e}')
+        return {}, []
+
+    try:
+        board = payload['fantasy_content']['league'][1]['scoreboard']['0']['matchups']
+    except (KeyError, IndexError, TypeError) as e:
+        print(f'  unexpected scoreboard shape: {type(e).__name__}: {e}')
+        return {}, []
+
     detail, pairs = {}, []
-    for m in matchups:
-        a_id, b_id = m['a']['team_id'], m['b']['team_id']
-        rows = parse_matchup_detail(
-            get(f'{base}/matchup?week={week}&mid1={a_id}&mid2={b_id}', authed=True), lid)
-        if len(rows) < 2:
+    for i in range(int(board.get('count', 0))):
+        node = board.get(str(i), {}).get('matchup')
+        if not node:
             continue
-        a, b = rows
-        for r in (a, b):
-            detail[r['team_id']] = r
-        pairs.append((a, b))
+        sides = []
+        teams = node['0']['teams']
+        for j in range(int(teams.get('count', 2))):
+            t = teams.get(str(j), {}).get('team')
+            if not t:
+                continue
+            info = _flatten(t[0])
+            row = {'team_id': int(info['team_id']), 'name': clean(info.get('name', ''))}
+            for s in t[1]['team_stats']['stats']:
+                name = STAT_IDS.get(int(s['stat']['stat_id']))
+                if name:
+                    row[name] = s['stat']['value']
+            row['ip'] = ip_to_float(row.get('IP*', 0))
+            sides.append(row)
+        if len(sides) == 2:
+            for r in sides:
+                detail[r['team_id']] = r
+            pairs.append(tuple(sides))
     return detail, pairs
 
 
@@ -776,12 +804,15 @@ def collect_both(lid, sims=SIMS):
         per_cat[a['team_id']] = cats
         per_cat[b['team_id']] = cats
 
-    # who is even a candidate to forfeit
-    candidates = sorted(t['team_id'] for t in detail.values()
-                        if t.get('IP*') not in (None, '')
-                        and MIN_IP - t['ip'] > UNREACHABLE_GAP)
-    if len(candidates) > 4:                     # keep the powerset sane
-        candidates = candidates[:4]
+    # Who gets a toggle: the teams furthest from the minimum, whether or not
+    # some threshold calls them "unreachable". Kurtis went 29.1 -> 37.1 in a
+    # morning, so a fixed gap rule silently drops managers off the controls
+    # exactly when the day is still moving. Three keeps the powerset at 8, which
+    # runs in ~25s; four pushed it to 94s and past the free tier.
+    short_now = [t for t in detail.values()
+                 if t.get('IP*') not in (None, '') and t['ip'] < MIN_IP]
+    candidates = sorted(t['team_id']
+                        for t in sorted(short_now, key=lambda t: t["ip"])[:3])
 
     combos = [set()]
     for cid in candidates:
