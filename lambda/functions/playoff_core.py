@@ -570,7 +570,29 @@ def category_winner(a, b, cat):
     return a['team_id'] if better else b['team_id']
 
 
-def score_matchup(a, b, apply_min_ip=False):
+UNREACHABLE_GAP = 12.0      # innings a team cannot make up in one day
+
+
+def short_ids_for(detail, mode):
+    """
+    Which teams to treat as failing the minimum.
+
+    'now'       nobody - the scoreboard as Yahoo has it
+    'adjusted'  everyone currently under the line, however close
+    'likely'    only those too far back to get there. A team two outs short
+                will get those outs; a team twenty innings short will not, and
+                treating those two the same is what made the blanket view
+                credit the wrong manager.
+    """
+    if mode == 'now':
+        return set()
+    if mode == 'likely':
+        return {t['team_id'] for t in detail.values()
+                if MIN_IP - t['ip'] > UNREACHABLE_GAP}
+    return {t['team_id'] for t in detail.values() if t['ip'] < MIN_IP}
+
+
+def score_matchup(a, b, apply_min_ip=False, short_ids=None):
     """
     Categories won by each side.
 
@@ -579,7 +601,12 @@ def score_matchup(a, b, apply_min_ip=False):
     goes to nobody rather than swapping hands - neither has earned it, and
     handing it to the other short team would be arbitrary.
     """
-    short = {a['team_id']: a['ip'] < MIN_IP, b['team_id']: b['ip'] < MIN_IP}
+    if short_ids is None:
+        short_ids = {t['team_id'] for t in (a, b)
+                     if apply_min_ip and t['ip'] < MIN_IP}
+    short = {a['team_id']: a['team_id'] in short_ids,
+             b['team_id']: b['team_id'] in short_ids}
+    apply_min_ip = True if short_ids else apply_min_ip
     score = {a['team_id']: 0, b['team_id']: 0}
     per_cat = {}
     for cat in ALL_CATS:
@@ -611,12 +638,15 @@ def collect_details(base, week, matchups, lid):
 
 def collect_both(lid, sims=SIMS):
     """
-    The whole picture, computed twice: as the scoreboard reads right now, and
-    again with the minimum-innings rule applied.
+    The whole picture, computed under three readings of the innings minimum:
 
-    Returns one dict with a shared header plus 'now' and 'adjusted' scenarios,
-    each holding its own teams/odds. Everything before the simulation is done
-    once and shared - only the live category counts differ between the two.
+      now       the scoreboard exactly as Yahoo shows it
+      adjusted  every team currently under 50 IP forfeits its pitching leads
+      likely    only teams too far short to get there forfeit
+
+    'likely' is the one worth reading. A team two outs short will get those
+    outs; one twenty innings short will not, and the blanket view treats them
+    identically - which credits the wrong manager in both directions.
     """
     base = f'https://baseball.fantasysports.yahoo.com/b1/{lid}'
     home = get(base)
@@ -635,26 +665,25 @@ def collect_both(lid, sims=SIMS):
     managers = load_managers()
 
     detail, pairs = collect_details(base, week, matchups, lid)
-
-    # live category counts under each rule
-    live = {'now': {}, 'adjusted': {}}
     per_cat = {}
     for a, b in pairs:
-        s_now, cats_now = score_matchup(a, b, apply_min_ip=False)
-        s_adj, _ = score_matchup(a, b, apply_min_ip=True)
-        live['now'].update(s_now)
-        live['adjusted'].update(s_adj)
-        per_cat[a['team_id']] = cats_now
-        per_cat[b['team_id']] = cats_now
+        _, cats = score_matchup(a, b)
+        per_cat[a['team_id']] = cats
+        per_cat[b['team_id']] = cats
 
     scenarios = {}
-    for key in ('now', 'adjusted'):
+    for mode in ('now', 'adjusted', 'likely'):
+        shorts = short_ids_for(detail, mode)
+        live = {}
+        for a, b in pairs:
+            sc, _ = score_matchup(a, b, short_ids=shorts)
+            live.update(sc)
+
         ms = []
         for m in matchups:
             mm = json.loads(json.dumps(m))
             for side in ('a', 'b'):
-                tid = mm[side]['team_id']
-                mm[side]['live'] = live[key].get(tid, mm[side]['live'])
+                mm[side]['live'] = live.get(mm[side]['team_id'], mm[side]['live'])
             mm['decided'] = mm['a']['live'] + mm['b']['live']
             mm['remaining'] = max(0, CATS_PER_WEEK - mm['decided'])
             ms.append(mm)
@@ -665,20 +694,27 @@ def collect_both(lid, sims=SIMS):
                 teams[tid]['manager'] = mgr
         for tid, t in teams.items():
             d = detail.get(tid, {})
+            gap = MIN_IP - d.get('ip', 0.0)
             t['ip'] = d.get('ip', 0.0)
             t['ip_raw'] = d.get('IP*', '')
-            t['ip_short'] = round(max(0.0, MIN_IP - d.get('ip', 0.0)), 2)
+            t['ip_short'] = round(max(0.0, gap), 2)
             t['meets_min_ip'] = d.get('ip', 0.0) >= MIN_IP
+            t['ip_reachable'] = gap <= UNREACHABLE_GAP
+            t['forfeits'] = tid in shorts
             t['cats'] = {c: d.get(c, '') for c in ALL_CATS}
             t['cats_led'] = [c for c, w in per_cat.get(tid, {}).items() if w == tid]
+            t['pit_led'] = [c for c in PITCHING_CATS
+                            if per_cat.get(tid, {}).get(c) == tid]
         playoff_status(teams, spots)
         simulate(teams, spots, progress, sims=sims)
-        scenarios[key] = {'teams': teams, 'matchups': ms}
+        scenarios[mode] = {'teams': teams, 'matchups': ms,
+                           'short_ids': sorted(shorts)}
 
     return {
         'base': base, 'meta': meta, 'week': week, 'spots': spots,
         'settings': settings, 'last_regular_week': last_reg_week,
         'progress': progress, 'min_ip': MIN_IP,
+        'unreachable_gap': UNREACHABLE_GAP,
         'scenarios': scenarios,
     }
 

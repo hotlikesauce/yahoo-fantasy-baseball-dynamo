@@ -3,15 +3,16 @@ Scheduled snapshot of the playoff race.
 
 Every run scrapes the public Yahoo league page AND all six matchup pages, so it
 has every category value and each team's innings pitched. It then computes the
-whole picture twice:
+whole picture three ways:
 
   now       the scoreboard exactly as Yahoo shows it
-  adjusted  with the minimum-innings rule applied - a team short of MIN_IP
-            forfeits every pitching category it currently leads
+  adjusted  every team currently under MIN_IP forfeits its pitching leads
+  likely    only teams too far short to get there forfeit - a team two outs
+            short will get those outs, one twenty innings short will not
 
 Rows written to FantasyBaseball-PlayoffOdds:
 
-  Slot = "current"              both scenarios in full, for the page to render
+  Slot = "current"              all three scenarios, for the page to render
   Slot = "meta"                 which teams the chart tracks
   Slot = "2026-08-30T1445"      one immutable tracking point, 15-min slots
                                 between 11am and 10pm league time
@@ -36,7 +37,8 @@ TEAM_FIELDS = (
     'team_id', 'name', 'manager', 'wins', 'losses', 'ties', 'pts', 'live',
     'floor', 'ceiling', 'projected', 'odds', 'clinched', 'eliminated',
     'magic', 'need_alive', 'remaining', 'opponent', 'games',
-    'ip', 'ip_raw', 'ip_short', 'meets_min_ip', 'cats', 'cats_led',
+    'ip', 'ip_raw', 'ip_short', 'meets_min_ip', 'ip_reachable', 'forfeits',
+    'cats', 'cats_led', 'pit_led',
 )
 
 
@@ -65,8 +67,8 @@ def lambda_handler(event, context):
 
     r = pc.collect_both(league_id())
     spots = r['spots']
+    MODES = ('now', 'adjusted', 'likely')
     now_t = r['scenarios']['now']['teams']
-    adj_t = r['scenarios']['adjusted']['teams']
 
     # ---- who the chart follows ------------------------------------------
     meta_row = table.get_item(Key={'Year': year, 'Slot': 'meta'}).get('Item') or {}
@@ -98,9 +100,11 @@ def lambda_handler(event, context):
         'lower_is_better': sorted(pc.LOWER_IS_BETTER),
         'source': r['base'],
         'scraped_at': pc.now_local().isoformat(timespec='seconds'),
-        'now': {'teams': slim(now_t), 'matchups': r['scenarios']['now']['matchups']},
-        'adjusted': {'teams': slim(adj_t),
-                     'matchups': r['scenarios']['adjusted']['matchups']},
+        'unreachable_gap': r['unreachable_gap'],
+        'modes': list(MODES),
+        **{m: {'teams': slim(r['scenarios'][m]['teams']),
+               'matchups': r['scenarios'][m]['matchups'],
+               'short_ids': r['scenarios'][m]['short_ids']} for m in MODES},
     }))
 
     # ---- one immutable tracking point per 15-minute slot ----------------
@@ -111,9 +115,10 @@ def lambda_handler(event, context):
         point = {'Year': year, 'Slot': key,
                  'label': pc.slot_label_15(slot),
                  'recorded_at': pc.now_local().isoformat(timespec='seconds'),
-                 'week': r['week'], 'now': {}, 'adjusted': {}}
-        for name, teams in (('now', now_t), ('adjusted', adj_t)):
-            for tid, t in teams.items():
+                 'week': r['week']}
+        for name in MODES:
+            point[name] = {}
+            for tid, t in r['scenarios'][name]['teams'].items():
                 point[name][str(tid)] = {
                     'odds': round(pc.chart_value(t), 4),
                     'pts': t['pts'] + t['live'],
@@ -132,9 +137,10 @@ def lambda_handler(event, context):
         'point_written': written,
         'week': r['week'],
         'status': r['meta']['status'],
-        'short_of_min_ip': [t['name'] for t in now_t.values() if not t['meets_min_ip']],
-        'odds': {now_t[t]['name']: {'now': round(now_t[t]['odds'], 2),
-                                    'adj': round(adj_t[t]['odds'], 2)}
+        'cannot_reach_min_ip': [now_t[i]['name']
+                                for i in r['scenarios']['likely']['short_ids']],
+        'odds': {now_t[t]['name']: {m: round(r['scenarios'][m]['teams'][t]['odds'], 2)
+                                    for m in MODES}
                  for t in tracked if t in now_t},
     }
     print(json.dumps(summary, ensure_ascii=False))

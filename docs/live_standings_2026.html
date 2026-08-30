@@ -11,9 +11,9 @@
   Static shell. Every number is read at load time from serve-playoff-odds,
   which reads DynamoDB, which snapshot-playoff-odds fills on a schedule.
 
-  Two scenarios arrive with every payload: "now" is the scoreboard as Yahoo
-  shows it, "adjusted" applies the 50-IP minimum. The toggle just swaps which
-  one every section renders from - nothing is recomputed in the browser.
+  Three scenarios arrive with every payload - "now", "likely" and "adjusted" -
+  each fully simulated server-side. The selector just swaps which one every
+  section renders from; nothing is recomputed in the browser.
 -->
 <style>
   .toolbar {
@@ -21,19 +21,16 @@
     background: #1e293b; border: 1px solid #334155; border-radius: 10px;
     padding: 12px 16px; margin-bottom: 18px;
   }
-  .switch { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
-  .switch input { display: none; }
-  .track {
-    width: 44px; height: 24px; border-radius: 12px; background: #334155;
-    position: relative; transition: background .15s; flex: none;
+  .toolbar .lbl { font-weight: 700; font-size: .9em; color: #e2e8f0; }
+  .seg {
+    font: inherit; font-size: .82em; font-weight: 600; cursor: pointer;
+    padding: 6px 12px; border: 1px solid #334155; background: #0f172a;
+    color: #94a3b8; margin-right: -1px;
   }
-  .track::after {
-    content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
-    border-radius: 50%; background: #94a3b8; transition: transform .15s, background .15s;
-  }
-  .switch input:checked + .track { background: #b45309; }
-  .switch input:checked + .track::after { transform: translateX(20px); background: #fbbf24; }
-  .switch .lbl { font-weight: 600; font-size: .92em; }
+  .seg:first-of-type { border-radius: 6px 0 0 6px; }
+  .seg:last-of-type { border-radius: 0 6px 6px 0; margin-right: 0; }
+  .seg:hover { color: #e2e8f0; }
+  .seg.on { background: #b45309; border-color: #b45309; color: #fff; }
   .toolbar .hint { color: #64748b; font-size: .8em; }
   .toolbar .warn { color: #fbbf24; font-weight: 600; font-size: .82em; }
   body.adj .toolbar { border-color: #b45309; background: #1f1a10; }
@@ -161,7 +158,9 @@
   var CATS = 12;
   var chart = null;
   var DATA = null;
-  var adjusted = false;          // the min-IP toggle
+  var mode = 'likely';   // 'now' | 'adjusted' | 'likely'
+  var MODE_LABEL = { now: 'As-is', adjusted: 'All short teams forfeit',
+                     likely: 'Only unreachable teams forfeit' };
 
   // One hue per team: solid + vibrant for points, muted + dashed for odds.
   var TEAM_COLORS = {
@@ -211,8 +210,8 @@
   function mgrSpan(t) {
     return t.manager ? ' <span class="mgr">' + esc(t.manager) + '</span>' : '';
   }
-  function scen() { return DATA.current[adjusted ? 'adjusted' : 'now']; }
-  function other() { return DATA.current[adjusted ? 'now' : 'adjusted']; }
+  function scen() { return DATA.current[mode]; }
+  function other() { return DATA.current[mode === 'now' ? 'likely' : 'now']; }
 
   function byLive(list) {
     return list.slice().sort(function (x, y) {
@@ -260,7 +259,7 @@
       '<th title="Innings pitched this week. Red means short of the ' +
         DATA.current.min_ip + '-inning minimum, with the shortfall in brackets.">IP</th>' +
       '<th title="How this row changes under the other scenario">' +
-        (adjusted ? 'vs as-is' : 'vs adj') + '</th>' +
+        (mode === 'now' ? 'vs likely' : 'vs as-is') + '</th>' +
       '<th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
@@ -307,7 +306,7 @@
             : ', leading no pitching categories');
       // fmtOdds can return "<0.1%" - that raw < has to be escaped or it eats
       // the rest of the line as a tag
-      var altTxt = a ? '<span class="alt">' + (adjusted ? 'as-is ' : 'adj ') +
+      var altTxt = a ? '<span class="alt">' + (mode === 'now' ? 'likely ' : 'as-is ') +
                        esc(fmtOdds(a)) + '</span>' : '';
       return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
         '<div class="pf-seed">' + seed + '</div>' +
@@ -328,7 +327,7 @@
 
   // ---------- 3. tracker chart ------------------------------------------
   function drawChart(points, tracked, byId) {
-    var key = adjusted ? 'adjusted' : 'now';
+    var key = mode;
     var ids = tracked.filter(function (id) { return byId[id]; });
     if (!ids.length || !points.length) return;
 
@@ -464,7 +463,7 @@
     var byId = indexById(teams);
     var weekPct = Math.round(cur.week_progress * 100) + '%';
     var tracked = (DATA.tracked || []).filter(function (id) { return byId[id]; });
-    document.body.className = adjusted ? 'adj' : '';
+    document.body.className = mode === 'now' ? '' : 'adj';
 
     document.getElementById('subtitle').textContent =
       'Week ' + cur.week + ' · ' + cur.status + ' · ' + spots + '-team playoff field';
@@ -479,16 +478,23 @@
              }).join(', ')
       : '<span class="ok">Every team has cleared ' + cur.min_ip + ' innings.</span>';
 
+    var HINTS = {
+      now: 'The scoreboard exactly as Yahoo has it. Nobody forfeits anything yet.',
+      likely: 'Only teams too far short to reach ' + cur.min_ip +
+              ' today forfeit their pitching categories. Two outs short is not the ' +
+              'same as twenty innings short.',
+      adjusted: 'Every team currently under ' + cur.min_ip +
+                ' forfeits, however close they are. Read this as the worst case, ' +
+                'not the likely one.',
+    };
     var toolbar =
       '<div class="toolbar">' +
-        '<label class="switch"><input type="checkbox" id="ipToggle"' +
-          (adjusted ? ' checked' : '') + '><span class="track"></span>' +
-          '<span class="lbl">Adjust for ' + cur.min_ip + '-IP minimum</span></label>' +
-        (adjusted
-          ? '<span class="warn">SHOWING ADJUSTED — teams under ' + cur.min_ip +
-            ' IP forfeit every pitching category they lead</span>'
-          : '<span class="hint">Showing the scoreboard as-is. Flip this to see it ' +
-            'with the innings minimum enforced.</span>') +
+        '<span class="lbl">Minimum-IP rule:</span>' +
+        ['now', 'likely', 'adjusted'].map(function (m) {
+          return '<button class="seg' + (m === mode ? ' on' : '') +
+                 '" data-mode="' + m + '">' + MODE_LABEL[m] + '</button>';
+        }).join('') +
+        '<span class="' + (mode === 'now' ? 'hint' : 'warn') + '">' + HINTS[mode] + '</span>' +
       '</div>' +
       '<div class="short-list">' + shortTxt + '</div>';
 
@@ -513,8 +519,12 @@
       toolbar +
       '<h2>1. Live Standings</h2>' +
       '<div class="section-desc">Live order — Bank + Leading. ' +
-        (adjusted ? 'Pitching categories led by teams under the innings minimum have been ' +
-                    'handed to their opponent.' : 'Exactly as Yahoo has it right now.') +
+        (mode === 'now'
+          ? 'Exactly as Yahoo has it right now.'
+          : 'Pitching categories led by ' +
+            (mode === 'likely' ? 'teams that cannot reach the minimum today'
+                               : 'every team currently under the minimum') +
+            ' have been handed to their opponent.') +
         '</div>' +
       renderStandings(teams, spots, cur.week) +
       '<h2>2. Playoff Picture</h2>' +
@@ -544,8 +554,9 @@
         'Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
       '</div>';
 
-    var tog = document.getElementById('ipToggle');
-    if (tog) tog.onchange = function () { adjusted = this.checked; render(); };
+    Array.prototype.forEach.call(document.querySelectorAll('.seg'), function (b) {
+      b.onclick = function () { mode = this.getAttribute('data-mode'); render(); };
+    });
     if (tracked.length && DATA.points.length) drawChart(DATA.points, tracked, byId);
   }
 
