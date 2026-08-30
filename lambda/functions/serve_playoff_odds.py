@@ -38,6 +38,8 @@ def lambda_handler(event, context):
             current = row
         elif slot == 'meta':
             meta = row
+        elif slot.startswith('ipcache'):
+            pass        # scrape cache, not a tracking point - never serve it
         else:
             points.append(row)
     points.sort(key=lambda p: p['Slot'])

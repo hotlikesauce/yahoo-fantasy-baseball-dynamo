@@ -375,7 +375,7 @@
       datasets.push({
         label: nm + ' — points',
         data: points.map(function (p) {
-          var v = p[key] && p[key][String(id)]; return v ? v.pts : null;
+          var v = p.s && p.s[key] && p.s[key][String(id)]; return v ? v.pts : null;
         }),
         borderColor: col.pts, backgroundColor: col.pts,
         borderWidth: 3, pointRadius: 2, pointHoverRadius: 5,
