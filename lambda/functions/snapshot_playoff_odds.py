@@ -3,12 +3,10 @@ Scheduled snapshot of the playoff race.
 
 Every run scrapes the public Yahoo league page AND all six matchup pages, so it
 has every category value and each team's innings pitched. It then computes the
-whole picture three ways:
-
-  now       the scoreboard exactly as Yahoo shows it
-  adjusted  every team currently under MIN_IP forfeits its pitching leads
-  likely    only teams too far short to get there forfeit - a team two outs
-            short will get those outs, one twenty innings short will not
+whole picture once per COMBINATION of the teams that genuinely cannot reach
+the innings minimum. A team two outs short will get those outs; one twenty
+innings short will not, so only the latter are candidates. Three candidates
+means eight fully-simulated scenarios, keyed 'none', '5', '5-6', '5-6-8', ...
 
 Rows written to FantasyBaseball-PlayoffOdds:
 
@@ -38,7 +36,7 @@ TEAM_FIELDS = (
     'floor', 'ceiling', 'projected', 'odds', 'clinched', 'eliminated',
     'magic', 'need_alive', 'remaining', 'opponent', 'games',
     'ip', 'ip_raw', 'ip_short', 'meets_min_ip', 'ip_reachable', 'forfeits',
-    'cats', 'cats_led', 'pit_led',
+    'is_candidate', 'cats_led', 'pit_led',
 )
 
 
@@ -67,8 +65,8 @@ def lambda_handler(event, context):
 
     r = pc.collect_both(league_id())
     spots = r['spots']
-    MODES = ('now', 'adjusted', 'likely')
-    now_t = r['scenarios']['now']['teams']
+    KEYS = sorted(r['scenarios'])
+    now_t = r['scenarios']['none']['teams']
 
     # ---- who the chart follows ------------------------------------------
     meta_row = table.get_item(Key={'Year': year, 'Slot': 'meta'}).get('Item') or {}
@@ -101,15 +99,19 @@ def lambda_handler(event, context):
         'source': r['base'],
         'scraped_at': pc.now_local().isoformat(timespec='seconds'),
         'unreachable_gap': r['unreachable_gap'],
-        'modes': list(MODES),
+        'candidates': r['candidates'],
+        'candidate_info': r['candidate_info'],
+        'all_key': r['all_key'],
+        'scenario_keys': KEYS,
         # Back-compat: a page that predates the scenario split reads teams and
-        # matchups off the top level. Keep mirroring the unadjusted view there
-        # so an older deploy keeps rendering instead of throwing on undefined.
+        # matchups off the top level, and an intermediate one read .now.
+        # Mirror the unadjusted view into both so older deploys keep rendering.
         'teams': slim(now_t),
-        'matchups': r['scenarios']['now']['matchups'],
-        **{m: {'teams': slim(r['scenarios'][m]['teams']),
-               'matchups': r['scenarios'][m]['matchups'],
-               'short_ids': r['scenarios'][m]['short_ids']} for m in MODES},
+        'matchups': r['scenarios']['none']['matchups'],
+        'now': {'teams': slim(now_t), 'matchups': r['scenarios']['none']['matchups']},
+        'scenarios': {k: {'teams': slim(r['scenarios'][k]['teams']),
+                          'matchups': r['scenarios'][k]['matchups'],
+                          'short_ids': r['scenarios'][k]['short_ids']} for k in KEYS},
     }))
 
     # ---- one immutable tracking point per 15-minute slot ----------------
@@ -121,16 +123,18 @@ def lambda_handler(event, context):
                  'label': pc.slot_label_15(slot),
                  'recorded_at': pc.now_local().isoformat(timespec='seconds'),
                  'week': r['week']}
-        for name in MODES:
-            point[name] = {}
+        point['s'] = {}
+        for name in KEYS:
+            point['s'][name] = {}
             for tid, t in r['scenarios'][name]['teams'].items():
-                point[name][str(tid)] = {
+                point['s'][name][str(tid)] = {
                     'odds': round(pc.chart_value(t), 4),
                     'pts': t['pts'] + t['live'],
                     'live': t['live'],
                 }
-        # same back-compat: the old chart reads a flat odds map off the point
-        point['odds'] = {tid: v['odds'] for tid, v in point['now'].items()}
+        # back-compat for older charts: flat odds map plus a .now alias
+        point['now'] = point['s']['none']
+        point['odds'] = {tid: v['odds'] for tid, v in point['s']['none'].items()}
         try:
             table.put_item(Item=to_dynamo(point),
                            ConditionExpression='attribute_not_exists(#s)',
@@ -144,10 +148,12 @@ def lambda_handler(event, context):
         'point_written': written,
         'week': r['week'],
         'status': r['meta']['status'],
-        'cannot_reach_min_ip': [now_t[i]['name']
-                                for i in r['scenarios']['likely']['short_ids']],
-        'odds': {now_t[t]['name']: {m: round(r['scenarios'][m]['teams'][t]['odds'], 2)
-                                    for m in MODES}
+        'candidates': [(c['manager'] or c['name']) for c in r['candidate_info']],
+        'scenarios': len(KEYS),
+        'odds': {(now_t[t].get('manager') or now_t[t]['name']):
+                 {'as-is': round(r['scenarios']['none']['teams'][t]['odds'], 2),
+                  'all-forfeit': round(
+                      r['scenarios'][r['all_key']]['teams'][t]['odds'], 2)}
                  for t in tracked if t in now_t},
     }
     print(json.dumps(summary, ensure_ascii=False))

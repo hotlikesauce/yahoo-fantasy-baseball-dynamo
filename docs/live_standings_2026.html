@@ -59,7 +59,7 @@
   td.delta.same { color: #475569; }
 
   .pf-row {
-    display: grid; grid-template-columns: 42px 1fr 170px 130px;
+    display: grid; grid-template-columns: 42px 1fr 230px 130px;
     align-items: center; gap: 12px;
     background: #1e293b; border: 1px solid #334155; border-radius: 10px;
     padding: 10px 14px; margin-bottom: 6px;
@@ -83,8 +83,15 @@
   .pf-ip.okay { color: #4ade80; }
   .pf-bar { height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
   .pf-bar span { display: block; height: 100%; background: linear-gradient(90deg,#3b82f6,#22c55e); }
-  .pf-pct { font-size: .8em; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
-  .pf-pct .alt { color: #fbbf24; }
+  .pf-two { display: grid; grid-template-columns: 52px 1fr 62px; align-items: center;
+            gap: 7px; font-size: .74em; margin-bottom: 4px; }
+  .pf-two .tag { color: #64748b; text-transform: uppercase; letter-spacing: .04em;
+                 font-weight: 700; font-size: .92em; }
+  .pf-two .val { text-align: right; color: #cbd5e1; font-weight: 700;
+                 font-variant-numeric: tabular-nums; }
+  .pf-two.alt .pf-bar span { background: linear-gradient(90deg,#92400e,#b45309); }
+  .pf-two.alt .tag { color: #b45309; }
+  .pf-two.alt.moved .tag, .pf-two.alt.moved .val { color: #fbbf24; }
   .pf-chip { text-align: right; }
 
   .chip {
@@ -138,7 +145,7 @@
     font: inherit; font-size: .9em;
   }
   @media (max-width: 720px) {
-    .pf-row { grid-template-columns: 32px 1fr 100px; }
+    .pf-row { grid-template-columns: 28px 1fr 150px; }
     .pf-chip { display: none; }
   }
 </style>
@@ -158,9 +165,21 @@
   var CATS = 12;
   var chart = null;
   var DATA = null;
-  var mode = 'likely';   // 'now' | 'adjusted' | 'likely'
-  var MODE_LABEL = { now: 'As-is', adjusted: 'All short teams forfeit',
-                     likely: 'Only unreachable teams forfeit' };
+  // Two independent selections: the top filters drive the standings table,
+  // the tracker carries its own copy. Table 2 answers to neither - it always
+  // shows as-is against the full-forfeit case, stacked.
+  var pick = {};        // team_id -> true, for the standings
+  var pickChart = {};   // team_id -> true, for the race tracker
+
+  function keyOf(sel) {
+    var ids = Object.keys(sel).filter(function (k) { return sel[k]; })
+                    .map(Number).sort(function (a, b) { return a - b; });
+    return ids.length ? ids.join('-') : 'none';
+  }
+  function scenarioFor(sel) {
+    var sc = DATA.current.scenarios;
+    return sc[keyOf(sel)] || sc.none;
+  }
 
   // One hue per team: solid + vibrant for points, muted + dashed for odds.
   var TEAM_COLORS = {
@@ -210,8 +229,11 @@
   function mgrSpan(t) {
     return t.manager ? ' <span class="mgr">' + esc(t.manager) + '</span>' : '';
   }
-  function scen() { return DATA.current[mode]; }
-  function other() { return DATA.current[mode === 'now' ? 'likely' : 'now']; }
+  function scen() { return scenarioFor(pick); }
+  function asIs() { return DATA.current.scenarios.none; }
+  function allForfeit() { return DATA.current.scenarios[DATA.current.all_key] ||
+                                 DATA.current.scenarios.none; }
+  function other() { return keyOf(pick) === 'none' ? allForfeit() : asIs(); }
 
   function byLive(list) {
     return list.slice().sort(function (x, y) {
@@ -259,7 +281,7 @@
       '<th title="Innings pitched this week. Red means short of the ' +
         DATA.current.min_ip + '-inning minimum, with the shortfall in brackets.">IP</th>' +
       '<th title="How this row changes under the other scenario">' +
-        (mode === 'now' ? 'vs likely' : 'vs as-is') + '</th>' +
+        (keyOf(pick) === 'none' ? 'vs forfeits' : 'vs as-is') + '</th>' +
       '<th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
 
@@ -281,44 +303,49 @@
     return 'Needs help elsewhere';
   }
 
-  function renderPicture(teams, spots) {
-    var order = teams.slice().sort(function (x, y) {
+  function renderPicture(spots) {
+    // Deliberately ignores the top filters. This table answers one question:
+    // where does everyone stand now, and where would they stand if every
+    // unreachable team forfeited. Both bars, always, side by side.
+    var A = indexById(asIs().teams);
+    var B = indexById(allForfeit().teams);
+    var order = asIs().teams.slice().sort(function (x, y) {
       return oddsValue(y) - oddsValue(x) || y.pts - x.pts;
     });
-    var byId = indexById(teams);
-    var alt = indexById(other().teams);
     return order.map(function (t, i) {
-      var cs = statusChip(t), seed = i + 1;
-      var opp = byId[t.opponent];
-      var a = alt[t.team_id];
-      var live = opp
-        ? '<span class="sc">' + t.live + '–' + opp.live + '</span> vs ' + esc(opp.name)
-        : '<span class="dim">no matchup</span>';
-      // cats_led covers every category; only the PITCHING ones are forfeitable
-      var atRisk = (t.cats_led || []).filter(function (c) {
-        return DATA.current.pitching_cats.indexOf(c) !== -1;
-      });
-      var ipTxt = t.meets_min_ip
-        ? 'IP ' + esc(t.ip_raw) + ' — over the ' + DATA.current.min_ip + ' minimum'
-        : 'IP ' + esc(t.ip_raw) + ' — <b>' + t.ip_short + ' short</b>' +
-          (atRisk.length ? ', ' + atRisk.length + ' pitching cat' +
-            (atRisk.length === 1 ? '' : 's') + ' at risk (' + esc(atRisk.join(', ')) + ')'
-            : ', leading no pitching categories');
-      // fmtOdds can return "<0.1%" - that raw < has to be escaped or it eats
-      // the rest of the line as a tag
-      var altTxt = a ? '<span class="alt">' + (mode === 'now' ? 'likely ' : 'as-is ') +
-                       esc(fmtOdds(a)) + '</span>' : '';
+      var a = A[t.team_id], b = B[t.team_id] || a;
+      var cs = statusChip(a), seed = i + 1;
+      var opp = A[a.opponent];
+      var oppB = B[a.opponent];
+      var moved = Math.abs(oddsValue(b) - oddsValue(a)) >= 0.05;
+      var ipTxt = a.meets_min_ip
+        ? 'IP ' + esc(a.ip_raw) + ' — over the ' + DATA.current.min_ip + ' minimum'
+        : 'IP ' + esc(a.ip_raw) + ' — <b>' + a.ip_short + ' short</b>' +
+          (a.is_candidate ? ' (cannot reach it today)' : ' (reachable)');
       return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
         '<div class="pf-seed">' + seed + '</div>' +
         '<div class="pf-main">' +
-          '<div class="pf-name">' + esc(t.name) + mgrSpan(t) + '</div>' +
-          '<div class="pf-live">' + live + '</div>' +
-          '<div class="pf-ip ' + (t.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +
-          '<div class="pf-note">' + esc(noteFor(t)) + '</div>' +
+          '<div class="pf-name">' + esc(a.name) + mgrSpan(a) + '</div>' +
+          '<div class="pf-live">' +
+            (opp ? '<span class="sc">' + a.live + '–' + opp.live + '</span> vs ' + esc(opp.name)
+                 : '<span class="dim">no matchup</span>') +
+            (moved && oppB ? '<span class="dim"> → ' + b.live + '–' + oppB.live +
+                             ' with forfeits</span>' : '') +
+          '</div>' +
+          '<div class="pf-ip ' + (a.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +
+          '<div class="pf-note">' + esc(noteFor(a)) + '</div>' +
         '</div>' +
         '<div class="pf-odds">' +
-          '<div class="pf-bar"><span style="width:' + oddsValue(t).toFixed(1) + '%"></span></div>' +
-          '<div class="pf-pct">' + esc(fmtOdds(t)) + ' &nbsp;' + altTxt + '</div>' +
+          '<div class="pf-two">' +
+            '<span class="tag">as-is</span>' +
+            '<div class="pf-bar"><span style="width:' + oddsValue(a).toFixed(1) + '%"></span></div>' +
+            '<span class="val">' + esc(fmtOdds(a)) + '</span>' +
+          '</div>' +
+          '<div class="pf-two alt' + (moved ? ' moved' : '') + '">' +
+            '<span class="tag">forfeits</span>' +
+            '<div class="pf-bar"><span style="width:' + oddsValue(b).toFixed(1) + '%"></span></div>' +
+            '<span class="val">' + esc(fmtOdds(b)) + '</span>' +
+          '</div>' +
         '</div>' +
         '<div class="pf-chip"><span class="chip ' + cs[0] + '">' + cs[1] + '</span></div>' +
       '</div>';
@@ -327,7 +354,7 @@
 
   // ---------- 3. tracker chart ------------------------------------------
   function drawChart(points, tracked, byId) {
-    var key = mode;
+    var key = keyOf(pickChart);
     var ids = tracked.filter(function (id) { return byId[id]; });
     if (!ids.length || !points.length) return;
 
@@ -348,7 +375,7 @@
       datasets.push({
         label: nm + ' — playoff %',
         data: points.map(function (p) {
-          var v = p[key] && p[key][String(id)]; return v ? v.odds : null;
+          var v = p.s && p.s[key] && p.s[key][String(id)]; return v ? v.odds : null;
         }),
         borderColor: col.odds, backgroundColor: col.odds,
         borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4,
@@ -455,6 +482,52 @@
     }).join('');
   }
 
+  // ---------- filter bar --------------------------------------------------
+  function pickNames(sel) {
+    var c = DATA.current.candidate_info.filter(function (x) { return sel[x.team_id]; });
+    if (!c.length) return 'nobody';
+    return c.map(function (x) { return x.manager || x.name; }).join(' + ');
+  }
+
+  // One control per team that genuinely cannot reach the minimum, plus As-is
+  // to clear them. Independent, because the three are separate events.
+  function filterBar(sel, id) {
+    var cur = DATA.current;
+    var on = keyOf(sel) !== 'none';
+    var btns = '<button class="seg' + (on ? '' : ' on') + '" data-sel="' + id +
+               '" data-team="">As-is</button>';
+    cur.candidate_info.forEach(function (c) {
+      var lost = c.pit_led.length;
+      btns += '<button class="seg' + (sel[c.team_id] ? ' on' : '') +
+              '" data-sel="' + id + '" data-team="' + c.team_id + '"' +
+              ' title="' + esc(c.name) + ' — IP ' + esc(c.ip_raw) + ', ' + c.ip_short +
+              ' short. Forfeits ' + (lost ? c.pit_led.join(', ') : 'no pitching categories') +
+              '">' + esc(c.manager || c.name) + ' forfeits' +
+              (lost ? '' : ' (no effect)') + '</button>';
+    });
+    return '<div class="toolbar">' +
+      '<span class="lbl">' + cur.min_ip + '-IP forfeits:</span>' + btns +
+      '<span class="' + (on ? 'warn' : 'hint') + '">' +
+        (on ? 'Assuming ' + pickNames(sel) + ' finish' +
+              (Object.keys(sel).filter(function (k) { return sel[k]; }).length === 1 ? 'es' : '') +
+              ' under ' + cur.min_ip + ' IP and forfeit every pitching category they lead.'
+            : 'Nobody forfeiting. Click a manager to model them missing the innings minimum.') +
+      '</span></div>';
+  }
+
+  function wireFilters() {
+    Array.prototype.forEach.call(document.querySelectorAll('.seg'), function (b) {
+      b.onclick = function () {
+        var which = this.getAttribute('data-sel') === 'f1' ? pick : pickChart;
+        var team = this.getAttribute('data-team');
+        if (!team) { Object.keys(which).forEach(function (k) { delete which[k]; }); }
+        else if (which[team]) { delete which[team]; }
+        else { which[team] = true; }
+        render();
+      };
+    });
+  }
+
   // ---------- assemble ---------------------------------------------------
   function render() {
     var cur = DATA.current;
@@ -463,7 +536,7 @@
     var byId = indexById(teams);
     var weekPct = Math.round(cur.week_progress * 100) + '%';
     var tracked = (DATA.tracked || []).filter(function (id) { return byId[id]; });
-    document.body.className = mode === 'now' ? '' : 'adj';
+    document.body.className = keyOf(pick) === 'none' ? '' : 'adj';
 
     document.getElementById('subtitle').textContent =
       'Week ' + cur.week + ' · ' + cur.status + ' · ' + spots + '-team playoff field';
@@ -478,34 +551,20 @@
              }).join(', ')
       : '<span class="ok">Every team has cleared ' + cur.min_ip + ' innings.</span>';
 
-    var HINTS = {
-      now: 'The scoreboard exactly as Yahoo has it. Nobody forfeits anything yet.',
-      likely: 'Only teams too far short to reach ' + cur.min_ip +
-              ' today forfeit their pitching categories. Two outs short is not the ' +
-              'same as twenty innings short.',
-      adjusted: 'Every team currently under ' + cur.min_ip +
-                ' forfeits, however close they are. Read this as the worst case, ' +
-                'not the likely one.',
-    };
-    var toolbar =
-      '<div class="toolbar">' +
-        '<span class="lbl">Minimum-IP rule:</span>' +
-        ['now', 'likely', 'adjusted'].map(function (m) {
-          return '<button class="seg' + (m === mode ? ' on' : '') +
-                 '" data-mode="' + m + '">' + MODE_LABEL[m] + '</button>';
-        }).join('') +
-        '<span class="' + (mode === 'now' ? 'hint' : 'warn') + '">' + HINTS[mode] + '</span>' +
-      '</div>' +
+    var toolbar = filterBar(pick, 'f1') +
       '<div class="short-list">' + shortTxt + '</div>';
 
     var chartSection = '';
     if (tracked.length) {
       chartSection =
         '<h2>3. Race Tracker</h2>' +
+        filterBar(pickChart, 'f2') +
         '<div class="section-desc">' +
           tracked.map(function (id) { return esc(byId[id].manager || byId[id].name); }).join(', ') +
           ' — every 15 minutes, 11am to 10pm MT. Solid lines are live points (left axis); ' +
           'dashed, muted lines are playoff odds (right axis). ' +
+          (keyOf(pickChart) === 'none' ? 'Showing as-is. '
+             : 'Projected with ' + pickNames(pickChart) + ' forfeiting. ') +
           (DATA.points.length ? DATA.points.length + ' point' +
             (DATA.points.length === 1 ? '' : 's') + ' logged today.'
             : 'Tracking starts at 11am — nothing logged yet.') +
@@ -519,18 +578,16 @@
       toolbar +
       '<h2>1. Live Standings</h2>' +
       '<div class="section-desc">Live order — Bank + Leading. ' +
-        (mode === 'now'
+        (keyOf(pick) === 'none'
           ? 'Exactly as Yahoo has it right now.'
-          : 'Pitching categories led by ' +
-            (mode === 'likely' ? 'teams that cannot reach the minimum today'
-                               : 'every team currently under the minimum') +
+          : 'Pitching categories led by ' + pickNames(pick) +
             ' have been handed to their opponent.') +
         '</div>' +
       renderStandings(teams, spots, cur.week) +
       '<h2>2. Playoff Picture</h2>' +
       '<div class="section-desc">Ordered by odds of making the field. The second figure ' +
         'on each bar is the same team under the other scenario.</div>' +
-      renderPicture(teams, spots) +
+      renderPicture(spots) +
       chartSection +
       '<h2>Week ' + cur.week + ' Matchups</h2>' +
       '<div class="section-desc">Live category scores — ' + esc(cur.status) + '</div>' +
@@ -554,9 +611,7 @@
         'Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
       '</div>';
 
-    Array.prototype.forEach.call(document.querySelectorAll('.seg'), function (b) {
-      b.onclick = function () { mode = this.getAttribute('data-mode'); render(); };
-    });
+    wireFilters();
     if (tracked.length && DATA.points.length) drawChart(DATA.points, tracked, byId);
   }
 

@@ -636,17 +636,20 @@ def collect_details(base, week, matchups, lid):
     return detail, pairs
 
 
+def combo_key(ids):
+    """Stable name for a set of forfeiting teams. Empty set is 'none'."""
+    return '-'.join(str(i) for i in sorted(ids)) or 'none'
+
+
 def collect_both(lid, sims=SIMS):
     """
-    The whole picture, computed under three readings of the innings minimum:
+    The whole picture, computed once for every combination of the teams that
+    genuinely cannot reach the innings minimum.
 
-      now       the scoreboard exactly as Yahoo shows it
-      adjusted  every team currently under 50 IP forfeits its pitching leads
-      likely    only teams too far short to get there forfeit
-
-    'likely' is the one worth reading. A team two outs short will get those
-    outs; one twenty innings short will not, and the blanket view treats them
-    identically - which credits the wrong manager in both directions.
+    Only teams further than UNREACHABLE_GAP from the line are candidates - a
+    side two outs short will get those outs, and pretending otherwise credits
+    the wrong manager. With three candidates that is eight scenarios, each
+    fully simulated, so the page can toggle any combination without estimating.
     """
     base = f'https://baseball.fantasysports.yahoo.com/b1/{lid}'
     home = get(base)
@@ -671,9 +674,18 @@ def collect_both(lid, sims=SIMS):
         per_cat[a['team_id']] = cats
         per_cat[b['team_id']] = cats
 
+    # who is even a candidate to forfeit
+    candidates = sorted(t['team_id'] for t in detail.values()
+                        if MIN_IP - t['ip'] > UNREACHABLE_GAP)
+    if len(candidates) > 4:                     # keep the powerset sane
+        candidates = candidates[:4]
+
+    combos = [set()]
+    for cid in candidates:
+        combos += [c | {cid} for c in combos]
+
     scenarios = {}
-    for mode in ('now', 'adjusted', 'likely'):
-        shorts = short_ids_for(detail, mode)
+    for shorts in combos:
         live = {}
         for a, b in pairs:
             sc, _ = score_matchup(a, b, short_ids=shorts)
@@ -700,6 +712,7 @@ def collect_both(lid, sims=SIMS):
             t['ip_short'] = round(max(0.0, gap), 2)
             t['meets_min_ip'] = d.get('ip', 0.0) >= MIN_IP
             t['ip_reachable'] = gap <= UNREACHABLE_GAP
+            t['is_candidate'] = tid in candidates
             t['forfeits'] = tid in shorts
             t['cats'] = {c: d.get(c, '') for c in ALL_CATS}
             t['cats_led'] = [c for c, w in per_cat.get(tid, {}).items() if w == tid]
@@ -707,14 +720,27 @@ def collect_both(lid, sims=SIMS):
                             if per_cat.get(tid, {}).get(c) == tid]
         playoff_status(teams, spots)
         simulate(teams, spots, progress, sims=sims)
-        scenarios[mode] = {'teams': teams, 'matchups': ms,
-                           'short_ids': sorted(shorts)}
+        scenarios[combo_key(shorts)] = {'teams': teams, 'matchups': ms,
+                                        'short_ids': sorted(shorts)}
+
+    none_teams = scenarios['none']['teams']
+    cand_info = [{
+        'team_id': c,
+        'name': none_teams[c]['name'],
+        'manager': none_teams[c].get('manager', ''),
+        'ip_raw': none_teams[c]['ip_raw'],
+        'ip_short': none_teams[c]['ip_short'],
+        'pit_led': none_teams[c]['pit_led'],
+        'opponent': none_teams[c]['opponent'],
+    } for c in candidates]
 
     return {
         'base': base, 'meta': meta, 'week': week, 'spots': spots,
         'settings': settings, 'last_regular_week': last_reg_week,
         'progress': progress, 'min_ip': MIN_IP,
         'unreachable_gap': UNREACHABLE_GAP,
+        'candidates': candidates, 'candidate_info': cand_info,
+        'all_key': combo_key(candidates),
         'scenarios': scenarios,
     }
 
