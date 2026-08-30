@@ -45,8 +45,49 @@ def now_local():
 # ==============================================================
 # Fetch
 # ==============================================================
-def get(url):
-    req = Request(url, headers={'User-Agent': UA})
+_cookie = None
+_cookie_tried = False
+
+
+def yahoo_cookie():
+    """
+    A logged-in Yahoo session, if one has been stored.
+
+    Yahoo serves the stat table on the CURRENT week's /matchup page only to
+    signed-in users - anonymously it returns HTTP 200 with that section simply
+    absent. Finished weeks render for anyone, which is why week 21 worked and
+    week 22 did not. Innings pitched is published nowhere else, so without a
+    session there is no IP data at all.
+    """
+    global _cookie, _cookie_tried
+    if _cookie_tried:
+        return _cookie
+    _cookie_tried = True
+    name = os.environ.get('YAHOO_COOKIE_SECRET', 'yahoo-fantasy-baseball')
+    try:
+        import boto3
+        raw = boto3.client(
+            'secretsmanager', region_name=os.environ.get('AWS_REGION', 'us-west-2')
+        ).get_secret_value(SecretId=name)['SecretString']
+        raw = raw.strip().lstrip('﻿ï»¿').strip()
+        if not raw.startswith('{') and '{' in raw:
+            raw = raw[raw.index('{'):]
+        _cookie = (json.loads(raw).get('YAHOO_COOKIE') or '').strip() or None
+    except Exception as e:
+        print(f'  (no Yahoo cookie available: {type(e).__name__})')
+        _cookie = None
+    if _cookie:
+        print('  using a stored Yahoo session for matchup pages')
+    return _cookie
+
+
+def get(url, authed=False):
+    headers = {'User-Agent': UA}
+    if authed:
+        c = yahoo_cookie()
+        if c:
+            headers['Cookie'] = c
+    req = Request(url, headers=headers)
     with urlopen(req, timeout=30) as r:
         return r.read().decode('utf-8', 'replace')
 
@@ -626,7 +667,7 @@ def collect_details(base, week, matchups, lid):
     for m in matchups:
         a_id, b_id = m['a']['team_id'], m['b']['team_id']
         rows = parse_matchup_detail(
-            get(f'{base}/matchup?week={week}&mid1={a_id}&mid2={b_id}'), lid)
+            get(f'{base}/matchup?week={week}&mid1={a_id}&mid2={b_id}', authed=True), lid)
         if len(rows) < 2:
             continue
         a, b = rows
