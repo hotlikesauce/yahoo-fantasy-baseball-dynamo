@@ -504,3 +504,207 @@ def history_from_dynamo(year=None, region=None):
             'odds': {k: float(v) for k, v in p['odds'].items()},
         } for p in points],
     }
+
+
+# ==============================================================
+# Per-category detail + the minimum-innings rule
+# ==============================================================
+BATTING_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
+PITCHING_CATS = ['TB', 'ERA', 'WHIP', 'K/9', 'QS', 'SV+H']
+ALL_CATS = BATTING_CATS + PITCHING_CATS
+LOWER_IS_BETTER = {'TB', 'ERA', 'WHIP'}
+MIN_IP = 50.0
+
+_DETAIL_TABLE = re.compile(
+    r'<table class="Table-plain Table Table-px-sm Table-mid Datatable.*?</table>', re.S)
+
+
+def ip_to_float(s):
+    """
+    Innings pitched are written in baseball notation, not decimal: 49.1 is
+    49 and 1/3 innings, and 49.2 is 49 and 2/3. Reading them as 49.1 and 49.2
+    would put a team over the line that is actually two outs short of it.
+    """
+    try:
+        whole, _, frac = str(s).strip().partition('.')
+        return int(whole) + (int(frac[0]) / 3.0 if frac else 0.0)
+    except (ValueError, IndexError):
+        return 0.0
+
+
+def parse_matchup_detail(page, lid):
+    """The two stat rows from /matchup - every category, plus IP."""
+    tbl = _DETAIL_TABLE.search(page)
+    if not tbl:
+        return []
+    t = tbl.group(0)
+    heads = [clean(re.sub(r'<[^>]+>', ' ', h))
+             for h in re.findall(r'<th[^>]*>(.*?)</th>', t, re.S)]
+    rows = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S)[1:]:
+        cells = [clean(re.sub(r'<[^>]+>', ' ', c))
+                 for c in re.findall(r'<td[^>]*>(.*?)</td>', r, re.S)]
+        if len(cells) < len(heads) - 2:
+            continue
+        d = dict(zip(heads, cells))
+        tid = re.search(r'/b1/%s/(\d+)"' % lid, r)
+        nm = re.search(r'/b1/%s/\d+">([^<]+)</a>' % lid, r)
+        if not tid:
+            continue
+        d['team_id'] = int(tid.group(1))
+        d['name'] = clean(html.unescape(nm.group(1))) if nm else f'Team {tid.group(1)}'
+        d['ip'] = ip_to_float(d.get('IP*', 0))
+        rows.append(d)
+    return rows[:2]
+
+
+def category_winner(a, b, cat):
+    """Which team_id currently leads `cat`, or None if level."""
+    try:
+        va, vb = float(a[cat]), float(b[cat])
+    except (KeyError, ValueError, TypeError):
+        return None
+    if va == vb:
+        return None
+    better = (va < vb) if cat in LOWER_IS_BETTER else (va > vb)
+    return a['team_id'] if better else b['team_id']
+
+
+def score_matchup(a, b, apply_min_ip=False):
+    """
+    Categories won by each side.
+
+    With apply_min_ip, a team that has not reached MIN_IP forfeits every
+    PITCHING category it currently leads. If BOTH teams are short the category
+    goes to nobody rather than swapping hands - neither has earned it, and
+    handing it to the other short team would be arbitrary.
+    """
+    short = {a['team_id']: a['ip'] < MIN_IP, b['team_id']: b['ip'] < MIN_IP}
+    score = {a['team_id']: 0, b['team_id']: 0}
+    per_cat = {}
+    for cat in ALL_CATS:
+        w = category_winner(a, b, cat)
+        if apply_min_ip and w is not None and cat in PITCHING_CATS and short[w]:
+            other = b['team_id'] if w == a['team_id'] else a['team_id']
+            w = None if short[other] else other
+        per_cat[cat] = w
+        if w is not None:
+            score[w] += 1
+    return score, per_cat
+
+
+def collect_details(base, week, matchups, lid):
+    """Fetch every matchup page once and index the stat rows by team id."""
+    detail, pairs = {}, []
+    for m in matchups:
+        a_id, b_id = m['a']['team_id'], m['b']['team_id']
+        rows = parse_matchup_detail(
+            get(f'{base}/matchup?week={week}&mid1={a_id}&mid2={b_id}'), lid)
+        if len(rows) < 2:
+            continue
+        a, b = rows
+        for r in (a, b):
+            detail[r['team_id']] = r
+        pairs.append((a, b))
+    return detail, pairs
+
+
+def collect_both(lid, sims=SIMS):
+    """
+    The whole picture, computed twice: as the scoreboard reads right now, and
+    again with the minimum-innings rule applied.
+
+    Returns one dict with a shared header plus 'now' and 'adjusted' scenarios,
+    each holding its own teams/odds. Everything before the simulation is done
+    once and shared - only the live category counts differ between the two.
+    """
+    base = f'https://baseball.fantasysports.yahoo.com/b1/{lid}'
+    home = get(base)
+    meta = parse_meta(home)
+    standings = parse_standings(home, lid)
+    week, matchups = parse_matchups(home, lid)
+    if not standings or not matchups:
+        raise RuntimeError('could not parse standings/matchups')
+
+    settings = parse_playoff_settings(get(f'{base}/settings'))
+    spots = settings['spots']
+    first_po = settings.get('first_playoff_week')
+    last_reg_week = (first_po - 1) if first_po else week
+    weeks_left_after = max(0, last_reg_week - week)
+    progress = week_progress(meta['status'])
+    managers = load_managers()
+
+    detail, pairs = collect_details(base, week, matchups, lid)
+
+    # live category counts under each rule
+    live = {'now': {}, 'adjusted': {}}
+    per_cat = {}
+    for a, b in pairs:
+        s_now, cats_now = score_matchup(a, b, apply_min_ip=False)
+        s_adj, _ = score_matchup(a, b, apply_min_ip=True)
+        live['now'].update(s_now)
+        live['adjusted'].update(s_adj)
+        per_cat[a['team_id']] = cats_now
+        per_cat[b['team_id']] = cats_now
+
+    scenarios = {}
+    for key in ('now', 'adjusted'):
+        ms = []
+        for m in matchups:
+            mm = json.loads(json.dumps(m))
+            for side in ('a', 'b'):
+                tid = mm[side]['team_id']
+                mm[side]['live'] = live[key].get(tid, mm[side]['live'])
+            mm['decided'] = mm['a']['live'] + mm['b']['live']
+            mm['remaining'] = max(0, CATS_PER_WEEK - mm['decided'])
+            ms.append(mm)
+
+        teams = build_teams(standings, ms, weeks_left_after, spots, progress)
+        for tid, mgr in managers.items():
+            if tid in teams:
+                teams[tid]['manager'] = mgr
+        for tid, t in teams.items():
+            d = detail.get(tid, {})
+            t['ip'] = d.get('ip', 0.0)
+            t['ip_raw'] = d.get('IP*', '')
+            t['ip_short'] = round(max(0.0, MIN_IP - d.get('ip', 0.0)), 2)
+            t['meets_min_ip'] = d.get('ip', 0.0) >= MIN_IP
+            t['cats'] = {c: d.get(c, '') for c in ALL_CATS}
+            t['cats_led'] = [c for c, w in per_cat.get(tid, {}).items() if w == tid]
+        playoff_status(teams, spots)
+        simulate(teams, spots, progress, sims=sims)
+        scenarios[key] = {'teams': teams, 'matchups': ms}
+
+    return {
+        'base': base, 'meta': meta, 'week': week, 'spots': spots,
+        'settings': settings, 'last_regular_week': last_reg_week,
+        'progress': progress, 'min_ip': MIN_IP,
+        'scenarios': scenarios,
+    }
+
+
+# ==============================================================
+# 15-minute tracking slots (11am - 10pm league time)
+# ==============================================================
+SNAP_START_HOUR = 11
+SNAP_END_HOUR = 22          # inclusive, on the hour only
+
+
+def current_slot_15(now=None):
+    """
+    The 15-minute boundary this run belongs to, or None outside the window.
+
+    Games are not being played at 4am, so tracking round the clock would only
+    add flat line. 11am to 10pm is 45 points a day.
+    """
+    now = now or now_local()
+    if now.hour < SNAP_START_HOUR or now.hour > SNAP_END_HOUR:
+        return None
+    if now.hour == SNAP_END_HOUR and now.minute > 0:
+        return None
+    return now.replace(minute=(now.minute // 15) * 15, second=0, microsecond=0)
+
+
+def slot_label_15(dt):
+    h = dt.hour % 12 or 12
+    return f'{dt.month}/{dt.day} {h}:{dt.minute:02d}{"a" if dt.hour < 12 else "p"}'

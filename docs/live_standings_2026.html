@@ -8,36 +8,72 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Live Standings - 2026 Season</title>
 <!--
-  This page is a static shell. Every number on it is read at load time from
-  serve-playoff-odds, which reads DynamoDB, which is filled by
-  snapshot-playoff-odds on an EventBridge schedule.
+  Static shell. Every number is read at load time from serve-playoff-odds,
+  which reads DynamoDB, which snapshot-playoff-odds fills on a schedule.
 
-  Nothing regenerates this file. Editing it is a hand-edit and a commit; the
-  data underneath moves on its own.
+  Two scenarios arrive with every payload: "now" is the scoreboard as Yahoo
+  shows it, "adjusted" applies the 50-IP minimum. The toggle just swaps which
+  one every section renders from - nothing is recomputed in the browser.
 -->
 <style>
-  .banner {
-    background: #1e293b; border: 1px solid #334155; border-left: 3px solid #38bdf8;
-    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
-    font-size: 0.85em; color: #94a3b8; line-height: 1.5;
+  .toolbar {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 18px;
   }
-  .banner strong { color: #e2e8f0; }
+  .switch { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+  .switch input { display: none; }
+  .track {
+    width: 44px; height: 24px; border-radius: 12px; background: #334155;
+    position: relative; transition: background .15s; flex: none;
+  }
+  .track::after {
+    content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+    border-radius: 50%; background: #94a3b8; transition: transform .15s, background .15s;
+  }
+  .switch input:checked + .track { background: #b45309; }
+  .switch input:checked + .track::after { transform: translateX(20px); background: #fbbf24; }
+  .switch .lbl { font-weight: 600; font-size: .92em; }
+  .toolbar .hint { color: #64748b; font-size: .8em; }
+  .toolbar .warn { color: #fbbf24; font-weight: 600; font-size: .82em; }
+  body.adj .toolbar { border-color: #b45309; background: #1f1a10; }
+
+  .short-list { font-size: .82em; color: #94a3b8; margin: -8px 0 18px; line-height: 1.6; }
+  .short-list b { color: #fbbf24; }
+  .short-list .ok { color: #4ade80; }
+
+  table.standings td { font-variant-numeric: tabular-nums; }
+  table.standings tr.out td { opacity: .55; }
+  table.standings tr.cut td { border-bottom: 2px solid #ef4444; }
+  .team-name { text-align: left; font-weight: 600; }
+  .team-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
+  td.pts { font-weight: 700; color: #34d399; }
+  td.live { color: #fbbf24; font-weight: 600; }
+  td.live .of { color: #64748b; font-weight: 400; font-size: .82em; }
+  td.bank { color: #e2e8f0; font-weight: 600; }
+  td.gb, td.ceil { color: #94a3b8; font-size: .9em; }
+  td.proj { color: #c4b5fd; font-weight: 600; }
+  td.odds { font-weight: 700; }
+  td.ip { font-variant-numeric: tabular-nums; }
+  td.ip.short { color: #f87171; font-weight: 700; }
+  td.ip.okay { color: #4ade80; }
+  td.delta.up { color: #4ade80; font-weight: 700; }
+  td.delta.down { color: #f87171; font-weight: 700; }
+  td.delta.same { color: #475569; }
 
   .pf-row {
-    display: grid; grid-template-columns: 42px 1fr 160px 130px;
+    display: grid; grid-template-columns: 42px 1fr 170px 130px;
     align-items: center; gap: 12px;
     background: #1e293b; border: 1px solid #334155; border-radius: 10px;
     padding: 10px 14px; margin-bottom: 6px;
   }
-  .pf-row.cutline { margin-bottom: 18px; position: relative; }
+  .pf-row.cutline { margin-bottom: 20px; position: relative; }
   .pf-row.cutline::after {
-    content: 'PLAYOFF CUT LINE'; position: absolute; left: 0; right: 0; bottom: -14px;
-    text-align: center; font-size: 0.6em; font-weight: 800; letter-spacing: .14em;
-    color: #ef4444;
+    content: 'PLAYOFF CUT LINE'; position: absolute; left: 0; right: 0; bottom: -15px;
+    text-align: center; font-size: .6em; font-weight: 800; letter-spacing: .14em; color: #ef4444;
   }
   .pf-row.clinched { border-color: #22c55e55; }
-  .pf-row.out { opacity: .62; }
-  .pf-row.longshot { opacity: .82; }
+  .pf-row.out { opacity: .6; }
   .pf-seed { font-size: 1.3em; font-weight: 800; color: #64748b; text-align: center; }
   .pf-name { font-weight: 600; }
   .pf-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
@@ -45,9 +81,13 @@
   .pf-live .sc { color: #fbbf24; font-weight: 700; font-variant-numeric: tabular-nums; }
   .pf-live .dim { color: #64748b; }
   .pf-note { font-size: .78em; color: #64748b; margin-top: 2px; }
+  .pf-ip { font-size: .76em; margin-top: 3px; }
+  .pf-ip.short { color: #f87171; }
+  .pf-ip.okay { color: #4ade80; }
   .pf-bar { height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
   .pf-bar span { display: block; height: 100%; background: linear-gradient(90deg,#3b82f6,#22c55e); }
-  .pf-pct { font-size: .78em; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .pf-pct { font-size: .8em; color: #94a3b8; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .pf-pct .alt { color: #fbbf24; }
   .pf-chip { text-align: right; }
 
   .chip {
@@ -60,36 +100,26 @@
   .chip.longshot { background: #94a3b822; color: #94a3b8; border: 1px solid #94a3b855; }
   .chip.out      { background: #ef444422; color: #f87171; border: 1px solid #ef444455; }
 
-  table.standings td { font-variant-numeric: tabular-nums; }
-  table.standings tr.out td { opacity: .62; }
-  table.standings tr.longshot td { opacity: .82; }
-  .team-name { text-align: left; font-weight: 600; }
-  .team-name .mgr { color: #64748b; font-weight: 400; font-size: .85em; margin-left: 6px; }
-  td.pts { font-weight: 700; color: #34d399; }
-  td.live { color: #fbbf24; font-weight: 600; }
-  td.live .of { color: #64748b; font-weight: 400; font-size: .82em; }
-  td.bank { color: #e2e8f0; font-weight: 600; }
-  td.ceil, td.gb { color: #94a3b8; font-size: .9em; }
-  td.proj { color: #c4b5fd; font-weight: 600; }
-  td.odds { font-weight: 700; }
-
   .chart-wrap {
-    height: 380px; background: #1e293b; border: 1px solid #334155;
+    height: 440px; background: #1e293b; border: 1px solid #334155;
     border-radius: 12px; padding: 18px 18px 14px; margin-bottom: 8px;
   }
-  @media (max-width: 720px) { .chart-wrap { height: 320px; padding: 12px 10px 10px; } }
+  @media (max-width: 720px) { .chart-wrap { height: 340px; padding: 12px 10px 10px; } }
 
   .mu-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 12px; }
   .mu { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 16px; }
   .mu.key { border-color: #3b82f6; }
   .mu-stakes { font-size: .72em; text-transform: uppercase; letter-spacing: .06em;
-                color: #64748b; font-weight: 700; margin-bottom: 10px; }
+               color: #64748b; font-weight: 700; margin-bottom: 10px; }
   .mu.key .mu-stakes { color: #60a5fa; }
   .mu-head { display: flex; align-items: center; gap: 10px; }
   .mu-side { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
   .mu-side.r { align-items: flex-end; text-align: right; }
   .mu-name { font-size: .92em; font-weight: 600; overflow-wrap: anywhere; }
   .mu-rec { font-size: .74em; color: #64748b; }
+  .mu-ip { font-size: .72em; }
+  .mu-ip.short { color: #f87171; }
+  .mu-ip.okay { color: #4ade80; }
   .mu-score { font-size: 1.5em; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .mu-score .winner { color: #22c55e; }
   .mu-score .loser { color: #ef4444; }
@@ -97,6 +127,12 @@
   .mu-score .sep { color: #64748b; margin: 0 5px; }
   .mu-foot { margin-top: 10px; font-size: .74em; color: #64748b; }
 
+  .banner {
+    background: #1e293b; border: 1px solid #334155; border-left: 3px solid #38bdf8;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+    font-size: .85em; color: #94a3b8; line-height: 1.55;
+  }
+  .banner strong { color: #e2e8f0; }
   .state { color: #64748b; text-align: center; padding: 40px 16px; font-size: .95em; }
   .state.err { color: #f87171; }
   .state .again {
@@ -104,9 +140,8 @@
     background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0;
     font: inherit; font-size: .9em;
   }
-
   @media (max-width: 720px) {
-    .pf-row { grid-template-columns: 32px 1fr 90px; }
+    .pf-row { grid-template-columns: 32px 1fr 100px; }
     .pf-chip { display: none; }
   }
 </style>
@@ -124,26 +159,34 @@
 
   var ENDPOINT = 'https://q4v6yvzalnkcvr6sppapaxd3ze0eidiz.lambda-url.us-west-2.on.aws/';
   var CATS = 12;
-  var RACE_COLORS = ['#38bdf8', '#a78bfa', '#fbbf24', '#34d399', '#f87171', '#f472b6'];
   var chart = null;
+  var DATA = null;
+  var adjusted = false;          // the min-IP toggle
+
+  // One hue per team: solid + vibrant for points, muted + dashed for odds.
+  var TEAM_COLORS = {
+    9:  { pts: '#fbbf24', odds: '#a1802f' },   // Greg
+    4:  { pts: '#a78bfa', odds: '#6d5f9c' },   // Bryant
+    2:  { pts: '#34d399', odds: '#2f7f68' },   // James
+  };
+  var FALLBACK = [
+    { pts: '#38bdf8', odds: '#31708f' },
+    { pts: '#f87171', odds: '#9c4c4c' },
+    { pts: '#f472b6', odds: '#96486f' },
+  ];
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-
-  // Only the clinch maths earns a round 100 - the simulation agreeing 99,945
-  // times out of 100,000 is not the same thing as being unable to miss.
   function oddsValue(t) {
     if (t.eliminated) return 0;
     if (t.clinched) return 100;
     return t.odds;
   }
-
-  // Print the real number, with however many decimals it takes to stay honestly
-  // below 100. Clamping to 99.9 instead would invent a value: a team sitting at
-  // 99.96 is not at 99.9, it just is not clinched.
+  // Print the real number, with as many decimals as it takes to stay honestly
+  // below 100. Clamping would invent a value a team does not have.
   function fmtPct(o) {
     for (var dp = 1; dp <= 4; dp++) {
       var s = o.toFixed(dp);
@@ -151,18 +194,13 @@
     }
     return '>99.99%';
   }
-
   function fmtOdds(t) {
     if (t.eliminated) return '0.0%';
     if (t.clinched) return '100%';
-    if (t.odds < 0.05) return '<0.1%';   // alive, but never got there in 100,000 runs
+    if (t.odds < 0.05) return '<0.1%';
     return fmtPct(t.odds);
   }
-
-  function fmtPts(v) {
-    return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1);
-  }
-
+  function fmtPts(v) { return v % 1 === 0 ? v.toFixed(0) : v.toFixed(1); }
   function statusChip(t) {
     if (t.clinched) return ['clinched', 'CLINCHED'];
     if (t.eliminated) return ['out', 'ELIMINATED'];
@@ -170,111 +208,223 @@
     if (t.odds < 1) return ['longshot', 'ALIVE ON PAPER'];
     return ['bubble', 'ON THE BUBBLE'];
   }
-
-  // The requirement and the live score have to be quoted on the same basis, or
-  // the card lies by juxtaposition: "needs 6" beside a 9-2 lead reads as "needs
-  // 6 more", when 6 is the target and the 9 already clears it.
-  function stakeLine(t) {
-    if (t.clinched || t.eliminated) return '';
-    var need, verb;
-    if (t.magic !== null && t.magic !== undefined) {
-      need = t.magic; verb = 'clinches with';
-    } else if (t.need_alive) {
-      need = t.need_alive; verb = 'needs';
-    } else {
-      return t.name + ' is fighting for the last spot';
-    }
-    var target = need >= t.remaining
-      ? 'needs all ' + t.remaining + ' this week ' +
-        (verb === 'clinches with' ? 'to clinch' : 'to stay alive')
-      : verb + ' ' + need + " of this week's " + t.remaining;
-    var pace = t.live >= need ? 'already there' : 'leads ' + t.live;
-    return t.name + ' ' + target + ' — ' + pace;
-  }
-
-  function noteFor(t) {
-    if (t.clinched) return 'Locked in — playing for seeding';
-    if (t.eliminated) return 'Eliminated from the playoff race';
-    var word = t.remaining === 1 ? 'category' : 'categories';
-    if (t.magic !== null && t.magic !== undefined) {
-      return 'Clinches with ' + t.magic + ' of the ' + t.remaining + ' ' + word +
-             ' left this week — ' +
-             (t.live >= t.magic ? 'leading enough right now' : 'leading ' + t.live);
-    }
-    if (t.need_alive) {
-      return 'Needs ' + t.need_alive + ' of the ' + t.remaining +
-             ' left this week just to stay alive — ' +
-             (t.live >= t.need_alive ? 'leading enough right now' : 'leading ' + t.live);
-    }
-    if (t.need_alive === 0) {
-      return 'Cannot be caught by the maths yet — but cannot lock it up either';
-    }
-    return 'Needs help elsewhere';
-  }
-
   function mgrSpan(t) {
     return t.manager ? ' <span class="mgr">' + esc(t.manager) + '</span>' : '';
   }
+  function scen() { return DATA.current[adjusted ? 'adjusted' : 'now']; }
+  function other() { return DATA.current[adjusted ? 'now' : 'adjusted']; }
 
-  function renderCards(order, spots, byId) {
-    return order.map(function (t, i) {
-      var cs = statusChip(t), seed = i + 1;
-      var opp = byId[t.opponent];
-      var live = opp
-        ? '<span class="sc">' + t.live + '–' + opp.live + '</span> vs ' + esc(opp.name) +
-          '<span class="dim"> · ' + fmtPts(t.pts) + ' banked → ' +
-          fmtPts(t.pts + t.live) + ' live</span>'
-        : '<span class="dim">no matchup this week · ' + fmtPts(t.pts) + ' banked</span>';
-      return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
-        '<div class="pf-seed">' + seed + '</div>' +
-        '<div class="pf-main">' +
-          '<div class="pf-name">' + esc(t.name) + mgrSpan(t) + '</div>' +
-          '<div class="pf-live">' + live + '</div>' +
-          '<div class="pf-note">' + esc(noteFor(t)) + '</div>' +
-        '</div>' +
-        '<div class="pf-odds">' +
-          '<div class="pf-bar"><span style="width:' + oddsValue(t).toFixed(1) + '%"></span></div>' +
-          '<div class="pf-pct">' + esc(fmtOdds(t)) + '</div>' +
-        '</div>' +
-        '<div class="pf-chip"><span class="chip ' + cs[0] + '">' + cs[1] + '</span></div>' +
-      '</div>';
-    }).join('');
+  function byLive(list) {
+    return list.slice().sort(function (x, y) {
+      return (y.pts + y.live) - (x.pts + x.live) || y.pts - x.pts;
+    });
+  }
+  function indexById(list) {
+    var m = {}; list.forEach(function (t) { m[t.team_id] = t; }); return m;
   }
 
-  function renderTable(order, week, spots) {
-    var leader = order[0].pts + order[0].live;   // live, same basis as the ranking
+  // ---------- 1. live standings -----------------------------------------
+  function renderStandings(teams, spots, week) {
+    var order = byLive(teams);
+    var prev = indexById(other().teams);
+    var leader = order[0].pts + order[0].live;
     var rows = order.map(function (t, i) {
-      var cs = statusChip(t), gb = leader - (t.pts + t.live);
-      return '<tr class="' + cs[0] + '">' +
-        '<td class="rank">' + (i + 1) + '</td>' +
+      var cs = statusChip(t);
+      var gb = leader - (t.pts + t.live);
+      var p = prev[t.team_id];
+      var d = p ? (t.pts + t.live) - (p.pts + p.live) : 0;
+      var dcls = d > 0 ? 'up' : d < 0 ? 'down' : 'same';
+      var dtxt = d === 0 ? '—' : (d > 0 ? '+' : '') + fmtPts(d);
+      var ipCls = t.meets_min_ip ? 'okay' : 'short';
+      return '<tr class="' + (t.eliminated ? 'out ' : '') + (i + 1 === spots ? 'cut' : '') + '">' +
+        '<td>' + (i + 1) + '</td>' +
         '<td class="team-name">' + esc(t.name) + mgrSpan(t) + '</td>' +
         '<td>' + t.wins + '-' + t.losses + '-' + t.ties + '</td>' +
         '<td class="bank">' + fmtPts(t.pts) + '</td>' +
         '<td class="live">' + t.live + '<span class="of">/' + CATS + '</span></td>' +
         '<td class="pts">' + fmtPts(t.pts + t.live) + '</td>' +
         '<td class="gb">' + (gb === 0 ? '—' : fmtPts(gb)) + '</td>' +
-        '<td class="proj">' + t.projected.toFixed(1) + '</td>' +
-        '<td class="ceil">' + fmtPts(t.floor) + ' – ' + fmtPts(t.ceiling) + '</td>' +
-        '<td class="odds">' + esc(fmtOdds(t)) + '</td>' +
+        '<td class="ip ' + ipCls + '">' + esc(t.ip_raw) +
+          (t.meets_min_ip ? '' : ' <span style="font-size:.85em">(−' + t.ip_short + ')</span>') +
+        '</td>' +
+        '<td class="delta ' + dcls + '">' + dtxt + '</td>' +
         '<td><span class="chip ' + cs[0] + '">' + cs[1] + '</span></td>' +
       '</tr>';
     }).join('');
 
     return '<div style="overflow-x:auto;"><table class="standings"><thead><tr>' +
       '<th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>' +
-      '<th title="Category points actually banked through week ' + (week - 1) +
-        ' — this is what Yahoo ranks on, and what the playoff odds start from">Bank</th>' +
-      '<th title="Of this week\'s 12 categories, how many this team leads right now. ' +
-        'Both teams in a matchup have some — they split the 12. None of it has banked.">' +
-        'Leading</th>' +
-      '<th title="Bank + Live. The table sorts on this, but the odds do not treat ' +
-        'the Live half as real yet">Pts</th>' +
-      '<th>GB</th>' +
-      '<th title="Average finish across the simulations">Proj</th>' +
-      '<th title="Worst case - best case finish, with every live category still winnable">Range</th>' +
-      '<th title="Chance of finishing in the top ' + spots + '">Playoff&nbsp;%</th>' +
-      '<th>Status</th>' +
-      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+      '<th title="Category points banked through week ' + (week - 1) + '">Bank</th>' +
+      '<th title="Categories led in week ' + week + ' right now, out of 12">Leading</th>' +
+      '<th title="Bank + Leading">Pts</th><th>GB</th>' +
+      '<th title="Innings pitched this week. Red means short of the ' +
+        DATA.current.min_ip + '-inning minimum, with the shortfall in brackets.">IP</th>' +
+      '<th title="How this row changes under the other scenario">' +
+        (adjusted ? 'vs as-is' : 'vs adj') + '</th>' +
+      '<th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  // ---------- 2. playoff picture ----------------------------------------
+  function noteFor(t) {
+    if (t.clinched) return 'Locked in — playing for seeding';
+    if (t.eliminated) return 'Eliminated from the playoff race';
+    var word = t.remaining === 1 ? 'category' : 'categories';
+    if (t.magic !== null && t.magic !== undefined) {
+      return 'Clinches with ' + t.magic + ' of the ' + t.remaining + ' ' + word +
+             ' left — ' + (t.live >= t.magic ? 'leading enough right now' : 'leading ' + t.live);
+    }
+    if (t.need_alive) {
+      return 'Needs ' + t.need_alive + ' of the ' + t.remaining +
+             ' left just to stay alive — ' +
+             (t.live >= t.need_alive ? 'leading enough right now' : 'leading ' + t.live);
+    }
+    if (t.need_alive === 0) return 'Cannot be caught yet — cannot lock it up either';
+    return 'Needs help elsewhere';
+  }
+
+  function renderPicture(teams, spots) {
+    var order = teams.slice().sort(function (x, y) {
+      return oddsValue(y) - oddsValue(x) || y.pts - x.pts;
+    });
+    var byId = indexById(teams);
+    var alt = indexById(other().teams);
+    return order.map(function (t, i) {
+      var cs = statusChip(t), seed = i + 1;
+      var opp = byId[t.opponent];
+      var a = alt[t.team_id];
+      var live = opp
+        ? '<span class="sc">' + t.live + '–' + opp.live + '</span> vs ' + esc(opp.name)
+        : '<span class="dim">no matchup</span>';
+      // cats_led covers every category; only the PITCHING ones are forfeitable
+      var atRisk = (t.cats_led || []).filter(function (c) {
+        return DATA.current.pitching_cats.indexOf(c) !== -1;
+      });
+      var ipTxt = t.meets_min_ip
+        ? 'IP ' + esc(t.ip_raw) + ' — over the ' + DATA.current.min_ip + ' minimum'
+        : 'IP ' + esc(t.ip_raw) + ' — <b>' + t.ip_short + ' short</b>' +
+          (atRisk.length ? ', ' + atRisk.length + ' pitching cat' +
+            (atRisk.length === 1 ? '' : 's') + ' at risk (' + esc(atRisk.join(', ')) + ')'
+            : ', leading no pitching categories');
+      // fmtOdds can return "<0.1%" - that raw < has to be escaped or it eats
+      // the rest of the line as a tag
+      var altTxt = a ? '<span class="alt">' + (adjusted ? 'as-is ' : 'adj ') +
+                       esc(fmtOdds(a)) + '</span>' : '';
+      return '<div class="pf-row ' + cs[0] + (seed === spots ? ' cutline' : '') + '">' +
+        '<div class="pf-seed">' + seed + '</div>' +
+        '<div class="pf-main">' +
+          '<div class="pf-name">' + esc(t.name) + mgrSpan(t) + '</div>' +
+          '<div class="pf-live">' + live + '</div>' +
+          '<div class="pf-ip ' + (t.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +
+          '<div class="pf-note">' + esc(noteFor(t)) + '</div>' +
+        '</div>' +
+        '<div class="pf-odds">' +
+          '<div class="pf-bar"><span style="width:' + oddsValue(t).toFixed(1) + '%"></span></div>' +
+          '<div class="pf-pct">' + esc(fmtOdds(t)) + ' &nbsp;' + altTxt + '</div>' +
+        '</div>' +
+        '<div class="pf-chip"><span class="chip ' + cs[0] + '">' + cs[1] + '</span></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ---------- 3. tracker chart ------------------------------------------
+  function drawChart(points, tracked, byId) {
+    var key = adjusted ? 'adjusted' : 'now';
+    var ids = tracked.filter(function (id) { return byId[id]; });
+    if (!ids.length || !points.length) return;
+
+    var datasets = [];
+    ids.forEach(function (id, i) {
+      var t = byId[id];
+      var col = TEAM_COLORS[id] || FALLBACK[i % FALLBACK.length];
+      var nm = t.manager || t.name;
+      datasets.push({
+        label: nm + ' — points',
+        data: points.map(function (p) {
+          var v = p[key] && p[key][String(id)]; return v ? v.pts : null;
+        }),
+        borderColor: col.pts, backgroundColor: col.pts,
+        borderWidth: 3, pointRadius: 2, pointHoverRadius: 5,
+        cubicInterpolationMode: 'monotone', spanGaps: true, clip: false, yAxisID: 'y',
+      });
+      datasets.push({
+        label: nm + ' — playoff %',
+        data: points.map(function (p) {
+          var v = p[key] && p[key][String(id)]; return v ? v.odds : null;
+        }),
+        borderColor: col.odds, backgroundColor: col.odds,
+        borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4,
+        cubicInterpolationMode: 'monotone', spanGaps: true, clip: false, yAxisID: 'y1',
+      });
+    });
+
+    // Fit the points axis to the teams plotted — a 100–160 span on a 0–200
+    // axis is unreadable.
+    var pv = [];
+    datasets.forEach(function (d) {
+      if (d.yAxisID !== 'y') return;
+      d.data.forEach(function (v) { if (v != null) pv.push(v); });
+    });
+    var lo = 0, hi = 10;
+    if (pv.length) {
+      lo = Math.min.apply(null, pv); hi = Math.max.apply(null, pv);
+      var pad = Math.max(1, (hi - lo) * 0.25);
+      lo = Math.floor((lo - pad)); hi = Math.ceil((hi + pad));
+      if (hi - lo < 6) { var mid = (hi + lo) / 2; lo = Math.floor(mid - 3); hi = Math.ceil(mid + 3); }
+    }
+    var titles = points.map(function (p) { return p.label + ' · week ' + p.week; });
+
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById('raceChart'), {
+      type: 'line',
+      data: { labels: points.map(function (p) { return p.label; }), datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: 14, bottom: 10, left: 4, right: 6 } },
+        scales: {
+          y:  { position: 'left', min: lo, max: hi,
+                title: { display: true, text: 'Live points', color: '#e2e8f0' },
+                ticks: { color: '#cbd5e1', padding: 6 },
+                grid: { color: '#1e293b' } },
+          y1: { position: 'right', min: 0, max: 100,
+                title: { display: true, text: 'Playoff %', color: '#94a3b8' },
+                ticks: { color: '#94a3b8', stepSize: 20, padding: 6,
+                         callback: function (v) { return v + '%'; } },
+                grid: { drawOnChartArea: false } },
+          x:  { ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 18 },
+                grid: { display: false } },
+        },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'line',
+                              boxWidth: 26, font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              title: function (it) { return titles[it[0].dataIndex] || ''; },
+              label: function (c) {
+                if (c.parsed.y == null) return c.dataset.label + ': n/a';
+                var pct = c.dataset.yAxisID === 'y1';
+                return c.dataset.label + ': ' +
+                  (pct ? (c.parsed.y >= 100 ? '100%' : fmtPct(c.parsed.y))
+                       : fmtPts(c.parsed.y) + ' pts');
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // ---------- matchups ---------------------------------------------------
+  function stakeLine(t) {
+    if (t.clinched || t.eliminated) return '';
+    var need, verb;
+    if (t.magic !== null && t.magic !== undefined) { need = t.magic; verb = 'clinches with'; }
+    else if (t.need_alive) { need = t.need_alive; verb = 'needs'; }
+    else return t.name + ' is fighting for the last spot';
+    var target = need >= t.remaining
+      ? 'needs all ' + t.remaining + ' left ' + (verb === 'clinches with' ? 'to clinch' : 'to stay alive')
+      : verb + ' ' + need + ' of the ' + t.remaining + ' left';
+    return t.name + ' ' + target + ' — ' + (t.live >= need ? 'already there' : 'leads ' + t.live);
   }
 
   function renderMatchups(matchups, byId, weekPct) {
@@ -282,186 +432,121 @@
       var a = byId[m.a.team_id], b = byId[m.b.team_id];
       if (!a || !b) return '';
       var stakes = [stakeLine(a), stakeLine(b)].filter(Boolean);
-      var stakeTxt = stakes.length ? stakes.join(' · ') : 'No bearing on the cut line';
-
-      // decided counts the categories that currently have a leader, so the only
-      // thing it tells the reader is how many are still level
       var tied = CATS - m.decided;
-      var tiedTxt = tied
-        ? tied + ' categor' + (tied === 1 ? 'y' : 'ies') + ' still level'
-        : 'All ' + CATS + ' categories have a leader';
-
       function cls(x, y) { return x > y ? 'winner' : x < y ? 'loser' : 'tied'; }
-
+      function ipTag(t) {
+        return '<span class="mu-ip ' + (t.meets_min_ip ? 'okay' : 'short') + '">IP ' +
+               esc(t.ip_raw) + (t.meets_min_ip ? '' : ' (−' + t.ip_short + ')') + '</span>';
+      }
       return '<div class="mu' + (stakes.length ? ' key' : '') + '">' +
-        '<div class="mu-stakes">' + esc(stakeTxt) + '</div>' +
+        '<div class="mu-stakes">' + esc(stakes.join(' · ') || 'No bearing on the cut line') + '</div>' +
         '<div class="mu-head">' +
           '<div class="mu-side"><span class="mu-name">' + esc(a.name) + '</span>' +
-            '<span class="mu-rec">' + a.wins + '-' + a.losses + '-' + a.ties + '</span></div>' +
+            '<span class="mu-rec">' + a.wins + '-' + a.losses + '-' + a.ties + '</span>' + ipTag(a) + '</div>' +
           '<div class="mu-score"><span class="' + cls(a.live, b.live) + '">' + a.live + '</span>' +
             '<span class="sep">–</span><span class="' + cls(b.live, a.live) + '">' + b.live + '</span></div>' +
           '<div class="mu-side r"><span class="mu-name">' + esc(b.name) + '</span>' +
-            '<span class="mu-rec">' + b.wins + '-' + b.losses + '-' + b.ties + '</span></div>' +
+            '<span class="mu-rec">' + b.wins + '-' + b.losses + '-' + b.ties + '</span>' + ipTag(b) + '</div>' +
         '</div>' +
-        '<div class="mu-foot">' + tiedTxt + ' · ' + weekPct +
-          ' of the week played · nothing banks until the week ends</div>' +
+        '<div class="mu-foot">' +
+          (tied ? tied + ' categor' + (tied === 1 ? 'y' : 'ies') + ' still level'
+                : 'All ' + CATS + ' categories have a leader') +
+          ' · ' + weekPct + ' of the week played · nothing banks until it ends</div>' +
       '</div>';
     }).join('');
   }
 
-  function drawChart(points, tracked, byId) {
-    var ids = tracked.filter(function (id) { return byId[id]; })
-                     .sort(function (x, y) { return oddsValue(byId[y]) - oddsValue(byId[x]); });
-    if (!ids.length || !points.length) return;
-
-    var datasets = ids.map(function (id, i) {
-      var t = byId[id];
-      return {
-        label: t.name + (t.manager ? ' (' + t.manager + ')' : ''),
-        data: points.map(function (p) {
-          var v = p.odds[String(id)];
-          return v === undefined ? null : v;
-        }),
-        borderColor: RACE_COLORS[i % RACE_COLORS.length],
-        backgroundColor: RACE_COLORS[i % RACE_COLORS.length],
-        borderWidth: 2.5,
-        // monotone rounds the corners without letting the curve overshoot -
-        // plain tension would arc a 100-to-100 stretch up past 100, and with
-        // clipping off that overshoot would actually be visible
-        cubicInterpolationMode: 'monotone',
-        borderJoinStyle: 'round',
-        borderCapStyle: 'round',
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        spanGaps: true,
-        clip: false
-      };
-    });
-
-    var titles = points.map(function (p) { return p.label + ' · week ' + p.week; });
-    if (chart) chart.destroy();
-    chart = new Chart(document.getElementById('raceChart'), {
-      type: 'line',
-      data: { labels: points.map(function (p) { return p.label; }), datasets: datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        // room above 100 and below 0 for the dots to sit whole
-        layout: { padding: { top: 14, bottom: 14, left: 4, right: 10 } },
-        scales: {
-          y: {
-            min: 0, max: 100,
-            ticks: { color: '#64748b', stepSize: 20, padding: 8,
-                     callback: function (v) { return v + '%'; } },
-            grid: { color: '#1e293b' }
-          },
-          x: {
-            ticks: { color: '#64748b', maxRotation: 60, autoSkip: true, maxTicksLimit: 16 },
-            grid: { display: false }
-          }
-        },
-        plugins: {
-          legend: { labels: { color: '#cbd5e1', usePointStyle: true,
-                              pointStyle: 'line', boxWidth: 26 } },
-          tooltip: {
-            callbacks: {
-              title: function (items) { return titles[items[0].dataIndex] || ''; },
-              label: function (c) {
-                return c.dataset.label + ': ' +
-                       (c.parsed.y == null ? 'n/a'
-                        : c.parsed.y >= 100 ? '100%' : fmtPct(c.parsed.y));
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-
-  function render(data) {
-    var cur = data.current;
-    if (!cur) throw new Error('no current standings in the response');
-
-    // Two orderings, because they answer two different questions and mixing
-    // them is what made Greg show below Bryant while being likelier to make it.
-    //   byBank - what Yahoo ranks on. Banked categories only, no live lead.
-    //   byOdds - who actually makes the field, which is not the same thing.
-    // This is the LIVE standings page: rank on what a team has right now,
-    // banked plus the categories it is currently leading. The Bank column is
-    // there so the difference is visible, not so the table hides behind it.
-    var teams = cur.teams.slice().sort(function (x, y) {
-      return (y.pts + y.live) - (x.pts + x.live) || y.pts - x.pts;
-    });
-    var byOdds = cur.teams.slice().sort(function (x, y) {
-      return oddsValue(y) - oddsValue(x) || y.pts - x.pts;
-    });
-    var byId = {};
-    teams.forEach(function (t) { byId[t.team_id] = t; });
-
-    var spots = cur.playoff_spots;
+  // ---------- assemble ---------------------------------------------------
+  function render() {
+    var cur = DATA.current;
+    var s = scen();
+    var teams = s.teams, spots = cur.playoff_spots;
+    var byId = indexById(teams);
     var weekPct = Math.round(cur.week_progress * 100) + '%';
-    var tracked = (data.tracked || []).filter(function (id) { return byId[id]; });
+    var tracked = (DATA.tracked || []).filter(function (id) { return byId[id]; });
+    document.body.className = adjusted ? 'adj' : '';
 
     document.getElementById('subtitle').textContent =
       'Week ' + cur.week + ' · ' + cur.status + ' · ' + spots + '-team playoff field';
 
+    var short = teams.filter(function (t) { return !t.meets_min_ip; });
+    var shortTxt = short.length
+      ? '<b>' + short.length + '</b> team' + (short.length === 1 ? '' : 's') +
+        ' short of ' + cur.min_ip + ' IP: ' +
+        short.sort(function (x, y) { return x.ip_short - y.ip_short; })
+             .map(function (t) {
+               return esc(t.manager || t.name) + ' <b>−' + t.ip_short + '</b>';
+             }).join(', ')
+      : '<span class="ok">Every team has cleared ' + cur.min_ip + ' innings.</span>';
+
+    var toolbar =
+      '<div class="toolbar">' +
+        '<label class="switch"><input type="checkbox" id="ipToggle"' +
+          (adjusted ? ' checked' : '') + '><span class="track"></span>' +
+          '<span class="lbl">Adjust for ' + cur.min_ip + '-IP minimum</span></label>' +
+        (adjusted
+          ? '<span class="warn">SHOWING ADJUSTED — teams under ' + cur.min_ip +
+            ' IP forfeit every pitching category they lead</span>'
+          : '<span class="hint">Showing the scoreboard as-is. Flip this to see it ' +
+            'with the innings minimum enforced.</span>') +
+      '</div>' +
+      '<div class="short-list">' + shortTxt + '</div>';
+
     var chartSection = '';
-    if (tracked.length && data.points.length) {
-      var names = tracked.map(function (id) { return esc(byId[id].name); }).join(', ');
-      var n = data.points.length;
+    if (tracked.length) {
       chartSection =
-        '<h2>Race for the Last Playoff Spots</h2>' +
-        '<div class="section-desc">' + names + ' — chasing the ' + spots +
-        '-team field. Snapshotted at midnight, noon, 3pm, 6pm and 9pm every day · ' +
-        n + ' snapshot' + (n === 1 ? '' : 's') + ' so far' +
-        (n < 2 ? ' — the line fills in from here' : '') + '</div>' +
-        '<div class="chart-wrap"><canvas id="raceChart"></canvas></div>';
+        '<h2>3. Race Tracker</h2>' +
+        '<div class="section-desc">' +
+          tracked.map(function (id) { return esc(byId[id].manager || byId[id].name); }).join(', ') +
+          ' — every 15 minutes, 11am to 10pm MT. Solid lines are live points (left axis); ' +
+          'dashed, muted lines are playoff odds (right axis). ' +
+          (DATA.points.length ? DATA.points.length + ' point' +
+            (DATA.points.length === 1 ? '' : 's') + ' logged today.'
+            : 'Tracking starts at 11am — nothing logged yet.') +
+        '</div>' +
+        (DATA.points.length
+          ? '<div class="chart-wrap"><canvas id="raceChart"></canvas></div>'
+          : '<div class="state">First tracking point lands at 11:00am MT.</div>');
     }
 
-    // The methodology sits at the FOOT of the page. It is reference material —
-    // it should not stand between the reader and the numbers they came for.
-    var footnotes =
-      '<div class="banner">' +
-        '<strong>Where this comes from:</strong> the Yahoo Fantasy API has been dead since late ' +
-        'July, so this is scraped from the public league page by a scheduled AWS job. Standings ' +
-        'are Yahoo\'s through week ' + (cur.week - 1) + ' (' + esc(cur.yahoo_updated) + '); the ' +
-        '<strong>Leading</strong> column is week ' + cur.week + '\'s category leads <em>right now</em> ' +
-        '— none of that is banked, a category can flip any day until the week closes, so every ' +
-        'live category is still treated as winnable in the maths. Playoff odds run the rest of ' +
-        'the season ' + cur.sims.toLocaleString() + ' times, holding each current lead in ' +
-        'proportion to the ' + weekPct + ' of the week already played and playing out the rest ' +
-        'on each team\'s season category win rate.' +
-        '<br><strong>Bank vs Leading:</strong> the standings sort on Bank + Leading, but only ' +
-        'Bank is actually banked. A team can show inside the cut line on a live lead and still ' +
-        'carry low odds, because the odds start from Bank and treat the live lead as worth only ' +
-        'the share of the week already played.' +
-        '<br><strong>Playoff format:</strong> ' + esc(cur.playoff_format) + '. ' +
-        'Data refreshes every 10 minutes; the race chart gains a point at midnight, noon, 3pm, ' +
-        '6pm and 9pm. Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
-      '</div>';
-
     document.getElementById('page').innerHTML =
-      '<h2>Playoff Picture</h2>' +
-      '<div class="section-desc">Ordered by odds of making the field, which is not the ' +
-        'same as the live order below — each row shows the live score driving it.</div>' +
-      renderCards(byOdds, spots, byId) +
+      toolbar +
+      '<h2>1. Live Standings</h2>' +
+      '<div class="section-desc">Live order — Bank + Leading. ' +
+        (adjusted ? 'Pitching categories led by teams under the innings minimum have been ' +
+                    'handed to their opponent.' : 'Exactly as Yahoo has it right now.') +
+        '</div>' +
+      renderStandings(teams, spots, cur.week) +
+      '<h2>2. Playoff Picture</h2>' +
+      '<div class="section-desc">Ordered by odds of making the field. The second figure ' +
+        'on each bar is the same team under the other scenario.</div>' +
+      renderPicture(teams, spots) +
       chartSection +
-      '<h2>Standings</h2>' +
-      '<div class="section-desc">Live order — Bank + Leading, where everyone stands ' +
-      'right now. <strong>Bank</strong> is what has actually banked (the order Yahoo ' +
-      'shows). <strong>Leading</strong> is how many of this week\'s 12 categories a ' +
-      'team is ahead in; the two teams in a matchup split those 12, so everyone has ' +
-      'some. Playoff % starts from Bank, which is why it can disagree with this order.' +
-      '</div>' +
-      renderTable(teams, cur.week, spots) +
       '<h2>Week ' + cur.week + ' Matchups</h2>' +
       '<div class="section-desc">Live category scores — ' + esc(cur.status) + '</div>' +
-      '<div class="mu-grid">' + renderMatchups(cur.matchups, byId, weekPct) + '</div>' +
+      '<div class="mu-grid">' + renderMatchups(s.matchups, byId, weekPct) + '</div>' +
       '<h2>How this is worked out</h2>' +
-      footnotes;
+      '<div class="banner">' +
+        '<strong>Minimum innings:</strong> a team that finishes the week under ' + cur.min_ip +
+        ' innings pitched forfeits every <em>pitching</em> category it leads (' +
+        cur.pitching_cats.join(', ') + ') to its opponent. If both teams in a matchup are ' +
+        'short, the category goes to neither. The toggle recomputes the standings and reruns ' +
+        'the full simulation under that rule — both scenarios are calculated server-side every ' +
+        '10 minutes, so flipping it is instant and never an estimate.' +
+        '<br><strong>Where this comes from:</strong> the Yahoo API has been dead since late July, ' +
+        'so a scheduled AWS job scrapes the public league page and all six matchup pages. ' +
+        'Standings are Yahoo\'s through week ' + (cur.week - 1) + ' (' + esc(cur.yahoo_updated) + '). ' +
+        'Playoff odds run the rest of the season ' + cur.sims.toLocaleString() + ' times, holding ' +
+        'each current lead in proportion to the ' + weekPct + ' of the week played.' +
+        '<br><strong>IP notation:</strong> innings are baseball notation, not decimal — 49.1 is ' +
+        '49 and 1/3 innings, so a team on 49.2 is still two outs short of 50.' +
+        '<br><strong>Playoff format:</strong> ' + esc(cur.playoff_format) + '. ' +
+        'Last scrape ' + esc(cur.scraped_at.replace('T', ' ')) + '.' +
+      '</div>';
 
-    if (chartSection) drawChart(data.points, tracked, byId);
+    var tog = document.getElementById('ipToggle');
+    if (tog) tog.onchange = function () { adjusted = this.checked; render(); };
+    if (tracked.length && DATA.points.length) drawChart(DATA.points, tracked, byId);
   }
 
   function fail(msg) {
@@ -474,18 +559,17 @@
   }
 
   function load() {
-    // cache-bust so a refresh never shows the copy the browser already had
     fetch(ENDPOINT + '?t=' + Date.now(), { cache: 'no-store' })
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       })
-      .then(render)
+      .then(function (d) { DATA = d; render(); })
       .catch(function (e) { fail(e.message || String(e)); });
   }
 
   load();
-  setInterval(load, 5 * 60 * 1000);   // the data behind it moves every 10
+  setInterval(load, 5 * 60 * 1000);
 })();
 </script>
 <script src="nav.js"></script>
