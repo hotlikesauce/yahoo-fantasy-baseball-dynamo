@@ -116,8 +116,18 @@
   .windows { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
   .win-chip {
     border: 1px solid #334155; border-radius: 8px; padding: 7px 11px;
-    font-size: 0.8em; background: #0f172a; flex: 1 1 120px;
+    font-size: 0.8em; background: #0f172a; flex: 1 1 110px;
+    font-family: inherit; text-align: left; color: inherit;
+    cursor: pointer; transition: border-color .15s, background .15s;
   }
+  .win-chip:hover { background: #16233a; }
+  .win-chip:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+  /* The selected window drives the category bars below. A tick plus the filled
+     background carry that state, so the choice is never signalled by hue alone. */
+  .win-chip.active { background: #16233a; }
+  .win-chip.active .v { color: #fff; }
+  .win-chip .k .tick { margin-left: auto; opacity: 0; font-size: 1.05em; line-height: 1; }
+  .win-chip.active .k .tick { opacity: 1; }
   .win-chip .k {
     font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.06em;
     font-weight: 800; display: flex; align-items: center; gap: 6px;
@@ -128,6 +138,12 @@
     margin-top: 4px; font-size: 1.15em;
   }
   .win-chip .s { color: #64748b; font-size: 0.9em; }
+
+  .thin-warn {
+    font-size: 0.74em; color: #fbbf24; background: #d9770614;
+    border-left: 2px solid #d9770688; border-radius: 0 6px 6px 0;
+    padding: 6px 9px; margin: 6px 0 8px; line-height: 1.45;
+  }
 
   /* Per-category strip */
   .cats { margin-top: 14px; }
@@ -240,6 +256,9 @@
     &mdash; plus a blend that weights them <span id="blendTxt"></span>. When the three disagree, that
     disagreement <em>is</em> the story: a team that is much better over two weeks than over twenty is
     either genuinely transformed or on a heater about to end.
+    <strong>Click any of the four boxes</strong> to redraw the category bars underneath it on that
+    window, and watch which categories are actually doing the moving.</p>
+  <p class="section-desc" style="max-width:900px;">
   </p>
   <div id="round"></div>
 
@@ -301,8 +320,35 @@ var C = {
   ink: '#e2e8f0', mute: '#94a3b8', dim: '#64748b', grid: '#33415566',
   season: '#2f77d6', l6: '#14a89a', l2: '#d97706', surface: '#1e293b'
 };
-var WINDOW_COLOR = { season: C.season, last6: C.l6, last2: C.l2, blend: '#94a3b8' };
+/**
+ * Blue and orange are RESERVED for the two teams - every bar on the card means
+ * one of them. The chips used to reuse those exact two (season = team blue,
+ * last 2 = team orange), so a chip read as if it were about a team.
+ *
+ * These four are separated from the team pair and from each other across all
+ * fifteen pairs: normal-vision dE >= 18.8 and contrast >= 3:1 throughout. The
+ * closest colourblind pair is pink/teal at deutan dE 7.5, which sits in the
+ * 6-8 floor band and is allowed here because every chip carries a permanent
+ * text label ("SEASON (21W)") - identity never rests on hue alone.
+ *
+ * Getting six apart needs LIGHTNESS to vary, not just hue: under red-green
+ * colourblindness the hue circle collapses toward one axis, so six colours all
+ * held at the same lightness genuinely cannot be told apart. Periwinkle works
+ * precisely because it is much lighter than the team blue, not a different hue
+ * from it.
+ */
+var WINDOW_COLOR = {
+  blend:  '#facc15',   // yellow      - the default composite
+  season: '#a5b4fc',   // periwinkle  - light, so it cannot read as team blue
+  last6:  '#14a89a',   // teal
+  last2:  '#f472b6'    // pink        - the hot, most recent window
+};
 var WINDOW_LABEL = { season: 'Season', last6: 'Last 6', last2: 'Last 2', blend: 'Blended' };
+// Chip order. 'blend' is included so the default view is reachable again
+// after the reader has picked a single window.
+var WINDOWS = ['blend', 'season', 'last6', 'last2'];
+var DEFAULT_WINDOW = 'blend';
+var CARD_SEQ = 0;
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -607,28 +653,24 @@ function matchupCard(a, b, when, res) {
   var v = view(a, b, 'blend');
   if (!v) return '';
 
-  var chips = ['season', 'last6', 'last2'].map(function (win) {
+  var id = 'mc' + (++CARD_SEQ);
+  var chips = WINDOWS.map(function (win) {
     var x = view(a, b, win);
-    return '<div class="win-chip">' +
+    var on = win === DEFAULT_WINDOW;
+    return '<button type="button" class="win-chip' + (on ? ' active' : '') + '"' +
+      ' data-win="' + win + '" aria-pressed="' + on + '"' +
+      ' style="border-color:' + (on ? WINDOW_COLOR[win] : '#334155') + '">' +
       '<div class="k" style="color:' + WINDOW_COLOR[win] + '">' +
         '<i style="background:' + WINDOW_COLOR[win] + '"></i>' + WINDOW_LABEL[win] +
-        ' (' + D.window_weeks[win].length + 'w)</div>' +
-      '<div class="v">' + pct0(x.a) + ' – ' + pct0(x.b) + '</div>' +
-      '<div class="s">' + x.exp_a.toFixed(1) + '–' + x.exp_b.toFixed(1) + ' cats</div>' +
-    '</div>';
-  }).join('');
-
-  var cats = D.cats.map(function (c) {
-    var p = v.cats[c];
-    var low = D.lower_is_better.indexOf(c) >= 0;
-    return '<div class="catrow">' +
-      '<span class="cn">' + c + (low ? '<span style="color:#475569">&darr;</span>' : '') + '</span>' +
-      '<span class="cbar">' +
-        '<i class="a" style="width:' + (p * 100).toFixed(1) + '%"></i>' +
-        '<i class="b" style="width:' + ((1 - p) * 100).toFixed(1) + '%"></i>' +
-        '<span class="mid"></span></span>' +
-      '<span class="cv">' + pct0(p) + '</span>' +
-    '</div>';
+        (D.window_weeks[win] ? ' (' + D.window_weeks[win].length + 'w)' : '') +
+        '<span class="tick">\u2713</span></div>' +
+      // Win / loss / TIE. Showing only two numbers made the chip look broken:
+      // '50% - 25%' is not a rounding error, it is 25% ties, and a 6-6 week is
+      // a tie in this league often enough to matter.
+      '<div class="v">' + pct0(x.a) + ' &ndash; ' + pct0(x.b) + '</div>' +
+      '<div class="s">' + x.exp_a.toFixed(1) + '&ndash;' + x.exp_b.toFixed(1) + ' cats' +
+        (x.tie >= 0.005 ? ' &middot; ' + pct0(x.tie) + ' tie' : '') + '</div>' +
+    '</button>';
   }).join('');
 
   var final = res && res.status === 'postevent';
@@ -652,13 +694,71 @@ function matchupCard(a, b, when, res) {
     '<div class="probfoot"><span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
       '<span>tie ' + pct(v.tie) + ' → seed ' + Math.min(A.seed, B.seed) + '</span>' +
       '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span></div>' +
-    '<div class="windows">' + chips + '</div>' +
-    '<div class="cats">' +
-      '<div class="probfoot" style="margin-bottom:4px"><span>' +
-        esc(A.manager) + ' wins the category</span><span>blended · &darr; lower is better</span>' +
-      '</div>' + cats + '</div>' +
+    '<div class="windows" role="group" aria-label="Choose the window the category bars use">' +
+      chips + '</div>' +
+    '<div class="cats" id="' + id + '" data-a="' + a + '" data-b="' + b + '">' +
+      catStrip(a, b, DEFAULT_WINDOW) + '</div>' +
   '</div>';
 }
+
+/**
+ * The per-category bars for one window. Split out of matchupCard so clicking a
+ * chip can redraw just this block: redrawing the whole card would reset every
+ * other card's chosen window and lose the reader's scroll position.
+ */
+function catStrip(a, b, win) {
+  var A = D.byId[a];
+  var v = view(a, b, win);
+  if (!v) return '';
+  var rows = D.cats.map(function (c) {
+    var p = v.cats[c];
+    var low = D.lower_is_better.indexOf(c) >= 0;
+    return '<div class="catrow">' +
+      '<span class="cn">' + c + (low ? '<span style="color:#475569">&darr;</span>' : '') + '</span>' +
+      '<span class="cbar">' +
+        '<i class="a" style="width:' + (p * 100).toFixed(1) + '%"></i>' +
+        '<i class="b" style="width:' + ((1 - p) * 100).toFixed(1) + '%"></i>' +
+        '<span class="mid"></span></span>' +
+      '<span class="cv">' + pct0(p) + '</span>' +
+    '</div>';
+  }).join('');
+  var wks = D.window_weeks[win];
+  // A short window has very few week-pairings to draw from - two weeks each
+  // gives four - so it returns clean 0% and 100% that look like certainty and
+  // are nothing of the kind. Say how thin the sample is right next to it.
+  var thin = wks && wks.length <= 3
+    ? '<div class="thin-warn">Only ' + (wks.length * wks.length) + ' week pairings exist in a ' +
+      wks.length + '-week window, so these land on round numbers. Treat 0% and 100% as ' +
+      '&ldquo;never happened yet&rdquo;, not as impossible and certain.</div>'
+    : '';
+  return '<div class="probfoot" style="margin-bottom:4px">' +
+      '<span>' + esc(A.manager) + ' wins the category</span>' +
+      '<span>' + WINDOW_LABEL[win].toLowerCase() +
+        (wks ? ' &middot; weeks ' + wks[0] + '&ndash;' + wks[wks.length - 1] : '') +
+        ' &middot; &darr; lower is better</span>' +
+    '</div>' + thin + rows;
+}
+
+/**
+ * One delegated listener covers every card, present and future - the Any
+ * Matchup card is rebuilt on each dropdown change, so per-card listeners would
+ * have to be re-attached every time.
+ */
+document.addEventListener('click', function (e) {
+  var chip = e.target.closest ? e.target.closest('.win-chip') : null;
+  if (!chip || !chip.dataset.win) return;
+  var card = chip.closest('.mucard');
+  if (!card) return;
+  var strip = card.querySelector('.cats');
+  if (!strip) return;
+  Array.prototype.forEach.call(card.querySelectorAll('.win-chip'), function (el) {
+    var on = el === chip;
+    el.classList.toggle('active', on);
+    el.setAttribute('aria-pressed', String(on));
+    el.style.borderColor = on ? WINDOW_COLOR[el.dataset.win] : '#334155';
+  });
+  strip.innerHTML = catStrip(+strip.dataset.a, +strip.dataset.b, chip.dataset.win);
+});
 
 function renderRound(d) {
   var w = d.bracket.weeks;

@@ -641,244 +641,244 @@
   {
    "key": "lucky",
    "title": "Luckiest Manager",
-   "subtitle": "Wins above expected",
-   "metric": "Matchups won beyond what their play deserved",
+   "subtitle": "Category points above expected",
+   "metric": "Handed points the schedule paid for",
    "tone": "good",
-   "caveat": "Expected wins = all-play win rate x weeks played. Positive means the schedule handed them matchups their categories had not earned.",
+   "caveat": "Expected = the categories this team would have averaged each week against all eleven opponents. The table is kept in category points, so this is the number that moves seeds - one full point here is one point of Pct.",
    "winner": {
-    "manager": "Mike",
-    "team": "¯\\_(ツ)_/¯",
-    "team_id": 12,
-    "value": 3.1818181818181817,
-    "display": "+3.2",
-    "note": "13-6-2 in real matchups; an all-play team this good wins 10.8"
-   },
-   "runner_up": {
     "manager": "Kevin",
     "team": "The Rosterbation Station",
     "team_id": 11,
-    "value": 2.636363636363635,
-    "display": "+2.6",
-    "note": "14-5-2 in real matchups; an all-play team this good wins 12.4"
+    "value": 19.22727272727272,
+    "display": "+19.2",
+    "note": "took 153.5 categories, would have averaged 134.3 against the whole league; 14-5-2 in matchups (+2.6 vs expected)"
+   },
+   "runner_up": {
+    "manager": "Mike",
+    "team": "¯\\_(ツ)_/¯",
+    "team_id": 12,
+    "value": 13.954545454545496,
+    "display": "+14.0",
+    "note": "took 142.5 categories, would have averaged 128.5 against the whole league; 13-6-2 in matchups (+3.2 vs expected)"
    },
    "board": [
-    {
-     "manager": "Mike",
-     "team": "¯\\_(ツ)_/¯",
-     "team_id": 12,
-     "value": 3.1818181818181817,
-     "display": "+3.2",
-     "note": "13-6-2 in real matchups; an all-play team this good wins 10.8"
-    },
     {
      "manager": "Kevin",
      "team": "The Rosterbation Station",
      "team_id": 11,
-     "value": 2.636363636363635,
-     "display": "+2.6",
-     "note": "14-5-2 in real matchups; an all-play team this good wins 12.4"
+     "value": 19.22727272727272,
+     "display": "+19.2",
+     "note": "took 153.5 categories, would have averaged 134.3 against the whole league; 14-5-2 in matchups (+2.6 vs expected)"
     },
     {
-     "manager": "Taylor",
-     "team": "M*A*S*H*D PO*TA*TOES",
-     "team_id": 1,
-     "value": 1.8636363636363633,
-     "display": "+1.9",
-     "note": "13-5-3 in real matchups; an all-play team this good wins 12.6"
-    },
-    {
-     "manager": "James",
-     "team": "Rosa Parks’ Bus Seat",
-     "team_id": 2,
-     "value": 0.09090909090908994,
-     "display": "+0.1",
-     "note": "6-9-6 in real matchups; an all-play team this good wins 8.9"
-    },
-    {
-     "manager": "Mikey",
-     "team": "LAST GAME OF THE YEAR BRENT",
-     "team_id": 10,
-     "value": -0.1363636363636367,
-     "display": "-0.1",
-     "note": "11-9-1 in real matchups; an all-play team this good wins 11.6"
-    },
-    {
-     "manager": "Eric",
-     "team": "Ian Cumsler",
-     "team_id": 7,
-     "value": -0.1363636363636367,
-     "display": "-0.1",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 8.1"
+     "manager": "Mike",
+     "team": "¯\\_(ツ)_/¯",
+     "team_id": 12,
+     "value": 13.954545454545496,
+     "display": "+14.0",
+     "note": "took 142.5 categories, would have averaged 128.5 against the whole league; 13-6-2 in matchups (+3.2 vs expected)"
     },
     {
      "manager": "Josh",
      "team": "Los Basureros",
      "team_id": 3,
-     "value": -0.6363636363636367,
-     "display": "-0.6",
-     "note": "13-7-1 in real matchups; an all-play team this good wins 14.1"
+     "value": 5.636363636363683,
+     "display": "+5.6",
+     "note": "took 153 categories, would have averaged 147.4 against the whole league; 13-7-1 in matchups (-0.6 vs expected)"
     },
     {
-     "manager": "Kurtis",
-     "team": "William Shatnermouth",
-     "team_id": 5,
-     "value": -0.9090909090909101,
-     "display": "-0.9",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 8.9"
+     "manager": "Taylor",
+     "team": "M*A*S*H*D PO*TA*TOES",
+     "team_id": 1,
+     "value": 4.681818181818159,
+     "display": "+4.7",
+     "note": "took 144.5 categories, would have averaged 139.8 against the whole league; 13-5-3 in matchups (+1.9 vs expected)"
     },
     {
-     "manager": "Greg",
-     "team": "OG 8️⃣ & an extra",
-     "team_id": 9,
-     "value": -0.954545454545455,
-     "display": "-1.0",
-     "note": "7-10-4 in real matchups; an all-play team this good wins 10.0"
+     "manager": "James",
+     "team": "Rosa Parks’ Bus Seat",
+     "team_id": 2,
+     "value": -0.22727272727271952,
+     "display": "-0.2",
+     "note": "took 118.5 categories, would have averaged 118.7 against the whole league; 6-9-6 in matchups (+0.1 vs expected)"
     },
     {
      "manager": "Bryant",
      "team": "Rickie Flower",
      "team_id": 4,
-     "value": -1.1818181818181817,
-     "display": "-1.2",
-     "note": "7-10-4 in real matchups; an all-play team this good wins 10.2"
+     "value": -1.5,
+     "display": "-1.5",
+     "note": "took 121.5 categories, would have averaged 123.0 against the whole league; 7-10-4 in matchups (-1.2 vs expected)"
+    },
+    {
+     "manager": "Greg",
+     "team": "OG 8️⃣ & an extra",
+     "team_id": 9,
+     "value": -1.7272727272727337,
+     "display": "-1.7",
+     "note": "took 122.5 categories, would have averaged 124.2 against the whole league; 7-10-4 in matchups (-1.0 vs expected)"
+    },
+    {
+     "manager": "Eric",
+     "team": "Ian Cumsler",
+     "team_id": 7,
+     "value": -2.7727272727272663,
+     "display": "-2.8",
+     "note": "took 113 categories, would have averaged 115.8 against the whole league; 7-12-2 in matchups (-0.1 vs expected)"
+    },
+    {
+     "manager": "Mikey",
+     "team": "LAST GAME OF THE YEAR BRENT",
+     "team_id": 10,
+     "value": -5.2727272727272805,
+     "display": "-5.3",
+     "note": "took 127.5 categories, would have averaged 132.8 against the whole league; 11-9-1 in matchups (-0.1 vs expected)"
     },
     {
      "manager": "Mark",
      "team": "Hatfield Hurlers",
      "team_id": 6,
-     "value": -1.7727272727272734,
-     "display": "-1.8",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 9.8"
+     "value": -9.409090909090878,
+     "display": "-9.4",
+     "note": "took 110.5 categories, would have averaged 119.9 against the whole league; 7-12-2 in matchups (-1.8 vs expected)"
+    },
+    {
+     "manager": "Kurtis",
+     "team": "William Shatnermouth",
+     "team_id": 5,
+     "value": -11.13636363636364,
+     "display": "-11.1",
+     "note": "took 105 categories, would have averaged 116.1 against the whole league; 7-12-2 in matchups (-0.9 vs expected)"
     },
     {
      "manager": "Austin",
      "team": "Moniebol 🐳 (DA BI ASS)",
      "team_id": 8,
-     "value": -2.045454545454545,
-     "display": "-2.0",
-     "note": "6-14-1 in real matchups; an all-play team this good wins 8.5"
+     "value": -11.454545454545453,
+     "display": "-11.5",
+     "note": "took 100 categories, would have averaged 111.5 against the whole league; 6-14-1 in matchups (-2.0 vs expected)"
     }
    ]
   },
   {
    "key": "unlucky",
    "title": "Unluckiest Manager",
-   "subtitle": "Wins below expected",
-   "metric": "Beaten by the schedule, not the league",
+   "subtitle": "Category points below expected",
+   "metric": "Robbed by the draw, not the roster",
    "tone": "bad",
    "caveat": "",
    "winner": {
     "manager": "Austin",
     "team": "Moniebol 🐳 (DA BI ASS)",
     "team_id": 8,
-    "value": -2.045454545454545,
-    "display": "-2.0",
-    "note": "6-14-1 in real matchups; an all-play team this good wins 8.5"
+    "value": -11.454545454545453,
+    "display": "-11.5",
+    "note": "took 100 categories, would have averaged 111.5 against the whole league; 6-14-1 in matchups (-2.0 vs expected)"
    },
    "runner_up": {
-    "manager": "Mark",
-    "team": "Hatfield Hurlers",
-    "team_id": 6,
-    "value": -1.7727272727272734,
-    "display": "-1.8",
-    "note": "7-12-2 in real matchups; an all-play team this good wins 9.8"
+    "manager": "Kurtis",
+    "team": "William Shatnermouth",
+    "team_id": 5,
+    "value": -11.13636363636364,
+    "display": "-11.1",
+    "note": "took 105 categories, would have averaged 116.1 against the whole league; 7-12-2 in matchups (-0.9 vs expected)"
    },
    "board": [
     {
      "manager": "Austin",
      "team": "Moniebol 🐳 (DA BI ASS)",
      "team_id": 8,
-     "value": -2.045454545454545,
-     "display": "-2.0",
-     "note": "6-14-1 in real matchups; an all-play team this good wins 8.5"
-    },
-    {
-     "manager": "Mark",
-     "team": "Hatfield Hurlers",
-     "team_id": 6,
-     "value": -1.7727272727272734,
-     "display": "-1.8",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 9.8"
-    },
-    {
-     "manager": "Bryant",
-     "team": "Rickie Flower",
-     "team_id": 4,
-     "value": -1.1818181818181817,
-     "display": "-1.2",
-     "note": "7-10-4 in real matchups; an all-play team this good wins 10.2"
-    },
-    {
-     "manager": "Greg",
-     "team": "OG 8️⃣ & an extra",
-     "team_id": 9,
-     "value": -0.954545454545455,
-     "display": "-1.0",
-     "note": "7-10-4 in real matchups; an all-play team this good wins 10.0"
+     "value": -11.454545454545453,
+     "display": "-11.5",
+     "note": "took 100 categories, would have averaged 111.5 against the whole league; 6-14-1 in matchups (-2.0 vs expected)"
     },
     {
      "manager": "Kurtis",
      "team": "William Shatnermouth",
      "team_id": 5,
-     "value": -0.9090909090909101,
-     "display": "-0.9",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 8.9"
+     "value": -11.13636363636364,
+     "display": "-11.1",
+     "note": "took 105 categories, would have averaged 116.1 against the whole league; 7-12-2 in matchups (-0.9 vs expected)"
     },
     {
-     "manager": "Josh",
-     "team": "Los Basureros",
-     "team_id": 3,
-     "value": -0.6363636363636367,
-     "display": "-0.6",
-     "note": "13-7-1 in real matchups; an all-play team this good wins 14.1"
+     "manager": "Mark",
+     "team": "Hatfield Hurlers",
+     "team_id": 6,
+     "value": -9.409090909090878,
+     "display": "-9.4",
+     "note": "took 110.5 categories, would have averaged 119.9 against the whole league; 7-12-2 in matchups (-1.8 vs expected)"
     },
     {
      "manager": "Mikey",
      "team": "LAST GAME OF THE YEAR BRENT",
      "team_id": 10,
-     "value": -0.1363636363636367,
-     "display": "-0.1",
-     "note": "11-9-1 in real matchups; an all-play team this good wins 11.6"
+     "value": -5.2727272727272805,
+     "display": "-5.3",
+     "note": "took 127.5 categories, would have averaged 132.8 against the whole league; 11-9-1 in matchups (-0.1 vs expected)"
     },
     {
      "manager": "Eric",
      "team": "Ian Cumsler",
      "team_id": 7,
-     "value": -0.1363636363636367,
-     "display": "-0.1",
-     "note": "7-12-2 in real matchups; an all-play team this good wins 8.1"
+     "value": -2.7727272727272663,
+     "display": "-2.8",
+     "note": "took 113 categories, would have averaged 115.8 against the whole league; 7-12-2 in matchups (-0.1 vs expected)"
+    },
+    {
+     "manager": "Greg",
+     "team": "OG 8️⃣ & an extra",
+     "team_id": 9,
+     "value": -1.7272727272727337,
+     "display": "-1.7",
+     "note": "took 122.5 categories, would have averaged 124.2 against the whole league; 7-10-4 in matchups (-1.0 vs expected)"
+    },
+    {
+     "manager": "Bryant",
+     "team": "Rickie Flower",
+     "team_id": 4,
+     "value": -1.5,
+     "display": "-1.5",
+     "note": "took 121.5 categories, would have averaged 123.0 against the whole league; 7-10-4 in matchups (-1.2 vs expected)"
     },
     {
      "manager": "James",
      "team": "Rosa Parks’ Bus Seat",
      "team_id": 2,
-     "value": 0.09090909090908994,
-     "display": "+0.1",
-     "note": "6-9-6 in real matchups; an all-play team this good wins 8.9"
+     "value": -0.22727272727271952,
+     "display": "-0.2",
+     "note": "took 118.5 categories, would have averaged 118.7 against the whole league; 6-9-6 in matchups (+0.1 vs expected)"
     },
     {
      "manager": "Taylor",
      "team": "M*A*S*H*D PO*TA*TOES",
      "team_id": 1,
-     "value": 1.8636363636363633,
-     "display": "+1.9",
-     "note": "13-5-3 in real matchups; an all-play team this good wins 12.6"
+     "value": 4.681818181818159,
+     "display": "+4.7",
+     "note": "took 144.5 categories, would have averaged 139.8 against the whole league; 13-5-3 in matchups (+1.9 vs expected)"
     },
     {
-     "manager": "Kevin",
-     "team": "The Rosterbation Station",
-     "team_id": 11,
-     "value": 2.636363636363635,
-     "display": "+2.6",
-     "note": "14-5-2 in real matchups; an all-play team this good wins 12.4"
+     "manager": "Josh",
+     "team": "Los Basureros",
+     "team_id": 3,
+     "value": 5.636363636363683,
+     "display": "+5.6",
+     "note": "took 153 categories, would have averaged 147.4 against the whole league; 13-7-1 in matchups (-0.6 vs expected)"
     },
     {
      "manager": "Mike",
      "team": "¯\\_(ツ)_/¯",
      "team_id": 12,
-     "value": 3.1818181818181817,
-     "display": "+3.2",
-     "note": "13-6-2 in real matchups; an all-play team this good wins 10.8"
+     "value": 13.954545454545496,
+     "display": "+14.0",
+     "note": "took 142.5 categories, would have averaged 128.5 against the whole league; 13-6-2 in matchups (+3.2 vs expected)"
+    },
+    {
+     "manager": "Kevin",
+     "team": "The Rosterbation Station",
+     "team_id": 11,
+     "value": 19.22727272727272,
+     "display": "+19.2",
+     "note": "took 153.5 categories, would have averaged 134.3 against the whole league; 14-5-2 in matchups (+2.6 vs expected)"
     }
    ]
   },
@@ -1683,6 +1683,9 @@
    "stdev_pts": 2.6166655834306005,
    "luck": -0.6363636363636367,
    "expected_wins": 14.136363636363637,
+   "cat_luck": 5.636363636363683,
+   "expected_cats": 147.36363636363632,
+   "actual_cats": 153.0,
    "upsets": 0,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -1913,6 +1916,9 @@
    "stdev_pts": 2.272531428379049,
    "luck": 1.8636363636363633,
    "expected_wins": 12.636363636363637,
+   "cat_luck": 4.681818181818159,
+   "expected_cats": 139.81818181818184,
+   "actual_cats": 144.5,
    "upsets": 2,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -2143,6 +2149,9 @@
    "stdev_pts": 2.238601766389173,
    "luck": 2.636363636363635,
    "expected_wins": 12.363636363636365,
+   "cat_luck": 19.22727272727272,
+   "expected_cats": 134.27272727272728,
+   "actual_cats": 153.5,
    "upsets": 3,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -2373,6 +2382,9 @@
    "stdev_pts": 3.0090566243770627,
    "luck": -0.1363636363636367,
    "expected_wins": 11.636363636363637,
+   "cat_luck": -5.2727272727272805,
+   "expected_cats": 132.77272727272728,
+   "actual_cats": 127.5,
    "upsets": 0,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -2603,6 +2615,9 @@
    "stdev_pts": 2.3071907705477415,
    "luck": 3.1818181818181817,
    "expected_wins": 10.818181818181818,
+   "cat_luck": 13.954545454545496,
+   "expected_cats": 128.5454545454545,
+   "actual_cats": 142.5,
    "upsets": 2,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -2833,6 +2848,9 @@
    "stdev_pts": 1.9854915942275604,
    "luck": -1.1818181818181817,
    "expected_wins": 10.181818181818182,
+   "cat_luck": -1.5,
+   "expected_cats": 123.0,
+   "actual_cats": 121.5,
    "upsets": 1,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -3063,6 +3081,9 @@
    "stdev_pts": 2.2218253613882295,
    "luck": -0.954545454545455,
    "expected_wins": 9.954545454545455,
+   "cat_luck": -1.7272727272727337,
+   "expected_cats": 124.22727272727273,
+   "actual_cats": 122.5,
    "upsets": 6,
    "ip_forfeits": 1,
    "ip_forfeit_weeks": [
@@ -3295,6 +3316,9 @@
    "stdev_pts": 2.4133509977930587,
    "luck": -1.7727272727272734,
    "expected_wins": 9.772727272727273,
+   "cat_luck": -9.409090909090878,
+   "expected_cats": 119.90909090909088,
+   "actual_cats": 110.5,
    "upsets": 3,
    "ip_forfeits": 2,
    "ip_forfeit_weeks": [
@@ -3528,6 +3552,9 @@
    "stdev_pts": 2.0710180217126317,
    "luck": 0.09090909090908994,
    "expected_wins": 8.90909090909091,
+   "cat_luck": -0.22727272727271952,
+   "expected_cats": 118.72727272727272,
+   "actual_cats": 118.5,
    "upsets": 3,
    "ip_forfeits": 0,
    "ip_forfeit_weeks": [],
@@ -3758,6 +3785,9 @@
    "stdev_pts": 2.5773740789526736,
    "luck": -0.9090909090909101,
    "expected_wins": 8.90909090909091,
+   "cat_luck": -11.13636363636364,
+   "expected_cats": 116.13636363636364,
+   "actual_cats": 105.0,
    "upsets": 4,
    "ip_forfeits": 3,
    "ip_forfeit_weeks": [
@@ -3992,6 +4022,9 @@
    "stdev_pts": 2.831031477929015,
    "luck": -2.045454545454545,
    "expected_wins": 8.545454545454545,
+   "cat_luck": -11.454545454545453,
+   "expected_cats": 111.45454545454545,
+   "actual_cats": 100.0,
    "upsets": 5,
    "ip_forfeits": 2,
    "ip_forfeit_weeks": [
@@ -4225,6 +4258,9 @@
    "stdev_pts": 2.8531718436086178,
    "luck": -0.1363636363636367,
    "expected_wins": 8.136363636363637,
+   "cat_luck": -2.7727272727272663,
+   "expected_cats": 115.77272727272727,
+   "actual_cats": 113.0,
    "upsets": 7,
    "ip_forfeits": 3,
    "ip_forfeit_weeks": [

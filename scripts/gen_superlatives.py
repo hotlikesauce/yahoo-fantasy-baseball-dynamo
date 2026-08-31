@@ -133,22 +133,33 @@ def build(res):
                'is excluded. %d weeks counted.' % ip_weeks))
 
     # ---- Luckiest / unluckiest ---------------------------------------------
-    awards.append(award(
-        'lucky', 'Luckiest Manager', 'Wins above expected',
-        'Matchups won beyond what their play deserved',
-        teams, 'luck', fmt=signed,
-        note=lambda t: '%d-%d-%d in real matchups; an all-play team this good wins %.1f' % (
-            t['matchup_w'], t['matchup_l'], t['matchup_t'], t['expected_wins']),
-        tone='good',
-        caveat='Expected wins = all-play win rate x weeks played. Positive means the '
-               'schedule handed them matchups their categories had not earned.'))
+    # Measured in CATEGORY points, not matchup wins. The standings and the
+    # playoff seeds in this league are category points (wins + 0.5 x ties), so
+    # that is the only currency in which "the schedule helped me" means
+    # anything. Matchup luck is reported alongside because it is interesting,
+    # but leading with it badly understates the effect. Kevin led the table for
+    # all 21 completed weeks on +19.2 categories of schedule help and sits 2nd
+    # with week 22 live; matchup luck rated him third-luckiest at +2.6 wins.
+    luck_note = (lambda t: 'took %g categories, would have averaged %.1f against the '
+                           'whole league; %d-%d-%d in matchups (%+.1f vs expected)' % (
+                     t['actual_cats'], t['expected_cats'],
+                     t['matchup_w'], t['matchup_l'], t['matchup_t'], t['luck']))
 
     awards.append(award(
-        'unlucky', 'Unluckiest Manager', 'Wins below expected',
-        'Beaten by the schedule, not the league',
-        teams, 'luck', reverse=False, fmt=signed,
-        note=lambda t: '%d-%d-%d in real matchups; an all-play team this good wins %.1f' % (
-            t['matchup_w'], t['matchup_l'], t['matchup_t'], t['expected_wins']),
+        'lucky', 'Luckiest Manager', 'Category points above expected',
+        'Handed points the schedule paid for',
+        teams, 'cat_luck', fmt=signed,
+        note=luck_note,
+        tone='good',
+        caveat='Expected = the categories this team would have averaged each week against '
+               'all eleven opponents. The table is kept in category points, so this is '
+               'the number that moves seeds - one full point here is one point of Pct.'))
+
+    awards.append(award(
+        'unlucky', 'Unluckiest Manager', 'Category points below expected',
+        'Robbed by the draw, not the roster',
+        teams, 'cat_luck', reverse=False, fmt=signed,
+        note=luck_note,
         tone='bad'))
 
     # ---- Upsets -------------------------------------------------------------
@@ -246,7 +257,8 @@ def main():
                 'cat_pts', 'matchup_w', 'matchup_l', 'matchup_t',
                 'allplay_w', 'allplay_l', 'allplay_pct', 'allplay_pct_l6',
                 'allplay_pct_l2', 'allplay_pct_h1', 'allplay_pct_h2',
-                'avg_pts', 'stdev_pts', 'luck', 'expected_wins', 'upsets',
+                'avg_pts', 'stdev_pts', 'luck', 'expected_wins',
+                'cat_luck', 'expected_cats', 'actual_cats', 'upsets',
                 'ip_forfeits', 'ip_forfeit_weeks', 'avg_ip', 'min_ip_week',
                 'moves', 'adds', 'drops', 'trades', 'slope', 'slope_rel',
                 'slope_r', 'vs_strong', 'vs_weak', 'split', 'weekly')

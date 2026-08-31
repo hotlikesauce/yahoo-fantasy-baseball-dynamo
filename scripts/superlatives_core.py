@@ -159,17 +159,29 @@ def all_play(rows, weeks=None):
     """
     Replay each week against all eleven other teams on the twelve categories.
 
+    Two different things come out of this, and the difference matters more in
+    this league than in most:
+
+      * `pct` - how often a team would BEAT a random opponent. A matchup rate.
+      * `exp_cats` - how many of the twelve CATEGORIES a team would average
+        against the field. This is the one that matters here, because the
+        standings and the playoff seeds are kept in category points
+        (`wins + 0.5 * ties`), not in matchup record. A team can be third in
+        matchup terms and first on the table, and in 2026 one was.
+
     Ties inside a category split it, exactly as Yahoo scores them, so a 6-6
     week against an opponent is half a win rather than a loss.
     """
     weeks = sorted(rows) if weeks is None else [w for w in weeks if w in rows]
-    tally = defaultdict(lambda: {'w': 0.0, 'l': 0.0, 'games': 0, 'weeks': 0})
+    tally = defaultdict(lambda: {'w': 0.0, 'l': 0.0, 'games': 0, 'weeks': 0,
+                                 'exp_cats': 0.0})
     per_week = defaultdict(dict)
 
     for w in weeks:
         teams = rows[w]
         for tid, me in teams.items():
             wins = 0.0
+            cats = 0.0
             for oid, other in teams.items():
                 if oid == tid:
                     continue
@@ -180,6 +192,7 @@ def all_play(rows, weeks=None):
                         score += 0.5
                     elif (a < b) if c in LOWER_IS_BETTER else (a > b):
                         score += 1.0
+                cats += score
                 # the head-to-head is decided on the twelve categories
                 if score > N_CATS / 2:
                     wins += 1.0
@@ -190,6 +203,7 @@ def all_play(rows, weeks=None):
             tally[tid]['l'] += n - wins
             tally[tid]['games'] += n
             tally[tid]['weeks'] += 1
+            tally[tid]['exp_cats'] += cats / n if n else 0.0
             per_week[w][tid] = wins / n if n else 0.0
 
     for t in tally.values():
@@ -316,8 +330,14 @@ def compute(data, through=None):
         ip_weeks = [r for r in wk if r['counts_ip']]
         forfeits = [r for r in ip_weeks if r['forfeit']]
 
-        # Luck: matchups won, against the matchups an all-play team of the same
-        # strength would have won over the same number of weeks.
+        # Luck, in the currency the standings are actually kept in: category
+        # points won, against the category points the same team would have
+        # averaged against the whole field. Matchup luck is kept alongside it
+        # because it is interesting, but it is NOT the headline - this league
+        # seeds on category points, so a manager can be handed a division title
+        # by the schedule while their matchup record looks ordinary.
+        exp_cats = ap[tid]['exp_cats']
+        actual_cats = sum(r['pts'] for r in wk)
         exp_w = ap[tid]['pct'] * len(wk)
         actual_w = mw + 0.5 * mt
 
@@ -344,6 +364,9 @@ def compute(data, through=None):
             'best_week_pts': max(pts) if pts else 0.0,
             'worst_week': min(wk, key=lambda r: r['pts'])['week'] if wk else None,
             'worst_week_pts': min(pts) if pts else 0.0,
+            'cat_luck': actual_cats - exp_cats,
+            'expected_cats': exp_cats,
+            'actual_cats': actual_cats,
             'luck': actual_w - exp_w,
             'expected_wins': exp_w,
             'ip_forfeits': len(forfeits),

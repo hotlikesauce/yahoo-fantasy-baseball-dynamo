@@ -16,6 +16,16 @@
       Object.keys(attrs).forEach(function(k) { el.setAttribute(k, attrs[k]); });
       document.head.appendChild(el);
     });
+    // Site-wide column sorting. Loaded here so every page picks it up without
+    // its own <script> tag; it no-ops on tables a page already sorts itself.
+    if (!document.querySelector('script[data-table-sort]')) {
+      var ts = document.createElement('script');
+      ts.src = base + 'table-sort.js';
+      ts.defer = true;
+      ts.setAttribute('data-table-sort', '');
+      document.head.appendChild(ts);
+    }
+
     // Theme color for browser chrome
     if (!document.querySelector('meta[name="theme-color"]')) {
       var meta = document.createElement('meta');
