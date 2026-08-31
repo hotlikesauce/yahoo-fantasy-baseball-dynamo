@@ -331,7 +331,7 @@
   const nav = document.getElementById('nav');
   if (!nav) return;
 
-  const pages2026    = ['draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','trade_grades_2026.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html','positional_strength_2026.html','playoff_scenarios_2026.html'];
+  const pages2026    = ['draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','trade_grades_2026.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html','positional_strength_2026.html','playoff_scenarios_2026.html','playoff_hub_2026.html','superlatives_2026.html'];
   const pagesYoY     = ['season_trends_2025.html','luck_analysis_2025.html','draft_picks_2025.html','season_trends_2024.html','season_trends_2023.html','season_trends_2022.html'];
 
   nav.innerHTML = `
@@ -347,7 +347,9 @@
               <a href="live_standings_2026.html" class="${isActive('live_standings_2026.html').trim()}">Live Standings</a>
               <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
               <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
+              <a href="playoff_hub_2026.html" class="${isActive('playoff_hub_2026.html').trim()}">Playoff Hub</a>
               <a href="playoff_scenarios_2026.html" class="${isActive('playoff_scenarios_2026.html').trim()}">Playoff Scenarios</a>
+              <a href="superlatives_2026.html" class="${isActive('superlatives_2026.html').trim()}">Superlatives</a>
               <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
               <a href="trade_grades_2026.html" class="${isActive('trade_grades_2026.html').trim()}">Trade Grades</a>
               <a href="positional_strength_2026.html" class="${isActive('positional_strength_2026.html').trim()}">Positional Strength</a>
@@ -402,7 +404,9 @@
           <a href="live_standings_2026.html" class="${isActive('live_standings_2026.html').trim()}">Live Standings</a>
           <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
           <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
+          <a href="playoff_hub_2026.html" class="${isActive('playoff_hub_2026.html').trim()}">Playoff Hub</a>
           <a href="playoff_scenarios_2026.html" class="${isActive('playoff_scenarios_2026.html').trim()}">Playoff Scenarios</a>
+          <a href="superlatives_2026.html" class="${isActive('superlatives_2026.html').trim()}">Superlatives</a>
           <a href="trade_analyzer.html" class="${isActive('trade_analyzer.html').trim()}">Trade Analyzer</a>
           <a href="trade_grades_2026.html" class="${isActive('trade_grades_2026.html').trim()}">Trade Grades</a>
           <a href="positional_strength_2026.html" class="${isActive('positional_strength_2026.html').trim()}">Positional Strength</a>

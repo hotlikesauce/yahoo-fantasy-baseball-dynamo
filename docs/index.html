@@ -197,9 +197,52 @@
   .standings-table .rank-num { color: #64748b; font-weight: 500; width: 30px; }
   .standings-table .team-name { font-size: 0.88em; white-space: nowrap; }
 
+  /* Two headline buttons. Deliberately much larger than the pills below:
+     these are where the season is actually decided in September, and a pill
+     the same size as 'Trade Analyzer' would not say that. */
+  .feature-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 24px 16px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .feature-nav a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 22px 24px;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.15s, filter 0.15s;
+  }
+  .feature-nav a:hover { transform: translateY(-3px); filter: brightness(1.12); }
+  .feature-nav a:focus-visible { outline: 3px solid #38bdf8; outline-offset: 3px; }
+  .feature-nav .fn-title {
+    font-size: 1.28em;
+    font-weight: 800;
+    line-height: 1.15;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .feature-nav .fn-sub { font-size: 0.84em; font-weight: 600; opacity: 0.82; }
+  .feature-nav .fn-hub {
+    background: linear-gradient(135deg, #9f1239, #e11d48);
+    color: #ffe4e6;
+    box-shadow: 0 6px 24px rgba(225,29,72,0.38);
+  }
+  .feature-nav .fn-sup {
+    background: linear-gradient(135deg, #7c2d12, #ea8a06);
+    color: #fef3c7;
+    box-shadow: 0 6px 24px rgba(234,138,6,0.38);
+  }
+
   .quick-nav {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
     padding: 0 24px 36px;
     max-width: 720px;
@@ -254,6 +297,9 @@
     .hero { padding: 24px 12px 20px; }
     .hero h1 { font-size: 1.7em; }
     .hero p { font-size: 0.95em; }
+    .feature-nav { grid-template-columns: 1fr; padding: 0 16px 14px; gap: 12px; }
+    .feature-nav a { padding: 18px 20px; }
+    .feature-nav .fn-title { font-size: 1.15em; }
     .quick-nav { grid-template-columns: 1fr 1fr; padding: 0 16px 28px; }
 
     .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -334,13 +380,22 @@
   <p class="est">Est. 2007 &middot; Entering Our 20th Year</p>
 </div>
 
+<div class="feature-nav">
+  <a href="playoff_hub_2026.html" class="fn-hub">
+    <span class="fn-title">⚾ Playoff Hub</span>
+    <span class="fn-sub">Bracket, title odds and matchup predictions</span>
+  </a>
+  <a href="superlatives_2026.html" class="fn-sup">
+    <span class="fn-title">🏆 Superlatives</span>
+    <span class="fn-sub">Thirteen awards, settled by the numbers</span>
+  </a>
+</div>
+
 <div class="quick-nav">
-  <a href="live_standings_2026.html" class="qn-standings">📊 Live Standings</a>
   <a href="season_trends_2026.html" class="qn-trends">📈 Season Trends</a>
   <a href="luck_analysis_2026.html" class="qn-luck">🎲 Luck Analysis</a>
   <a href="trade_grades_2026.html" class="qn-trades">🏷️ Trade Grades</a>
   <a href="trade_analyzer.html" class="qn-analyzer">🔄 Trade Analyzer</a>
-  <a href="playoff_scenarios_2026.html" class="qn-playoffs">🏆 Playoff Simulator</a>
 </div>
 
 <div class="container">

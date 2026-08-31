@@ -1,0 +1,350 @@
+"""
+Playoff seeding, bracket and matchup prediction for the 2026 postseason.
+
+The prediction model is a **week bootstrap**. To play a matchup, draw one whole
+week each team actually had, and score its twelve categories against the other.
+Drawing a whole week rather than each category on its own is the entire point:
+a team's ERA, WHIP and K/9 all move together with how its starters went, and a
+per-category normal would happily deal a team the best ERA it ever posted
+alongside the fewest strikeouts, a week that has never happened and never will.
+
+Three windows are reported because they answer different questions:
+
+    season  - all completed weeks, the biggest sample and the least noisy
+    last 6  - the shape of the roster after the trade deadline
+    last 2  - who is hot, on a sample small enough to be mostly noise
+
+and a blend that mixes the three, because none of them is right alone.
+
+The 50-innings rule is simulated, not smoothed over: if a drawn week came in
+under 50 IP, that team forfeits all five pitching categories in that draw,
+exactly as Yahoo scores it. Managers who habitually run short carry that risk
+into their odds instead of getting credit for the pretty rate stats they put up
+on 35 innings.
+"""
+
+import random
+from collections import defaultdict
+
+import superlatives_core as sc
+
+CATS = sc.CATS
+LOWER_IS_BETTER = sc.LOWER_IS_BETTER
+PITCHING = sc.PITCHING
+N_CATS = sc.N_CATS
+MIN_IP = sc.MIN_IP
+
+# How the blended number weights the three windows. The season carries the most
+# because it is the only window with enough weeks to mean anything; the last two
+# get a real but minority say so a genuinely hot team is not ignored.
+BLEND = {'season': 0.50, 'last6': 0.30, 'last2': 0.20}
+
+SIMS = 20000
+SEED = 17
+
+
+def windows(weeks):
+    return {
+        'season': list(weeks),
+        'last6': list(weeks[-6:]),
+        'last2': list(weeks[-2:]),
+    }
+
+
+def week_pool(rows, tid, weeks):
+    """The weeks a team actually played, as draw-able samples."""
+    return [rows[w][tid] for w in weeks if tid in rows[w]]
+
+
+def score_pair(a, b):
+    """
+    Twelve categories between two drawn weeks. Returns team A's points, with a
+    tied category worth half to each, and a sub-50-IP week forfeiting its five
+    pitching categories outright.
+    """
+    a_forfeit = a['counts_ip'] and a['ip'] < MIN_IP
+    b_forfeit = b['counts_ip'] and b['ip'] < MIN_IP
+    pts = 0.0
+    for c in CATS:
+        if c in PITCHING and (a_forfeit or b_forfeit):
+            # a double forfeit splits them; otherwise the side that made the
+            # innings takes all five
+            if a_forfeit and b_forfeit:
+                pts += 0.5
+            elif b_forfeit:
+                pts += 1.0
+            continue
+        x, y = a['stats'][c], b['stats'][c]
+        if x == y:
+            pts += 0.5
+        elif (x < y) if c in LOWER_IS_BETTER else (x > y):
+            pts += 1.0
+    return pts
+
+
+class Predictor:
+    """Bootstrap sampler over one window, shared by matchup and bracket sims."""
+
+    def __init__(self, rows, weeks, window, sims=SIMS, seed=SEED):
+        self.sims = sims
+        self.rng = random.Random(seed)
+        self.window = window
+        self.pool = {}
+        for tid in {t for w in weeks for t in rows[w]}:
+            p = week_pool(rows, tid, window) or week_pool(rows, tid, weeks)
+            self.pool[tid] = p
+
+    def draw(self, tid):
+        return self.rng.choice(self.pool[tid])
+
+    def matchup(self, a, b):
+        """P(a wins), P(tie), expected category points, and per-category rates."""
+        wins = ties = 0
+        total = 0.0
+        cat_wins = defaultdict(float)
+        for _ in range(self.sims):
+            wa, wb = self.draw(a), self.draw(b)
+            pts = score_pair(wa, wb)
+            total += pts
+            if pts > N_CATS / 2:
+                wins += 1
+            elif pts == N_CATS / 2:
+                ties += 1
+            a_f = wa['counts_ip'] and wa['ip'] < MIN_IP
+            b_f = wb['counts_ip'] and wb['ip'] < MIN_IP
+            for c in CATS:
+                if c in PITCHING and (a_f or b_f):
+                    cat_wins[c] += 0.5 if (a_f and b_f) else (0.0 if a_f else 1.0)
+                    continue
+                x, y = wa['stats'][c], wb['stats'][c]
+                if x == y:
+                    cat_wins[c] += 0.5
+                elif (x < y) if c in LOWER_IS_BETTER else (x > y):
+                    cat_wins[c] += 1.0
+        n = float(self.sims)
+        return {
+            'win': wins / n,
+            'tie': ties / n,
+            'loss': (n - wins - ties) / n,
+            'exp_pts': total / n,
+            'cats': {c: cat_wins[c] / n for c in CATS},
+        }
+
+    def play(self, a, b):
+        """One drawn matchup, ties broken by the higher seed (the league rule)."""
+        pts = score_pair(self.draw(a), self.draw(b))
+        if pts > N_CATS / 2:
+            return a
+        if pts < N_CATS / 2:
+            return b
+        return None          # caller applies the seeding tiebreak
+
+
+class BlendPredictor:
+    """
+    The blended number, as a mixture rather than an average of three answers.
+
+    Averaging three win probabilities and sampling from a weighted mixture of
+    the three week pools are not the same thing, and the mixture is the right
+    one: it is a single coherent model of 'a week this team might have', not
+    three models glued together after the fact.
+    """
+
+    def __init__(self, rows, weeks, sims=SIMS, seed=SEED):
+        self.sims = sims
+        self.rng = random.Random(seed)
+        wins = windows(weeks)
+        self.pool, self.weights = {}, {}
+        for tid in {t for w in weeks for t in rows[w]}:
+            samples, wts = [], []
+            for name, weight in BLEND.items():
+                pool = week_pool(rows, tid, wins[name])
+                if not pool:
+                    continue
+                for r in pool:
+                    samples.append(r)
+                    wts.append(weight / len(pool))
+            self.pool[tid] = samples
+            self.weights[tid] = wts
+
+    def draw(self, tid):
+        return self.rng.choices(self.pool[tid], weights=self.weights[tid], k=1)[0]
+
+    matchup = Predictor.matchup
+    play = Predictor.play
+
+
+# ==============================================================
+# Seeding
+# ==============================================================
+def seed_teams(data, res, playoff_teams=6):
+    """
+    Final regular-season order, live week included.
+
+    Yahoo's standings block only counts completed weeks, so while the last week
+    is still running the seeds have to be projected: banked points plus what
+    the live scoreboard already shows. Once that week goes postevent the live
+    part is zero and this returns the real thing - the same code path either
+    way, with `final` saying which it was.
+    """
+    teams = res['teams']
+    counted = set(res['weeks'])
+    live = defaultdict(float)
+    live_week = None
+    pending = False
+
+    for wk, matchups in data['weeks'].items():
+        w = int(wk)
+        if w in counted or not matchups:
+            continue
+        if any(m.get('is_playoffs') for m in matchups):
+            continue
+        live_week = w if live_week is None else min(live_week, w)
+        for m in matchups:
+            if m['status'] != 'postevent':
+                pending = True
+            ties = N_CATS - m['a']['cats'] - m['b']['cats']
+            for side in (m['a'], m['b']):
+                live[side['team_id']] += side['cats'] + 0.5 * ties
+
+    rows = []
+    for tid, t in teams.items():
+        rows.append({
+            'team_id': tid,
+            'manager': t['manager'],
+            'name': t['name'],
+            'banked': t['cat_pts'],
+            'live': live.get(tid, 0.0),
+            'pts': t['cat_pts'] + live.get(tid, 0.0),
+            'allplay_pct': t['allplay_pct'],
+            'allplay_pct_l6': t['allplay_pct_l6'],
+            'allplay_pct_l2': t['allplay_pct_l2'],
+        })
+    # ties on points are broken head-to-head on categories; all-play is the
+    # stand-in here and is flagged on the page rather than pretended away
+    rows.sort(key=lambda r: (-r['pts'], -r['allplay_pct']))
+    for i, r in enumerate(rows, 1):
+        r['seed'] = i
+        r['in'] = i <= playoff_teams
+    return {
+        'seeds': rows,
+        'final': not pending,
+        'live_week': live_week,
+        'playoff_teams': playoff_teams,
+    }
+
+
+# ==============================================================
+# Bracket
+# ==============================================================
+def default_bracket(seeds, playoff_weeks):
+    """
+    Six teams over three weeks, with reseeding.
+
+    Round 1 the top two sit out and 3-6 / 4-5 play. Round 2 the highest
+    surviving seed draws the lowest surviving seed, which is what reseeding
+    means and why a 6 seed upsetting a 3 does not hand the 2 seed an easier
+    week - it hands it a harder one.
+    """
+    inn = [s for s in seeds if s['in']]
+    by_seed = {s['seed']: s for s in inn}
+    r1, r2, r3 = playoff_weeks
+    return {
+        'weeks': {'quarter': r1, 'semi': r2, 'final': r3},
+        'byes': [by_seed[1]['team_id'], by_seed[2]['team_id']],
+        'quarters': [
+            {'week': r1, 'a': by_seed[3]['team_id'], 'b': by_seed[6]['team_id']},
+            {'week': r1, 'a': by_seed[4]['team_id'], 'b': by_seed[5]['team_id']},
+        ],
+        'reseeded': True,
+    }
+
+
+def real_bracket_round(data, week, field=None):
+    """
+    The actual pairings Yahoo posted for a playoff week, if it has posted them.
+
+    Once the postseason starts this is the truth and the projection is not, so
+    every round checks here first.
+
+    `field` is the set of team ids actually in the bracket, and passing it is
+    close to mandatory. All twelve teams play every week of the postseason: the
+    six in the bracket, and the six in the consolation round. Yahoo's
+    `is_consolation` flag sorts most of that out, but a bye team still gets put
+    on the schedule against somebody, and a matchup that pairs a bracket team
+    with a non-bracket team is that filler - not a playoff game. Without the
+    field check, filler is read as a real pairing and the bye silently
+    disappears, which turns the 1 seed's three-week path into a two-week one and
+    quietly wrecks every number on the page.
+    """
+    matchups = data['weeks'].get(str(week)) or []
+    out = []
+    for m in matchups:
+        if not m.get('is_playoffs') or m.get('is_consolation'):
+            continue
+        a, b = m['a']['team_id'], m['b']['team_id']
+        if field is not None and not (a in field and b in field):
+            continue
+        out.append({
+            'week': week,
+            'a': a, 'b': b,
+            'a_cats': m['a']['cats'], 'b_cats': m['b']['cats'],
+            'status': m['status'],
+            'winner': m['winner'],
+        })
+    return out
+
+
+def simulate_bracket(pred, seeds, bracket, data, sims=SIMS, seed=SEED):
+    """
+    Run the whole postseason. Returns each team's chance of reaching each round
+    and of winning it.
+
+    A drawn tie is given to the better seed, which is the league's rule and also
+    the only defensible default: the alternative, a coin flip, invents a result
+    the rulebook already decides.
+    """
+    rng = random.Random(seed)
+    inn = [s for s in seeds if s['in']]
+    seed_of = {s['team_id']: s['seed'] for s in inn}
+    r1, r2, r3 = bracket['weeks']['quarter'], bracket['weeks']['semi'], bracket['weeks']['final']
+
+    # Anything Yahoo has already decided is fixed, not simulated. The field is
+    # passed so a consolation or bye-filler game can never be mistaken for a
+    # bracket result.
+    field = {s['team_id'] for s in inn}
+    known = {}
+    for wk in (r1, r2, r3):
+        for m in real_bracket_round(data, wk, field):
+            if m['winner'] is not None and m['status'] == 'postevent':
+                known[(wk, m['a'], m['b'])] = m['winner']
+
+    def resolve(a, b, wk):
+        for key in ((wk, a, b), (wk, b, a)):
+            if key in known:
+                return known[key]
+        w = pred.play(a, b)
+        if w is None:
+            w = a if seed_of.get(a, 99) < seed_of.get(b, 99) else b
+        return w
+
+    reach = {s['team_id']: {'semi': 0, 'final': 0, 'title': 0} for s in inn}
+    for _ in range(sims):
+        # round 1
+        alive = list(bracket['byes'])
+        for q in bracket['quarters']:
+            alive.append(resolve(q['a'], q['b'], r1))
+        for t in alive:
+            reach[t]['semi'] += 1
+
+        # round 2, reseeded: best remaining seed vs worst remaining seed
+        alive.sort(key=lambda t: seed_of.get(t, 99))
+        finalists = [resolve(alive[0], alive[-1], r2), resolve(alive[1], alive[2], r2)]
+        for t in finalists:
+            reach[t]['final'] += 1
+
+        champ = resolve(finalists[0], finalists[1], r3)
+        reach[champ]['title'] += 1
+
+    n = float(sims)
+    return {tid: {k: v / n for k, v in d.items()} for tid, d in reach.items()}

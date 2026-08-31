@@ -94,6 +94,10 @@ tr:hover { background: #1e293b55; }
   padding-bottom: 0;
 }
 
+/* Wide tables scroll inside their own box so the page body never does */
+.table-scroll { overflow-x: auto; margin-bottom: 24px; }
+.table-scroll table { margin-bottom: 0; }
+
 /* Chart containers */
 .chart-box {
   background: #1e293b;

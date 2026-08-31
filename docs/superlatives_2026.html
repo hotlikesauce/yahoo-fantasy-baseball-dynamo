@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F3C6;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Season Superlatives</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Diverging pair and the three time windows, validated against #1e293b:
+     lightness band, chroma floor, CVD separation, normal-vision floor and
+     contrast vs surface all pass. Do not swap these for the brighter
+     tailwind-400 greens and reds - #22c55e vs #ef4444 is deutan dE 7.4, which
+     is below the readable floor. */
+  :root {
+    --up:      #14a89a;
+    --down:    #d97706;
+    --neutral: #64748b;
+    --season:  #2f77d6;
+    --l6:      #14a89a;
+    --l2:      #d97706;
+  }
+
+  .stamp {
+    text-align: center; color: #64748b; font-size: 0.86em; margin: -14px 0 26px;
+  }
+
+  /* ── Award cards ─────────────────────────────────────────────────────── */
+  .awards {
+    display: grid; gap: 16px; margin-bottom: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  }
+  .aw {
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+    padding: 18px 20px 16px; display: flex; flex-direction: column;
+    border-top: 3px solid var(--neutral);
+  }
+  .aw.good { border-top-color: var(--up); }
+  .aw.bad  { border-top-color: var(--down); }
+  .aw-title {
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.09em;
+    font-weight: 800; color: #94a3b8;
+  }
+  .aw-sub { font-size: 0.78em; color: #64748b; margin-top: 2px; }
+  .aw-hero {
+    display: flex; align-items: baseline; gap: 12px; margin: 14px 0 2px;
+    flex-wrap: wrap;
+  }
+  .aw-val {
+    font-size: 2.3em; font-weight: 800; line-height: 1;
+    font-variant-numeric: tabular-nums; color: #e2e8f0;
+  }
+  .aw.good .aw-val { color: var(--up); }
+  .aw.bad  .aw-val { color: var(--down); }
+  .aw-who { font-size: 1.25em; font-weight: 700; color: #e2e8f0; }
+  .aw-team {
+    font-size: 0.8em; color: #64748b; overflow-wrap: anywhere; margin-bottom: 10px;
+  }
+  .aw-note {
+    font-size: 0.85em; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;
+  }
+  .aw-next {
+    font-size: 0.8em; color: #94a3b8; border-top: 1px solid #334155;
+    padding-top: 9px; margin-top: auto;
+  }
+  .aw-next b { color: #cbd5e1; font-variant-numeric: tabular-nums; }
+  .aw details { margin-top: 9px; }
+  .aw summary {
+    cursor: pointer; font-size: 0.78em; color: #38bdf8; list-style: none;
+    font-weight: 600;
+  }
+  .aw summary::-webkit-details-marker { display: none; }
+  .aw summary::before { content: '\25B8 '; display: inline-block; transition: transform .15s; }
+  .aw details[open] summary::before { transform: rotate(90deg); }
+  .aw summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; border-radius: 3px; }
+  .aw-board { margin-top: 9px; font-size: 0.82em; }
+  .aw-board div {
+    display: flex; justify-content: space-between; gap: 10px;
+    padding: 3px 0; border-bottom: 1px solid #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .aw-board div span:first-child { color: #94a3b8; }
+  .aw-board div span:last-child { color: #e2e8f0; font-weight: 600; }
+  .aw-board div.win span { color: #e2e8f0; font-weight: 700; }
+  .aw-caveat {
+    font-size: 0.76em; color: #64748b; line-height: 1.5; margin-top: 10px;
+    border-left: 2px solid #334155; padding-left: 9px;
+  }
+
+  /* ── Single-week records strip ───────────────────────────────────────── */
+  .records {
+    display: grid; gap: 14px; margin-bottom: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
+  .rec {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .rec-lbl {
+    font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #64748b; font-weight: 800;
+  }
+  .rec-val {
+    font-size: 1.6em; font-weight: 800; color: #e2e8f0; margin: 6px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .rec-who { font-size: 0.85em; color: #cbd5e1; }
+  .rec-when { font-size: 0.78em; color: #64748b; margin-top: 2px; }
+
+  /* ── Leaderboard ─────────────────────────────────────────────────────── */
+  .lb td, .lb th { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .lb td.mgr { font-weight: 700; color: #e2e8f0; }
+  .lb td.tm { color: #64748b; font-size: 0.85em; max-width: 200px; overflow: hidden;
+              text-overflow: ellipsis; white-space: nowrap; }
+  .lb .up   { color: var(--up); font-weight: 700; }
+  .lb .down { color: var(--down); font-weight: 700; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 12px; font-size: 0.84em; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: #cbd5e1; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .loading { text-align: center; color: #64748b; padding: 60px 0; }
+  .err {
+    background: #d9770618; border: 1px solid #d9770666; border-radius: 10px;
+    padding: 14px 16px; color: #fbbf24; font-size: 0.9em;
+  }
+
+  @media (max-width: 720px) {
+    .awards { grid-template-columns: 1fr; }
+    .aw-val { font-size: 2em; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Season Superlatives</p>
+<p class="stamp" id="stamp"></p>
+
+<div id="content" class="loading">Loading the season&hellip;</div>
+
+<div id="main" hidden>
+  <p class="section-desc" style="max-width:900px;">
+    Thirteen awards, each one a number you can check. Everything here is computed from Yahoo's own
+    per-category results for every completed week &mdash; not from the standings, which only tell you
+    who your schedule happened to be. Open any card to see where the other eleven finished.
+  </p>
+
+  <div class="awards" id="awards"></div>
+
+  <h3>Single-Week Records</h3>
+  <div class="records" id="records"></div>
+
+  <h3>Luck: Matchups Won vs Matchups Earned</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Expected wins come from the all-play rate &mdash; how often a manager would have beaten a randomly
+    drawn opponent. A bar to the right means the schedule was kind: real wins the categories did not
+    pay for. To the left means the opposite. The number on each bar is the difference in wins.
+  </p>
+  <div class="legend">
+    <span><i style="background:var(--up)"></i> Won more than they earned</span>
+    <span><i style="background:var(--down)"></i> Won less than they earned</span>
+  </div>
+  <div class="chart-box-tall"><canvas id="luckChart"></canvas></div>
+
+  <h3>Playing Up, Playing Down</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Each manager's weekly category points regressed against the strength of the opponent they faced.
+    <em>Every</em> slope is negative &mdash; good teams beat you &mdash; so what is plotted is each
+    manager's slope against the league average of <b id="lslope"></b> categories per point of
+    opponent strength. To the right of zero is a manager who holds up when the opposition is good;
+    to the left is one who only eats when the food is easy.
+  </p>
+  <div class="legend">
+    <span><i style="background:var(--up)"></i> Holds up against good teams</span>
+    <span><i style="background:var(--down)"></i> Fades against good teams</span>
+  </div>
+  <div class="chart-box-tall"><canvas id="slopeChart"></canvas></div>
+
+  <h3>Every Number on the Board</h3>
+  <p class="section-desc">
+    Sorted by all-play. <b>AP</b> is the all-play win rate, <b>L6</b> and <b>L2</b> the same over the
+    last six and last two weeks. <b>Str</b> and <b>Wk</b> are average category points against the top
+    and bottom half of the league.
+  </p>
+  <div class="table-scroll"><table class="lb">
+    <thead><tr>
+      <th>Manager</th><th>Team</th>
+      <th style="text-align:right">Rank</th>
+      <th style="text-align:right">Cats</th>
+      <th style="text-align:right">Record</th>
+      <th style="text-align:right">AP</th>
+      <th style="text-align:right">L6</th>
+      <th style="text-align:right">L2</th>
+      <th style="text-align:right">Luck</th>
+      <th style="text-align:right">Ups</th>
+      <th style="text-align:right">Str</th>
+      <th style="text-align:right">Wk</th>
+      <th style="text-align:right">Slope</th>
+      <th style="text-align:right">Moves</th>
+      <th style="text-align:right">Trades</th>
+      <th style="text-align:right">&lt;50 IP</th>
+    </tr></thead>
+    <tbody id="lbBody"></tbody>
+  </table></div>
+
+  <h3>How Each Number Is Built</h3>
+  <div class="card" style="max-width:900px;">
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>All-play</b> replays every completed week as if each team had faced all eleven others on that
+      week's twelve categories. A category the two sides tie splits half a win, exactly as Yahoo scores
+      it. Over a full season that is a 231-game record, which is enough for who you drew to stop
+      mattering.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>Innings minimums.</b> Missing 50 innings in a week forfeits all five pitching categories.
+      Week 1 ran Wednesday to Sunday, all twelve teams finished under 50, and every one of them still
+      won pitching categories &mdash; Yahoo waived the minimum for the short week, so it is excluded.
+      Judging a manager for missing a minimum that was never enforced would be the worst mistake on
+      this page.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin:0;">
+      <b>Source.</b> Yahoo's public fantasy API &mdash; per-category winners and innings pitched for
+      every matchup of the season, plus the full transaction log. The reconstructed category records
+      match Yahoo's published standings exactly for all twelve teams, which is the check that says
+      the parsing is right.
+    </p>
+  </div>
+</div>
+
+</div>
+
+<script>
+var C = {
+  ink: '#e2e8f0', mute: '#94a3b8', dim: '#64748b',
+  grid: '#33415566', surface: '#1e293b',
+  up: '#14a89a', down: '#d97706', neutral: '#64748b'
+};
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+function fmtPct(v) { return '.' + String(Math.round(v * 1000)).padStart(3, '0'); }
+function signed(v, d) { return (v >= 0 ? '+' : '') + v.toFixed(d === undefined ? 1 : d); }
+
+fetch('data/superlatives_2026.json', { cache: 'no-store' })
+  .then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(render)
+  .catch(function (e) {
+    document.getElementById('content').className = '';
+    document.getElementById('content').innerHTML =
+      '<div class="err"><b>Could not load the board.</b> ' + esc(e.message) +
+      '<br>Run <code>python scripts/fetch_league_activity.py</code> then ' +
+      '<code>python scripts/gen_superlatives.py</code> to rebuild ' +
+      '<code>docs/data/superlatives_2026.json</code>.</div>';
+  });
+
+function render(d) {
+  document.getElementById('content').hidden = true;
+  document.getElementById('main').hidden = false;
+  document.getElementById('stamp').textContent =
+    'Through week ' + d.through_week + ' · ' + d.weeks_counted.length +
+    ' completed weeks · built ' + d.generated_at.replace('T', ' ');
+  document.getElementById('lslope').textContent = d.league_slope.toFixed(1);
+
+  // ── Award cards ──────────────────────────────────────────────────────
+  document.getElementById('awards').innerHTML = d.awards.map(function (a) {
+    var w = a.winner, r = a.runner_up;
+    var board = a.board.map(function (b, i) {
+      return '<div class="' + (i === 0 ? 'win' : '') + '"><span>' + (i + 1) + '. ' +
+             esc(b.manager) + '</span><span>' + esc(b.display) + '</span></div>';
+    }).join('');
+    return '' +
+      '<div class="aw ' + esc(a.tone) + '">' +
+        '<div class="aw-title">' + esc(a.title) + '</div>' +
+        '<div class="aw-sub">' + esc(a.metric) + '</div>' +
+        '<div class="aw-hero"><span class="aw-val">' + esc(w.display) + '</span>' +
+          '<span class="aw-who">' + esc(w.manager) + '</span></div>' +
+        '<div class="aw-team">' + esc(w.team) + '</div>' +
+        (w.note ? '<div class="aw-note">' + esc(w.note) + '</div>' : '') +
+        (a.caveat ? '<div class="aw-caveat">' + esc(a.caveat) + '</div>' : '') +
+        '<div class="aw-next">Runner-up: ' +
+          (r ? esc(r.manager) + ' <b>' + esc(r.display) + '</b>' : '—') +
+          '<details><summary>Full board</summary><div class="aw-board">' + board +
+          '</div></details>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+
+  // ── Single-week records ──────────────────────────────────────────────
+  var recs = ['best_week', 'upset', 'streak', 'swing']
+    .map(function (k) { return d.records[k]; })
+    .filter(Boolean);
+  document.getElementById('records').innerHTML = recs.map(function (r) {
+    var verb = r.pts > 6 ? ' over ' : r.pts === 6 ? ' tied with ' : ' lost to ';
+    return '<div class="rec">' +
+      '<div class="rec-lbl">' + esc(r.label) + '</div>' +
+      '<div class="rec-val">' + esc(r.score) +
+        (r.ties ? '<span style="font-size:0.5em;color:#64748b"> +' + r.ties + ' tied</span>' : '') +
+      '</div>' +
+      '<div class="rec-who">' + esc(r.manager) +
+        (r.opponent ? verb + esc(r.opponent) : '') + '</div>' +
+      '<div class="rec-when">' +
+        (r.span ? esc(r.span) : 'Week ' + r.week + ' · ' + r.pts + ' of 12 points') +
+        (r.extra ? ' · ' + esc(r.extra) : '') + '</div>' +
+    '</div>';
+  }).join('');
+
+  // ── Leaderboard ──────────────────────────────────────────────────────
+  document.getElementById('lbBody').innerHTML = d.teams.map(function (t) {
+    var cls = function (v) { return v > 0 ? 'up' : v < 0 ? 'down' : ''; };
+    return '<tr>' +
+      '<td class="mgr">' + esc(t.manager) + '</td>' +
+      '<td class="tm" title="' + esc(t.name) + '">' + esc(t.name) + '</td>' +
+      '<td style="text-align:right">' + t.rank + '</td>' +
+      '<td style="text-align:right">' + t.cat_w + '-' + t.cat_l + '-' + t.cat_t + '</td>' +
+      '<td style="text-align:right">' + t.matchup_w + '-' + t.matchup_l + '-' + t.matchup_t + '</td>' +
+      '<td style="text-align:right"><b>' + fmtPct(t.allplay_pct) + '</b></td>' +
+      '<td style="text-align:right">' + fmtPct(t.allplay_pct_l6) + '</td>' +
+      '<td style="text-align:right">' + fmtPct(t.allplay_pct_l2) + '</td>' +
+      '<td style="text-align:right" class="' + cls(t.luck) + '">' + signed(t.luck) + '</td>' +
+      '<td style="text-align:right">' + t.upsets + '</td>' +
+      '<td style="text-align:right">' + t.vs_strong.toFixed(1) + '</td>' +
+      '<td style="text-align:right">' + t.vs_weak.toFixed(1) + '</td>' +
+      '<td style="text-align:right" class="' + cls(t.slope_rel) + '">' + signed(t.slope_rel) + '</td>' +
+      '<td style="text-align:right">' + t.moves + '</td>' +
+      '<td style="text-align:right">' + t.trades + '</td>' +
+      '<td style="text-align:right">' + (t.ip_forfeits || '–') + '</td>' +
+    '</tr>';
+  }).join('');
+
+  drawDiverging('luckChart', d.teams, 'luck', 1,
+    function (t) {
+      return [t.matchup_w + '-' + t.matchup_l + '-' + t.matchup_t + ' actual',
+              t.expected_wins.toFixed(1) + ' expected from all-play ' + fmtPct(t.allplay_pct)];
+    }, 'wins above expected');
+
+  drawDiverging('slopeChart', d.teams, 'slope_rel', 1,
+    function (t) {
+      return [t.vs_strong.toFixed(1) + ' cats vs the top half',
+              t.vs_weak.toFixed(1) + ' cats vs the bottom half',
+              'correlation r = ' + signed(t.slope_r, 2)];
+    }, 'slope vs league average');
+}
+
+/**
+ * Horizontal diverging bar, sorted, with the signed value printed at the end of
+ * every bar. The printed sign plus the side of zero the bar sits on is the
+ * secondary encoding that carries the up/down reading without relying on hue.
+ */
+function drawDiverging(canvasId, teams, key, decimals, tipLines, axisLabel) {
+  var rows = teams.slice().sort(function (a, b) { return b[key] - a[key]; });
+  var labels = rows.map(function (t) { return t.manager; });
+  var vals = rows.map(function (t) { return t[key]; });
+  var span = Math.max.apply(null, vals.map(Math.abs)) * 1.25 || 1;
+
+  var endLabels = {
+    id: 'endLabels',
+    afterDatasetsDraw: function (chart) {
+      var ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = '700 12px "Segoe UI", system-ui, sans-serif';
+      ctx.textBaseline = 'middle';
+      meta.data.forEach(function (bar, i) {
+        var v = vals[i];
+        ctx.fillStyle = v >= 0 ? C.up : C.down;
+        ctx.textAlign = v >= 0 ? 'left' : 'right';
+        ctx.fillText(signed(v, decimals), bar.x + (v >= 0 ? 7 : -7), bar.y);
+      });
+      ctx.restore();
+    }
+  };
+
+  new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: vals,
+        backgroundColor: vals.map(function (v) { return v >= 0 ? C.up : C.down; }),
+        borderRadius: 4,
+        borderSkipped: false,
+        barPercentage: 0.68,
+        // a 2px ring of the surface colour keeps a bar from fusing with the
+        // zero line when it is very short
+        borderColor: C.surface,
+        borderWidth: { top: 0, bottom: 0, left: 2, right: 2 }
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 34, left: 34 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          borderColor: '#334155', borderWidth: 1,
+          titleColor: C.ink, bodyColor: C.mute, padding: 10,
+          callbacks: {
+            title: function (items) { return rows[items[0].dataIndex].manager; },
+            label: function (item) { return signed(vals[item.dataIndex], decimals) + ' ' + axisLabel; },
+            afterBody: function (items) { return tipLines(rows[items[0].dataIndex]); }
+          }
+        }
+      },
+      scales: {
+        x: {
+          min: -span, max: span,
+          grid: { color: function (c) { return c.tick.value === 0 ? '#475569' : C.grid; },
+                  lineWidth: function (c) { return c.tick.value === 0 ? 2 : 1; } },
+          ticks: { color: C.dim, font: { size: 11 } },
+          title: { display: true, text: axisLabel, color: C.dim, font: { size: 11 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: C.ink, font: { size: 12, weight: '600' } }
+        }
+      }
+    },
+    plugins: [endLabels]
+  });
+}
+</script>
+</body>
+</html>

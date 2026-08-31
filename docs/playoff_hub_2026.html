@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26BE;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Summertime Sadness - 2026 Playoff Hub</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* Three time windows. Validated against surface #1e293b on all pairs:
+     lightness band, chroma floor, CVD separation, normal-vision floor and
+     contrast all pass. */
+  :root {
+    --season: #2f77d6;
+    --l6:     #14a89a;
+    --l2:     #d97706;
+    --good:   #14a89a;
+    --bad:    #d97706;
+  }
+
+  .stamp { text-align: center; color: #64748b; font-size: 0.86em; margin: -14px 0 22px; }
+
+  .banner {
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 22px;
+    font-size: 0.9em; line-height: 1.55;
+  }
+  .banner.live  { background: #d9770618; border: 1px solid #d9770666; color: #fbbf24; }
+  .banner.final { background: #14a89a18; border: 1px solid #14a89a66; color: #5eead4; }
+
+  /* ── Seeding board ───────────────────────────────────────────────────── */
+  .seedtbl td, .seedtbl th { font-variant-numeric: tabular-nums; }
+  .seedtbl tr.in td { background: #14a89a10; }
+  .seedtbl td.sd { font-weight: 800; color: #38bdf8; width: 44px; }
+  .seedtbl tr.out td.sd { color: #475569; }
+  .seedtbl td.mgr { font-weight: 700; color: #e2e8f0; }
+  .seedtbl td.tm { color: #64748b; font-size: 0.86em; }
+  .seedtbl tr.cut td {
+    background: #0f172a; border-bottom: 2px solid var(--bad);
+    color: var(--bad); font-size: 0.68em; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px;
+    text-align: center;
+  }
+  .seedtbl tr.cut:hover td { background: #0f172a; }
+  .bye { font-size: 0.66em; font-weight: 800; letter-spacing: .06em; padding: 2px 6px;
+         border-radius: 4px; background: #2f77d622; color: #93c5fd;
+         border: 1px solid #2f77d666; text-transform: uppercase; }
+
+  /* ── Bracket ─────────────────────────────────────────────────────────── */
+  .bracket {
+    display: grid; grid-template-columns: repeat(3, minmax(200px, 1fr));
+    gap: 18px; align-items: start; margin-bottom: 8px;
+  }
+  .rnd-head {
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.09em;
+    color: #64748b; font-weight: 800; margin-bottom: 10px;
+  }
+  .bx {
+    background: #1e293b; border: 1px solid #334155; border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 12px;
+  }
+  .bx.slot { border-style: dashed; color: #64748b; }
+  .bx-side {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; padding: 5px 0; font-size: 0.9em;
+  }
+  .bx-side + .bx-side { border-top: 1px solid #334155; }
+  .bx-seed {
+    display: inline-block; width: 20px; text-align: center; font-weight: 800;
+    font-size: 0.78em; color: #64748b;
+  }
+  .bx-name { flex: 1; color: #e2e8f0; font-weight: 600; overflow-wrap: anywhere; }
+  .bx-side.won .bx-name { color: var(--good); }
+  .bx-side.lost .bx-name { color: #64748b; }
+  .bx-odds {
+    font-variant-numeric: tabular-nums; font-weight: 700; color: #93c5fd;
+    font-size: 0.9em;
+  }
+  .bx-foot { font-size: 0.72em; color: #64748b; margin-top: 6px; }
+
+  /* ── Matchup prediction card ─────────────────────────────────────────── */
+  .mucard {
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+    padding: 18px 20px; margin-bottom: 18px;
+  }
+  .mu-when {
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em;
+    color: #64748b; font-weight: 800; margin-bottom: 12px;
+  }
+  .mu-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .mu-team { flex: 1 1 150px; min-width: 0; }
+  .mu-team.r { text-align: right; }
+  .mu-mgr { font-size: 1.15em; font-weight: 800; color: #e2e8f0; }
+  .mu-tm { font-size: 0.78em; color: #64748b; overflow-wrap: anywhere; }
+  .mu-pct {
+    font-size: 1.9em; font-weight: 800; font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .mu-l .mu-pct { color: var(--season); }
+  .mu-r .mu-pct { color: var(--l2); }
+  .mu-vs { color: #475569; font-weight: 800; font-size: 0.85em; }
+
+  .probbar {
+    display: flex; height: 20px; border-radius: 6px; overflow: hidden;
+    margin: 14px 0 6px; background: #0f172a;
+  }
+  .probbar i { display: block; height: 100%; }
+  .probbar i.a { background: var(--season); }
+  .probbar i.t { background: #475569; }
+  .probbar i.b { background: var(--l2); }
+  .probfoot {
+    display: flex; justify-content: space-between; font-size: 0.76em;
+    color: #64748b; font-variant-numeric: tabular-nums;
+  }
+
+  .windows { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+  .win-chip {
+    border: 1px solid #334155; border-radius: 8px; padding: 7px 11px;
+    font-size: 0.8em; background: #0f172a; flex: 1 1 120px;
+  }
+  .win-chip .k {
+    font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 800; display: flex; align-items: center; gap: 6px;
+  }
+  .win-chip .k i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .win-chip .v {
+    font-variant-numeric: tabular-nums; color: #e2e8f0; font-weight: 700;
+    margin-top: 4px; font-size: 1.15em;
+  }
+  .win-chip .s { color: #64748b; font-size: 0.9em; }
+
+  /* Per-category strip */
+  .cats { margin-top: 14px; }
+  .catrow {
+    display: grid; grid-template-columns: 46px 1fr 46px; gap: 10px;
+    align-items: center; padding: 3px 0; font-size: 0.8em;
+  }
+  .catrow .cn { color: #94a3b8; font-weight: 700; }
+  .catrow .cv {
+    text-align: right; font-variant-numeric: tabular-nums; color: #cbd5e1;
+    font-weight: 600;
+  }
+  .cbar {
+    position: relative; height: 12px; background: #0f172a; border-radius: 3px;
+    overflow: hidden;
+  }
+  .cbar i { position: absolute; top: 0; bottom: 0; display: block; }
+  /* 2px of the card surface between the two fills - without it the boundary
+     that carries the whole value reads as a colour change, not an edge */
+  .cbar i.a { background: var(--season); left: 0; border-right: 2px solid #1e293b; }
+  .cbar i.b { background: var(--l2); right: 0; }
+  .cbar .mid {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+    background: #94a3b8; opacity: .55; z-index: 2;
+  }
+
+  .picker {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-bottom: 16px;
+  }
+  .picker select {
+    background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
+    border-radius: 8px; padding: 9px 12px; font-family: inherit; font-size: 0.9em;
+  }
+  .picker select:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+  .picker label { color: #64748b; font-size: 0.82em; font-weight: 700;
+                  text-transform: uppercase; letter-spacing: .07em; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 12px; font-size: 0.84em; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: #cbd5e1; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  .loading { text-align: center; color: #64748b; padding: 60px 0; }
+  .err {
+    background: #d9770618; border: 1px solid #d9770666; border-radius: 10px;
+    padding: 14px 16px; color: #fbbf24; font-size: 0.9em;
+  }
+
+  @media (max-width: 860px) {
+    .bracket { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+<div class="container">
+<h1>Summertime Sadness Fantasy Baseball</h1>
+<p class="page-subtitle">2026 Playoff Hub</p>
+<p class="stamp" id="stamp"></p>
+
+<div id="content" class="loading">Loading the bracket&hellip;</div>
+
+<div id="main" hidden>
+  <div id="banner"></div>
+
+  <h3>Seeding</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Points are category wins plus half a point per tie, which is what Yahoo's Pct column is built
+    from. The top two seeds sit out the first round.
+  </p>
+  <div class="table-scroll"><table class="seedtbl">
+    <thead><tr>
+      <th style="width:44px">Seed</th><th>Manager</th><th>Team</th>
+      <th style="text-align:right">Points</th>
+      <th style="text-align:right">Banked</th>
+      <th style="text-align:right">This week</th>
+      <th style="text-align:right">All-play</th>
+      <th style="text-align:right">Last 6</th>
+      <th style="text-align:right">Last 2</th>
+    </tr></thead>
+    <tbody id="seedBody"></tbody>
+  </table></div>
+
+  <h3>The Bracket</h3>
+  <p class="section-desc" style="max-width:900px;" id="bracketDesc"></p>
+  <div class="bracket" id="bracket"></div>
+
+  <h3>Title Odds</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Twenty thousand runs of the whole bracket. Each week is played by drawing a week each team
+    actually had this season and scoring the twelve categories against each other, so the odds carry
+    a team's real range rather than its average. Rounds Yahoo has already decided are not simulated.
+  </p>
+  <div class="chart-box-tall"><canvas id="oddsChart"></canvas></div>
+  <div class="table-scroll"><table>
+    <thead><tr>
+      <th style="width:44px">Seed</th><th>Manager</th>
+      <th style="text-align:right">Reaches semi</th>
+      <th style="text-align:right">Reaches final</th>
+      <th style="text-align:right">Wins it</th>
+    </tr></thead>
+    <tbody id="oddsBody"></tbody>
+  </table></div>
+
+  <h3 id="roundHead">This Round</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Each matchup predicted three ways &mdash; the whole season, the last six weeks, and the last two
+    &mdash; plus a blend that weights them <span id="blendTxt"></span>. When the three disagree, that
+    disagreement <em>is</em> the story: a team that is much better over two weeks than over twenty is
+    either genuinely transformed or on a heater about to end.
+  </p>
+  <div id="round"></div>
+
+  <h3>Any Matchup</h3>
+  <p class="section-desc" style="max-width:900px;">
+    Reseeding means the second round is not knowable until the first is played, so here is every
+    pairing that could still happen.
+  </p>
+  <div class="picker">
+    <label for="selA">Team</label>
+    <select id="selA"></select>
+    <label for="selB">vs</label>
+    <select id="selB"></select>
+  </div>
+  <div id="custom"></div>
+
+  <h3>How the Prediction Works</h3>
+  <div class="card" style="max-width:900px;">
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>A week is drawn whole.</b> To play one matchup, the model picks a week each team actually
+      had and scores its twelve categories against the other's. Drawing the whole week matters: a
+      team's ERA, WHIP and K/9 all move together with how its starters went, and a model that drew
+      each category on its own would happily deal a team its best ERA of the year alongside its
+      fewest strikeouts &mdash; a week that has never happened and never will.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>The innings rule is simulated, not smoothed over.</b> A drawn week under 50 IP forfeits all
+      five pitching categories, exactly as Yahoo scores it. Managers who habitually run short carry
+      that risk into their odds rather than getting credit for tidy rate stats posted on 35 innings.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>Ties go to the better seed</b>, which is the league's rule. A 6&ndash;6 week is not rare here,
+      so it is worth knowing which way it falls before it happens.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin:0;">
+      <b>What it does not know.</b> Injuries, call-ups, who is actually setting a lineup in September,
+      and the two-start weeks that decide most pitching categories. A two-week window is eleven weeks
+      of noise short of meaning anything on its own, which is why it is shown next to the season
+      rather than instead of it.
+    </p>
+  </div>
+
+  <p class="section-desc" style="margin-top:24px;">
+    The regular-season race that produced this bracket is preserved on the
+    <a href="playoff_scenarios_2026.html" style="color:#38bdf8">week 22 scenarios page</a>.
+  </p>
+</div>
+
+</div>
+
+<script>
+var D = null;
+var C = {
+  ink: '#e2e8f0', mute: '#94a3b8', dim: '#64748b', grid: '#33415566',
+  season: '#2f77d6', l6: '#14a89a', l2: '#d97706', surface: '#1e293b'
+};
+var WINDOW_COLOR = { season: C.season, last6: C.l6, last2: C.l2, blend: '#94a3b8' };
+var WINDOW_LABEL = { season: 'Season', last6: 'Last 6', last2: 'Last 2', blend: 'Blended' };
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+function pct(v) { return (v * 100).toFixed(1) + '%'; }
+function pct0(v) { return Math.round(v * 100) + '%'; }
+function fmtRate(v) { return '.' + String(Math.round(v * 1000)).padStart(3, '0'); }
+
+/** The matrix is keyed one way only; look up both and flip if needed. */
+function pair(a, b) {
+  var k = a + '-' + b;
+  if (D.matrix[k]) return { m: D.matrix[k], flip: false };
+  k = b + '-' + a;
+  if (D.matrix[k]) return { m: D.matrix[k], flip: true };
+  return null;
+}
+/** Prediction oriented so that `a` is the left-hand team. */
+function view(a, b, window) {
+  var p = pair(a, b);
+  if (!p) return null;
+  var r = p.m[window];
+  if (!p.flip) {
+    return { a: r.win, tie: r.tie, b: 1 - r.win - r.tie,
+             exp_a: r.exp_a, exp_b: r.exp_b, cats: r.cats, flip: false };
+  }
+  var cats = {};
+  Object.keys(r.cats).forEach(function (c) { cats[c] = 1 - r.cats[c]; });
+  return { a: 1 - r.win - r.tie, tie: r.tie, b: r.win,
+           exp_a: r.exp_b, exp_b: r.exp_a, cats: cats, flip: true };
+}
+
+fetch('data/playoff_hub_2026.json', { cache: 'no-store' })
+  .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(render)
+  .catch(function (e) {
+    document.getElementById('content').className = '';
+    document.getElementById('content').innerHTML =
+      '<div class="err"><b>Could not load the bracket.</b> ' + esc(e.message) +
+      '<br>Run <code>python scripts/fetch_league_activity.py</code> then ' +
+      '<code>python scripts/gen_playoff_hub.py</code>.</div>';
+  });
+
+function render(d) {
+  D = d;
+  D.byId = {};
+  d.seeds.forEach(function (s) { D.byId[s.team_id] = s; });
+
+  document.getElementById('content').hidden = true;
+  document.getElementById('main').hidden = false;
+  document.getElementById('stamp').textContent =
+    'Weeks ' + d.playoff_weeks.join(', ') + ' · through week ' + d.through_week +
+    ' · built ' + d.generated_at.replace('T', ' ');
+  document.getElementById('blendTxt').textContent =
+    Object.keys(d.blend_weights).map(function (k) {
+      return WINDOW_LABEL[k].toLowerCase() + ' ' + Math.round(d.blend_weights[k] * 100) + '%';
+    }).join(', ');
+
+  // ── Banner ───────────────────────────────────────────────────────────
+  var b = document.getElementById('banner');
+  if (!d.seeds_final) {
+    b.className = 'banner live';
+    b.innerHTML = '<b>Seeds are projected.</b> Week ' + d.live_week +
+      ' is still being played, so every seed below is banked points plus what the live scoreboard ' +
+      'already shows. The bracket is the one those seeds imply — it becomes Yahoo\'s real pairings ' +
+      'as soon as they are posted. Re-run the generator once the week goes final.';
+  } else if (d.bracket_source === 'yahoo') {
+    b.className = 'banner final';
+    b.innerHTML = '<b>Seeds are final and the pairings are Yahoo\'s.</b> ' +
+      'Completed rounds are read from the scoreboard rather than simulated.';
+  } else {
+    b.className = 'banner final';
+    b.innerHTML = '<b>Seeds are final.</b> Yahoo has not posted week ' + d.playoff_weeks[0] +
+      ' pairings yet, so the bracket below is the one the seeds imply.';
+  }
+
+  // ── Seeding ──────────────────────────────────────────────────────────
+  var byes = d.bracket.byes || [];
+  var html = '';
+  d.seeds.forEach(function (s, i) {
+    if (i === d.playoff_teams) {
+      html += '<tr class="cut"><td colspan="9">Playoff cut line</td></tr>';
+    }
+    html += '<tr class="' + (s['in'] ? 'in' : 'out') + '">' +
+      '<td class="sd">' + s.seed + '</td>' +
+      '<td class="mgr">' + esc(s.manager) +
+        (byes.indexOf(s.team_id) >= 0 ? ' <span class="bye">bye</span>' : '') + '</td>' +
+      '<td class="tm">' + esc(s.name) + '</td>' +
+      '<td style="text-align:right"><b>' + s.pts.toFixed(1) + '</b></td>' +
+      '<td style="text-align:right">' + s.banked.toFixed(1) + '</td>' +
+      '<td style="text-align:right">' + (s.live ? '+' + s.live.toFixed(1) : '—') + '</td>' +
+      '<td style="text-align:right">' + fmtRate(s.allplay_pct) + '</td>' +
+      '<td style="text-align:right">' + fmtRate(s.allplay_pct_l6) + '</td>' +
+      '<td style="text-align:right">' + fmtRate(s.allplay_pct_l2) + '</td>' +
+    '</tr>';
+  });
+  document.getElementById('seedBody').innerHTML = html;
+
+  renderBracket(d);
+  renderOdds(d);
+  renderRound(d);
+  renderPicker(d);
+}
+
+// ── Bracket ────────────────────────────────────────────────────────────
+function sideRow(tid, res) {
+  var s = D.byId[tid];
+  var cls = '';
+  if (res && res.status === 'postevent') cls = res.winner === tid ? 'won' : 'lost';
+  var score = res ? (res.a === tid ? res.a_cats : res.b_cats) : null;
+  return '<div class="bx-side ' + cls + '">' +
+    '<span class="bx-seed">' + (s ? s.seed : '?') + '</span>' +
+    '<span class="bx-name">' + esc(s ? s.manager : 'TBD') + '</span>' +
+    '<span class="bx-odds">' + (score !== null ? score : '') + '</span>' +
+  '</div>';
+}
+
+function renderBracket(d) {
+  var w = d.bracket.weeks;
+  document.getElementById('bracketDesc').innerHTML =
+    d.playoff_teams + ' teams over three weeks' +
+    (d.reseeding
+      ? ', <b>with reseeding</b> — after the first round the highest surviving seed draws the ' +
+        'lowest surviving seed. A 6 seed knocking out the 3 does not hand the 1 seed an easier ' +
+        'week; it hands it a harder one, which is why the semi-finals cannot be drawn in advance.'
+      : '.');
+
+  var r1 = (d.results[String(w.quarter)] || []);
+  var byKey = {};
+  r1.forEach(function (m) { byKey[m.a + '-' + m.b] = m; byKey[m.b + '-' + m.a] = m; });
+
+  var col1 = '<div><div class="rnd-head">Week ' + w.quarter + ' · Quarter-finals</div>';
+  d.bracket.quarters.forEach(function (q) {
+    var res = byKey[q.a + '-' + q.b];
+    var v = view(q.a, q.b, 'blend');
+    col1 += '<div class="bx">' + sideRow(q.a, res) + sideRow(q.b, res) +
+      '<div class="bx-foot">' +
+        (res && res.status === 'postevent'
+          ? 'Final'
+          : (v ? esc(D.byId[q.a].manager) + ' ' + pct0(v.a) + ' · ' +
+                 esc(D.byId[q.b].manager) + ' ' + pct0(v.b) +
+                 (v.tie > 0.005 ? ' · tie ' + pct0(v.tie) : '')
+               : '')) +
+      '</div></div>';
+  });
+  d.bracket.byes.forEach(function (t) {
+    col1 += '<div class="bx slot">' + sideRow(t, null) +
+      '<div class="bx-foot">Bye — straight to the semi-final</div></div>';
+  });
+  col1 += '</div>';
+
+  var col2 = '<div><div class="rnd-head">Week ' + w.semi + ' · Semi-finals</div>';
+  var r2 = (d.results[String(w.semi)] || []);
+  if (r2.length) {
+    r2.forEach(function (m) {
+      col2 += '<div class="bx">' + sideRow(m.a, m) + sideRow(m.b, m) +
+        '<div class="bx-foot">' + (m.status === 'postevent' ? 'Final' : 'In progress') +
+        '</div></div>';
+    });
+  } else {
+    col2 += '<div class="bx slot">' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Top surviving seed</span></div>' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Lowest surviving seed</span></div>' +
+      '<div class="bx-foot">Set by reseeding once week ' + w.quarter + ' is final</div></div>' +
+      '<div class="bx slot">' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Second surviving seed</span></div>' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Third surviving seed</span></div>' +
+      '<div class="bx-foot">Set by reseeding once week ' + w.quarter + ' is final</div></div>';
+  }
+  col2 += '</div>';
+
+  var col3 = '<div><div class="rnd-head">Week ' + w.final + ' · Final</div>';
+  var r3 = (d.results[String(w.final)] || []);
+  if (r3.length) {
+    r3.forEach(function (m) {
+      col3 += '<div class="bx">' + sideRow(m.a, m) + sideRow(m.b, m) +
+        '<div class="bx-foot">' + (m.status === 'postevent' ? 'Champion decided' : 'In progress') +
+        '</div></div>';
+    });
+  } else {
+    var top = Object.keys(d.odds).map(function (t) {
+      return { t: +t, p: d.odds[t].title };
+    }).sort(function (x, y) { return y.p - x.p; }).slice(0, 2);
+    col3 += '<div class="bx slot">' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Semi-final winner</span></div>' +
+      '<div class="bx-side"><span class="bx-seed">—</span>' +
+        '<span class="bx-name">Semi-final winner</span></div>' +
+      '<div class="bx-foot">Most likely: ' +
+        top.map(function (x) { return esc(D.byId[x.t].manager) + ' ' + pct0(x.p); }).join(' · ') +
+      '</div></div>';
+  }
+  col3 += '</div>';
+
+  document.getElementById('bracket').innerHTML = col1 + col2 + col3;
+}
+
+// ── Title odds ─────────────────────────────────────────────────────────
+function renderOdds(d) {
+  var rows = Object.keys(d.odds).map(function (t) {
+    return { s: D.byId[+t], o: d.odds[t] };
+  }).sort(function (x, y) { return y.o.title - x.o.title; });
+
+  document.getElementById('oddsBody').innerHTML = rows.map(function (r) {
+    return '<tr>' +
+      '<td style="font-weight:800;color:#38bdf8">' + r.s.seed + '</td>' +
+      '<td style="font-weight:700">' + esc(r.s.manager) + '</td>' +
+      '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.semi) + '</td>' +
+      '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.final) + '</td>' +
+      '<td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:#5eead4">' +
+        pct(r.o.title) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  // One series, so no legend box - the axis title names it - and every bar
+  // carries its own value, which is the direct label the skill asks for.
+  var labels = rows.map(function (r) { return r.s.manager; });
+  var vals = rows.map(function (r) { return r.o.title * 100; });
+  new Chart(document.getElementById('oddsChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: vals,
+        backgroundColor: C.season,
+        borderRadius: 4, borderSkipped: false, barPercentage: 0.66
+      }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      layout: { padding: { right: 46 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+          titleColor: C.ink, bodyColor: C.mute, padding: 10,
+          callbacks: {
+            label: function (i) { return 'Wins it ' + vals[i.dataIndex].toFixed(1) + '%'; },
+            afterBody: function (items) {
+              var r = rows[items[0].dataIndex];
+              return ['Seed ' + r.s.seed + ' · ' + fmtRate(r.s.allplay_pct) + ' all-play',
+                      'Reaches the final ' + pct(r.o.final)];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: C.grid },
+          ticks: { color: C.dim, font: { size: 11 }, callback: function (v) { return v + '%'; } },
+          title: { display: true, text: 'chance of winning the title', color: C.dim,
+                   font: { size: 11 } }
+        },
+        y: { grid: { display: false }, ticks: { color: C.ink, font: { size: 12, weight: '600' } } }
+      }
+    },
+    plugins: [{
+      id: 'oddsLabels',
+      afterDatasetsDraw: function (chart) {
+        var ctx = chart.ctx;
+        ctx.save();
+        ctx.font = '700 12px "Segoe UI", system-ui, sans-serif';
+        ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        chart.getDatasetMeta(0).data.forEach(function (bar, i) {
+          ctx.fillText(vals[i].toFixed(1) + '%', bar.x + 8, bar.y);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ── Matchup cards ──────────────────────────────────────────────────────
+function matchupCard(a, b, when, res) {
+  var A = D.byId[a], B = D.byId[b];
+  var v = view(a, b, 'blend');
+  if (!v) return '';
+
+  var chips = ['season', 'last6', 'last2'].map(function (win) {
+    var x = view(a, b, win);
+    return '<div class="win-chip">' +
+      '<div class="k" style="color:' + WINDOW_COLOR[win] + '">' +
+        '<i style="background:' + WINDOW_COLOR[win] + '"></i>' + WINDOW_LABEL[win] +
+        ' (' + D.window_weeks[win].length + 'w)</div>' +
+      '<div class="v">' + pct0(x.a) + ' – ' + pct0(x.b) + '</div>' +
+      '<div class="s">' + x.exp_a.toFixed(1) + '–' + x.exp_b.toFixed(1) + ' cats</div>' +
+    '</div>';
+  }).join('');
+
+  var cats = D.cats.map(function (c) {
+    var p = v.cats[c];
+    var low = D.lower_is_better.indexOf(c) >= 0;
+    return '<div class="catrow">' +
+      '<span class="cn">' + c + (low ? '<span style="color:#475569">&darr;</span>' : '') + '</span>' +
+      '<span class="cbar">' +
+        '<i class="a" style="width:' + (p * 100).toFixed(1) + '%"></i>' +
+        '<i class="b" style="width:' + ((1 - p) * 100).toFixed(1) + '%"></i>' +
+        '<span class="mid"></span></span>' +
+      '<span class="cv">' + pct0(p) + '</span>' +
+    '</div>';
+  }).join('');
+
+  var final = res && res.status === 'postevent';
+  return '<div class="mucard">' +
+    '<div class="mu-when">' + esc(when) +
+      (final ? ' · final ' + res.a_cats + '–' + res.b_cats : '') + '</div>' +
+    '<div class="mu-top">' +
+      '<div class="mu-team mu-l"><div class="mu-pct">' + pct0(v.a) + '</div>' +
+        '<div class="mu-mgr">' + esc(A.manager) + '</div>' +
+        '<div class="mu-tm">' + esc(A.name) + ' · seed ' + A.seed + '</div></div>' +
+      '<div class="mu-vs">vs</div>' +
+      '<div class="mu-team r mu-r"><div class="mu-pct">' + pct0(v.b) + '</div>' +
+        '<div class="mu-mgr">' + esc(B.manager) + '</div>' +
+        '<div class="mu-tm">' + esc(B.name) + ' · seed ' + B.seed + '</div></div>' +
+    '</div>' +
+    '<div class="probbar">' +
+      '<i class="a" style="width:' + (v.a * 100).toFixed(1) + '%"></i>' +
+      '<i class="t" style="width:' + (v.tie * 100).toFixed(1) + '%"></i>' +
+      '<i class="b" style="width:' + (v.b * 100).toFixed(1) + '%"></i>' +
+    '</div>' +
+    '<div class="probfoot"><span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
+      '<span>tie ' + pct(v.tie) + ' → seed ' + Math.min(A.seed, B.seed) + '</span>' +
+      '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span></div>' +
+    '<div class="windows">' + chips + '</div>' +
+    '<div class="cats">' +
+      '<div class="probfoot" style="margin-bottom:4px"><span>' +
+        esc(A.manager) + ' wins the category</span><span>blended · &darr; lower is better</span>' +
+      '</div>' + cats + '</div>' +
+  '</div>';
+}
+
+function renderRound(d) {
+  var w = d.bracket.weeks;
+  var live = null, head = '';
+  for (var i = 0; i < d.playoff_weeks.length; i++) {
+    var wk = d.playoff_weeks[i];
+    var r = d.results[String(wk)] || [];
+    if (r.length && r.some(function (m) { return m.status !== 'postevent'; })) {
+      live = { week: wk, matchups: r.map(function (m) { return { a: m.a, b: m.b, res: m }; }) };
+      break;
+    }
+  }
+  if (!live) {
+    // nothing running yet - show the first round as it stands
+    var r1 = d.results[String(w.quarter)] || [];
+    if (r1.length) {
+      live = { week: w.quarter,
+               matchups: r1.map(function (m) { return { a: m.a, b: m.b, res: m }; }) };
+    } else {
+      live = { week: w.quarter,
+               matchups: d.bracket.quarters.map(function (q) {
+                 return { a: q.a, b: q.b, res: null };
+               }) };
+    }
+  }
+  head = 'Week ' + live.week + ' · ' +
+    (live.week === w.quarter ? 'Quarter-finals'
+      : live.week === w.semi ? 'Semi-finals' : 'The Final');
+  document.getElementById('roundHead').textContent = head;
+  document.getElementById('round').innerHTML = live.matchups.map(function (m) {
+    return matchupCard(m.a, m.b, 'Week ' + live.week, m.res);
+  }).join('');
+}
+
+// ── Any matchup ────────────────────────────────────────────────────────
+function renderPicker(d) {
+  var field = d.seeds.filter(function (s) { return s['in']; });
+  var selA = document.getElementById('selA'), selB = document.getElementById('selB');
+  var opts = field.map(function (s) {
+    return '<option value="' + s.team_id + '">' + esc(s.manager) + ' (' + s.seed + ')</option>';
+  }).join('');
+  selA.innerHTML = opts;
+  selB.innerHTML = opts;
+  selA.value = field[0].team_id;
+  selB.value = field[1].team_id;
+
+  function draw() {
+    var a = +selA.value, b = +selB.value;
+    var box = document.getElementById('custom');
+    if (a === b) {
+      box.innerHTML = '<p class="section-desc">Pick two different teams.</p>';
+      return;
+    }
+    box.innerHTML = matchupCard(a, b, 'Hypothetical', null);
+  }
+  selA.addEventListener('change', draw);
+  selB.addEventListener('change', draw);
+  draw();
+}
+</script>
+</body>
+</html>

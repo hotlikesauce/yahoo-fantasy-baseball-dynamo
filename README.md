@@ -17,6 +17,8 @@ Live site: [hotlikesauce.github.io/yahoo-fantasy-baseball-dynamo](https://hotlik
 | [Season Trends (2025)](docs/season_trends_2025.html) | Power scores, xWins, batter/pitcher scatter, hot/cold, season bests | `gen_season_trends.py` |
 | [Luck Analysis (2025)](docs/luck_analysis_2025.html) | Luck rankings, all-play H2H, blowouts, closest matchups | `gen_luck_analysis.py` |
 | [Season Trends (2022-2024)](docs/) | Historical season trends from archived data | `gen_historical_trends.py` |
+| [Superlatives (2026)](docs/superlatives_2026.html) | Thirteen season awards - best, most active, most traded, missed IP minimums, luck, upsets, plays up/down | `gen_superlatives.py` |
+| [Playoff Hub (2026)](docs/playoff_hub_2026.html) | Seeding, bracket, title odds, and matchup predictions over season / last-6 / last-2 windows | `gen_playoff_hub.py` |
 
 ## Tech Stack
 
@@ -55,8 +57,21 @@ python scripts/gen_luck_analysis.py
 python scripts/gen_draft_picks.py
 ```
 
+**2026 superlatives and playoffs** - both read one cached pull, so refresh the
+cache first and the two pages together after:
+```bash
+python scripts/fetch_league_activity.py      # public Yahoo API -> league_activity_2026.json
+python scripts/gen_superlatives.py           # -> superlatives_2026.json
+python scripts/gen_playoff_hub.py            # -> playoff_hub_2026.json
+```
+Re-run all three after any week goes final. The playoff hub projects the seeds
+and bracket while the last regular-season week is still live, and switches to
+Yahoo's real pairings and results as soon as they are posted - no code change,
+just another run.
+
 **Data scripts**:
 ```bash
+python scripts/fetch_league_activity.py       # public Yahoo API -> full season cache
 python scripts/fetch_trade_data.py           # Yahoo API -> trade_data.json
 python scripts/copy_2025_to_historical.py    # Snapshot live -> historical
 python scripts/migrate_mongo_to_dynamo.py    # One-time MongoDB migration
@@ -65,6 +80,8 @@ python scripts/backfill_2023_scores.py       # One-time 2023 score backfill
 
 **Config**:
 - `scripts/team_config.py` - Team number to manager mappings by year
+- `scripts/superlatives_core.py` - All-play, luck, opponent-strength and transaction metrics
+- `scripts/playoff_predict.py` - Seeding, bracket and the week-bootstrap matchup model
 - `docs/nav.js` - Shared navigation bar injected into all pages
 
 ## Setup
