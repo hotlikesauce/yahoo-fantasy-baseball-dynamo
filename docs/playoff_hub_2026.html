@@ -98,6 +98,21 @@
   }
   .mu-l .mu-pct { color: var(--season); }
   .mu-r .mu-pct { color: var(--l2); }
+  .mu-ml {
+    display: flex; gap: 12px; margin-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .mu-r .mu-ml { justify-content: flex-end; }
+  .mu-ml span { display: flex; flex-direction: column; line-height: 1.15; }
+  .mu-r .mu-ml span { align-items: flex-end; }
+  .mu-ml i {
+    font-style: normal; font-size: 0.62em; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #64748b; font-weight: 700;
+  }
+  .pr-fair  { font-size: 0.9em; font-weight: 700; color: #64748b; }
+  .pr-vegas { font-size: 0.9em; font-weight: 800; color: #cbd5e1; }
+  .ml { font-variant-numeric: tabular-nums; color: #94a3b8; font-weight: 700; }
+  .ml.vegas { color: #e2e8f0; font-weight: 800; }
   .mu-vs { color: #475569; font-weight: 800; font-size: 0.85em; }
 
   .probbar {
@@ -246,6 +261,8 @@
       <th style="text-align:right">Reaches semi</th>
       <th style="text-align:right">Reaches final</th>
       <th style="text-align:right">Wins it</th>
+      <th style="text-align:right">Fair</th>
+      <th style="text-align:right">Vegas</th>
     </tr></thead>
     <tbody id="oddsBody"></tbody>
   </table></div>
@@ -256,8 +273,9 @@
     &mdash; plus a blend that weights them <span id="blendTxt"></span>. When the three disagree, that
     disagreement <em>is</em> the story: a team that is much better over two weeks than over twenty is
     either genuinely transformed or on a heater about to end.
-    <strong>Click any of the four boxes</strong> to redraw the category bars underneath it on that
-    window, and watch which categories are actually doing the moving.</p>
+    <strong>Click any of the four boxes</strong> to switch the whole card to that window &mdash; the
+    headline odds, the win/tie/loss bar and every category bar all move together &mdash; and watch
+    which categories are actually doing the work.</p>
   <p class="section-desc" style="max-width:900px;">
   </p>
   <div id="round"></div>
@@ -293,6 +311,28 @@
       <b>Ties go to the better seed</b>, which is the league's rule. A 6&ndash;6 week is not rare here,
       so it is worth knowing which way it falls before it happens.
     </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>Two prices, American moneyline.</b> Negative is the favourite &mdash; <b>&minus;150</b> means
+      risk 150 to win 100; positive is the dog &mdash; <b>+200</b> means 100 returns 200.
+      <b class="pr-fair" style="font-size:1em">Fair</b> is the model's probability converted straight
+      across, with no margin: that is the break-even price, and nobody would book it.
+      <b class="pr-vegas" style="font-size:1em">Vegas</b> is what a house could actually post &mdash;
+      the same probabilities with a margin added and rounded to a number that belongs on a board.
+      The gap between the two columns is precisely what the house is charging.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>A matchup is a three-way market</b> &mdash; win, tie, loss &mdash; priced at a 5% hold, with
+      the tie quoted next to its probability under the bar. A 6&ndash;6 week is a real result here, so
+      pricing it two-way and calling ties a push would be a different bet from the one the model
+      predicts. The title is a six-runner futures book at 20%, which is on the friendly side of what
+      real books charge on futures.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>The margin is loaded onto the longshots</b>, not spread evenly. Multiplying every probability
+      by the same factor would tax a 3% shot and a 60% favourite equally, which no book does; the
+      prices here use the power method, so the outsiders give up proportionally more &mdash; the
+      favourite-longshot bias that real boards have.
+    </p>
     <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin:0;">
       <b>What it does not know.</b> Injuries, call-ups, who is actually setting a lineup in September,
       and the two-start weeks that decide most pitching categories. A two-week window is eleven weeks
@@ -310,7 +350,7 @@
 </div>
 
 <!--DATA:BEGIN-->
-<script id="pageData" type="application/json">{"generated_at":"2026-08-30T20:11:55","league":"Summertime Sadness","season":"2026","through_week":21,"weeks_counted":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"playoff_weeks":[23,24,25],"playoff_teams":6,"reseeding":true,"seeds_final":false,"live_week":22,"bracket_source":"projected","blend_weights":{"season":0.5,"last6":0.3,"last2":0.2},"window_weeks":{"season":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"last6":[16,17,18,19,20,21],"last2":[20,21]},"cats":["R","H","HR","RBI","SB","OPS","TB","ERA","WHIP","K9","QS","SVH"],"lower_is_better":["ERA","WHIP"],"pitching_cats":["ERA","WHIP","K9","QS","SVH"],"seeds":[{"team_id":3,"manager":"Josh","name":"Los Basureros","banked":153.0,"live":9.0,"pts":162.0,"allplay_pct":0.6731601731601732,"allplay_pct_l6":0.7727272727272727,"allplay_pct_l2":0.7045454545454546,"seed":1,"in":true},{"team_id":11,"manager":"Kevin","name":"The Rosterbation Station","banked":153.5,"live":7.0,"pts":160.5,"allplay_pct":0.5887445887445888,"allplay_pct_l6":0.5303030303030303,"allplay_pct_l2":0.7272727272727273,"seed":2,"in":true},{"team_id":1,"manager":"Taylor","name":"M*A*S*H*D PO*TA*TOES","banked":144.5,"live":9.0,"pts":153.5,"allplay_pct":0.6017316017316018,"allplay_pct_l6":0.6287878787878788,"allplay_pct_l2":0.6136363636363636,"seed":3,"in":true},{"team_id":12,"manager":"Mike","name":"¯\\_(ツ)_/¯","banked":142.5,"live":5.0,"pts":147.5,"allplay_pct":0.5151515151515151,"allplay_pct_l6":0.6515151515151515,"allplay_pct_l2":0.7954545454545454,"seed":4,"in":true},{"team_id":10,"manager":"Mikey","name":"LAST GAME OF THE YEAR BRENT","banked":127.5,"live":3.0,"pts":130.5,"allplay_pct":0.5541125541125541,"allplay_pct_l6":0.5833333333333334,"allplay_pct_l2":0.29545454545454547,"seed":5,"in":true},{"team_id":2,"manager":"James","name":"Rosa Parks’ Bus Seat","banked":118.5,"live":9.5,"pts":128.0,"allplay_pct":0.42424242424242425,"allplay_pct_l6":0.5075757575757576,"allplay_pct_l2":0.6818181818181818,"seed":6,"in":true},{"team_id":4,"manager":"Bryant","name":"Rickie Flower","banked":121.5,"live":5.5,"pts":127.0,"allplay_pct":0.48484848484848486,"allplay_pct_l6":0.45454545454545453,"allplay_pct_l2":0.38636363636363635,"seed":7,"in":false},{"team_id":9,"manager":"Greg","name":"OG 8️⃣ & an extra","banked":122.5,"live":1.5,"pts":124.0,"allplay_pct":0.474025974025974,"allplay_pct_l6":0.48484848484848486,"allplay_pct_l2":0.7045454545454546,"seed":8,"in":false},{"team_id":7,"manager":"Eric","name":"Ian Cumsler","banked":113.0,"live":10.5,"pts":123.5,"allplay_pct":0.3874458874458874,"allplay_pct_l6":0.2878787878787879,"allplay_pct_l2":0.045454545454545456,"seed":9,"in":false},{"team_id":6,"manager":"Mark","name":"Hatfield Hurlers","banked":110.5,"live":2.5,"pts":113.0,"allplay_pct":0.4653679653679654,"allplay_pct_l6":0.49242424242424243,"allplay_pct_l2":0.38636363636363635,"seed":10,"in":false},{"team_id":5,"manager":"Kurtis","name":"William Shatnermouth","banked":105.0,"live":6.5,"pts":111.5,"allplay_pct":0.42424242424242425,"allplay_pct_l6":0.3939393939393939,"allplay_pct_l2":0.5454545454545454,"seed":11,"in":false},{"team_id":8,"manager":"Austin","name":"Moniebol 🐳 (DA BI ASS)","banked":100.0,"live":3.0,"pts":103.0,"allplay_pct":0.4069264069264069,"allplay_pct_l6":0.21212121212121213,"allplay_pct_l2":0.11363636363636363,"seed":12,"in":false}],"bracket":{"weeks":{"quarter":23,"semi":24,"final":25},"byes":[3,11],"quarters":[{"week":23,"a":1,"b":2},{"week":23,"a":12,"b":10}],"reseeded":true,"source":"projected"},"results":{"23":[],"24":[],"25":[]},"matrix":{"3-11":{"season":{"win":0.5444,"tie":0.0776,"exp_a":6.48,"exp_b":5.52,"cats":{"R":0.634,"H":0.579,"HR":0.486,"RBI":0.582,"SB":0.66,"OPS":0.518,"TB":0.542,"ERA":0.484,"WHIP":0.609,"K9":0.586,"QS":0.604,"SVH":0.194}},"last6":{"win":0.5211,"tie":0.1109,"exp_a":6.67,"exp_b":5.33,"cats":{"R":0.717,"H":0.564,"HR":0.636,"RBI":0.762,"SB":0.484,"OPS":0.525,"TB":0.402,"ERA":0.528,"WHIP":0.694,"K9":0.639,"QS":0.469,"SVH":0.248}},"last2":{"win":0.2437,"tie":0.2525,"exp_a":4.99,"exp_b":7.01,"cats":{"R":0.628,"H":0.496,"HR":0.875,"RBI":0.756,"SB":0.244,"OPS":0.253,"TB":0.506,"ERA":0.0,"WHIP":0.494,"K9":0.244,"QS":0.372,"SVH":0.122}},"blend":{"win":0.5008,"tie":0.0998,"exp_a":6.33,"exp_b":5.67,"cats":{"R":0.653,"H":0.572,"HR":0.582,"RBI":0.668,"SB":0.536,"OPS":0.482,"TB":0.505,"ERA":0.446,"WHIP":0.624,"K9":0.54,"QS":0.514,"SVH":0.203}}},"3-1":{"season":{"win":0.5493,"tie":0.0668,"exp_a":6.17,"exp_b":5.83,"cats":{"R":0.577,"H":0.609,"HR":0.645,"RBI":0.659,"SB":0.495,"OPS":0.531,"TB":0.558,"ERA":0.353,"WHIP":0.452,"K9":0.402,"QS":0.322,"SVH":0.569}},"last6":{"win":0.5029,"tie":0.0555,"exp_a":6.4,"exp_b":5.6,"cats":{"R":0.528,"H":0.53,"HR":0.722,"RBI":0.735,"SB":0.529,"OPS":0.511,"TB":0.642,"ERA":0.363,"WHIP":0.446,"K9":0.643,"QS":0.083,"SVH":0.666}},"last2":{"win":0.4974,"tie":0.2515,"exp_a":6.36,"exp_b":5.64,"cats":{"R":0.623,"H":0.749,"HR":1.0,"RBI":1.0,"SB":0.371,"OPS":0.749,"TB":1.0,"ERA":0.0,"WHIP":0.0,"K9":0.245,"QS":0.0,"SVH":0.622}},"blend":{"win":0.5347,"tie":0.0849,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.572,"H":0.611,"HR":0.732,"RBI":0.738,"SB":0.471,"OPS":0.562,"TB":0.665,"ERA":0.292,"WHIP":0.365,"K9":0.444,"QS":0.194,"SVH":0.599}}},"3-12":{"season":{"win":0.5984,"tie":0.0474,"exp_a":6.56,"exp_b":5.44,"cats":{"R":0.624,"H":0.606,"HR":0.598,"RBI":0.679,"SB":0.509,"OPS":0.581,"TB":0.609,"ERA":0.385,"WHIP":0.511,"K9":0.428,"QS":0.497,"SVH":0.535}},"last6":{"win":0.5515,"tie":0.057,"exp_a":6.55,"exp_b":5.45,"cats":{"R":0.722,"H":0.371,"HR":0.763,"RBI":0.847,"SB":0.413,"OPS":0.497,"TB":0.806,"ERA":0.195,"WHIP":0.469,"K9":0.579,"QS":0.192,"SVH":0.694}},"last2":{"win":0.4993,"tie":0.0,"exp_a":5.74,"exp_b":6.26,"cats":{"R":0.375,"H":0.499,"HR":0.621,"RBI":1.0,"SB":0.375,"OPS":0.25,"TB":1.0,"ERA":0.0,"WHIP":0.249,"K9":0.746,"QS":0.0,"SVH":0.626}},"blend":{"win":0.5441,"tie":0.0414,"exp_a":6.37,"exp_b":5.63,"cats":{"R":0.632,"H":0.488,"HR":0.651,"RBI":0.811,"SB":0.434,"OPS":0.506,"TB":0.752,"ERA":0.222,"WHIP":0.442,"K9":0.539,"QS":0.286,"SVH":0.602}}},"3-10":{"season":{"win":0.609,"tie":0.0432,"exp_a":6.58,"exp_b":5.42,"cats":{"R":0.717,"H":0.654,"HR":0.578,"RBI":0.652,"SB":0.801,"OPS":0.567,"TB":0.402,"ERA":0.384,"WHIP":0.537,"K9":0.43,"QS":0.446,"SVH":0.409}},"last6":{"win":0.6635,"tie":0.0,"exp_a":6.61,"exp_b":5.39,"cats":{"R":0.885,"H":0.636,"HR":0.715,"RBI":0.746,"SB":0.647,"OPS":0.551,"TB":0.496,"ERA":0.333,"WHIP":0.471,"K9":0.64,"QS":0.183,"SVH":0.307}},"last2":{"win":0.7499,"tie":0.0,"exp_a":7.49,"exp_b":4.51,"cats":{"R":1.0,"H":0.875,"HR":1.0,"RBI":1.0,"SB":0.748,"OPS":0.497,"TB":1.0,"ERA":0.0,"WHIP":0.246,"K9":0.75,"QS":0.253,"SVH":0.123}},"blend":{"win":0.6552,"tie":0.0285,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.83,"H":0.68,"HR":0.685,"RBI":0.774,"SB":0.743,"OPS":0.566,"TB":0.509,"ERA":0.295,"WHIP":0.475,"K9":0.527,"QS":0.342,"SVH":0.325}}},"3-2":{"season":{"win":0.6592,"tie":0.0513,"exp_a":7.04,"exp_b":4.96,"cats":{"R":0.711,"H":0.654,"HR":0.704,"RBI":0.793,"SB":0.48,"OPS":0.588,"TB":0.483,"ERA":0.513,"WHIP":0.519,"K9":0.67,"QS":0.443,"SVH":0.479}},"last6":{"win":0.6923,"tie":0.0274,"exp_a":7.12,"exp_b":4.88,"cats":{"R":0.734,"H":0.638,"HR":0.76,"RBI":0.917,"SB":0.397,"OPS":0.609,"TB":0.764,"ERA":0.334,"WHIP":0.412,"K9":0.779,"QS":0.428,"SVH":0.347}},"last2":{"win":0.2546,"tie":0.2509,"exp_a":5.77,"exp_b":6.23,"cats":{"R":0.878,"H":0.506,"HR":0.878,"RBI":1.0,"SB":0.127,"OPS":0.255,"TB":1.0,"ERA":0.0,"WHIP":0.255,"K9":0.496,"QS":0.372,"SVH":0.0}},"blend":{"win":0.6306,"tie":0.0599,"exp_a":6.89,"exp_b":5.11,"cats":{"R":0.751,"H":0.656,"HR":0.761,"RBI":0.874,"SB":0.38,"OPS":0.553,"TB":0.632,"ERA":0.405,"WHIP":0.424,"K9":0.662,"QS":0.45,"SVH":0.342}}},"11-1":{"season":{"win":0.4142,"tie":0.095,"exp_a":5.7,"exp_b":6.3,"cats":{"R":0.425,"H":0.517,"HR":0.671,"RBI":0.615,"SB":0.366,"OPS":0.514,"TB":0.491,"ERA":0.344,"WHIP":0.366,"K9":0.302,"QS":0.221,"SVH":0.867}},"last6":{"win":0.3347,"tie":0.1116,"exp_a":5.21,"exp_b":6.79,"cats":{"R":0.265,"H":0.477,"HR":0.54,"RBI":0.513,"SB":0.549,"OPS":0.568,"TB":0.581,"ERA":0.112,"WHIP":0.11,"K9":0.504,"QS":0.126,"SVH":0.864}},"last2":{"win":1.0,"tie":0.0,"exp_a":7.49,"exp_b":4.51,"cats":{"R":0.503,"H":1.0,"HR":1.0,"RBI":1.0,"SB":0.497,"OPS":1.0,"TB":0.749,"ERA":0.0,"WHIP":0.0,"K9":0.748,"QS":0.123,"SVH":0.874}},"blend":{"win":0.4768,"tie":0.072,"exp_a":5.81,"exp_b":6.19,"cats":{"R":0.378,"H":0.576,"HR":0.683,"RBI":0.662,"SB":0.431,"OPS":0.588,"TB":0.582,"ERA":0.204,"WHIP":0.243,"K9":0.427,"QS":0.167,"SVH":0.869}}},"11-12":{"season":{"win":0.5111,"tie":0.1113,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.473,"H":0.526,"HR":0.651,"RBI":0.642,"SB":0.383,"OPS":0.602,"TB":0.564,"ERA":0.416,"WHIP":0.408,"K9":0.337,"QS":0.367,"SVH":0.868}},"last6":{"win":0.2459,"tie":0.1665,"exp_a":5.44,"exp_b":6.56,"cats":{"R":0.512,"H":0.193,"HR":0.583,"RBI":0.677,"SB":0.376,"OPS":0.468,"TB":0.74,"ERA":0.113,"WHIP":0.191,"K9":0.413,"QS":0.269,"SVH":0.903}},"last2":{"win":0.5056,"tie":0.2462,"exp_a":6.26,"exp_b":5.74,"cats":{"R":0.377,"H":0.253,"HR":0.499,"RBI":1.0,"SB":0.499,"OPS":0.499,"TB":0.754,"ERA":0.0,"WHIP":0.253,"K9":1.0,"QS":0.126,"SVH":1.0}},"blend":{"win":0.4154,"tie":0.1746,"exp_a":6.01,"exp_b":5.99,"cats":{"R":0.466,"H":0.377,"HR":0.603,"RBI":0.732,"SB":0.386,"OPS":0.549,"TB":0.67,"ERA":0.215,"WHIP":0.326,"K9":0.501,"QS":0.28,"SVH":0.909}}},"11-10":{"season":{"win":0.5445,"tie":0.0659,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.59,"H":0.593,"HR":0.647,"RBI":0.595,"SB":0.608,"OPS":0.573,"TB":0.357,"ERA":0.407,"WHIP":0.43,"K9":0.339,"QS":0.332,"SVH":0.771}},"last6":{"win":0.4965,"tie":0.0282,"exp_a":5.93,"exp_b":6.07,"cats":{"R":0.824,"H":0.628,"HR":0.594,"RBI":0.596,"SB":0.696,"OPS":0.58,"TB":0.456,"ERA":0.111,"WHIP":0.234,"K9":0.439,"QS":0.197,"SVH":0.572}},"last2":{"win":1.0,"tie":0.0,"exp_a":8.24,"exp_b":3.76,"cats":{"R":1.0,"H":1.0,"HR":0.756,"RBI":1.0,"SB":0.875,"OPS":1.0,"TB":0.504,"ERA":0.0,"WHIP":0.496,"K9":0.747,"QS":0.37,"SVH":0.495}},"blend":{"win":0.6378,"tie":0.0387,"exp_a":6.58,"exp_b":5.42,"cats":{"R":0.755,"H":0.686,"HR":0.646,"RBI":0.697,"SB":0.694,"OPS":0.627,"TB":0.408,"ERA":0.264,"WHIP":0.365,"K9":0.444,"QS":0.314,"SVH":0.675}}},"11-2":{"season":{"win":0.615,"tie":0.0851,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.611,"H":0.6,"HR":0.77,"RBI":0.774,"SB":0.327,"OPS":0.593,"TB":0.448,"ERA":0.528,"WHIP":0.425,"K9":0.56,"QS":0.343,"SVH":0.768}},"last6":{"win":0.5014,"tie":0.1676,"exp_a":6.31,"exp_b":5.69,"cats":{"R":0.448,"H":0.654,"HR":0.656,"RBI":0.75,"SB":0.401,"OPS":0.599,"TB":0.737,"ERA":0.248,"WHIP":0.11,"K9":0.637,"QS":0.486,"SVH":0.584}},"last2":{"win":0.5039,"tie":0.2505,"exp_a":6.26,"exp_b":5.74,"cats":{"R":0.502,"H":0.628,"HR":0.629,"RBI":1.0,"SB":0.375,"OPS":0.503,"TB":0.502,"ERA":0.749,"WHIP":0.252,"K9":0.497,"QS":0.498,"SVH":0.126}},"blend":{"win":0.5871,"tie":0.1172,"exp_a":6.61,"exp_b":5.39,"cats":{"R":0.553,"H":0.622,"HR":0.713,"RBI":0.814,"SB":0.367,"OPS":0.578,"TB":0.532,"ERA":0.47,"WHIP":0.295,"K9":0.611,"QS":0.424,"SVH":0.629}}},"1-12":{"season":{"win":0.5485,"tie":0.1014,"exp_a":6.46,"exp_b":5.54,"cats":{"R":0.559,"H":0.513,"HR":0.438,"RBI":0.507,"SB":0.511,"OPS":0.577,"TB":0.582,"ERA":0.548,"WHIP":0.551,"K9":0.528,"QS":0.694,"SVH":0.453}},"last6":{"win":0.4151,"tie":0.109,"exp_a":5.98,"exp_b":6.02,"cats":{"R":0.724,"H":0.301,"HR":0.43,"RBI":0.689,"SB":0.305,"OPS":0.414,"TB":0.721,"ERA":0.181,"WHIP":0.505,"K9":0.464,"QS":0.725,"SVH":0.525}},"last2":{"win":0.0,"tie":0.2455,"exp_a":4.74,"exp_b":7.26,"cats":{"R":0.126,"H":0.0,"HR":0.0,"RBI":1.0,"SB":0.374,"OPS":0.0,"TB":0.498,"ERA":0.251,"WHIP":0.498,"K9":1.0,"QS":0.501,"SVH":0.496}},"blend":{"win":0.4305,"tie":0.1135,"exp_a":6.04,"exp_b":5.96,"cats":{"R":0.561,"H":0.337,"HR":0.364,"RBI":0.623,"SB":0.442,"OPS":0.435,"TB":0.597,"ERA":0.393,"WHIP":0.536,"K9":0.583,"QS":0.677,"SVH":0.491}}},"1-10":{"season":{"win":0.5347,"tie":0.0935,"exp_a":6.5,"exp_b":5.5,"cats":{"R":0.637,"H":0.586,"HR":0.416,"RBI":0.47,"SB":0.745,"OPS":0.552,"TB":0.356,"ERA":0.617,"WHIP":0.622,"K9":0.547,"QS":0.624,"SVH":0.327}},"last6":{"win":0.5549,"tie":0.0568,"exp_a":6.6,"exp_b":5.4,"cats":{"R":0.864,"H":0.639,"HR":0.391,"RBI":0.583,"SB":0.671,"OPS":0.56,"TB":0.343,"ERA":0.637,"WHIP":0.664,"K9":0.528,"QS":0.523,"SVH":0.194}},"last2":{"win":0.7478,"tie":0.2522,"exp_a":8.0,"exp_b":4.0,"cats":{"R":1.0,"H":0.748,"HR":0.0,"RBI":1.0,"SB":1.0,"OPS":0.501,"TB":0.0,"ERA":1.0,"WHIP":1.0,"K9":0.748,"QS":0.875,"SVH":0.126}},"blend":{"win":0.5754,"tie":0.0978,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.791,"H":0.6,"HR":0.35,"RBI":0.576,"SB":0.773,"OPS":0.517,"TB":0.3,"ERA":0.7,"WHIP":0.687,"K9":0.565,"QS":0.651,"SVH":0.244}}},"1-2":{"season":{"win":0.6355,"tie":0.0917,"exp_a":6.91,"exp_b":5.09,"cats":{"R":0.66,"H":0.586,"HR":0.56,"RBI":0.647,"SB":0.498,"OPS":0.565,"TB":0.458,"ERA":0.652,"WHIP":0.52,"K9":0.772,"QS":0.587,"SVH":0.409}},"last6":{"win":0.6125,"tie":0.0309,"exp_a":6.84,"exp_b":5.16,"cats":{"R":0.725,"H":0.659,"HR":0.574,"RBI":0.752,"SB":0.307,"OPS":0.586,"TB":0.691,"ERA":0.44,"WHIP":0.31,"K9":0.666,"QS":0.918,"SVH":0.208}},"last2":{"win":0.2506,"tie":0.0,"exp_a":5.5,"exp_b":6.5,"cats":{"R":0.874,"H":0.0,"HR":0.497,"RBI":0.752,"SB":0.125,"OPS":0.251,"TB":0.0,"ERA":1.0,"WHIP":0.497,"K9":0.503,"QS":1.0,"SVH":0.0}},"blend":{"win":0.5914,"tie":0.0768,"exp_a":6.71,"exp_b":5.29,"cats":{"R":0.71,"H":0.542,"HR":0.531,"RBI":0.701,"SB":0.398,"OPS":0.499,"TB":0.463,"ERA":0.671,"WHIP":0.472,"K9":0.712,"QS":0.749,"SVH":0.26}}},"12-10":{"season":{"win":0.4813,"tie":0.0686,"exp_a":6.07,"exp_b":5.93,"cats":{"R":0.615,"H":0.556,"HR":0.484,"RBI":0.483,"SB":0.733,"OPS":0.51,"TB":0.295,"ERA":0.512,"WHIP":0.544,"K9":0.517,"QS":0.445,"SVH":0.375}},"last6":{"win":0.6942,"tie":0.0566,"exp_a":6.47,"exp_b":5.53,"cats":{"R":0.79,"H":0.834,"HR":0.397,"RBI":0.429,"SB":0.805,"OPS":0.665,"TB":0.084,"ERA":0.804,"WHIP":0.56,"K9":0.584,"QS":0.361,"SVH":0.153}},"last2":{"win":1.0,"tie":0.0,"exp_a":8.13,"exp_b":3.87,"cats":{"R":1.0,"H":1.0,"HR":0.622,"RBI":0.622,"SB":1.0,"OPS":1.0,"TB":0.0,"ERA":1.0,"WHIP":0.503,"K9":0.502,"QS":0.877,"SVH":0.0}},"blend":{"win":0.6432,"tie":0.0641,"exp_a":6.59,"exp_b":5.41,"cats":{"R":0.781,"H":0.74,"HR":0.482,"RBI":0.504,"SB":0.799,"OPS":0.628,"TB":0.18,"ERA":0.676,"WHIP":0.554,"K9":0.517,"QS":0.517,"SVH":0.217}}},"12-2":{"season":{"win":0.5926,"tie":0.0813,"exp_a":6.62,"exp_b":5.38,"cats":{"R":0.644,"H":0.568,"HR":0.621,"RBI":0.672,"SB":0.489,"OPS":0.517,"TB":0.356,"ERA":0.62,"WHIP":0.502,"K9":0.737,"QS":0.452,"SVH":0.443}},"last6":{"win":0.6659,"tie":0.0308,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.599,"H":0.834,"HR":0.546,"RBI":0.667,"SB":0.499,"OPS":0.586,"TB":0.374,"ERA":0.693,"WHIP":0.303,"K9":0.667,"QS":0.793,"SVH":0.188}},"last2":{"win":0.7528,"tie":0.2472,"exp_a":6.63,"exp_b":5.37,"cats":{"R":1.0,"H":1.0,"HR":0.753,"RBI":0.256,"SB":0.124,"OPS":0.497,"TB":0.0,"ERA":1.0,"WHIP":0.497,"K9":0.503,"QS":1.0,"SVH":0.0}},"blend":{"win":0.6386,"tie":0.077,"exp_a":6.65,"exp_b":5.35,"cats":{"R":0.651,"H":0.724,"HR":0.618,"RBI":0.608,"SB":0.467,"OPS":0.551,"TB":0.294,"ERA":0.714,"WHIP":0.455,"K9":0.648,"QS":0.654,"SVH":0.268}}},"10-2":{"season":{"win":0.5373,"tie":0.077,"exp_a":6.43,"exp_b":5.57,"cats":{"R":0.494,"H":0.511,"HR":0.647,"RBI":0.679,"SB":0.192,"OPS":0.533,"TB":0.592,"ERA":0.588,"WHIP":0.428,"K9":0.721,"QS":0.487,"SVH":0.559}},"last6":{"win":0.48,"tie":0.1101,"exp_a":6.27,"exp_b":5.73,"cats":{"R":0.236,"H":0.508,"HR":0.57,"RBI":0.643,"SB":0.266,"OPS":0.613,"TB":0.822,"ERA":0.448,"WHIP":0.226,"K9":0.669,"QS":0.799,"SVH":0.473}},"last2":{"win":0.0,"tie":0.2475,"exp_a":4.24,"exp_b":7.76,"cats":{"R":0.0,"H":0.0,"HR":0.495,"RBI":0.0,"SB":0.0,"OPS":0.495,"TB":0.629,"ERA":1.0,"WHIP":0.371,"K9":0.505,"QS":0.618,"SVH":0.124}},"blend":{"win":0.4299,"tie":0.0978,"exp_a":5.96,"exp_b":6.04,"cats":{"R":0.309,"H":0.421,"HR":0.597,"RBI":0.56,"SB":0.188,"OPS":0.529,"TB":0.661,"ERA":0.604,"WHIP":0.362,"K9":0.66,"QS":0.602,"SVH":0.468}}}},"odds":{"3":{"semi":1.0,"final":0.6476,"title":0.3932},"11":{"semi":1.0,"final":0.5684,"title":0.273},"1":{"semi":0.6743,"final":0.3065,"title":0.1441},"12":{"semi":0.7043,"final":0.2836,"title":0.1267},"10":{"semi":0.2957,"final":0.0974,"title":0.0333},"2":{"semi":0.3257,"final":0.0966,"title":0.0297}},"profiles":{"3":{"season":{"R":34.38095238095238,"H":58.57142857142857,"HR":9.666666666666666,"RBI":32.80952380952381,"SB":5.476190476190476,"OPS":0.7800476190476191,"TB":79.19047619047619,"ERA":3.9642857142857144,"WHIP":1.1657142857142857,"K9":9.428095238095239,"QS":3.380952380952381,"SVH":4.238095238095238,"IP":55.07952380952381,"forfeit_rate":0.0},"last6":{"R":39.5,"H":63.166666666666664,"HR":11.5,"RBI":38.166666666666664,"SB":6.0,"OPS":0.7638333333333334,"TB":85.16666666666667,"ERA":4.251666666666667,"WHIP":1.1766666666666665,"K9":10.118333333333334,"QS":2.8333333333333335,"SVH":5.5,"IP":57.5,"forfeit_rate":0.0},"last2":{"R":36.5,"H":58.5,"HR":10.5,"RBI":39.0,"SB":5.0,"OPS":0.724,"TB":98.0,"ERA":5.23,"WHIP":1.335,"K9":8.95,"QS":2.0,"SVH":4.0,"IP":59.5,"forfeit_rate":0.0}},"11":{"season":{"R":30.428571428571427,"H":53.76190476190476,"HR":9.619047619047619,"RBI":30.285714285714285,"SB":4.428571428571429,"OPS":0.7709047619047619,"TB":78.61904761904762,"ERA":3.81,"WHIP":1.2242857142857144,"K9":9.118571428571428,"QS":2.857142857142857,"SVH":6.904761904761905,"IP":52.12666666666667,"forfeit_rate":0.0},"last6":{"R":33.666666666666664,"H":56.5,"HR":9.0,"RBI":29.833333333333332,"SB":6.166666666666667,"OPS":0.751,"TB":90.83333333333333,"ERA":4.516666666666667,"WHIP":1.3499999999999999,"K9":9.303333333333333,"QS":2.8333333333333335,"SVH":7.333333333333333,"IP":53.38833333333333,"forfeit_rate":0.0},"last2":{"R":35.0,"H":57.0,"HR":8.5,"RBI":34.0,"SB":6.0,"OPS":0.77,"TB":91.0,"ERA":4.5,"WHIP":1.375,"K9":9.940000000000001,"QS":2.5,"SVH":6.5,"IP":53.0,"forfeit_rate":0.0}},"1":{"season":{"R":31.761904761904763,"H":53.904761904761905,"HR":7.380952380952381,"RBI":27.476190476190474,"SB":5.857142857142857,"OPS":0.7578571428571429,"TB":76.85714285714286,"ERA":3.350952380952381,"WHIP":1.1133333333333333,"K9":9.914285714285715,"QS":4.190476190476191,"SVH":3.6666666666666665,"IP":56.69761904761905,"forfeit_rate":0.0},"last6":{"R":37.833333333333336,"H":60.333333333333336,"HR":8.166666666666666,"RBI":30.166666666666668,"SB":5.5,"OPS":0.7523333333333334,"TB":83.5,"ERA":3.486666666666667,"WHIP":1.18,"K9":9.603333333333333,"QS":4.666666666666667,"SVH":3.8333333333333335,"IP":62.276666666666664,"forfeit_rate":0.0},"last2":{"R":33.5,"H":47.0,"HR":5.0,"RBI":26.0,"SB":6.0,"OPS":0.685,"TB":70.0,"ERA":2.9699999999999998,"WHIP":1.15,"K9":9.645,"QS":4.5,"SVH":3.5,"IP":55.665,"forfeit_rate":0.0}},"12":{"season":{"R":30.333333333333332,"H":53.333333333333336,"HR":8.095238095238095,"RBI":27.19047619047619,"SB":5.571428571428571,"OPS":0.7451428571428571,"TB":73.04761904761905,"ERA":3.544761904761905,"WHIP":1.1776190476190476,"K9":9.831428571428571,"QS":3.4285714285714284,"SVH":4.0,"IP":53.84142857142857,"forfeit_rate":0.0},"last6":{"R":33.166666666666664,"H":64.33333333333333,"HR":8.333333333333334,"RBI":26.5,"SB":7.0,"OPS":0.7639999999999999,"TB":70.33333333333333,"ERA":2.873333333333333,"WHIP":1.1833333333333333,"K9":9.816666666666666,"QS":4.0,"SVH":4.0,"IP":53.666666666666664,"forfeit_rate":0.0},"last2":{"R":37.0,"H":61.5,"HR":8.5,"RBI":21.5,"SB":6.5,"OPS":0.7735000000000001,"TB":65.0,"ERA":2.71,"WHIP":1.195,"K9":8.379999999999999,"QS":4.5,"SVH":3.0,"IP":53.165,"forfeit_rate":0.0}},"10":{"season":{"R":28.142857142857142,"H":52.0,"HR":8.428571428571429,"RBI":28.333333333333332,"SB":3.142857142857143,"OPS":0.7507142857142858,"TB":90.14285714285714,"ERA":3.5390476190476186,"WHIP":1.206190476190476,"K9":9.64952380952381,"QS":3.6666666666666665,"SVH":4.904761904761905,"IP":63.11190476190476,"forfeit_rate":0.0},"last6":{"R":26.833333333333332,"H":55.666666666666664,"HR":9.166666666666666,"RBI":29.333333333333332,"SB":4.333333333333333,"OPS":0.7503333333333333,"TB":100.33333333333333,"ERA":3.5283333333333338,"WHIP":1.2216666666666667,"K9":9.536666666666667,"QS":4.5,"SVH":6.333333333333333,"IP":68.835,"forfeit_rate":0.0},"last2":{"R":20.5,"H":45.5,"HR":7.0,"RBI":18.5,"SB":3.0,"OPS":0.708,"TB":87.5,"ERA":3.72,"WHIP":1.25,"K9":8.85,"QS":3.0,"SVH":6.5,"IP":60.5,"forfeit_rate":0.0}},"2":{"season":{"R":28.61904761904762,"H":51.857142857142854,"HR":6.571428571428571,"RBI":23.428571428571427,"SB":5.571428571428571,"OPS":0.7390952380952381,"TB":83.85714285714286,"ERA":3.994285714285714,"WHIP":1.1923809523809523,"K9":8.696666666666667,"QS":3.8095238095238093,"SVH":4.523809523809524,"IP":58.12714285714286,"forfeit_rate":0.0},"last6":{"R":32.833333333333336,"H":55.5,"HR":7.166666666666667,"RBI":23.833333333333332,"SB":6.5,"OPS":0.7246666666666667,"TB":74.0,"ERA":3.5,"WHIP":1.09,"K9":8.833333333333334,"QS":3.1666666666666665,"SVH":6.5,"IP":55.333333333333336,"forfeit_rate":0.0},"last2":{"R":32.0,"H":53.5,"HR":6.5,"RBI":23.5,"SB":7.5,"OPS":0.743,"TB":85.5,"ERA":4.635,"WHIP":1.195,"K9":8.955,"QS":2.5,"SVH":7.5,"IP":55.335,"forfeit_rate":0.0}}}}</script>
+<script id="pageData" type="application/json">{"generated_at":"2026-08-30T20:11:55","league":"Summertime Sadness","season":"2026","through_week":21,"weeks_counted":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"playoff_weeks":[23,24,25],"playoff_teams":6,"reseeding":true,"seeds_final":false,"live_week":22,"bracket_source":"projected","blend_weights":{"season":0.5,"last6":0.3,"last2":0.2},"window_weeks":{"season":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21],"last6":[16,17,18,19,20,21],"last2":[20,21]},"cats":["R","H","HR","RBI","SB","OPS","TB","ERA","WHIP","K9","QS","SVH"],"lower_is_better":["ERA","WHIP"],"pitching_cats":["ERA","WHIP","K9","QS","SVH"],"seeds":[{"team_id":3,"manager":"Josh","name":"Los Basureros","banked":153.0,"live":9.0,"pts":162.0,"allplay_pct":0.6731601731601732,"allplay_pct_l6":0.7727272727272727,"allplay_pct_l2":0.7045454545454546,"seed":1,"in":true},{"team_id":11,"manager":"Kevin","name":"The Rosterbation Station","banked":153.5,"live":7.0,"pts":160.5,"allplay_pct":0.5887445887445888,"allplay_pct_l6":0.5303030303030303,"allplay_pct_l2":0.7272727272727273,"seed":2,"in":true},{"team_id":1,"manager":"Taylor","name":"M*A*S*H*D PO*TA*TOES","banked":144.5,"live":9.0,"pts":153.5,"allplay_pct":0.6017316017316018,"allplay_pct_l6":0.6287878787878788,"allplay_pct_l2":0.6136363636363636,"seed":3,"in":true},{"team_id":12,"manager":"Mike","name":"¯\\_(ツ)_/¯","banked":142.5,"live":5.0,"pts":147.5,"allplay_pct":0.5151515151515151,"allplay_pct_l6":0.6515151515151515,"allplay_pct_l2":0.7954545454545454,"seed":4,"in":true},{"team_id":10,"manager":"Mikey","name":"LAST GAME OF THE YEAR BRENT","banked":127.5,"live":3.0,"pts":130.5,"allplay_pct":0.5541125541125541,"allplay_pct_l6":0.5833333333333334,"allplay_pct_l2":0.29545454545454547,"seed":5,"in":true},{"team_id":2,"manager":"James","name":"Rosa Parks’ Bus Seat","banked":118.5,"live":9.5,"pts":128.0,"allplay_pct":0.42424242424242425,"allplay_pct_l6":0.5075757575757576,"allplay_pct_l2":0.6818181818181818,"seed":6,"in":true},{"team_id":4,"manager":"Bryant","name":"Rickie Flower","banked":121.5,"live":5.5,"pts":127.0,"allplay_pct":0.48484848484848486,"allplay_pct_l6":0.45454545454545453,"allplay_pct_l2":0.38636363636363635,"seed":7,"in":false},{"team_id":9,"manager":"Greg","name":"OG 8️⃣ & an extra","banked":122.5,"live":1.5,"pts":124.0,"allplay_pct":0.474025974025974,"allplay_pct_l6":0.48484848484848486,"allplay_pct_l2":0.7045454545454546,"seed":8,"in":false},{"team_id":7,"manager":"Eric","name":"Ian Cumsler","banked":113.0,"live":10.5,"pts":123.5,"allplay_pct":0.3874458874458874,"allplay_pct_l6":0.2878787878787879,"allplay_pct_l2":0.045454545454545456,"seed":9,"in":false},{"team_id":6,"manager":"Mark","name":"Hatfield Hurlers","banked":110.5,"live":2.5,"pts":113.0,"allplay_pct":0.4653679653679654,"allplay_pct_l6":0.49242424242424243,"allplay_pct_l2":0.38636363636363635,"seed":10,"in":false},{"team_id":5,"manager":"Kurtis","name":"William Shatnermouth","banked":105.0,"live":6.5,"pts":111.5,"allplay_pct":0.42424242424242425,"allplay_pct_l6":0.3939393939393939,"allplay_pct_l2":0.5454545454545454,"seed":11,"in":false},{"team_id":8,"manager":"Austin","name":"Moniebol 🐳 (DA BI ASS)","banked":100.0,"live":3.0,"pts":103.0,"allplay_pct":0.4069264069264069,"allplay_pct_l6":0.21212121212121213,"allplay_pct_l2":0.11363636363636363,"seed":12,"in":false}],"bracket":{"weeks":{"quarter":23,"semi":24,"final":25},"byes":[3,11],"quarters":[{"week":23,"a":1,"b":2},{"week":23,"a":12,"b":10}],"reseeded":true,"source":"projected"},"results":{"23":[],"24":[],"25":[]},"matrix":{"3-11":{"season":{"win":0.5444,"tie":0.0776,"exp_a":6.48,"exp_b":5.52,"cats":{"R":0.634,"H":0.579,"HR":0.486,"RBI":0.582,"SB":0.66,"OPS":0.518,"TB":0.542,"ERA":0.484,"WHIP":0.609,"K9":0.586,"QS":0.604,"SVH":0.194}},"last6":{"win":0.5211,"tie":0.1109,"exp_a":6.67,"exp_b":5.33,"cats":{"R":0.717,"H":0.564,"HR":0.636,"RBI":0.762,"SB":0.484,"OPS":0.525,"TB":0.402,"ERA":0.528,"WHIP":0.694,"K9":0.639,"QS":0.469,"SVH":0.248}},"last2":{"win":0.2437,"tie":0.2525,"exp_a":4.99,"exp_b":7.01,"cats":{"R":0.628,"H":0.496,"HR":0.875,"RBI":0.756,"SB":0.244,"OPS":0.253,"TB":0.506,"ERA":0.0,"WHIP":0.494,"K9":0.244,"QS":0.372,"SVH":0.122}},"blend":{"win":0.5008,"tie":0.0998,"exp_a":6.33,"exp_b":5.67,"cats":{"R":0.653,"H":0.572,"HR":0.582,"RBI":0.668,"SB":0.536,"OPS":0.482,"TB":0.505,"ERA":0.446,"WHIP":0.624,"K9":0.54,"QS":0.514,"SVH":0.203}}},"3-1":{"season":{"win":0.5493,"tie":0.0668,"exp_a":6.17,"exp_b":5.83,"cats":{"R":0.577,"H":0.609,"HR":0.645,"RBI":0.659,"SB":0.495,"OPS":0.531,"TB":0.558,"ERA":0.353,"WHIP":0.452,"K9":0.402,"QS":0.322,"SVH":0.569}},"last6":{"win":0.5029,"tie":0.0555,"exp_a":6.4,"exp_b":5.6,"cats":{"R":0.528,"H":0.53,"HR":0.722,"RBI":0.735,"SB":0.529,"OPS":0.511,"TB":0.642,"ERA":0.363,"WHIP":0.446,"K9":0.643,"QS":0.083,"SVH":0.666}},"last2":{"win":0.4974,"tie":0.2515,"exp_a":6.36,"exp_b":5.64,"cats":{"R":0.623,"H":0.749,"HR":1.0,"RBI":1.0,"SB":0.371,"OPS":0.749,"TB":1.0,"ERA":0.0,"WHIP":0.0,"K9":0.245,"QS":0.0,"SVH":0.622}},"blend":{"win":0.5347,"tie":0.0849,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.572,"H":0.611,"HR":0.732,"RBI":0.738,"SB":0.471,"OPS":0.562,"TB":0.665,"ERA":0.292,"WHIP":0.365,"K9":0.444,"QS":0.194,"SVH":0.599}}},"3-12":{"season":{"win":0.5984,"tie":0.0474,"exp_a":6.56,"exp_b":5.44,"cats":{"R":0.624,"H":0.606,"HR":0.598,"RBI":0.679,"SB":0.509,"OPS":0.581,"TB":0.609,"ERA":0.385,"WHIP":0.511,"K9":0.428,"QS":0.497,"SVH":0.535}},"last6":{"win":0.5515,"tie":0.057,"exp_a":6.55,"exp_b":5.45,"cats":{"R":0.722,"H":0.371,"HR":0.763,"RBI":0.847,"SB":0.413,"OPS":0.497,"TB":0.806,"ERA":0.195,"WHIP":0.469,"K9":0.579,"QS":0.192,"SVH":0.694}},"last2":{"win":0.4993,"tie":0.0,"exp_a":5.74,"exp_b":6.26,"cats":{"R":0.375,"H":0.499,"HR":0.621,"RBI":1.0,"SB":0.375,"OPS":0.25,"TB":1.0,"ERA":0.0,"WHIP":0.249,"K9":0.746,"QS":0.0,"SVH":0.626}},"blend":{"win":0.5441,"tie":0.0414,"exp_a":6.37,"exp_b":5.63,"cats":{"R":0.632,"H":0.488,"HR":0.651,"RBI":0.811,"SB":0.434,"OPS":0.506,"TB":0.752,"ERA":0.222,"WHIP":0.442,"K9":0.539,"QS":0.286,"SVH":0.602}}},"3-10":{"season":{"win":0.609,"tie":0.0432,"exp_a":6.58,"exp_b":5.42,"cats":{"R":0.717,"H":0.654,"HR":0.578,"RBI":0.652,"SB":0.801,"OPS":0.567,"TB":0.402,"ERA":0.384,"WHIP":0.537,"K9":0.43,"QS":0.446,"SVH":0.409}},"last6":{"win":0.6635,"tie":0.0,"exp_a":6.61,"exp_b":5.39,"cats":{"R":0.885,"H":0.636,"HR":0.715,"RBI":0.746,"SB":0.647,"OPS":0.551,"TB":0.496,"ERA":0.333,"WHIP":0.471,"K9":0.64,"QS":0.183,"SVH":0.307}},"last2":{"win":0.7499,"tie":0.0,"exp_a":7.49,"exp_b":4.51,"cats":{"R":1.0,"H":0.875,"HR":1.0,"RBI":1.0,"SB":0.748,"OPS":0.497,"TB":1.0,"ERA":0.0,"WHIP":0.246,"K9":0.75,"QS":0.253,"SVH":0.123}},"blend":{"win":0.6552,"tie":0.0285,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.83,"H":0.68,"HR":0.685,"RBI":0.774,"SB":0.743,"OPS":0.566,"TB":0.509,"ERA":0.295,"WHIP":0.475,"K9":0.527,"QS":0.342,"SVH":0.325}}},"3-2":{"season":{"win":0.6592,"tie":0.0513,"exp_a":7.04,"exp_b":4.96,"cats":{"R":0.711,"H":0.654,"HR":0.704,"RBI":0.793,"SB":0.48,"OPS":0.588,"TB":0.483,"ERA":0.513,"WHIP":0.519,"K9":0.67,"QS":0.443,"SVH":0.479}},"last6":{"win":0.6923,"tie":0.0274,"exp_a":7.12,"exp_b":4.88,"cats":{"R":0.734,"H":0.638,"HR":0.76,"RBI":0.917,"SB":0.397,"OPS":0.609,"TB":0.764,"ERA":0.334,"WHIP":0.412,"K9":0.779,"QS":0.428,"SVH":0.347}},"last2":{"win":0.2546,"tie":0.2509,"exp_a":5.77,"exp_b":6.23,"cats":{"R":0.878,"H":0.506,"HR":0.878,"RBI":1.0,"SB":0.127,"OPS":0.255,"TB":1.0,"ERA":0.0,"WHIP":0.255,"K9":0.496,"QS":0.372,"SVH":0.0}},"blend":{"win":0.6306,"tie":0.0599,"exp_a":6.89,"exp_b":5.11,"cats":{"R":0.751,"H":0.656,"HR":0.761,"RBI":0.874,"SB":0.38,"OPS":0.553,"TB":0.632,"ERA":0.405,"WHIP":0.424,"K9":0.662,"QS":0.45,"SVH":0.342}}},"11-1":{"season":{"win":0.4142,"tie":0.095,"exp_a":5.7,"exp_b":6.3,"cats":{"R":0.425,"H":0.517,"HR":0.671,"RBI":0.615,"SB":0.366,"OPS":0.514,"TB":0.491,"ERA":0.344,"WHIP":0.366,"K9":0.302,"QS":0.221,"SVH":0.867}},"last6":{"win":0.3347,"tie":0.1116,"exp_a":5.21,"exp_b":6.79,"cats":{"R":0.265,"H":0.477,"HR":0.54,"RBI":0.513,"SB":0.549,"OPS":0.568,"TB":0.581,"ERA":0.112,"WHIP":0.11,"K9":0.504,"QS":0.126,"SVH":0.864}},"last2":{"win":1.0,"tie":0.0,"exp_a":7.49,"exp_b":4.51,"cats":{"R":0.503,"H":1.0,"HR":1.0,"RBI":1.0,"SB":0.497,"OPS":1.0,"TB":0.749,"ERA":0.0,"WHIP":0.0,"K9":0.748,"QS":0.123,"SVH":0.874}},"blend":{"win":0.4768,"tie":0.072,"exp_a":5.81,"exp_b":6.19,"cats":{"R":0.378,"H":0.576,"HR":0.683,"RBI":0.662,"SB":0.431,"OPS":0.588,"TB":0.582,"ERA":0.204,"WHIP":0.243,"K9":0.427,"QS":0.167,"SVH":0.869}}},"11-12":{"season":{"win":0.5111,"tie":0.1113,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.473,"H":0.526,"HR":0.651,"RBI":0.642,"SB":0.383,"OPS":0.602,"TB":0.564,"ERA":0.416,"WHIP":0.408,"K9":0.337,"QS":0.367,"SVH":0.868}},"last6":{"win":0.2459,"tie":0.1665,"exp_a":5.44,"exp_b":6.56,"cats":{"R":0.512,"H":0.193,"HR":0.583,"RBI":0.677,"SB":0.376,"OPS":0.468,"TB":0.74,"ERA":0.113,"WHIP":0.191,"K9":0.413,"QS":0.269,"SVH":0.903}},"last2":{"win":0.5056,"tie":0.2462,"exp_a":6.26,"exp_b":5.74,"cats":{"R":0.377,"H":0.253,"HR":0.499,"RBI":1.0,"SB":0.499,"OPS":0.499,"TB":0.754,"ERA":0.0,"WHIP":0.253,"K9":1.0,"QS":0.126,"SVH":1.0}},"blend":{"win":0.4154,"tie":0.1746,"exp_a":6.01,"exp_b":5.99,"cats":{"R":0.466,"H":0.377,"HR":0.603,"RBI":0.732,"SB":0.386,"OPS":0.549,"TB":0.67,"ERA":0.215,"WHIP":0.326,"K9":0.501,"QS":0.28,"SVH":0.909}}},"11-10":{"season":{"win":0.5445,"tie":0.0659,"exp_a":6.24,"exp_b":5.76,"cats":{"R":0.59,"H":0.593,"HR":0.647,"RBI":0.595,"SB":0.608,"OPS":0.573,"TB":0.357,"ERA":0.407,"WHIP":0.43,"K9":0.339,"QS":0.332,"SVH":0.771}},"last6":{"win":0.4965,"tie":0.0282,"exp_a":5.93,"exp_b":6.07,"cats":{"R":0.824,"H":0.628,"HR":0.594,"RBI":0.596,"SB":0.696,"OPS":0.58,"TB":0.456,"ERA":0.111,"WHIP":0.234,"K9":0.439,"QS":0.197,"SVH":0.572}},"last2":{"win":1.0,"tie":0.0,"exp_a":8.24,"exp_b":3.76,"cats":{"R":1.0,"H":1.0,"HR":0.756,"RBI":1.0,"SB":0.875,"OPS":1.0,"TB":0.504,"ERA":0.0,"WHIP":0.496,"K9":0.747,"QS":0.37,"SVH":0.495}},"blend":{"win":0.6378,"tie":0.0387,"exp_a":6.58,"exp_b":5.42,"cats":{"R":0.755,"H":0.686,"HR":0.646,"RBI":0.697,"SB":0.694,"OPS":0.627,"TB":0.408,"ERA":0.264,"WHIP":0.365,"K9":0.444,"QS":0.314,"SVH":0.675}}},"11-2":{"season":{"win":0.615,"tie":0.0851,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.611,"H":0.6,"HR":0.77,"RBI":0.774,"SB":0.327,"OPS":0.593,"TB":0.448,"ERA":0.528,"WHIP":0.425,"K9":0.56,"QS":0.343,"SVH":0.768}},"last6":{"win":0.5014,"tie":0.1676,"exp_a":6.31,"exp_b":5.69,"cats":{"R":0.448,"H":0.654,"HR":0.656,"RBI":0.75,"SB":0.401,"OPS":0.599,"TB":0.737,"ERA":0.248,"WHIP":0.11,"K9":0.637,"QS":0.486,"SVH":0.584}},"last2":{"win":0.5039,"tie":0.2505,"exp_a":6.26,"exp_b":5.74,"cats":{"R":0.502,"H":0.628,"HR":0.629,"RBI":1.0,"SB":0.375,"OPS":0.503,"TB":0.502,"ERA":0.749,"WHIP":0.252,"K9":0.497,"QS":0.498,"SVH":0.126}},"blend":{"win":0.5871,"tie":0.1172,"exp_a":6.61,"exp_b":5.39,"cats":{"R":0.553,"H":0.622,"HR":0.713,"RBI":0.814,"SB":0.367,"OPS":0.578,"TB":0.532,"ERA":0.47,"WHIP":0.295,"K9":0.611,"QS":0.424,"SVH":0.629}}},"1-12":{"season":{"win":0.5485,"tie":0.1014,"exp_a":6.46,"exp_b":5.54,"cats":{"R":0.559,"H":0.513,"HR":0.438,"RBI":0.507,"SB":0.511,"OPS":0.577,"TB":0.582,"ERA":0.548,"WHIP":0.551,"K9":0.528,"QS":0.694,"SVH":0.453}},"last6":{"win":0.4151,"tie":0.109,"exp_a":5.98,"exp_b":6.02,"cats":{"R":0.724,"H":0.301,"HR":0.43,"RBI":0.689,"SB":0.305,"OPS":0.414,"TB":0.721,"ERA":0.181,"WHIP":0.505,"K9":0.464,"QS":0.725,"SVH":0.525}},"last2":{"win":0.0,"tie":0.2455,"exp_a":4.74,"exp_b":7.26,"cats":{"R":0.126,"H":0.0,"HR":0.0,"RBI":1.0,"SB":0.374,"OPS":0.0,"TB":0.498,"ERA":0.251,"WHIP":0.498,"K9":1.0,"QS":0.501,"SVH":0.496}},"blend":{"win":0.4305,"tie":0.1135,"exp_a":6.04,"exp_b":5.96,"cats":{"R":0.561,"H":0.337,"HR":0.364,"RBI":0.623,"SB":0.442,"OPS":0.435,"TB":0.597,"ERA":0.393,"WHIP":0.536,"K9":0.583,"QS":0.677,"SVH":0.491}}},"1-10":{"season":{"win":0.5347,"tie":0.0935,"exp_a":6.5,"exp_b":5.5,"cats":{"R":0.637,"H":0.586,"HR":0.416,"RBI":0.47,"SB":0.745,"OPS":0.552,"TB":0.356,"ERA":0.617,"WHIP":0.622,"K9":0.547,"QS":0.624,"SVH":0.327}},"last6":{"win":0.5549,"tie":0.0568,"exp_a":6.6,"exp_b":5.4,"cats":{"R":0.864,"H":0.639,"HR":0.391,"RBI":0.583,"SB":0.671,"OPS":0.56,"TB":0.343,"ERA":0.637,"WHIP":0.664,"K9":0.528,"QS":0.523,"SVH":0.194}},"last2":{"win":0.7478,"tie":0.2522,"exp_a":8.0,"exp_b":4.0,"cats":{"R":1.0,"H":0.748,"HR":0.0,"RBI":1.0,"SB":1.0,"OPS":0.501,"TB":0.0,"ERA":1.0,"WHIP":1.0,"K9":0.748,"QS":0.875,"SVH":0.126}},"blend":{"win":0.5754,"tie":0.0978,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.791,"H":0.6,"HR":0.35,"RBI":0.576,"SB":0.773,"OPS":0.517,"TB":0.3,"ERA":0.7,"WHIP":0.687,"K9":0.565,"QS":0.651,"SVH":0.244}}},"1-2":{"season":{"win":0.6355,"tie":0.0917,"exp_a":6.91,"exp_b":5.09,"cats":{"R":0.66,"H":0.586,"HR":0.56,"RBI":0.647,"SB":0.498,"OPS":0.565,"TB":0.458,"ERA":0.652,"WHIP":0.52,"K9":0.772,"QS":0.587,"SVH":0.409}},"last6":{"win":0.6125,"tie":0.0309,"exp_a":6.84,"exp_b":5.16,"cats":{"R":0.725,"H":0.659,"HR":0.574,"RBI":0.752,"SB":0.307,"OPS":0.586,"TB":0.691,"ERA":0.44,"WHIP":0.31,"K9":0.666,"QS":0.918,"SVH":0.208}},"last2":{"win":0.2506,"tie":0.0,"exp_a":5.5,"exp_b":6.5,"cats":{"R":0.874,"H":0.0,"HR":0.497,"RBI":0.752,"SB":0.125,"OPS":0.251,"TB":0.0,"ERA":1.0,"WHIP":0.497,"K9":0.503,"QS":1.0,"SVH":0.0}},"blend":{"win":0.5914,"tie":0.0768,"exp_a":6.71,"exp_b":5.29,"cats":{"R":0.71,"H":0.542,"HR":0.531,"RBI":0.701,"SB":0.398,"OPS":0.499,"TB":0.463,"ERA":0.671,"WHIP":0.472,"K9":0.712,"QS":0.749,"SVH":0.26}}},"12-10":{"season":{"win":0.4813,"tie":0.0686,"exp_a":6.07,"exp_b":5.93,"cats":{"R":0.615,"H":0.556,"HR":0.484,"RBI":0.483,"SB":0.733,"OPS":0.51,"TB":0.295,"ERA":0.512,"WHIP":0.544,"K9":0.517,"QS":0.445,"SVH":0.375}},"last6":{"win":0.6942,"tie":0.0566,"exp_a":6.47,"exp_b":5.53,"cats":{"R":0.79,"H":0.834,"HR":0.397,"RBI":0.429,"SB":0.805,"OPS":0.665,"TB":0.084,"ERA":0.804,"WHIP":0.56,"K9":0.584,"QS":0.361,"SVH":0.153}},"last2":{"win":1.0,"tie":0.0,"exp_a":8.13,"exp_b":3.87,"cats":{"R":1.0,"H":1.0,"HR":0.622,"RBI":0.622,"SB":1.0,"OPS":1.0,"TB":0.0,"ERA":1.0,"WHIP":0.503,"K9":0.502,"QS":0.877,"SVH":0.0}},"blend":{"win":0.6432,"tie":0.0641,"exp_a":6.59,"exp_b":5.41,"cats":{"R":0.781,"H":0.74,"HR":0.482,"RBI":0.504,"SB":0.799,"OPS":0.628,"TB":0.18,"ERA":0.676,"WHIP":0.554,"K9":0.517,"QS":0.517,"SVH":0.217}}},"12-2":{"season":{"win":0.5926,"tie":0.0813,"exp_a":6.62,"exp_b":5.38,"cats":{"R":0.644,"H":0.568,"HR":0.621,"RBI":0.672,"SB":0.489,"OPS":0.517,"TB":0.356,"ERA":0.62,"WHIP":0.502,"K9":0.737,"QS":0.452,"SVH":0.443}},"last6":{"win":0.6659,"tie":0.0308,"exp_a":6.75,"exp_b":5.25,"cats":{"R":0.599,"H":0.834,"HR":0.546,"RBI":0.667,"SB":0.499,"OPS":0.586,"TB":0.374,"ERA":0.693,"WHIP":0.303,"K9":0.667,"QS":0.793,"SVH":0.188}},"last2":{"win":0.7528,"tie":0.2472,"exp_a":6.63,"exp_b":5.37,"cats":{"R":1.0,"H":1.0,"HR":0.753,"RBI":0.256,"SB":0.124,"OPS":0.497,"TB":0.0,"ERA":1.0,"WHIP":0.497,"K9":0.503,"QS":1.0,"SVH":0.0}},"blend":{"win":0.6386,"tie":0.077,"exp_a":6.65,"exp_b":5.35,"cats":{"R":0.651,"H":0.724,"HR":0.618,"RBI":0.608,"SB":0.467,"OPS":0.551,"TB":0.294,"ERA":0.714,"WHIP":0.455,"K9":0.648,"QS":0.654,"SVH":0.268}}},"10-2":{"season":{"win":0.5373,"tie":0.077,"exp_a":6.43,"exp_b":5.57,"cats":{"R":0.494,"H":0.511,"HR":0.647,"RBI":0.679,"SB":0.192,"OPS":0.533,"TB":0.592,"ERA":0.588,"WHIP":0.428,"K9":0.721,"QS":0.487,"SVH":0.559}},"last6":{"win":0.48,"tie":0.1101,"exp_a":6.27,"exp_b":5.73,"cats":{"R":0.236,"H":0.508,"HR":0.57,"RBI":0.643,"SB":0.266,"OPS":0.613,"TB":0.822,"ERA":0.448,"WHIP":0.226,"K9":0.669,"QS":0.799,"SVH":0.473}},"last2":{"win":0.0,"tie":0.2475,"exp_a":4.24,"exp_b":7.76,"cats":{"R":0.0,"H":0.0,"HR":0.495,"RBI":0.0,"SB":0.0,"OPS":0.495,"TB":0.629,"ERA":1.0,"WHIP":0.371,"K9":0.505,"QS":0.618,"SVH":0.124}},"blend":{"win":0.4299,"tie":0.0978,"exp_a":5.96,"exp_b":6.04,"cats":{"R":0.309,"H":0.421,"HR":0.597,"RBI":0.56,"SB":0.188,"OPS":0.529,"TB":0.661,"ERA":0.604,"WHIP":0.362,"K9":0.66,"QS":0.602,"SVH":0.468}}}},"h2h":{"3-11":{"a":12.5,"b":11.5,"meetings":2,"winner":3},"3-1":{"a":9.5,"b":14.5,"meetings":2,"winner":1},"3-12":{"a":15.0,"b":9.0,"meetings":2,"winner":3},"3-10":{"a":10.5,"b":1.5,"meetings":1,"winner":3},"3-2":{"a":9.5,"b":14.5,"meetings":2,"winner":2},"11-1":{"a":15.0,"b":9.0,"meetings":2,"winner":11},"11-12":{"a":8.0,"b":4.0,"meetings":1,"winner":11},"11-10":{"a":19.0,"b":5.0,"meetings":2,"winner":11},"11-2":{"a":12.0,"b":12.0,"meetings":2,"winner":null},"1-12":{"a":17.0,"b":7.0,"meetings":2,"winner":1},"1-10":{"a":18.5,"b":5.5,"meetings":2,"winner":1},"1-2":{"a":10.0,"b":14.0,"meetings":2,"winner":2},"12-10":{"a":16.5,"b":7.5,"meetings":2,"winner":12},"12-2":{"a":12.5,"b":11.5,"meetings":2,"winner":12},"10-2":{"a":20.0,"b":4.0,"meetings":2,"winner":10}},"odds":{"3":{"semi":1.0,"final":0.629,"title":0.3674},"11":{"semi":1.0,"final":0.5734,"title":0.2806},"1":{"semi":0.6025,"final":0.2732,"title":0.1425},"12":{"semi":0.7043,"final":0.2836,"title":0.1306},"10":{"semi":0.2957,"final":0.0969,"title":0.0338},"2":{"semi":0.3976,"final":0.144,"title":0.045}},"profiles":{"3":{"season":{"R":34.38095238095238,"H":58.57142857142857,"HR":9.666666666666666,"RBI":32.80952380952381,"SB":5.476190476190476,"OPS":0.7800476190476191,"TB":79.19047619047619,"ERA":3.9642857142857144,"WHIP":1.1657142857142857,"K9":9.428095238095239,"QS":3.380952380952381,"SVH":4.238095238095238,"IP":55.07952380952381,"forfeit_rate":0.0},"last6":{"R":39.5,"H":63.166666666666664,"HR":11.5,"RBI":38.166666666666664,"SB":6.0,"OPS":0.7638333333333334,"TB":85.16666666666667,"ERA":4.251666666666667,"WHIP":1.1766666666666665,"K9":10.118333333333334,"QS":2.8333333333333335,"SVH":5.5,"IP":57.5,"forfeit_rate":0.0},"last2":{"R":36.5,"H":58.5,"HR":10.5,"RBI":39.0,"SB":5.0,"OPS":0.724,"TB":98.0,"ERA":5.23,"WHIP":1.335,"K9":8.95,"QS":2.0,"SVH":4.0,"IP":59.5,"forfeit_rate":0.0}},"11":{"season":{"R":30.428571428571427,"H":53.76190476190476,"HR":9.619047619047619,"RBI":30.285714285714285,"SB":4.428571428571429,"OPS":0.7709047619047619,"TB":78.61904761904762,"ERA":3.81,"WHIP":1.2242857142857144,"K9":9.118571428571428,"QS":2.857142857142857,"SVH":6.904761904761905,"IP":52.12666666666667,"forfeit_rate":0.0},"last6":{"R":33.666666666666664,"H":56.5,"HR":9.0,"RBI":29.833333333333332,"SB":6.166666666666667,"OPS":0.751,"TB":90.83333333333333,"ERA":4.516666666666667,"WHIP":1.3499999999999999,"K9":9.303333333333333,"QS":2.8333333333333335,"SVH":7.333333333333333,"IP":53.38833333333333,"forfeit_rate":0.0},"last2":{"R":35.0,"H":57.0,"HR":8.5,"RBI":34.0,"SB":6.0,"OPS":0.77,"TB":91.0,"ERA":4.5,"WHIP":1.375,"K9":9.940000000000001,"QS":2.5,"SVH":6.5,"IP":53.0,"forfeit_rate":0.0}},"1":{"season":{"R":31.761904761904763,"H":53.904761904761905,"HR":7.380952380952381,"RBI":27.476190476190474,"SB":5.857142857142857,"OPS":0.7578571428571429,"TB":76.85714285714286,"ERA":3.350952380952381,"WHIP":1.1133333333333333,"K9":9.914285714285715,"QS":4.190476190476191,"SVH":3.6666666666666665,"IP":56.69761904761905,"forfeit_rate":0.0},"last6":{"R":37.833333333333336,"H":60.333333333333336,"HR":8.166666666666666,"RBI":30.166666666666668,"SB":5.5,"OPS":0.7523333333333334,"TB":83.5,"ERA":3.486666666666667,"WHIP":1.18,"K9":9.603333333333333,"QS":4.666666666666667,"SVH":3.8333333333333335,"IP":62.276666666666664,"forfeit_rate":0.0},"last2":{"R":33.5,"H":47.0,"HR":5.0,"RBI":26.0,"SB":6.0,"OPS":0.685,"TB":70.0,"ERA":2.9699999999999998,"WHIP":1.15,"K9":9.645,"QS":4.5,"SVH":3.5,"IP":55.665,"forfeit_rate":0.0}},"12":{"season":{"R":30.333333333333332,"H":53.333333333333336,"HR":8.095238095238095,"RBI":27.19047619047619,"SB":5.571428571428571,"OPS":0.7451428571428571,"TB":73.04761904761905,"ERA":3.544761904761905,"WHIP":1.1776190476190476,"K9":9.831428571428571,"QS":3.4285714285714284,"SVH":4.0,"IP":53.84142857142857,"forfeit_rate":0.0},"last6":{"R":33.166666666666664,"H":64.33333333333333,"HR":8.333333333333334,"RBI":26.5,"SB":7.0,"OPS":0.7639999999999999,"TB":70.33333333333333,"ERA":2.873333333333333,"WHIP":1.1833333333333333,"K9":9.816666666666666,"QS":4.0,"SVH":4.0,"IP":53.666666666666664,"forfeit_rate":0.0},"last2":{"R":37.0,"H":61.5,"HR":8.5,"RBI":21.5,"SB":6.5,"OPS":0.7735000000000001,"TB":65.0,"ERA":2.71,"WHIP":1.195,"K9":8.379999999999999,"QS":4.5,"SVH":3.0,"IP":53.165,"forfeit_rate":0.0}},"10":{"season":{"R":28.142857142857142,"H":52.0,"HR":8.428571428571429,"RBI":28.333333333333332,"SB":3.142857142857143,"OPS":0.7507142857142858,"TB":90.14285714285714,"ERA":3.5390476190476186,"WHIP":1.206190476190476,"K9":9.64952380952381,"QS":3.6666666666666665,"SVH":4.904761904761905,"IP":63.11190476190476,"forfeit_rate":0.0},"last6":{"R":26.833333333333332,"H":55.666666666666664,"HR":9.166666666666666,"RBI":29.333333333333332,"SB":4.333333333333333,"OPS":0.7503333333333333,"TB":100.33333333333333,"ERA":3.5283333333333338,"WHIP":1.2216666666666667,"K9":9.536666666666667,"QS":4.5,"SVH":6.333333333333333,"IP":68.835,"forfeit_rate":0.0},"last2":{"R":20.5,"H":45.5,"HR":7.0,"RBI":18.5,"SB":3.0,"OPS":0.708,"TB":87.5,"ERA":3.72,"WHIP":1.25,"K9":8.85,"QS":3.0,"SVH":6.5,"IP":60.5,"forfeit_rate":0.0}},"2":{"season":{"R":28.61904761904762,"H":51.857142857142854,"HR":6.571428571428571,"RBI":23.428571428571427,"SB":5.571428571428571,"OPS":0.7390952380952381,"TB":83.85714285714286,"ERA":3.994285714285714,"WHIP":1.1923809523809523,"K9":8.696666666666667,"QS":3.8095238095238093,"SVH":4.523809523809524,"IP":58.12714285714286,"forfeit_rate":0.0},"last6":{"R":32.833333333333336,"H":55.5,"HR":7.166666666666667,"RBI":23.833333333333332,"SB":6.5,"OPS":0.7246666666666667,"TB":74.0,"ERA":3.5,"WHIP":1.09,"K9":8.833333333333334,"QS":3.1666666666666665,"SVH":6.5,"IP":55.333333333333336,"forfeit_rate":0.0},"last2":{"R":32.0,"H":53.5,"HR":6.5,"RBI":23.5,"SB":7.5,"OPS":0.743,"TB":85.5,"ERA":4.635,"WHIP":1.195,"K9":8.955,"QS":2.5,"SVH":7.5,"IP":55.335,"forfeit_rate":0.0}}}}</script>
 <!--DATA:END-->
 
 <script>
@@ -357,6 +397,96 @@ function esc(s) {
 }
 function pct(v) { return (v * 100).toFixed(1) + '%'; }
 function pct0(v) { return Math.round(v * 100) + '%'; }
+
+/* ── Pricing ──────────────────────────────────────────────────────────────
+ * These are prices a book could actually post, not fair-value conversions.
+ *
+ * A matchup is a THREE-way market here: win, tie, loss. A 6-6 week is a real
+ * result, so pricing it two-way and calling ties a push would be a different
+ * bet from the one the model actually predicts.
+ *
+ * Hold is the book's margin. Matchups carry 5%, roughly a real three-way
+ * market; the title is a six-runner futures book at 20%, which is on the
+ * friendly side of what books charge on futures.
+ */
+var MATCHUP_HOLD = 0.05;
+var FUTURES_HOLD = 0.20;
+
+/**
+ * Solve for the exponent k where sum(p^k) = 1 + hold.
+ *
+ * The power method, not a flat multiplier. Multiplying every probability by
+ * the same factor taxes a 3% longshot and a 60% favourite equally, which no
+ * book does - margin is loaded onto the longshots (the favourite-longshot
+ * bias). Raising to a power below 1 lifts small probabilities proportionally
+ * more, which is the shape real prices have.
+ */
+function vigExponent(ps, hold) {
+  var target = 1 + hold, lo = 0.2, hi = 1.0;
+  for (var i = 0; i < 60; i++) {
+    var k = (lo + hi) / 2, s = 0;
+    for (var j = 0; j < ps.length; j++) s += Math.pow(ps[j], k);
+    if (s > target) lo = k; else hi = k;   // smaller k => bigger sum
+  }
+  return (lo + hi) / 2;
+}
+
+/** Probabilities with the book's margin baked in; they sum to 1 + hold. */
+function withVig(ps, hold) {
+  var k = vigExponent(ps, hold);
+  return ps.map(function (p) { return Math.pow(p, k); });
+}
+
+/** Raw American moneyline from a probability, unrounded. */
+function toAmerican(p) {
+  if (!(p > 0)) return Infinity;
+  if (p >= 1) return -Infinity;
+  return p >= 0.5 ? -100 * p / (1 - p) : 100 * (1 - p) / p;
+}
+
+/** Round to an increment a book would actually print on the board. */
+function bookRound(v) {
+  var a = Math.abs(v), step = a <= 300 ? 5 : a <= 1000 ? 25 : 100;
+  var r = Math.round(v / step) * step;
+  if (r > -100 && r < 100) r = v < 0 ? -100 : 100;   // no book posts -35
+  return r;
+}
+
+function fmtPrice(v) {
+  if (!isFinite(v)) return '—';
+  var r = bookRound(v);
+  return (r > 0 ? '+' : '') + r;
+}
+
+/**
+ * Price a whole market at once. Returns display strings in the same order as
+ * the probabilities handed in. Pricing the market together rather than each
+ * leg alone is the point - the margin has to be shared across the outcomes.
+ */
+function priceMarket(ps, hold) {
+  var live = ps.map(function (p) { return p > 0 ? p : 0; });
+  var total = live.reduce(function (a, b) { return a + b; }, 0);
+  if (!total) return ps.map(function () { return '—'; });
+  var norm = live.map(function (p) { return p / total; });
+  return withVig(norm, hold).map(function (p) { return fmtPrice(toAmerican(p)); });
+}
+
+/** Convenience for a single matchup: [teamA, tie, teamB]. */
+function matchupPrices(v) {
+  return priceMarket([v.a, v.tie, v.b], MATCHUP_HOLD);
+}
+
+/**
+ * The FAIR price - the model's probability converted straight across, with no
+ * margin at all. Shown next to the Vegas number so the vig is visible rather
+ * than buried: the gap between the two is exactly what the house is charging.
+ */
+function fairPrice(p) {
+  if (!(p > 0) || p >= 1) return '—';
+  var v = toAmerican(p);
+  var r = Math.abs(v) >= 1000 ? Math.round(v / 25) * 25 : Math.round(v);
+  return (r > 0 ? '+' : '') + r;
+}
 function fmtRate(v) { return '.' + String(Math.round(v * 1000)).padStart(3, '0'); }
 
 /** The matrix is keyed one way only; look up both and flip if needed. */
@@ -367,6 +497,31 @@ function pair(a, b) {
   if (D.matrix[k]) return { m: D.matrix[k], flip: true };
   return null;
 }
+/**
+ * Who a tied week goes to, and why. The league breaks it on the season series
+ * counted in CATEGORIES - not on seed, and not on who won more of the
+ * meetings: two weeks of 7-5 and 4-8 look like a 1-1 split but are 11-13 on
+ * categories. Seed is only the fallback when the series is level or never
+ * happened.
+ */
+function tiebreak(a, b) {
+  var rec = (D.h2h || {})['' + a + '-' + b];
+  var flip = false;
+  if (!rec) { rec = (D.h2h || {})['' + b + '-' + a]; flip = !!rec; }
+  var A = D.byId[a], B = D.byId[b];
+  if (rec) {
+    var ca = flip ? rec.b : rec.a, cb = flip ? rec.a : rec.b;
+    if (rec.winner !== null && rec.winner !== undefined) {
+      var w = D.byId[rec.winner];
+      return { who: w, why: 'h2h ' + Math.max(ca, cb) + '&ndash;' + Math.min(ca, cb) };
+    }
+    var bySeed = A.seed < B.seed ? A : B;
+    return { who: bySeed, why: 'h2h level ' + ca + '&ndash;' + cb + ', seed' };
+  }
+  var s = A.seed < B.seed ? A : B;
+  return { who: s, why: 'never met, seed' };
+}
+
 /** Prediction oriented so that `a` is the left-hand team. */
 function view(a, b, window) {
   var p = pair(a, b);
@@ -577,6 +732,11 @@ function renderOdds(d) {
     return { s: D.byId[+t], o: d.odds[t] };
   }).sort(function (x, y) { return y.o.title - x.o.title; });
 
+  // The title is one six-runner futures market, so the margin is spread across
+  // all six at once rather than each price being juiced on its own.
+  var futures = priceMarket(rows.map(function (r) { return r.o.title; }), FUTURES_HOLD);
+  rows.forEach(function (r, i) { r.vegas = futures[i]; });
+
   document.getElementById('oddsBody').innerHTML = rows.map(function (r) {
     return '<tr>' +
       '<td style="font-weight:800;color:#38bdf8">' + r.s.seed + '</td>' +
@@ -585,6 +745,8 @@ function renderOdds(d) {
       '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.final) + '</td>' +
       '<td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:#5eead4">' +
         pct(r.o.title) + '</td>' +
+      '<td style="text-align:right" class="ml">' + fairPrice(r.o.title) + '</td>' +
+      '<td style="text-align:right" class="ml vegas">' + r.vegas + '</td>' +
     '</tr>';
   }).join('');
 
@@ -648,14 +810,26 @@ function renderOdds(d) {
 }
 
 // ── Matchup cards ──────────────────────────────────────────────────────
+/** Fair price beside Vegas price, so the margin between them is visible. */
+function priceInner(p, vegas) {
+  return '<span class="pr-fair">' + fairPrice(p) + '<i>fair</i></span>' +
+         '<span class="pr-vegas">' + vegas + '<i>vegas</i></span>';
+}
+function priceLine(p, vegas) {
+  return '<div class="mu-ml">' + priceInner(p, vegas) + '</div>';
+}
+
 function matchupCard(a, b, when, res) {
   var A = D.byId[a], B = D.byId[b];
   var v = view(a, b, 'blend');
   if (!v) return '';
+  var mp = matchupPrices(v);
+  var tb = tiebreak(a, b);
 
   var id = 'mc' + (++CARD_SEQ);
   var chips = WINDOWS.map(function (win) {
     var x = view(a, b, win);
+    var xp = matchupPrices(x);
     var on = win === DEFAULT_WINDOW;
     return '<button type="button" class="win-chip' + (on ? ' active' : '') + '"' +
       ' data-win="' + win + '" aria-pressed="' + on + '"' +
@@ -668,8 +842,9 @@ function matchupCard(a, b, when, res) {
       // '50% - 25%' is not a rounding error, it is 25% ties, and a 6-6 week is
       // a tie in this league often enough to matter.
       '<div class="v">' + pct0(x.a) + ' &ndash; ' + pct0(x.b) + '</div>' +
-      '<div class="s">' + x.exp_a.toFixed(1) + '&ndash;' + x.exp_b.toFixed(1) + ' cats' +
-        (x.tie >= 0.005 ? ' &middot; ' + pct0(x.tie) + ' tie' : '') + '</div>' +
+      '<div class="s">' + xp[0] + ' / ' + xp[2] +
+        (x.tie >= 0.005 ? ' &middot; tie ' + xp[1] : '') + '</div>' +
+      '<div class="s">' + x.exp_a.toFixed(1) + '&ndash;' + x.exp_b.toFixed(1) + ' cats</div>' +
     '</button>';
   }).join('');
 
@@ -679,10 +854,12 @@ function matchupCard(a, b, when, res) {
       (final ? ' · final ' + res.a_cats + '–' + res.b_cats : '') + '</div>' +
     '<div class="mu-top">' +
       '<div class="mu-team mu-l"><div class="mu-pct">' + pct0(v.a) + '</div>' +
+        priceLine(v.a, mp[0]) +
         '<div class="mu-mgr">' + esc(A.manager) + '</div>' +
         '<div class="mu-tm">' + esc(A.name) + ' · seed ' + A.seed + '</div></div>' +
       '<div class="mu-vs">vs</div>' +
       '<div class="mu-team r mu-r"><div class="mu-pct">' + pct0(v.b) + '</div>' +
+        priceLine(v.b, mp[2]) +
         '<div class="mu-mgr">' + esc(B.manager) + '</div>' +
         '<div class="mu-tm">' + esc(B.name) + ' · seed ' + B.seed + '</div></div>' +
     '</div>' +
@@ -691,14 +868,68 @@ function matchupCard(a, b, when, res) {
       '<i class="t" style="width:' + (v.tie * 100).toFixed(1) + '%"></i>' +
       '<i class="b" style="width:' + (v.b * 100).toFixed(1) + '%"></i>' +
     '</div>' +
-    '<div class="probfoot"><span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
-      '<span>tie ' + pct(v.tie) + ' → seed ' + Math.min(A.seed, B.seed) + '</span>' +
+    // `mu-foot` distinguishes the headline caption from the one inside the
+    // category strip - both are .probfoot, and the toggle has to update only
+    // this one.
+    '<div class="probfoot mu-foot"><span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
+      // The tie is a priceable outcome, not a footnote - it is the third leg of
+      // the market, and at 8% it is worth more than most people assume.
+      '<span>tie ' + pct(v.tie) + ' <b class="ml vegas">' + mp[1] + '</b>' +
+        ' → ' + esc(tb.who.manager) + ' <span style="color:#475569">(' + tb.why + ')</span></span>' +
       '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span></div>' +
-    '<div class="windows" role="group" aria-label="Choose the window the category bars use">' +
+    '<div class="windows" role="group" aria-label="Choose the window this card is predicted on">' +
       chips + '</div>' +
     '<div class="cats" id="' + id + '" data-a="' + a + '" data-b="' + b + '">' +
       catStrip(a, b, DEFAULT_WINDOW) + '</div>' +
   '</div>';
+}
+
+/**
+ * Repoint an entire card at one window: the headline percentages, the
+ * win/tie/loss bar, its caption, and the category bars.
+ *
+ * The first version of the toggle only redrew the category bars, which left
+ * the big 59% / 33% and the bar above them still showing the blended number
+ * while the bars underneath showed a different window - two answers to the same
+ * question on one card, with nothing saying which was which.
+ */
+function applyWindow(card, win) {
+  var strip = card.querySelector('.cats');
+  if (!strip) return;
+  var a = +strip.dataset.a, b = +strip.dataset.b;
+  var A = D.byId[a], B = D.byId[b];
+  var v = view(a, b, win);
+  if (!v) return;
+
+  var left = card.querySelector('.mu-l .mu-pct');
+  var right = card.querySelector('.mu-r .mu-pct');
+  if (left) left.textContent = pct0(v.a);
+  if (right) right.textContent = pct0(v.b);
+  var mp = matchupPrices(v);
+  var tb = tiebreak(a, b);
+  var mlL = card.querySelector('.mu-l .mu-ml');
+  var mlR = card.querySelector('.mu-r .mu-ml');
+  if (mlL) mlL.innerHTML = priceInner(v.a, mp[0]);
+  if (mlR) mlR.innerHTML = priceInner(v.b, mp[2]);
+
+  var bar = card.querySelector('.probbar');
+  if (bar) {
+    var seg = { a: v.a, t: v.tie, b: v.b };
+    ['a', 't', 'b'].forEach(function (k) {
+      var el = bar.querySelector('i.' + k);
+      if (el) el.style.width = (seg[k] * 100).toFixed(1) + '%';
+    });
+  }
+
+  var foot = card.querySelector('.probfoot.mu-foot');
+  if (foot) {
+    foot.innerHTML = '<span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
+      '<span>tie ' + pct(v.tie) + ' <b class="ml vegas">' + mp[1] + '</b>' +
+        ' → ' + esc(tb.who.manager) + ' <span style="color:#475569">(' + tb.why + ')</span></span>' +
+      '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span>';
+  }
+
+  strip.innerHTML = catStrip(a, b, win);
 }
 
 /**
@@ -749,15 +980,13 @@ document.addEventListener('click', function (e) {
   if (!chip || !chip.dataset.win) return;
   var card = chip.closest('.mucard');
   if (!card) return;
-  var strip = card.querySelector('.cats');
-  if (!strip) return;
   Array.prototype.forEach.call(card.querySelectorAll('.win-chip'), function (el) {
     var on = el === chip;
     el.classList.toggle('active', on);
     el.setAttribute('aria-pressed', String(on));
     el.style.borderColor = on ? WINDOW_COLOR[el.dataset.win] : '#334155';
   });
-  strip.innerHTML = catStrip(+strip.dataset.a, +strip.dataset.b, chip.dataset.win);
+  applyWindow(card, chip.dataset.win);
 });
 
 function renderRound(d) {

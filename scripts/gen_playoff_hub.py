@@ -99,7 +99,24 @@ def main():
                 }
             matrix['%d-%d' % (a, b)] = entry
 
-    odds = pp.simulate_bracket(preds['blend'], seeds, bracket, data)
+    # The league breaks a tied week on the season series, counted in categories.
+    h2h = pp.head_to_head(rows, weeks)
+    odds = pp.simulate_bracket(preds['blend'], seeds, bracket, data, h2h)
+
+    # Flatten the pairs the page needs, oriented both ways so the card can look
+    # one up without knowing which id happens to be lower.
+    h2h_out = {}
+    for i, a in enumerate(order):
+        for b in order[i + 1:]:
+            rec = h2h.get((a, b) if a < b else (b, a))
+            if not rec or not rec['n']:
+                continue
+            ca, cb = (rec['a'], rec['b']) if a < b else (rec['b'], rec['a'])
+            winner = a if ca > cb else b if cb > ca else None
+            h2h_out['%d-%d' % (a, b)] = {
+                'a': round(ca, 1), 'b': round(cb, 1),
+                'meetings': rec['n'], 'winner': winner,
+            }
 
     profiles = {}
     for tid in order:
@@ -127,6 +144,7 @@ def main():
         'bracket': bracket,
         'results': {str(w): pp.real_bracket_round(data, w, field) for w in playoff_weeks},
         'matrix': matrix,
+        'h2h': h2h_out,
         'odds': {str(k): {kk: round(vv, 4) for kk, vv in v.items()} for k, v in odds.items()},
         'profiles': profiles,
     }

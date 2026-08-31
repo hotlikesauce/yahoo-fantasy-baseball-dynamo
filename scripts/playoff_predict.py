@@ -260,6 +260,49 @@ def default_bracket(seeds, playoff_weeks):
     }
 
 
+def head_to_head(rows, weeks):
+    """
+    Season head-to-head between every pair, counted in CATEGORIES.
+
+    This is the league's tiebreak, and it is not the same as who won more of
+    the meetings: two weeks of 7-5 and 4-8 look like a 1-1 split but are 11-13
+    on categories, and the categories decide it. Ties inside a week are already
+    folded into `pts` at half a point each.
+
+    Returns {(low_id, high_id): {'a': cats, 'b': cats, 'n': meetings}} keyed
+    with the lower team id first.
+    """
+    h = {}
+    for w in weeks:
+        for tid, r in rows[w].items():
+            o = r['opponent']
+            if o is None or tid > o:
+                continue
+            key = (tid, o)
+            rec = h.setdefault(key, {'a': 0.0, 'b': 0.0, 'n': 0})
+            rec['a'] += r['pts']
+            rec['b'] += N_CATS - r['pts']       # the two sides always sum to 12
+            rec['n'] += 1
+    return h
+
+
+def h2h_winner(h2h, a, b):
+    """
+    Which of `a`/`b` the season series favours, or None when it is level or
+    they never met. Callers fall back to seed order on None.
+    """
+    key = (a, b) if a < b else (b, a)
+    rec = h2h.get(key)
+    if not rec or not rec['n']:
+        return None
+    ca, cb = (rec['a'], rec['b']) if a < b else (rec['b'], rec['a'])
+    if ca > cb:
+        return a
+    if cb > ca:
+        return b
+    return None
+
+
 def real_bracket_round(data, week, field=None):
     """
     The actual pairings Yahoo posted for a playoff week, if it has posted them.
@@ -295,14 +338,16 @@ def real_bracket_round(data, week, field=None):
     return out
 
 
-def simulate_bracket(pred, seeds, bracket, data, sims=SIMS, seed=SEED):
+def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED):
     """
     Run the whole postseason. Returns each team's chance of reaching each round
     and of winning it.
 
-    A drawn tie is given to the better seed, which is the league's rule and also
-    the only defensible default: the alternative, a coin flip, invents a result
-    the rulebook already decides.
+    A drawn week goes to whoever won the SEASON SERIES ON CATEGORIES, which is
+    the league's tiebreak - not to the better seed. Those two disagree on four
+    of the fifteen pairings in this field, so using seed order as a shortcut
+    quietly hands several ties to the wrong team. Seed order is only the last
+    resort, for a pair that is level head-to-head or never met.
     """
     rng = random.Random(seed)
     inn = [s for s in seeds if s['in']]
@@ -319,13 +364,21 @@ def simulate_bracket(pred, seeds, bracket, data, sims=SIMS, seed=SEED):
             if m['winner'] is not None and m['status'] == 'postevent':
                 known[(wk, m['a'], m['b'])] = m['winner']
 
+    def break_tie(a, b):
+        """Season series on categories first; seed order only if that is level."""
+        if h2h:
+            w = h2h_winner(h2h, a, b)
+            if w is not None:
+                return w
+        return a if seed_of.get(a, 99) < seed_of.get(b, 99) else b
+
     def resolve(a, b, wk):
         for key in ((wk, a, b), (wk, b, a)):
             if key in known:
                 return known[key]
         w = pred.play(a, b)
         if w is None:
-            w = a if seed_of.get(a, 99) < seed_of.get(b, 99) else b
+            w = break_tie(a, b)
         return w
 
     reach = {s['team_id']: {'semi': 0, 'final': 0, 'title': 0} for s in inn}
