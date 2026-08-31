@@ -19,7 +19,7 @@ The two ideas the rest of the file leans on:
 
 import json
 import statistics
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 
@@ -27,10 +27,19 @@ DATA = Path(__file__).resolve().parent.parent / 'docs' / 'data'
 CACHE = DATA / 'league_activity_2026.json'
 
 CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'TB', 'ERA', 'WHIP', 'K9', 'QS', 'SVH']
-BATTING = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS', 'TB']
-PITCHING = ['ERA', 'WHIP', 'K9', 'QS', 'SVH']
-# Lower is better in these two; everything else scored here is higher-is-better.
-LOWER_IS_BETTER = {'ERA', 'WHIP'}
+BATTING = ['R', 'H', 'HR', 'RBI', 'SB', 'OPS']
+PITCHING = ['TB', 'ERA', 'WHIP', 'K9', 'QS', 'SVH']
+# Lower is better in these three; everything else scored here is higher-is-better.
+#
+# TB is TOTAL BASES ALLOWED - a PITCHING category, won by the smaller number. It
+# reads like a hitting stat and Yahoo lists it without units, which is exactly
+# how it ended up classed as batting/higher-is-better here. Both halves of that
+# were wrong, and the public API settles it 112-0: across every clean 2026 game
+# where the two teams differed on TB, the LOWER number won the category, never
+# once the higher. It is pitching too - in all 12 games where one side missed
+# the 50-IP minimum, TB went to the side that made the innings, so a forfeit
+# gives up SIX categories, not five. Do not move TB back into BATTING.
+LOWER_IS_BETTER = {'ERA', 'WHIP', 'TB'}
 N_CATS = 12
 MIN_IP = 50.0
 
@@ -304,6 +313,107 @@ def linreg(xs, ys):
     return sxy / sxx, sxy / (sxx * syy) ** 0.5
 
 
+# The eight categories that are sums and can therefore be totalled over a
+# season. The other four (OPS, ERA, WHIP, K9) are rates whose denominators -
+# plate appearances, earned runs, walks allowed - Yahoo never gave us, only the
+# weekly rate itself. Averaging weekly rates is not a season rate, so season
+# leaderboards are restricted to these eight and the rate cats are left to
+# category_crowns, which only ever compares within a single week.
+COUNTING_CATS = ['R', 'H', 'HR', 'RBI', 'SB', 'TB', 'QS', 'SVH']
+
+
+RATE_CATS = ['OPS', 'ERA', 'WHIP', 'K9']
+
+
+def running_power_scores(rows, weeks):
+    """
+    The site's RUNNING power rank, recomputed offline.
+
+    This is the season-to-date power ranking on the season trends page - the one
+    that has Josh finishing on 943.8 and Austin on 313.5 - and it is a replica of
+    `lambda/functions/compute_season_trends.py` step 4b so the two always agree.
+
+    Through each week: counting categories are SUMMED over every week so far and
+    rate categories are AVERAGED, then each of the twelve is min-max scaled
+    across the league to 0-100 and summed, giving 0-1200. It answers "who has
+    been the strongest team all season" and moves slowly.
+
+    Do NOT confuse this with the single-week power score in step 4, which scales
+    one week's stats in isolation. That one is jumpy by construction and is not
+    what the league means by the power rankings.
+    """
+    out = {w: {} for w in weeks}
+    for i, w in enumerate(weeks):
+        so_far = weeks[:i + 1]
+        agg = {}
+        for tid in {t for ww in so_far for t in rows[ww]}:
+            counts, rates = {}, {}
+            for ww in so_far:
+                if tid not in rows[ww]:
+                    continue
+                for c in COUNTING_CATS:
+                    counts[c] = counts.get(c, 0) + rows[ww][tid]['stats'][c]
+                for c in RATE_CATS:
+                    rates.setdefault(c, []).append(rows[ww][tid]['stats'][c])
+            if not counts and not rates:
+                continue
+            agg[tid] = dict(counts)
+            for c, vs in rates.items():
+                agg[tid][c] = sum(vs) / len(vs)
+        for tid in agg:
+            out[w][tid] = 0.0
+        for c in CATS:
+            vals = {tid: agg[tid][c] for tid in agg if c in agg[tid]}
+            if not vals:
+                continue
+            lo, hi = min(vals.values()), max(vals.values())
+            for tid, v in vals.items():
+                if hi == lo:
+                    out[w][tid] += 50.0
+                elif c in LOWER_IS_BETTER:
+                    out[w][tid] += (hi - v) / (hi - lo) * 100
+                else:
+                    out[w][tid] += (v - lo) / (hi - lo) * 100
+        for tid in out[w]:
+            out[w][tid] = round(out[w][tid], 1)
+    return out
+
+
+def category_crowns(rows, weeks):
+    """
+    Who posted the league-best number, per category, per week.
+
+    This is the one leaderboard that works for all twelve categories: inside a
+    single week every team's rate stats cover the same seven days, so they are
+    directly comparable in a way season totals are not.
+
+    A week that missed the 50-IP minimum cannot win a pitching category - Yahoo
+    would have forfeited it - so those teams are dropped from the pitching cats
+    before the best number is found, and cannot be crowned on rates they rang up
+    in 38 innings. Ties share the crown.
+    """
+    crowns = Counter()
+    by_cat = defaultdict(Counter)
+    totals = defaultdict(lambda: defaultdict(float))
+
+    for w in weeks:
+        for c in CATS:
+            elig = [(tid, r['stats'][c]) for tid, r in rows[w].items()
+                    if not (c in PITCHING and r['counts_ip'] and r['forfeit'])]
+            if not elig:
+                continue
+            best = (min if c in LOWER_IS_BETTER else max)(v for _, v in elig)
+            for tid, v in elig:
+                if v == best:
+                    crowns[tid] += 1
+                    by_cat[c][tid] += 1
+        for tid, r in rows[w].items():
+            for c in COUNTING_CATS:
+                totals[tid][c] += r['stats'][c]
+
+    return crowns, by_cat, {t: dict(v) for t, v in totals.items()}
+
+
 def compute(data, through=None):
     rows, meta = build_weeks(data, through)
     weeks = sorted(rows)
@@ -311,14 +421,18 @@ def compute(data, through=None):
     ap, ap_week = all_play(rows)
     tx = transaction_summary(data, meta)
 
-    last6 = weeks[-6:]
-    last2 = weeks[-2:]
+    last8 = weeks[-8:]
+    last4 = weeks[-4:]
     first_half = weeks[:len(weeks) // 2]
     second_half = weeks[len(weeks) // 2:]
-    ap6, _ = all_play(rows, last6)
-    ap2, _ = all_play(rows, last2)
+    ap8, _ = all_play(rows, last8)
+    ap4, _ = all_play(rows, last4)
     ap_h1, _ = all_play(rows, first_half)
     ap_h2, _ = all_play(rows, second_half)
+
+    crowns, crowns_by_cat, cat_totals = category_crowns(rows, weeks)
+    power = running_power_scores(rows, weeks)
+    weeks_at_1 = Counter(max(power[w], key=lambda t: power[w][t]) for w in weeks)
 
     teams = {}
     for tid, st in standings.items():
@@ -354,10 +468,22 @@ def compute(data, through=None):
             'allplay_w': round(ap[tid]['w'], 1),
             'allplay_l': round(ap[tid]['l'], 1),
             'allplay_pct': ap[tid]['pct'],
-            'allplay_pct_l6': ap6.get(tid, {}).get('pct', 0.0),
-            'allplay_pct_l2': ap2.get(tid, {}).get('pct', 0.0),
+            'allplay_pct_l8': ap8.get(tid, {}).get('pct', 0.0),
+            'allplay_pct_l4': ap4.get(tid, {}).get('pct', 0.0),
             'allplay_pct_h1': ap_h1.get(tid, {}).get('pct', 0.0),
             'allplay_pct_h2': ap_h2.get(tid, {}).get('pct', 0.0),
+            'cat_crowns': crowns.get(tid, 0),
+            'cat_crowns_by_cat': {c: crowns_by_cat[c].get(tid, 0)
+                                  for c in CATS if crowns_by_cat[c].get(tid)},
+            'weeks_at_1': weeks_at_1.get(tid, 0),
+            'peak_allplay': max((ap_week[w][tid] for w in weeks if tid in rows[w]),
+                                default=0.0),
+            'peak_power': max((power[w][tid] for w in weeks if tid in power[w]),
+                              default=0.0),
+            'final_power': power[weeks[-1]].get(tid, 0.0) if weeks else 0.0,
+            'weeks_at_1_list': [w for w in weeks
+                                if power[w] and max(power[w], key=lambda t: power[w][t]) == tid],
+            'cat_totals': cat_totals.get(tid, {}),
             'avg_pts': statistics.fmean(pts) if pts else 0.0,
             'stdev_pts': statistics.pstdev(pts) if len(pts) > 1 else 0.0,
             'best_week': max(wk, key=lambda r: r['pts'])['week'] if wk else None,
@@ -379,6 +505,19 @@ def compute(data, through=None):
                         'allplay': round(ap_week[r['week']][tid], 3)} for r in wk],
         }
         teams[tid].update(tx.get(tid, {}))
+
+    # Which of the eight summable categories each team finished the season
+    # leading. Ties share the title, same as the weekly crowns.
+    for t in teams.values():
+        t['cats_led'] = []
+    for c in COUNTING_CATS:
+        vals = {tid: t['cat_totals'].get(c, 0.0) for tid, t in teams.items()}
+        best = (min if c in LOWER_IS_BETTER else max)(vals.values())
+        for tid, v in vals.items():
+            if v == best:
+                teams[tid]['cats_led'].append(c)
+    for t in teams.values():
+        t['n_cats_led'] = len(t['cats_led'])
 
     # --- upsets and opponent-strength response -------------------------------
     for tid, t in teams.items():

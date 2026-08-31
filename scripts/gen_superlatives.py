@@ -52,7 +52,25 @@ def award(key, title, subtitle, metric, teams, sort_key, reverse=True,
 
 
 def pct(v, _t):
+    # Baseball-style leading-dot rate, except a perfect 1.000 has no leading-dot
+    # form - '.1000' reads as a hundredth of what it is. A team really can go
+    # 11-0 in all-play for a week, so this is reachable, not theoretical.
+    if v >= 0.9995:
+        return '1.000'
     return '.%03d' % round(v * 1000)
+
+
+def weekspan(ws):
+    """Render a list of week numbers as runs: [2,3,4,7] -> 'weeks 2-4, 7'."""
+    if not ws:
+        return 'no weeks'
+    runs, start, prev = [], ws[0], ws[0]
+    for w in ws[1:] + [None]:
+        if w != prev + 1:
+            runs.append(str(start) if start == prev else '%d-%d' % (start, prev))
+            start = w
+        prev = w
+    return ('week ' if len(ws) == 1 else 'weeks ') + ', '.join(runs)
 
 
 def signed(v, _t):
@@ -120,7 +138,7 @@ def build(res):
     ip_weeks = sum(1 for w in weeks if res['week_meta'][w]['counts_ip'])
     awards.append(award(
         'ip', 'Most Missed Minimums', 'Weeks under 50 IP',
-        'Weeks that forfeited all five pitching categories',
+        'Weeks that forfeited all six pitching categories',
         teams, 'ip_forfeits',
         fmt=lambda v, t: '%d' % v,
         note=lambda t: ('weeks %s - %g innings short in total, low of %g' % (
@@ -226,6 +244,58 @@ def build(res):
             pct(t['allplay_pct_h2'], t), len(weeks) - len(weeks) // 2),
         tone='bad'))
 
+    # ---- Category crowns ----------------------------------------------------
+    def top_cats(t, n=3):
+        best = sorted(t['cat_crowns_by_cat'].items(), key=lambda kv: -kv[1])[:n]
+        return ', '.join('%s x%d' % (c, v) for c, v in best) or 'none'
+
+    awards.append(award(
+        'crowns', 'Most Category Crowns', 'League-best weekly numbers',
+        'Weeks you posted the best number in the league in a category',
+        teams, 'cat_crowns',
+        fmt=lambda v, t: '%d' % v,
+        note=lambda t: 'best at %s' % top_cats(t),
+        tone='good',
+        caveat='All twelve categories, %d weeks - %d crowns on the table. Rate '
+               'categories only compare fairly inside one week, which is why this '
+               'is counted weekly rather than as a season total. A week under the '
+               '50-IP minimum cannot win a pitching category.'
+               % (len(weeks), len(weeks) * 12)))
+
+    # ---- Weeks as the best team in the league -------------------------------
+    awards.append(award(
+        'topweeks', 'Most Weeks at #1', 'Power ranking',
+        'Weeks you were the strongest team in the league',
+        teams, 'weeks_at_1',
+        fmt=lambda v, t: '%d' % v,
+        note=lambda t: ('led %s; finished on %.1f, peaked at %.1f'
+                        % (weekspan(t['weeks_at_1_list']), t['final_power'],
+                           t['peak_power'])
+                        if t['weeks_at_1'] else
+                        'never led; finished on %.1f, peaked at %.1f'
+                        % (t['final_power'], t['peak_power'])),
+        tone='good',
+        caveat='The running power rank from the season trends page - season-to-'
+               'date totals (rates averaged), each category scaled 0-100 across '
+               'the league and summed, so 1200 is a perfect season. It is '
+               'cumulative, so it moves slowly and holding #1 means holding it '
+               'for a stretch. These add up to %d.' % len(weeks)))
+
+    # ---- Season category leaders --------------------------------------------
+    awards.append(award(
+        'leader', 'Most Categories Led', 'Season totals',
+        'Categories you finished the season leading',
+        teams, 'n_cats_led',
+        fmt=lambda v, t: '%d' % v,
+        note=lambda t: (', '.join('%s %g' % (c, t['cat_totals'][c])
+                                  for c in t['cats_led']) or 'none'),
+        tone='good',
+        caveat='Only the eight categories that are sums (R, H, HR, RBI, SB, TB, '
+               'QS, SV+H). OPS, ERA, WHIP and K/9 are rates and Yahoo never gave '
+               'us the denominators, so they cannot be totalled over a season - '
+               'they are covered by the weekly crowns instead. TB is total bases '
+               'allowed, so the leader is the team that gave up the fewest.'))
+
     return awards
 
 
@@ -255,8 +325,11 @@ def main():
             k: t[k] for k in (
                 'team_id', 'manager', 'name', 'rank', 'cat_w', 'cat_l', 'cat_t',
                 'cat_pts', 'matchup_w', 'matchup_l', 'matchup_t',
-                'allplay_w', 'allplay_l', 'allplay_pct', 'allplay_pct_l6',
-                'allplay_pct_l2', 'allplay_pct_h1', 'allplay_pct_h2',
+                'allplay_w', 'allplay_l', 'allplay_pct', 'allplay_pct_l8',
+                'allplay_pct_l4', 'allplay_pct_h1', 'allplay_pct_h2',
+                'cat_crowns', 'cat_crowns_by_cat', 'weeks_at_1', 'peak_allplay',
+                'cat_totals', 'cats_led', 'n_cats_led', 'peak_power',
+                'final_power', 'weeks_at_1_list',
                 'avg_pts', 'stdev_pts', 'luck', 'expected_wins',
                 'cat_luck', 'expected_cats', 'actual_cats', 'upsets',
                 'ip_forfeits', 'ip_forfeit_weeks', 'avg_ip', 'min_ip_week',

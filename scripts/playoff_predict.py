@@ -11,13 +11,21 @@ alongside the fewest strikeouts, a week that has never happened and never will.
 Three windows are reported because they answer different questions:
 
     season  - all completed weeks, the biggest sample and the least noisy
-    last 6  - the shape of the roster after the trade deadline
-    last 2  - who is hot, on a sample small enough to be mostly noise
+    last 8  - the shape of the roster after the trade deadline
+    last 4  - who is hot, on the shortest window that is still a sample
 
 and a blend that mixes the three, because none of them is right alone.
 
+The short window is four weeks, not two, and that floor is deliberate. The
+bootstrap draws one whole week per team, so a two-week window has a pool of two
+and only 2x2 = 4 distinct outcomes: every probability it can emit is a multiple
+of 0.25, and it routinely emitted 0.0 and 1.0 - certainties - off four samples,
+carrying 20% of the blend while it did. Running SIMS draws against that pool
+does not help; the resolution is set by the pool, not the draw count. Four weeks
+gives 16 outcomes and a 0.0625 floor. Do not shorten this window again.
+
 The 50-innings rule is simulated, not smoothed over: if a drawn week came in
-under 50 IP, that team forfeits all five pitching categories in that draw,
+under 50 IP, that team forfeits all six pitching categories in that draw,
 exactly as Yahoo scores it. Managers who habitually run short carry that risk
 into their odds instead of getting credit for the pretty rate stats they put up
 on 35 innings.
@@ -35,9 +43,9 @@ N_CATS = sc.N_CATS
 MIN_IP = sc.MIN_IP
 
 # How the blended number weights the three windows. The season carries the most
-# because it is the only window with enough weeks to mean anything; the last two
-# get a real but minority say so a genuinely hot team is not ignored.
-BLEND = {'season': 0.50, 'last6': 0.30, 'last2': 0.20}
+# because it is the only window with enough weeks to mean anything; the short
+# windows get a real but minority say so a genuinely hot team is not ignored.
+BLEND = {'season': 0.50, 'last8': 0.30, 'last4': 0.20}
 
 SIMS = 20000
 SEED = 17
@@ -46,8 +54,8 @@ SEED = 17
 def windows(weeks):
     return {
         'season': list(weeks),
-        'last6': list(weeks[-6:]),
-        'last2': list(weeks[-2:]),
+        'last8': list(weeks[-8:]),
+        'last4': list(weeks[-4:]),
     }
 
 
@@ -59,7 +67,7 @@ def week_pool(rows, tid, weeks):
 def score_pair(a, b):
     """
     Twelve categories between two drawn weeks. Returns team A's points, with a
-    tied category worth half to each, and a sub-50-IP week forfeiting its five
+    tied category worth half to each, and a sub-50-IP week forfeiting its six
     pitching categories outright.
     """
     a_forfeit = a['counts_ip'] and a['ip'] < MIN_IP
@@ -68,7 +76,7 @@ def score_pair(a, b):
     for c in CATS:
         if c in PITCHING and (a_forfeit or b_forfeit):
             # a double forfeit splits them; otherwise the side that made the
-            # innings takes all five
+            # innings takes all six
             if a_forfeit and b_forfeit:
                 pts += 0.5
             elif b_forfeit:
@@ -217,8 +225,8 @@ def seed_teams(data, res, playoff_teams=6):
             'live': live.get(tid, 0.0),
             'pts': t['cat_pts'] + live.get(tid, 0.0),
             'allplay_pct': t['allplay_pct'],
-            'allplay_pct_l6': t['allplay_pct_l6'],
-            'allplay_pct_l2': t['allplay_pct_l2'],
+            'allplay_pct_l8': t['allplay_pct_l8'],
+            'allplay_pct_l4': t['allplay_pct_l4'],
         })
     # ties on points are broken head-to-head on categories; all-play is the
     # stand-in here and is flagged on the page rather than pretended away
