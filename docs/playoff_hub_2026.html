@@ -233,7 +233,7 @@
   </p>
   <div class="table-scroll"><table class="seedtbl">
     <thead><tr>
-      <th style="width:44px">Seed</th><th>Manager</th><th>Team</th>
+      <th style="width:68px">Seed</th><th>Manager</th><th>Team</th>
       <th style="text-align:right">Points</th>
       <th style="text-align:right">Banked</th>
       <th style="text-align:right">This week</th>
@@ -257,12 +257,12 @@
   <div class="chart-box-tall"><canvas id="oddsChart"></canvas></div>
   <div class="table-scroll"><table>
     <thead><tr>
-      <th style="width:44px">Seed</th><th>Manager</th>
+      <th style="width:68px">Seed</th><th>Manager</th>
       <th style="text-align:right">Reaches semi</th>
       <th style="text-align:right">Reaches final</th>
       <th style="text-align:right">Wins it</th>
-      <th style="text-align:right">Fair</th>
-      <th style="text-align:right">Vegas</th>
+      <th style="text-align:right" id="vegasHead"
+          title="What a book would post. Pays less than the raw probability — that gap is the house edge.">Vegas</th>
     </tr></thead>
     <tbody id="oddsBody"></tbody>
   </table></div>
@@ -318,7 +318,14 @@
       across, with no margin: that is the break-even price, and nobody would book it.
       <b class="pr-vegas" style="font-size:1em">Vegas</b> is what a house could actually post &mdash;
       the same probabilities with a margin added and rounded to a number that belongs on a board.
-      The gap between the two columns is precisely what the house is charging.
+    </p>
+    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+      <b>Vegas always pays you less than fair, and that is the juice.</b> A <em>smaller</em> number is
+      a worse deal, not a cheaper one. Josh at fair <b>+172</b> returns 172 on a 100 stake; the Vegas
+      <b>+140</b> returns 140 for the same risk on the same outcome. Every price on the board is
+      shortened the same way, which is why the fair column's implied chances add to exactly 100%
+      while the Vegas column adds to more &mdash; the excess is the house edge, and it is printed in
+      the column header.
     </p>
     <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
       <b>A matchup is a three-way market</b> &mdash; win, tie, loss &mdash; priced at a 5% hold, with
@@ -737,6 +744,19 @@ function renderOdds(d) {
   var futures = priceMarket(rows.map(function (r) { return r.o.title; }), FUTURES_HOLD);
   rows.forEach(function (r, i) { r.vegas = futures[i]; });
 
+  // State the realised hold on the header. Book rounding nudges it off the
+  // 20% target, and a reader deserves the actual number rather than the aim.
+  var book = futures.reduce(function (s, p) {
+    var a = parseInt(p, 10);
+    if (!isFinite(a)) return s;
+    return s + (a > 0 ? 100 / (a + 100) : -a / (-a + 100));
+  }, 0);
+  var vh = document.getElementById('vegasHead');
+  if (vh) {
+    vh.innerHTML = 'Vegas <span style="font-weight:400;text-transform:none;' +
+      'letter-spacing:0;color:#64748b">' + Math.round((book - 1) * 100) + '% hold</span>';
+  }
+
   document.getElementById('oddsBody').innerHTML = rows.map(function (r) {
     return '<tr>' +
       '<td style="font-weight:800;color:#38bdf8">' + r.s.seed + '</td>' +
@@ -745,8 +765,8 @@ function renderOdds(d) {
       '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.final) + '</td>' +
       '<td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:#5eead4">' +
         pct(r.o.title) + '</td>' +
-      '<td style="text-align:right" class="ml">' + fairPrice(r.o.title) + '</td>' +
-      '<td style="text-align:right" class="ml vegas">' + r.vegas + '</td>' +
+      '<td style="text-align:right" class="ml vegas" title="fair price ' +
+        fairPrice(r.o.title) + '">' + r.vegas + '</td>' +
     '</tr>';
   }).join('');
 

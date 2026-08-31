@@ -73,11 +73,14 @@ td {
 tr:hover { background: #1e293b55; }
 
 /* Sortable column headers */
-.sortable { cursor: pointer; user-select: none; }
+/* The sort arrow is joined to the label with a NON-BREAKING space and the cell
+   is nowrap: with an ordinary space a narrow column ("Seed") wraps the arrow
+   onto a second line and doubles the header height. */
+.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
 .sortable:hover { color: #e2e8f0; }
-.sortable::after { content: ' \2195'; font-size: 0.8em; }
-.sortable.asc::after { content: ' \2191'; }
-.sortable.desc::after { content: ' \2193'; }
+.sortable::after { content: '\00a0\2195'; font-size: 0.8em; }
+.sortable.asc::after { content: '\00a0\2191'; }
+.sortable.desc::after { content: '\00a0\2193'; }
 
 /* Cards and panels */
 .card, .panel {
