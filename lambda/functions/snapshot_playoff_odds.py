@@ -35,6 +35,7 @@ TEAM_FIELDS = (
     'team_id', 'name', 'manager', 'wins', 'losses', 'ties', 'pts', 'live',
     'floor', 'ceiling', 'projected', 'odds', 'clinched', 'eliminated',
     'magic', 'need_alive', 'remaining', 'opponent', 'games',
+    'tied_cats', 'live_pts',
     'ip', 'ip_raw', 'ip_short', 'meets_min_ip', 'ip_reachable', 'forfeits',
     'is_candidate', 'cats_led', 'pit_led',
 )
@@ -131,7 +132,7 @@ def lambda_handler(event, context):
             for tid, t in r['scenarios'][name]['teams'].items():
                 point['s'][name][str(tid)] = {
                     'odds': round(pc.chart_value(t), 4),
-                    'pts': t['pts'] + t['live'],
+                    'pts': t['pts'] + t['live_pts'],
                     'live': t['live'],
                 }
         # back-compat for older charts: flat odds map plus a .now alias

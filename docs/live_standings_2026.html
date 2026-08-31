@@ -47,6 +47,7 @@
   td.pts { font-weight: 700; color: #34d399; }
   td.live { color: #fbbf24; font-weight: 600; }
   td.live .of { color: #64748b; font-weight: 400; font-size: .82em; }
+  td.live .tied { color: #38bdf8; font-weight: 600; font-size: .78em; margin-left: 5px; }
   td.bank { color: #e2e8f0; font-weight: 600; }
   td.gb, td.ceil { color: #94a3b8; font-size: .9em; }
   td.proj { color: #c4b5fd; font-weight: 600; }
@@ -238,9 +239,16 @@
                                  DATA.current.scenarios.none; }
   function other() { return keyOf(pick) === 'none' ? allForfeit() : asIs(); }
 
+  // A level category is half a point to each side, same as a tied week in the
+  // season record. live_pts carries that; t.live is the count of categories LED.
+  function livePts(t) {
+    return t.live_pts !== undefined && t.live_pts !== null
+      ? t.live_pts : t.live + 0.5 * (t.tied_cats || 0);
+  }
+
   function byLive(list) {
     return list.slice().sort(function (x, y) {
-      return (y.pts + y.live) - (x.pts + x.live) || y.pts - x.pts;
+      return (y.pts + livePts(y)) - (x.pts + livePts(x)) || y.pts - x.pts;
     });
   }
   function indexById(list) {
@@ -251,10 +259,10 @@
   function renderStandings(teams, spots, week) {
     var order = byLive(teams);
     var prev = indexById(other().teams);
-    var leader = order[0].pts + order[0].live;
+    var leader = order[0].pts + livePts(order[0]);
     var rows = order.map(function (t, i) {
       var cs = statusChip(t);
-      var gb = leader - (t.pts + t.live);
+      var gb = leader - (t.pts + livePts(t));
       var p = prev[t.team_id];
       var d = p ? (t.pts + t.live) - (p.pts + p.live) : 0;
       var dcls = d > 0 ? 'up' : d < 0 ? 'down' : 'same';
@@ -266,8 +274,9 @@
         '<td class="team-name">' + esc(t.name) + mgrSpan(t) + '</td>' +
         '<td>' + t.wins + '-' + t.losses + '-' + t.ties + '</td>' +
         '<td class="bank">' + fmtPts(t.pts) + '</td>' +
-        '<td class="live">' + t.live + '<span class="of">/' + CATS + '</span></td>' +
-        '<td class="pts">' + fmtPts(t.pts + t.live) + '</td>' +
+        '<td class="live">' + t.live + '<span class="of">/' + CATS + '</span>' +
+          (t.tied_cats ? '<span class="tied">+' + t.tied_cats + 'T</span>' : '') + '</td>' +
+        '<td class="pts">' + fmtPts(t.pts + livePts(t)) + '</td>' +
         '<td class="gb">' + (gb === 0 ? '—' : fmtPts(gb)) + '</td>' +
         '<td class="ip ' + ipCls + '">' +
           (!ipKnown ? '—'
@@ -282,7 +291,9 @@
     return '<div style="overflow-x:auto;"><table class="standings"><thead><tr>' +
       '<th>#</th><th style="text-align:left">Team</th><th>W-L-T</th>' +
       '<th title="Category points banked through week ' + (week - 1) + '">Bank</th>' +
-      '<th title="Categories led in week ' + week + ' right now, out of 12">Leading</th>' +
+      '<th title="Categories led in week ' + week + ' right now, out of 12. ' +
+        '+nT means n more are level - each of those is worth half a point to ' +
+        'both sides, and Pts already counts them.">Leading</th>' +
       '<th title="Bank + Leading">Pts</th><th>GB</th>' +
       '<th title="Innings pitched this week. Red means short of the ' +
         DATA.current.min_ip + '-inning minimum, with the shortfall in brackets.">IP</th>' +
@@ -339,6 +350,7 @@
                  : '<span class="dim">no matchup</span>') +
             (moved && oppB ? '<span class="dim"> → ' + b.live + '–' + oppB.live +
                              ' with forfeits</span>' : '') +
+            (a.tied_cats ? '<span class="dim"> · ' + a.tied_cats + ' level (½ each)</span>' : '') +
           '</div>' +
           '<div class="pf-ip ' + (a.meets_min_ip === null || a.meets_min_ip === undefined
               ? 'unk' : a.meets_min_ip ? 'okay' : 'short') + '">' + ipTxt + '</div>' +

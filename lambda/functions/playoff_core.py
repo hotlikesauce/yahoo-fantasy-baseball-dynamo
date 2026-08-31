@@ -192,6 +192,11 @@ def build_teams(standings, matchups, weeks_left_after, spots, progress):
     `progress` is the share of the week already played. While the week is live
     every one of its 12 categories is still winnable, so the floor/ceiling range
     stays wide - only a finished week banks its categories.
+
+    A category the two sides are LEVEL on is worth half a point to each, exactly
+    as a tied week is in the season record (pts = wins + 0.5 * ties). Counting
+    those as zero understates every team in a matchup that has one, and gets the
+    final standings wrong the moment the week closes.
     """
     opp, live, decided = {}, {}, {}
     for m in matchups:
@@ -206,14 +211,19 @@ def build_teams(standings, matchups, weeks_left_after, spots, progress):
         tid = row['team_id']
         pts = row['wins'] + 0.5 * row['ties']
         games = row['wins'] + row['losses'] + row['ties']
-        banked = live.get(tid, 0) if week_over else 0
+        led = live.get(tid, 0)
+        tied_cats = max(0, CATS_PER_WEEK - decided.get(tid, CATS_PER_WEEK))
+        live_pts = led + 0.5 * tied_cats            # what a tie is actually worth
+        banked = live_pts if week_over else 0
         pool = 0 if week_over else CATS_PER_WEEK    # all 12 stay in play
         free = weeks_left_after * CATS_PER_WEEK     # later weeks (opponents unknown)
         teams[tid] = dict(row,
                           pts=pts,
                           games=games,
                           cat_pct=pts / games if games else 0.5,
-                          live=live.get(tid, 0),
+                          live=led,
+                          tied_cats=tied_cats,
+                          live_pts=live_pts,
                           decided=decided.get(tid, 0),
                           banked=banked,
                           pool=pool,
