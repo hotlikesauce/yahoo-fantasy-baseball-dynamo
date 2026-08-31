@@ -311,33 +311,10 @@
       so it is worth knowing which way it falls before it happens.
     </p>
     <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
-      <b>Two prices, American moneyline.</b> Negative is the favourite &mdash; <b>&minus;150</b> means
-      risk 150 to win 100; positive is the dog &mdash; <b>+200</b> means 100 returns 200.
-      <b class="pr-fair" style="font-size:1em">Fair</b> is the model's probability converted straight
-      across, with no margin: that is the break-even price, and nobody would book it.
-      <b class="pr-vegas" style="font-size:1em">Vegas</b> is what a house could actually post &mdash;
-      the same probabilities with a margin added and rounded to a number that belongs on a board.
-    </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
-      <b>Vegas always pays you less than fair, and that is the juice.</b> A <em>smaller</em> number is
-      a worse deal, not a cheaper one. Josh at fair <b>+172</b> returns 172 on a 100 stake; the Vegas
-      <b>+140</b> returns 140 for the same risk on the same outcome. Every price on the board is
-      shortened the same way, which is why the fair column's implied chances add to exactly 100%
-      while the Vegas column adds to more &mdash; the excess is the house edge, and it is printed in
-      the column header.
-    </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
-      <b>A matchup is a three-way market</b> &mdash; win, tie, loss &mdash; priced at a 5% hold, with
-      the tie quoted next to its probability under the bar. A 6&ndash;6 week is a real result here, so
-      pricing it two-way and calling ties a push would be a different bet from the one the model
-      predicts. The title is a six-runner futures book at 20%, which is on the friendly side of what
-      real books charge on futures.
-    </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
-      <b>The margin is loaded onto the longshots</b>, not spread evenly. Multiplying every probability
-      by the same factor would tax a 3% shot and a 60% favourite equally, which no book does; the
-      prices here use the power method, so the outsiders give up proportionally more &mdash; the
-      favourite-longshot bias that real boards have.
+      <b>Odds are American moneyline.</b> Negative is the favourite &mdash; <b>&minus;150</b> means
+      risk 150 to win 100; positive is the dog &mdash; <b>+200</b> means 100 returns 200. A matchup
+      is priced three ways &mdash; win, tie, loss &mdash; with the tie quoted next to its probability
+      under the bar, because a 6&ndash;6 week is a real result here and not a push.
     </p>
     <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin:0;">
       <b>What it does not know.</b> Injuries, call-ups, who is actually setting a lineup in September,
@@ -743,18 +720,9 @@ function renderOdds(d) {
   var futures = priceMarket(rows.map(function (r) { return r.o.title; }), FUTURES_HOLD);
   rows.forEach(function (r, i) { r.vegas = futures[i]; });
 
-  // State the realised hold on the header. Book rounding nudges it off the
-  // 20% target, and a reader deserves the actual number rather than the aim.
-  var book = futures.reduce(function (s, p) {
-    var a = parseInt(p, 10);
-    if (!isFinite(a)) return s;
-    return s + (a > 0 ? 100 / (a + 100) : -a / (-a + 100));
-  }, 0);
-  var vh = document.getElementById('vegasHead');
-  if (vh) {
-    vh.innerHTML = 'Vegas <span style="font-weight:400;text-transform:none;' +
-      'letter-spacing:0;color:#64748b">' + Math.round((book - 1) * 100) + '% hold</span>';
-  }
+  // The board shows the posted price and nothing else. The hold is a fact
+  // about the book, not information for the person taking the price - it used
+  // to be printed in this header, which is exactly backwards.
 
   document.getElementById('oddsBody').innerHTML = rows.map(function (r) {
     return '<tr>' +
@@ -764,8 +732,7 @@ function renderOdds(d) {
       '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.final) + '</td>' +
       '<td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:#5eead4">' +
         pct(r.o.title) + '</td>' +
-      '<td style="text-align:right" class="ml vegas" title="fair price ' +
-        fairPrice(r.o.title) + '">' + r.vegas + '</td>' +
+      '<td style="text-align:right" class="ml vegas">' + r.vegas + '</td>' +
     '</tr>';
   }).join('');
 
@@ -829,10 +796,16 @@ function renderOdds(d) {
 }
 
 // ── Matchup cards ──────────────────────────────────────────────────────
-/** Fair price beside Vegas price, so the margin between them is visible. */
+/**
+ * The posted price, and only the posted price.
+ *
+ * This used to print the fair price beside it with the two labelled, which put
+ * the exact size of the margin on screen next to every matchup - the one
+ * number a board must never show the person taking the price. `fairPrice` is
+ * kept for working the numbers out offline, not for display.
+ */
 function priceInner(p, vegas) {
-  return '<span class="pr-fair">' + fairPrice(p) + '<i>fair</i></span>' +
-         '<span class="pr-vegas">' + vegas + '<i>vegas</i></span>';
+  return '<span class="pr-vegas">' + vegas + '</span>';
 }
 function priceLine(p, vegas) {
   return '<div class="mu-ml">' + priceInner(p, vegas) + '</div>';
