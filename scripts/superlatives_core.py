@@ -47,6 +47,39 @@ def load(path=CACHE):
     return json.loads(Path(path).read_text(encoding='utf-8'))
 
 
+DATA_BEGIN = '<!--DATA:BEGIN-->'
+DATA_END = '<!--DATA:END-->'
+
+
+def embed(html_path, payload, element_id='pageData'):
+    """
+    Write the page's data straight into its HTML, between the DATA markers.
+
+    The pages originally only fetched docs/data/*.json, which works when the
+    site is served but fails the moment anyone opens the file from disk:
+    Chrome refuses fetch() on a file:// URL outright ('URL scheme "file" is not
+    supported'), so the page showed nothing but its own error box. Every other
+    generator in this repo emits self-contained HTML; these now do too, and the
+    fetch stays in the page as a fallback for a hand-edited JSON.
+
+    '</' is escaped because a team name containing '</script>' would otherwise
+    close the block early and inject markup - the one genuine hazard of
+    embedding JSON in a page.
+    """
+    path = Path(html_path)
+    html = path.read_text(encoding='utf-8')
+    if DATA_BEGIN not in html or DATA_END not in html:
+        raise SystemExit('ERROR: %s has no <!--DATA:BEGIN--> / <!--DATA:END--> markers'
+                         % path.name)
+    blob = json.dumps(payload, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    block = ('%s\n<script id="%s" type="application/json">%s</script>\n%s'
+             % (DATA_BEGIN, element_id, blob, DATA_END))
+    start = html.index(DATA_BEGIN)
+    end = html.index(DATA_END) + len(DATA_END)
+    path.write_text(html[:start] + block + html[end:], encoding='utf-8')
+    return len(blob)
+
+
 def to_float(cat, raw):
     """Yahoo hands back strings, and OPS as '.863'. Missing means zero."""
     try:

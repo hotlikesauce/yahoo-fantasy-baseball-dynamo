@@ -133,6 +133,8 @@ def main():
 
     OUT.write_text(json.dumps(payload, indent=1, ensure_ascii=False), encoding='utf-8')
     print('Wrote %s (%.0f KB)' % (OUT, OUT.stat().st_size / 1024))
+    n = sc.embed(sc.DATA.parent / 'playoff_hub_2026.html', payload)
+    print('Embedded %.0f KB into playoff_hub_2026.html' % (n / 1024))
 
     tag = 'FINAL' if seeding['final'] else 'PROJECTED (week %s still live)' % seeding['live_week']
     print('\nSeeds - %s\n' % tag)

@@ -69,6 +69,12 @@ and bracket while the last regular-season week is still live, and switches to
 Yahoo's real pairings and results as soon as they are posted - no code change,
 just another run.
 
+The two generators **rewrite their own HTML**, embedding the data between the
+`<!--DATA:BEGIN-->` / `<!--DATA:END-->` markers, so both pages open straight
+from disk (`file://`) as well as from the served site. The `docs/data/*.json`
+files are still written and are still read as a fallback, but the page does not
+need them. Do not delete those markers.
+
 **Data scripts**:
 ```bash
 python scripts/fetch_league_activity.py       # public Yahoo API -> full season cache

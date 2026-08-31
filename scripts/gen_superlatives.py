@@ -255,6 +255,8 @@ def main():
 
     OUT.write_text(json.dumps(payload, indent=1, ensure_ascii=False), encoding='utf-8')
     print('Wrote %s (%.0f KB)' % (OUT, OUT.stat().st_size / 1024))
+    n = sc.embed(sc.DATA.parent / 'superlatives_2026.html', payload)
+    print('Embedded %.0f KB into superlatives_2026.html' % (n / 1024))
     print('\nThrough week %d - %d weeks counted\n' % (payload['through_week'], len(res['weeks'])))
     for a in awards:
         w = a['winner']
