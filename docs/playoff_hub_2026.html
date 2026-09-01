@@ -963,11 +963,7 @@ function catStrip(a, b, win) {
     return '<div class="probfoot" style="margin-bottom:4px">' +
         '<span>' + esc(A.manager) + ' wins the category</span>' +
         '<span>live &middot; &darr; lower is better</span>' +
-      '</div>' +
-      '<div class="thin-warn">This week finished from where it actually stands: ' +
-      'what is already banked, plus the rest of the week simulated. A big lead ' +
-      'with little time left is near-certain; a one-run lead on the Monday is ' +
-      'barely worth anything.</div>' + rows;
+      '</div>' + rows;
   }
   var thin = wks && wks.length <= 4
     ? '<div class="thin-warn">Only ' + (wks.length * wks.length) + ' week pairings exist in a ' +
