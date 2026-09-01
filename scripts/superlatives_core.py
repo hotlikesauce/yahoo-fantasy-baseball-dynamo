@@ -97,6 +97,14 @@ def to_float(cat, raw):
         return 0.0
 
 
+def at_bats(hab):
+    """Yahoo gives hits/at-bats as one string, '65/235'. We want the 235."""
+    try:
+        return float(str(hab).split('/')[1])
+    except (IndexError, ValueError, AttributeError):
+        return 0.0
+
+
 def full_week(matchup):
     """
     Did the 50-inning minimum apply?
@@ -118,7 +126,7 @@ def full_week(matchup):
 # ==============================================================
 # Per-week table
 # ==============================================================
-def build_weeks(data, through=None):
+def build_weeks(data, through=None, include_playoffs=False):
     """
     Flatten the scoreboard into one row per team per completed week.
 
@@ -133,6 +141,19 @@ def build_weeks(data, through=None):
         if through is not None and w > through:
             continue
         if not matchups or any(m['status'] != 'postevent' for m in matchups):
+            continue
+        # EVERY metric built on these rows - all-play, luck, category crowns,
+        # the running power rank, the prediction pools - is a REGULAR SEASON
+        # measure. A playoff week is not comparable to one and must never be
+        # folded in: only four teams play a bracket game, the other games are
+        # consolation, and the two bye teams have no row at all, so a team's
+        # all-play would move purely on whether it had a bye.
+        #
+        # This was previously excluded only by accident: playoff weeks were
+        # still midevent, so the postevent check above dropped them. The moment
+        # week 23 finalised, every regular-season award would have silently
+        # started counting it. Do not remove this.
+        if matchups[0].get('is_playoffs') and not include_playoffs:
             continue
         meta[w] = {
             'week': w,
@@ -159,6 +180,7 @@ def build_weeks(data, through=None):
                     'ip_short': round(max(0.0, MIN_IP - me['ip']), 2),
                     'counts_ip': meta[w]['counts_ip'],
                     'forfeit': me['ip'] < MIN_IP and meta[w]['counts_ip'],
+                    'ab': at_bats(me['stats'].get('HAB')),
                     'stats': {c: to_float(c, me['stats'].get(c)) for c in CATS},
                 }
     return rows, meta

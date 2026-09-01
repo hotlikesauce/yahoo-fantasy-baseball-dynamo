@@ -99,9 +99,33 @@ def main():
                 }
             matrix['%d-%d' % (a, b)] = entry
 
+    # A bracket week already underway gets a fifth, live window: the same twelve
+    # categories finished from where they actually stand. This is the one the
+    # page leads with while the week is running, because by Thursday the
+    # season-strength number is answering a question nobody is asking.
+    live_pairs, live_rows = pp.live_bracket_week(data, playoff_weeks[0], field, rows)
+    live_week = None
+    if live_pairs:
+        live_week = pp.LiveWeek(rows, weeks, live_rows)
+        for a, b in live_pairs:
+            key = '%d-%d' % (a, b)
+            flip = key not in matrix
+            if flip:
+                key = '%d-%d' % (b, a)
+            x, y = (b, a) if flip else (a, b)
+            r = live_week.matchup(preds['blend'], x, y)
+            matrix[key]['live'] = {
+                'win': round(r['win'], 4),
+                'tie': round(r['tie'], 4),
+                'exp_a': round(r['exp_pts'], 2),
+                'exp_b': round(sc.N_CATS - r['exp_pts'], 2),
+                'cats': {c: round(v, 3) for c, v in r['cats'].items()},
+            }
+
     # The league breaks a tied week on the season series, counted in categories.
     h2h = pp.head_to_head(rows, weeks)
-    odds = pp.simulate_bracket(preds['blend'], seeds, bracket, data, h2h)
+    odds = pp.simulate_bracket(preds['blend'], seeds, bracket, data, h2h,
+                               rows=rows, weeks=weeks)
 
     # Flatten the pairs the page needs, oriented both ways so the card can look
     # one up without knowing which id happens to be lower.
@@ -137,6 +161,7 @@ def main():
         'bracket_source': bracket['source'],
         'blend_weights': pp.BLEND,
         'window_weeks': {k: v for k, v in wins.items()},
+        'has_live': bool(live_pairs),
         'cats': sc.CATS,
         'lower_is_better': sorted(sc.LOWER_IS_BETTER),
         'pitching_cats': sc.PITCHING,
@@ -167,10 +192,13 @@ def main():
         a, b = q['a'], q['b']
         m = matrix.get('%d-%d' % (a, b)) or matrix.get('%d-%d' % (b, a))
         flip = '%d-%d' % (a, b) not in matrix
-        pa = (1 - m['blend']['win'] - m['blend']['tie']) if flip else m['blend']['win']
-        print('  wk%d  %-8s vs %-8s   %s %.0f%%' % (
+        # Quote the live projection once the week is under way - the
+        # season-strength number is not what anyone is asking about by then.
+        win = m.get('live') or m['blend']
+        pa = (1 - win['win'] - win['tie']) if flip else win['win']
+        print('  wk%d  %-8s vs %-8s   %s %.0f%%%s' % (
             q['week'], by_id[a]['manager'], by_id[b]['manager'],
-            by_id[a]['manager'], pa * 100))
+            by_id[a]['manager'], pa * 100, '  (live)' if 'live' in m else ''))
 
     print('\nTitle odds (blended)\n')
     print('  %-8s %6s %6s %6s' % ('mgr', 'semi', 'final', 'title'))

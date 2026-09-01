@@ -90,6 +90,157 @@ def score_pair(a, b):
     return pts
 
 
+BAT_COUNT = ['R', 'H', 'HR', 'RBI', 'SB']
+PIT_COUNT = ['TB', 'QS', 'SVH']
+RATE_PIT = ['ERA', 'WHIP', 'K9']
+
+
+class LiveWeek:
+    """
+    A week that is underway: score the rest of it on top of what is banked.
+
+    A part-played week is not a coin flip and it is not a decided result, and
+    the difference between those two is the whole point of this class. Up 7-1 in
+    home runs with two days left is very nearly a lock; up 1-0 on the Monday is
+    still a toss-up. Both look identical to a model that only reads "leading".
+
+    So every draw here scores the categories the way they will actually finish:
+    banked totals plus a fraction of a bootstrapped week, and the fraction is
+    how much of the week each team has left. Progress is measured in AB and IP
+    against that team's own season averages rather than in calendar days,
+    because a team that has already burned four starts has less left than the
+    date implies.
+
+    Counting categories add. Rates are re-weighted, not averaged: a 3.48 ERA
+    over 10 innings and a 4.50 over the next 50 is a 4.33 week, and averaging
+    those two numbers would say 3.99. The 50-IP minimum is applied to the
+    PROJECTED innings, so a team on 8 IP on Monday is not treated as forfeiting
+    - it has all week to get there.
+    """
+
+    def __init__(self, rows, weeks, live_rows):
+        self.live = live_rows
+        self.avg_ab, self.avg_ip = {}, {}
+        for tid in {t for w in weeks for t in rows[w]}:
+            abs_ = [rows[w][tid]['ab'] for w in weeks if tid in rows[w]]
+            ips = [rows[w][tid]['ip'] for w in weeks
+                   if tid in rows[w] and rows[w][tid]['counts_ip']]
+            self.avg_ab[tid] = (sum(abs_) / len(abs_)) if abs_ else 0.0
+            self.avg_ip[tid] = (sum(ips) / len(ips)) if ips else 0.0
+
+    def fractions(self, tid):
+        """How much of this team's normal week is still to come, per side."""
+        cur = self.live[tid]
+        f_bat = 1.0 - (cur['ab'] / self.avg_ab[tid] if self.avg_ab[tid] else 0.0)
+        f_pit = 1.0 - (cur['ip'] / self.avg_ip[tid] if self.avg_ip[tid] else 0.0)
+        return max(0.0, min(1.0, f_bat)), max(0.0, min(1.0, f_pit))
+
+    def project(self, tid, draw):
+        """Banked totals plus `fraction` of one bootstrapped week."""
+        cur = self.live[tid]
+        f_bat, f_pit = self.fractions(tid)
+        # Counting stats are ROUNDED back to whole numbers. Nobody hits 5.16
+        # home runs, and leaving them fractional quietly destroys ties - two
+        # teams can then never finish level in a category, so a one-homer lead
+        # on the Monday converts almost directly into a category win. With
+        # rounding, a 1-0 lead is worth what it should be: a nudge, not a result.
+        out = {}
+        for c in BAT_COUNT:
+            out[c] = round(cur['stats'][c] + f_bat * draw['stats'][c])
+        for c in PIT_COUNT:
+            out[c] = round(cur['stats'][c] + f_pit * draw['stats'][c])
+
+        # Rates re-weighted by the innings/at-bats behind each piece.
+        add_ip = f_pit * draw['ip']
+        tot_ip = cur['ip'] + add_ip
+        for c in RATE_PIT:
+            out[c] = ((cur['stats'][c] * cur['ip'] + draw['stats'][c] * add_ip) / tot_ip
+                      if tot_ip else draw['stats'][c])
+        add_ab = f_bat * draw['ab']
+        tot_ab = cur['ab'] + add_ab
+        out['OPS'] = ((cur['stats']['OPS'] * cur['ab'] + draw['stats']['OPS'] * add_ab) / tot_ab
+                      if tot_ab else draw['stats']['OPS'])
+        return out, tot_ip
+
+    def matchup(self, pred, a, b, sims=SIMS):
+        """Same shape as Predictor.matchup, but finishing a part-played week."""
+        wins = ties = 0
+        total = 0.0
+        cat_wins = defaultdict(float)
+        for _ in range(sims):
+            pa, ip_a = self.project(a, pred.draw(a))
+            pb, ip_b = self.project(b, pred.draw(b))
+            fa, fb = ip_a < MIN_IP, ip_b < MIN_IP
+            pts = 0.0
+            for c in CATS:
+                if c in PITCHING and (fa or fb):
+                    got = 0.5 if (fa and fb) else (1.0 if fb else 0.0)
+                elif pa[c] == pb[c]:
+                    got = 0.5
+                elif (pa[c] < pb[c]) if c in LOWER_IS_BETTER else (pa[c] > pb[c]):
+                    got = 1.0
+                else:
+                    got = 0.0
+                pts += got
+                cat_wins[c] += got
+            total += pts
+            if pts > N_CATS / 2:
+                wins += 1
+            elif pts == N_CATS / 2:
+                ties += 1
+        n = float(sims)
+        return {
+            'win': wins / n, 'tie': ties / n, 'loss': (n - wins - ties) / n,
+            'exp_pts': total / n, 'cats': {c: cat_wins[c] / n for c in CATS},
+        }
+
+    def play(self, pred, a, b):
+        """One simulated finish of this matchup. Returns team A's points."""
+        pa, ip_a = self.project(a, pred.draw(a))
+        pb, ip_b = self.project(b, pred.draw(b))
+        fa, fb = ip_a < MIN_IP, ip_b < MIN_IP
+        pts = 0.0
+        for c in CATS:
+            if c in PITCHING and (fa or fb):
+                pts += 0.5 if (fa and fb) else (1.0 if fb else 0.0)
+                continue
+            x, y = pa[c], pb[c]
+            if x == y:
+                pts += 0.5
+            elif (x < y) if c in LOWER_IS_BETTER else (x > y):
+                pts += 1.0
+        return pts
+
+
+def live_bracket_week(data, week, field, rows):
+    """
+    The part-played bracket games for `week`, or None if there are none.
+
+    Consolation games and bye filler are excluded by `field`, the same guard
+    real_bracket_round uses - a consolation result must never move the bracket.
+    """
+    wk = data.get('weeks', {}).get(str(week)) or []
+    live_rows, pairs = {}, []
+    for m in wk:
+        if not m.get('is_playoffs') or m.get('is_consolation'):
+            continue
+        if m['status'] != 'midevent':
+            continue
+        a, b = m['a']['team_id'], m['b']['team_id']
+        if a not in field or b not in field:
+            continue
+        pairs.append((a, b))
+        for side in (m['a'], m['b']):
+            live_rows[side['team_id']] = {
+                'ip': side['ip'],
+                'ab': sc.at_bats(side['stats'].get('HAB')),
+                'stats': {c: sc.to_float(c, side['stats'].get(c)) for c in CATS},
+            }
+    if not pairs:
+        return None, None
+    return pairs, live_rows
+
+
 class Predictor:
     """Bootstrap sampler over one window, shared by matchup and bracket sims."""
 
@@ -346,7 +497,8 @@ def real_bracket_round(data, week, field=None):
     return out
 
 
-def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED):
+def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED,
+                     rows=None, weeks=None):
     """
     Run the whole postseason. Returns each team's chance of reaching each round
     and of winning it.
@@ -372,6 +524,16 @@ def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED)
             if m['winner'] is not None and m['status'] == 'postevent':
                 known[(wk, m['a'], m['b'])] = m['winner']
 
+    # A bracket week that is underway is scored from where it actually stands,
+    # not re-simulated from scratch. Without this a team leading 10-0 on the
+    # Monday is still quoted at its season-strength number, which is simply
+    # wrong by Wednesday and indefensible by Saturday.
+    live_pairs, live_rows = (None, None)
+    if rows is not None and weeks:
+        live_pairs, live_rows = live_bracket_week(data, r1, field, rows)
+    live = LiveWeek(rows, weeks, live_rows) if live_pairs else None
+    live_set = {frozenset(p) for p in (live_pairs or [])}
+
     def break_tie(a, b):
         """Season series on categories first; seed order only if that is level."""
         if h2h:
@@ -384,6 +546,9 @@ def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED)
         for key in ((wk, a, b), (wk, b, a)):
             if key in known:
                 return known[key]
+        if live and wk == r1 and frozenset((a, b)) in live_set:
+            pts = live.play(pred, a, b)
+            return a if pts > N_CATS / 2 else b if pts < N_CATS / 2 else break_tie(a, b)
         w = pred.play(a, b)
         if w is None:
             w = break_tie(a, b)

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-31T06:46:16",
+ "generated_at": "2026-09-01T06:15:04",
  "season": "2026",
  "league": "Summertime Sadness",
  "weeks_counted": [
@@ -170,9 +170,9 @@
     "manager": "Mike",
     "team": "¯\\_(ツ)_/¯",
     "team_id": 12,
-    "value": 124,
-    "display": "124",
-    "note": "124 adds, 116 drops - 58 bats, 66 arms; busiest day 2026-03-14 (5 moves)"
+    "value": 126,
+    "display": "126",
+    "note": "126 adds, 119 drops - 59 bats, 67 arms; busiest day 2026-03-14 (5 moves)"
    },
    "board": [
     {
@@ -187,9 +187,17 @@
      "manager": "Mike",
      "team": "¯\\_(ツ)_/¯",
      "team_id": 12,
-     "value": 124,
-     "display": "124",
-     "note": "124 adds, 116 drops - 58 bats, 66 arms; busiest day 2026-03-14 (5 moves)"
+     "value": 126,
+     "display": "126",
+     "note": "126 adds, 119 drops - 59 bats, 67 arms; busiest day 2026-03-14 (5 moves)"
+    },
+    {
+     "manager": "James",
+     "team": "Rosa Parks’ Bus Seat",
+     "team_id": 2,
+     "value": 121,
+     "display": "121",
+     "note": "121 adds, 119 drops - 57 bats, 64 arms; busiest day 2026-06-15 (5 moves)"
     },
     {
      "manager": "Mark",
@@ -200,20 +208,12 @@
      "note": "121 adds, 117 drops - 55 bats, 66 arms; busiest day 2026-03-14 (7 moves)"
     },
     {
-     "manager": "James",
-     "team": "Rosa Parks’ Bus Seat",
-     "team_id": 2,
-     "value": 120,
-     "display": "120",
-     "note": "120 adds, 118 drops - 56 bats, 64 arms; busiest day 2026-06-15 (5 moves)"
-    },
-    {
      "manager": "Austin",
      "team": "Moniebol 🐳 (DA BI ASS)",
      "team_id": 8,
      "value": 117,
      "display": "117",
-     "note": "117 adds, 115 drops - 25 bats, 92 arms; busiest day 2026-04-05 (4 moves)"
+     "note": "117 adds, 123 drops - 25 bats, 92 arms; busiest day 2026-04-05 (4 moves)"
     },
     {
      "manager": "Kurtis",
@@ -229,15 +229,15 @@
      "team_id": 11,
      "value": 85,
      "display": "85",
-     "note": "85 adds, 81 drops - 44 bats, 41 arms; busiest day 2026-05-11 (3 moves)"
+     "note": "85 adds, 82 drops - 44 bats, 41 arms; busiest day 2026-05-11 (3 moves)"
     },
     {
      "manager": "Mikey",
      "team": "LAST GAME OF THE YEAR BRENT",
      "team_id": 10,
-     "value": 76,
-     "display": "76",
-     "note": "76 adds, 77 drops - 27 bats, 49 arms; busiest day 2026-04-02 (4 moves)"
+     "value": 79,
+     "display": "79",
+     "note": "79 adds, 79 drops - 29 bats, 50 arms; busiest day 2026-04-02 (4 moves)"
     },
     {
      "manager": "Bryant",
@@ -259,9 +259,9 @@
      "manager": "Taylor",
      "team": "M*A*S*H*D PO*TA*TOES",
      "team_id": 1,
-     "value": 46,
-     "display": "46",
-     "note": "46 adds, 44 drops - 21 bats, 25 arms; busiest day 2026-03-26 (3 moves)"
+     "value": 47,
+     "display": "47",
+     "note": "47 adds, 45 drops - 22 bats, 25 arms; busiest day 2026-03-26 (3 moves)"
     },
     {
      "manager": "Eric",
@@ -292,8 +292,8 @@
     "manager": "Taylor",
     "team": "M*A*S*H*D PO*TA*TOES",
     "team_id": 1,
-    "value": 46,
-    "display": "46",
+    "value": 47,
+    "display": "47",
     "note": "one move every 0.5 weeks; the league leader made 4x as many"
    },
    "board": [
@@ -309,8 +309,8 @@
      "manager": "Taylor",
      "team": "M*A*S*H*D PO*TA*TOES",
      "team_id": 1,
-     "value": 46,
-     "display": "46",
+     "value": 47,
+     "display": "47",
      "note": "one move every 0.5 weeks; the league leader made 4x as many"
     },
     {
@@ -333,8 +333,8 @@
      "manager": "Mikey",
      "team": "LAST GAME OF THE YEAR BRENT",
      "team_id": 10,
-     "value": 76,
-     "display": "76",
+     "value": 79,
+     "display": "79",
      "note": "one move every 0.3 weeks; the league leader made 2x as many"
     },
     {
@@ -365,8 +365,8 @@
      "manager": "James",
      "team": "Rosa Parks’ Bus Seat",
      "team_id": 2,
-     "value": 120,
-     "display": "120",
+     "value": 121,
+     "display": "121",
      "note": "one move every 0.2 weeks; the league leader made 1x as many"
     },
     {
@@ -381,8 +381,8 @@
      "manager": "Mike",
      "team": "¯\\_(ツ)_/¯",
      "team_id": 12,
-     "value": 124,
-     "display": "124",
+     "value": 126,
+     "display": "126",
      "note": "one move every 0.2 weeks; the league leader made 1x as many"
     },
     {
@@ -2392,9 +2392,9 @@
    "ip_forfeit_weeks": [],
    "avg_ip": 59.28476190476191,
    "min_ip_week": 51.0,
-   "moves": 46,
-   "adds": 46,
-   "drops": 44,
+   "moves": 47,
+   "adds": 47,
+   "drops": 45,
    "trades": 5,
    "slope": -3.396680265910081,
    "slope_rel": 5.210432922836871,
@@ -2671,7 +2671,7 @@
    "min_ip_week": 50.33,
    "moves": 85,
    "adds": 85,
-   "drops": 81,
+   "drops": 82,
    "trades": 3,
    "slope": -4.907979311507977,
    "slope_rel": 3.6991338772389755,
@@ -2943,9 +2943,9 @@
    "ip_forfeit_weeks": [],
    "avg_ip": 55.491904761904756,
    "min_ip_week": 50.0,
-   "moves": 124,
-   "adds": 124,
-   "drops": 116,
+   "moves": 126,
+   "adds": 126,
+   "drops": 119,
    "trades": 7,
    "slope": -18.184653150286394,
    "slope_rel": -9.577539961539442,
@@ -3213,9 +3213,9 @@
    "ip_forfeit_weeks": [],
    "avg_ip": 63.93761904761905,
    "min_ip_week": 51.0,
-   "moves": 76,
-   "adds": 76,
-   "drops": 77,
+   "moves": 79,
+   "adds": 79,
+   "drops": 79,
    "trades": 3,
    "slope": -26.30610641290569,
    "slope_rel": -17.69899322415874,
@@ -4309,9 +4309,9 @@
    "ip_forfeit_weeks": [],
    "avg_ip": 58.82523809523809,
    "min_ip_week": 52.0,
-   "moves": 120,
-   "adds": 120,
-   "drops": 118,
+   "moves": 121,
+   "adds": 121,
+   "drops": 119,
    "trades": 13,
    "slope": 1.9875739157497772,
    "slope_rel": 10.59468710449673,
@@ -5133,7 +5133,7 @@
    "min_ip_week": 29.67,
    "moves": 117,
    "adds": 117,
-   "drops": 115,
+   "drops": 123,
    "trades": 13,
    "slope": -11.724557725974385,
    "slope_rel": -3.117444537227433,
