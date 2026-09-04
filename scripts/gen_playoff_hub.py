@@ -196,9 +196,17 @@ def main():
         # season-strength number is not what anyone is asking about by then.
         win = m.get('live') or m['blend']
         pa = (1 - win['win'] - win['tie']) if flip else win['win']
-        print('  wk%d  %-8s vs %-8s   %s %.0f%%%s' % (
+        # Two-way, same as the page: a 6-6 week is not a third outcome, the
+        # league tiebreak sends it to a known team, so give it to that team.
+        tie_to = pp.h2h_winner(h2h, a, b)
+        if tie_to is None:
+            tie_to = a if by_id[a]['seed'] < by_id[b]['seed'] else b
+        pa += win['tie'] if tie_to == a else 0.0
+        print('  wk%d  %-8s vs %-8s   %s %.0f%% / %s %.0f%%%s' % (
             q['week'], by_id[a]['manager'], by_id[b]['manager'],
-            by_id[a]['manager'], pa * 100, '  (live)' if 'live' in m else ''))
+            by_id[a]['manager'], pa * 100,
+            by_id[b]['manager'], (1 - pa) * 100,
+            '  (live)' if 'live' in m else ''))
 
     print('\nTitle odds (blended)\n')
     print('  %-8s %6s %6s %6s' % ('mgr', 'semi', 'final', 'title'))
