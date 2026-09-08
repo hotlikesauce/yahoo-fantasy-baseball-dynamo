@@ -497,6 +497,44 @@ def real_bracket_round(data, week, field=None):
     return out
 
 
+
+def rounds_alive(data, playoff_weeks, field):
+    """
+    Who is still in the bracket entering each playoff week, and which week is
+    being played right now.
+
+    `field` alone is NOT enough to identify a round's real games, and week 24 of
+    2026 is why. Yahoo flagged THREE week-24 matchups is_playoffs with
+    is_consolation false: the two real semi-finals, and Taylor vs Mikey - the
+    two teams knocked out in week 23 - playing what is effectively a
+    third-place game. Both of them are in `field`, because both were seeded, so
+    the field check waves that game straight through and it reads as a live
+    bracket matchup.
+
+    The fix is to carry the bracket forward: a team is alive in a round only if
+    it had a bye or won its way there. Losers drop out of the set and their
+    consolation games stop being mistaken for bracket games.
+
+    Returns (alive_by_week, live_week). live_week is the first playoff week
+    whose bracket games are not all final, or None once the bracket is done.
+    """
+    alive = set(field)
+    by_week = {}
+    live_week = None
+    for wk in playoff_weeks:
+        by_week[wk] = set(alive)
+        games = real_bracket_round(data, wk, alive)
+        if not games:
+            live_week = live_week or wk
+            break
+        if any(g['status'] != 'postevent' or g['winner'] is None for g in games):
+            live_week = live_week or wk
+            break
+        playing = {t for g in games for t in (g['a'], g['b'])}
+        alive = (alive - playing) | {g['winner'] for g in games}
+    return by_week, live_week
+
+
 def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED,
                      rows=None, weeks=None):
     """
@@ -518,19 +556,25 @@ def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED,
     # passed so a consolation or bye-filler game can never be mistaken for a
     # bracket result.
     field = {s['team_id'] for s in inn}
+    # Each round is read against the teams still ALIVE in it, not the original
+    # six - see rounds_alive() for the week-24 game that makes the difference.
+    alive_by_week, live_week = rounds_alive(data, [r1, r2, r3], field)
     known = {}
     for wk in (r1, r2, r3):
-        for m in real_bracket_round(data, wk, field):
+        for m in real_bracket_round(data, wk, alive_by_week.get(wk, field)):
             if m['winner'] is not None and m['status'] == 'postevent':
                 known[(wk, m['a'], m['b'])] = m['winner']
 
     # A bracket week that is underway is scored from where it actually stands,
     # not re-simulated from scratch. Without this a team leading 10-0 on the
     # Monday is still quoted at its season-strength number, which is simply
-    # wrong by Wednesday and indefensible by Saturday.
+    # wrong by Wednesday and indefensible by Saturday. This follows the bracket
+    # forward - in the semi-final week it is the semi-final that is live, not
+    # whatever week happened to be first.
     live_pairs, live_rows = (None, None)
-    if rows is not None and weeks:
-        live_pairs, live_rows = live_bracket_week(data, r1, field, rows)
+    if rows is not None and weeks and live_week is not None:
+        live_pairs, live_rows = live_bracket_week(
+            data, live_week, alive_by_week.get(live_week, field), rows)
     live = LiveWeek(rows, weeks, live_rows) if live_pairs else None
     live_set = {frozenset(p) for p in (live_pairs or [])}
 
@@ -546,7 +590,7 @@ def simulate_bracket(pred, seeds, bracket, data, h2h=None, sims=SIMS, seed=SEED,
         for key in ((wk, a, b), (wk, b, a)):
             if key in known:
                 return known[key]
-        if live and wk == r1 and frozenset((a, b)) in live_set:
+        if live and wk == live_week and frozenset((a, b)) in live_set:
             pts = live.play(pred, a, b)
             return a if pts > N_CATS / 2 else b if pts < N_CATS / 2 else break_tie(a, b)
         w = pred.play(a, b)

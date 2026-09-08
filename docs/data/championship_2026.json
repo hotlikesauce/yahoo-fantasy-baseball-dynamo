@@ -1,0 +1,221 @@
+{
+ "generated_at": "2026-09-08T03:41:13.035377+00:00",
+ "status": "pending",
+ "demo": false,
+ "rules": {
+  "scoring_mode": "cumulative",
+  "min_ip_total": 100.0,
+  "max_adds": 10,
+  "drop_lockout_hours": 24,
+  "week1": [
+   "2026-09-14",
+   "2026-09-20"
+  ],
+  "week2": [
+   "2026-09-21",
+   "2026-09-27"
+  ],
+  "roster_slots": {
+   "C": 1,
+   "1B": 1,
+   "2B": 1,
+   "3B": 1,
+   "SS": 1,
+   "OF": 3,
+   "Util": 1,
+   "SP": 2,
+   "RP": 2,
+   "P": 4,
+   "BN": 5,
+   "IL": 4,
+   "NA": 3
+  },
+  "slot_order": [
+   "C",
+   "1B",
+   "2B",
+   "3B",
+   "SS",
+   "OF",
+   "Util",
+   "SP",
+   "RP",
+   "P",
+   "BN",
+   "IL",
+   "NA"
+  ],
+  "categories": [
+   "R",
+   "H",
+   "HR",
+   "RBI",
+   "SB",
+   "OPS",
+   "TB",
+   "ERA",
+   "WHIP",
+   "K9",
+   "QS",
+   "SVH"
+  ],
+  "hitting": [
+   "R",
+   "H",
+   "HR",
+   "RBI",
+   "SB",
+   "OPS"
+  ],
+  "pitching": [
+   "TB",
+   "ERA",
+   "WHIP",
+   "K9",
+   "QS",
+   "SVH"
+  ],
+  "lower_is_better": [
+   "ERA",
+   "TB",
+   "WHIP"
+  ]
+ },
+ "bracket": [
+  {
+   "week": 23,
+   "matchups": [
+    {
+     "week": 23,
+     "week_start": "2026-08-31",
+     "week_end": "2026-09-06",
+     "status": "postevent",
+     "is_consolation": false,
+     "teams": [
+      {
+       "team_id": 1,
+       "team_key": "469.l.8614.t.1",
+       "name": "M*A*S*H*D PO*TA*TOES",
+       "manager": "Taylor",
+       "cats": 3
+      },
+      {
+       "team_id": 2,
+       "team_key": "469.l.8614.t.2",
+       "name": "Rosa Parks\u2019 Bus Seat",
+       "manager": "James",
+       "cats": 7
+      }
+     ],
+     "for_title": true
+    },
+    {
+     "week": 23,
+     "week_start": "2026-08-31",
+     "week_end": "2026-09-06",
+     "status": "postevent",
+     "is_consolation": false,
+     "teams": [
+      {
+       "team_id": 10,
+       "team_key": "469.l.8614.t.10",
+       "name": "NO WAY COOCH COULD BLOW IT",
+       "manager": "Mikey",
+       "cats": 4
+      },
+      {
+       "team_id": 12,
+       "team_key": "469.l.8614.t.12",
+       "name": "\u00af\\_(\u30c4)_/\u00af",
+       "manager": "Mike",
+       "cats": 7
+      }
+     ],
+     "for_title": true
+    }
+   ]
+  },
+  {
+   "week": 24,
+   "matchups": [
+    {
+     "week": 24,
+     "week_start": "2026-09-07",
+     "week_end": "2026-09-13",
+     "status": "midevent",
+     "is_consolation": false,
+     "teams": [
+      {
+       "team_id": 2,
+       "team_key": "469.l.8614.t.2",
+       "name": "Rosa Parks\u2019 Bus Seat",
+       "manager": "James",
+       "cats": 1
+      },
+      {
+       "team_id": 3,
+       "team_key": "469.l.8614.t.3",
+       "name": "Los Basureros",
+       "manager": "Josh",
+       "cats": 10
+      }
+     ],
+     "for_title": true
+    },
+    {
+     "week": 24,
+     "week_start": "2026-09-07",
+     "week_end": "2026-09-13",
+     "status": "midevent",
+     "is_consolation": false,
+     "teams": [
+      {
+       "team_id": 11,
+       "team_key": "469.l.8614.t.11",
+       "name": "The Rosterbation Station",
+       "manager": "Kevin",
+       "cats": 6
+      },
+      {
+       "team_id": 12,
+       "team_key": "469.l.8614.t.12",
+       "name": "\u00af\\_(\u30c4)_/\u00af",
+       "manager": "Mike",
+       "cats": 5
+      }
+     ],
+     "for_title": true
+    }
+   ]
+  }
+ ],
+ "freeze_at": "2026-09-20T23:59:59-04:00",
+ "team_names": {
+  "1": "M*A*S*H*D PO*TA*TOES",
+  "2": "Rosa Parks\u2019 Bus Seat",
+  "3": "Los Basureros",
+  "4": "Rickie Flower",
+  "5": "William Shatnermouth",
+  "6": "Hatfield Hurlers",
+  "7": "Ian Cumsler",
+  "8": "Moniebol \ud83d\udc33 (DA BI ASS)",
+  "9": "OG 8\ufe0f\u20e3 & an extra",
+  "10": "NO WAY COOCH COULD BLOW IT",
+  "11": "The Rosterbation Station",
+  "12": "\u00af\\_(\u30c4)_/\u00af"
+ },
+ "managers": {
+  "1": "Taylor",
+  "2": "James",
+  "3": "Josh",
+  "4": "Bryant",
+  "5": "Kurtis",
+  "6": "Mark",
+  "7": "Eric",
+  "8": "Austin",
+  "9": "Greg",
+  "10": "Mikey",
+  "11": "Kevin",
+  "12": "Mike"
+ }
+}

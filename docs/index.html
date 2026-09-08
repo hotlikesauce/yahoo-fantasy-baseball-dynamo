@@ -229,6 +229,14 @@
     gap: 9px;
   }
   .feature-nav .fn-sub { font-size: 0.84em; font-weight: 600; opacity: 0.82; }
+  /* The championship sits above the other two, full width, and waits there
+     until the final actually starts. */
+  .feature-nav .fn-champ {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #4c1d95, #b45309);
+    color: #fef3c7;
+    box-shadow: 0 6px 24px rgba(180,83,9,0.34);
+  }
   .feature-nav .fn-hub {
     background: linear-gradient(135deg, #9f1239, #e11d48);
     color: #ffe4e6;
@@ -381,6 +389,10 @@
 </div>
 
 <div class="feature-nav">
+  <a href="championship_hub_2026.html" class="fn-champ">
+    <span class="fn-title">🏆 Championship Hub</span>
+    <span class="fn-sub">Two-week final &middot; Sept 14 &ndash; Sept 27</span>
+  </a>
   <a href="playoff_hub_2026.html" class="fn-hub">
     <span class="fn-title">⚾ Playoff Hub</span>
     <span class="fn-sub">Bracket, title odds and matchup predictions</span>

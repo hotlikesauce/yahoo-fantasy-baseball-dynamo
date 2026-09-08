@@ -103,7 +103,10 @@ def main():
     # categories finished from where they actually stand. This is the one the
     # page leads with while the week is running, because by Thursday the
     # season-strength number is answering a question nobody is asking.
-    live_pairs, live_rows = pp.live_bracket_week(data, playoff_weeks[0], field, rows)
+    alive_by_week, live_wk = pp.rounds_alive(data, playoff_weeks, field)
+    live_alive = alive_by_week.get(live_wk, field) if live_wk else field
+    live_pairs, live_rows = ((None, None) if live_wk is None else
+                             pp.live_bracket_week(data, live_wk, live_alive, rows))
     live_week = None
     if live_pairs:
         live_week = pp.LiveWeek(rows, weeks, live_rows)
@@ -167,7 +170,10 @@ def main():
         'pitching_cats': sc.PITCHING,
         'seeds': seeds,
         'bracket': bracket,
-        'results': {str(w): pp.real_bracket_round(data, w, field) for w in playoff_weeks},
+        'results': {str(w): pp.real_bracket_round(data, w, alive_by_week.get(w, field))
+                    for w in playoff_weeks},
+        'live_bracket_week': live_wk,
+        'alive_by_week': {str(w): sorted(t) for w, t in alive_by_week.items()},
         'matrix': matrix,
         'h2h': h2h_out,
         'odds': {str(k): {kk: round(vv, 4) for kk, vv in v.items()} for k, v in odds.items()},
@@ -188,7 +194,15 @@ def main():
 
     print('\nBracket (%s) - weeks %s' % (bracket['source'], playoff_weeks))
     print('  byes: %s' % ', '.join(by_id[t]['manager'] for t in bracket['byes']))
-    for q in bracket['quarters']:
+    for w in playoff_weeks:
+        for g in pp.real_bracket_round(data, w, alive_by_week.get(w, field)):
+            if g['status'] == 'postevent' and g['winner'] is not None:
+                print('  wk%d  %-8s %2s-%-2s %-8s  FINAL, %s advances' % (
+                    w, by_id[g['a']]['manager'], g['a_cats'], g['b_cats'],
+                    by_id[g['b']]['manager'], by_id[g['winner']]['manager']))
+    current = ([] if live_wk is None else
+               pp.real_bracket_round(data, live_wk, alive_by_week.get(live_wk, field)))
+    for q in [{'week': g['week'], 'a': g['a'], 'b': g['b']} for g in current]:
         a, b = q['a'], q['b']
         m = matrix.get('%d-%d' % (a, b)) or matrix.get('%d-%d' % (b, a))
         flip = '%d-%d' % (a, b) not in matrix

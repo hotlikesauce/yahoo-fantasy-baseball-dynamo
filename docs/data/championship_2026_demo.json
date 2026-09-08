@@ -1,0 +1,6434 @@
+{
+ "generated_at": "2026-09-08T03:41:09.126060+00:00",
+ "status": "set",
+ "demo": true,
+ "rules": {
+  "scoring_mode": "cumulative",
+  "min_ip_total": 100.0,
+  "max_adds": 10,
+  "drop_lockout_hours": 24,
+  "week1": [
+   "2026-08-31",
+   "2026-09-06"
+  ],
+  "week2": [
+   "2026-09-07",
+   "2026-09-13"
+  ],
+  "roster_slots": {
+   "C": 1,
+   "1B": 1,
+   "2B": 1,
+   "3B": 1,
+   "SS": 1,
+   "OF": 3,
+   "Util": 1,
+   "SP": 2,
+   "RP": 2,
+   "P": 4,
+   "BN": 5,
+   "IL": 4,
+   "NA": 3
+  },
+  "slot_order": [
+   "C",
+   "1B",
+   "2B",
+   "3B",
+   "SS",
+   "OF",
+   "Util",
+   "SP",
+   "RP",
+   "P",
+   "BN",
+   "IL",
+   "NA"
+  ],
+  "categories": [
+   "R",
+   "H",
+   "HR",
+   "RBI",
+   "SB",
+   "OPS",
+   "TB",
+   "ERA",
+   "WHIP",
+   "K9",
+   "QS",
+   "SVH"
+  ],
+  "hitting": [
+   "R",
+   "H",
+   "HR",
+   "RBI",
+   "SB",
+   "OPS"
+  ],
+  "pitching": [
+   "TB",
+   "ERA",
+   "WHIP",
+   "K9",
+   "QS",
+   "SVH"
+  ],
+  "lower_is_better": [
+   "ERA",
+   "TB",
+   "WHIP"
+  ]
+ },
+ "sides": {
+  "a": {
+   "team_id": 11,
+   "name": "The Rosterbation Station",
+   "manager": "Kevin",
+   "adds_used": 0
+  },
+  "b": {
+   "team_id": 12,
+   "name": "\u00af\\_(\u30c4)_/\u00af",
+   "manager": "Mike",
+   "adds_used": 0
+  }
+ },
+ "scoreboard": {
+  "categories": {
+   "R": {
+    "a": 27,
+    "b": 41,
+    "winner": "b"
+   },
+   "H": {
+    "a": 50,
+    "b": 66,
+    "winner": "b"
+   },
+   "HR": {
+    "a": 6,
+    "b": 8,
+    "winner": "b"
+   },
+   "RBI": {
+    "a": 28,
+    "b": 24,
+    "winner": "a"
+   },
+   "SB": {
+    "a": 9,
+    "b": 7,
+    "winner": "a"
+   },
+   "OPS": {
+    "a": 0.7086,
+    "b": 0.7306,
+    "winner": "b"
+   },
+   "TB": {
+    "a": 57,
+    "b": 108,
+    "winner": "tie"
+   },
+   "ERA": {
+    "a": 3.75,
+    "b": 4.5874,
+    "winner": "tie"
+   },
+   "WHIP": {
+    "a": 1.0833,
+    "b": 1.1796,
+    "winner": "tie"
+   },
+   "K9": {
+    "a": 8.75,
+    "b": 9.3058,
+    "winner": "tie"
+   },
+   "QS": {
+    "a": 1,
+    "b": 5,
+    "winner": "tie"
+   },
+   "SVH": {
+    "a": 7,
+    "b": 4,
+    "winner": "tie"
+   }
+  },
+  "a_cats": 2,
+  "b_cats": 4,
+  "ties": 6,
+  "leader": "b"
+ },
+ "totals": {
+  "a": {
+   "R": 27,
+   "H": 50,
+   "HR": 6,
+   "RBI": 28,
+   "SB": 9,
+   "OPS": 0.7086,
+   "TB": 57,
+   "ERA": 3.75,
+   "WHIP": 1.0833,
+   "K9": 8.75,
+   "QS": 1,
+   "SVH": 7,
+   "IP": 36.0,
+   "ip_minimum": 100.0,
+   "forfeits_pitching": true
+  },
+  "b": {
+   "R": 41,
+   "H": 66,
+   "HR": 8,
+   "RBI": 24,
+   "SB": 7,
+   "OPS": 0.7306,
+   "TB": 108,
+   "ERA": 4.5874,
+   "WHIP": 1.1796,
+   "K9": 9.3058,
+   "QS": 5,
+   "SVH": 4,
+   "IP": 68.67,
+   "ip_minimum": 100.0,
+   "forfeits_pitching": true
+  }
+ },
+ "trend": [
+  {
+   "date": "2026-08-31",
+   "a_cats": 4,
+   "b_cats": 1
+  },
+  {
+   "date": "2026-09-01",
+   "a_cats": 5,
+   "b_cats": 1
+  },
+  {
+   "date": "2026-09-02",
+   "a_cats": 4,
+   "b_cats": 1
+  },
+  {
+   "date": "2026-09-03",
+   "a_cats": 3,
+   "b_cats": 1
+  },
+  {
+   "date": "2026-09-04",
+   "a_cats": 1,
+   "b_cats": 4
+  },
+  {
+   "date": "2026-09-05",
+   "a_cats": 1,
+   "b_cats": 4
+  },
+  {
+   "date": "2026-09-06",
+   "a_cats": 0,
+   "b_cats": 4
+  },
+  {
+   "date": "2026-09-07",
+   "a_cats": 2,
+   "b_cats": 4
+  },
+  {
+   "date": "2026-09-08",
+   "a_cats": 2,
+   "b_cats": 4
+  }
+ ],
+ "week2_dates": [
+  "2026-09-07",
+  "2026-09-08",
+  "2026-09-09",
+  "2026-09-10",
+  "2026-09-11",
+  "2026-09-12",
+  "2026-09-13"
+ ],
+ "rosters": {
+  "a": [
+   {
+    "key": "469.p.11853",
+    "name": "Alejandro Kirk",
+    "team": "TOR",
+    "pos": "C",
+    "eligible": [
+     "C",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 672386,
+    "mlb_team_id": 141,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/Vdd6w.phQOyKP9Pe4HqHtg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/11853.1.png",
+    "status": null,
+    "slot": "C"
+   },
+   {
+    "key": "469.p.10600",
+    "name": "Jake Bauers",
+    "team": "MIL",
+    "pos": "1B,OF",
+    "eligible": [
+     "1B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 641343,
+    "mlb_team_id": 158,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/Ytg8aQAXR7fEFQnWLozjxQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10600.png",
+    "status": null,
+    "slot": "1B"
+   },
+   {
+    "key": "469.p.12503",
+    "name": "Zack Gelof",
+    "team": "ATH",
+    "pos": "2B,3B,OF",
+    "eligible": [
+     "2B",
+     "3B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 680869,
+    "mlb_team_id": 133,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/pt_cfBvR9LkxyLEjO0yMLg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/12503.png",
+    "status": null,
+    "slot": "2B"
+   },
+   {
+    "key": "469.p.60419",
+    "name": "Junior Caminero",
+    "team": "TB",
+    "pos": "3B",
+    "eligible": [
+     "3B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 691406,
+    "mlb_team_id": 139,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ke5bnQWnGRNFQtQ4j2SplQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/60419.1.png",
+    "status": null,
+    "slot": "3B"
+   },
+   {
+    "key": "469.p.60214",
+    "name": "Zach Neto",
+    "team": "LAA",
+    "pos": "SS",
+    "eligible": [
+     "SS",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 687263,
+    "mlb_team_id": 108,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/qdmEQNCoqj2Fl_oEucL4ag--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/60214.png",
+    "status": null,
+    "slot": "SS"
+   },
+   {
+    "key": "469.p.8875",
+    "name": "Bryce Harper",
+    "team": "PHI",
+    "pos": "1B,OF",
+    "eligible": [
+     "1B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 547180,
+    "mlb_team_id": 143,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ZtHE9IY1JiGdvXJPtWVzww--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/8875.1.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.12024",
+    "name": "Jordan Walker",
+    "team": "STL",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 691023,
+    "mlb_team_id": 138,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/Ca4w2kRhbtvvdcXaWmxdZA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/12024.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.11760",
+    "name": "Riley Greene",
+    "team": "DET",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 682985,
+    "mlb_team_id": 116,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/yU0h1UrRQZEF5ZFG7goLfw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11760.1.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.11817",
+    "name": "Bryson Stott",
+    "team": "PHI",
+    "pos": "2B,3B,SS",
+    "eligible": [
+     "2B",
+     "3B",
+     "SS",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 681082,
+    "mlb_team_id": 143,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/gXSiQdpFwvaKp_szxTyJbQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11817.1.png",
+    "status": null,
+    "slot": "Util"
+   },
+   {
+    "key": "469.p.11384",
+    "name": "Julio Rodr\u00edguez",
+    "team": "SEA",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 677594,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ykRBf7qUe6fzLFAxnW3dfQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04012026/11384.3.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.11375",
+    "name": "Xavier Edwards",
+    "team": "MIA",
+    "pos": "2B,SS",
+    "eligible": [
+     "2B",
+     "SS",
+     "Util",
+     "IL"
+    ],
+    "type": "B",
+    "mlb_id": 669364,
+    "mlb_team_id": 146,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/QPVGzIPQI8GD2lINj1i0bg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11375.png",
+    "status": "IL10",
+    "slot": "IL"
+   },
+   {
+    "key": "469.p.10166",
+    "name": "Willson Contreras",
+    "team": "BOS",
+    "pos": "1B",
+    "eligible": [
+     "1B",
+     "Util",
+     "IL"
+    ],
+    "type": "B",
+    "mlb_id": 575929,
+    "mlb_team_id": 111,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/RbkkdkWttXS4LB_9yQUdtg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10166.png",
+    "status": "IL10",
+    "slot": "IL"
+   },
+   {
+    "key": "469.p.63633",
+    "name": "Sebastian Walcott",
+    "team": "TEX",
+    "pos": "3B,SS",
+    "eligible": [
+     "3B",
+     "SS",
+     "Util",
+     "NA"
+    ],
+    "type": "B",
+    "mlb_id": 806964,
+    "mlb_team_id": null,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/3VovcbMMHu4GvisUw6CUtg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05152026/63633.1.png",
+    "status": "NA",
+    "slot": "NA"
+   },
+   {
+    "key": "469.p.9823",
+    "name": "Carlos Rod\u00f3n",
+    "team": "NYY",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 607074,
+    "mlb_team_id": 147,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/rpLD.krt2S4GwUw6IUZlNg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04042025/9823.png",
+    "status": null,
+    "slot": "SP"
+   },
+   {
+    "key": "469.p.60418",
+    "name": "Ian Seymour",
+    "team": "TB",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 693855,
+    "mlb_team_id": 139,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/wtVKBBSM89I9T2MotOJP6Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/60418.1.png",
+    "status": null,
+    "slot": "SP"
+   },
+   {
+    "key": "469.p.12275",
+    "name": "Dylan Lee",
+    "team": "ATL",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 669276,
+    "mlb_team_id": 144,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/t0WuNpLu3MtuEdmKO9Og9A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/12275.1.png",
+    "status": null,
+    "slot": "RP"
+   },
+   {
+    "key": "469.p.12086",
+    "name": "Jacob Latz",
+    "team": "TEX",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 656641,
+    "mlb_team_id": 140,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/HINixoTj1sjFTP6nA3nnnw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/12086.1.png",
+    "status": null,
+    "slot": "RP"
+   },
+   {
+    "key": "469.p.60218",
+    "name": "Ben Joyce",
+    "team": "LAA",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 690829,
+    "mlb_team_id": 108,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/XavNE5HpUICtszWjKt2zQw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/60218.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.11358",
+    "name": "Garrett Whitlock",
+    "team": "BOS",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 676477,
+    "mlb_team_id": 111,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/hm7sIGTJNLMiyqSbfn4HhA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/11358.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.9262",
+    "name": "Brooks Raley",
+    "team": "PHI",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 548384,
+    "mlb_team_id": 143,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/_8OLs8jvRpdwP2DS4.tJ1A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/9262.1.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.11847",
+    "name": "Joe Ryan",
+    "team": "MIN",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 657746,
+    "mlb_team_id": 142,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/IFRw5y6sCU.G0J5m__4GNQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11847.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.8193",
+    "name": "Max Scherzer",
+    "team": "TOR",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 453286,
+    "mlb_team_id": 141,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/s8g6YiXpjDZT7uvFfgQhcQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03312025/8193.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.11826",
+    "name": "George Kirby",
+    "team": "SEA",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 669923,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/l64JO7q8zIxIHamYYqDixA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/11826.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.9334",
+    "name": "Kevin Gausman",
+    "team": "CHC",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 592332,
+    "mlb_team_id": 112,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/mezKP93eLzc6K6Sit_Q2zw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08192026/9334.2.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.11926",
+    "name": "Reid Detmers",
+    "team": "LAA",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 672282,
+    "mlb_team_id": 108,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/sveBIqO1PTIj_FJyRntiUA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11926.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.11988",
+    "name": "Emerson Hancock",
+    "team": "SEA",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P",
+     "IL"
+    ],
+    "type": "P",
+    "mlb_id": 676106,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/c2IvyY8XhaNffMrCWddDwg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03182025/11988.png",
+    "status": "IL15",
+    "slot": "IL"
+   }
+  ],
+  "b": [
+   {
+    "key": "469.p.11836",
+    "name": "Ivan Herrera",
+    "team": "STL",
+    "pos": "C",
+    "eligible": [
+     "C",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 671056,
+    "mlb_team_id": 138,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/qHGXNod7B5ydUGPgttHrag--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/11836.png",
+    "status": null,
+    "slot": "C"
+   },
+   {
+    "key": "469.p.11733",
+    "name": "Kyle Stowers",
+    "team": "MIA",
+    "pos": "1B,OF",
+    "eligible": [
+     "1B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 669065,
+    "mlb_team_id": 146,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/mRSd3qLBKKKHD_WrNeSVVw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11733.png",
+    "status": null,
+    "slot": "1B"
+   },
+   {
+    "key": "469.p.11118",
+    "name": "Jeff McNeil",
+    "team": "ATH",
+    "pos": "1B,2B,OF",
+    "eligible": [
+     "1B",
+     "2B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 643446,
+    "mlb_team_id": 133,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/fgdAS_y5vD_kwsurK9Fq0g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/11118.png",
+    "status": null,
+    "slot": "2B"
+   },
+   {
+    "key": "469.p.9111",
+    "name": "Manny Machado",
+    "team": "SD",
+    "pos": "3B",
+    "eligible": [
+     "3B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 592518,
+    "mlb_team_id": 135,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/xSZRLVkbgjyGfpl4ZJZPoA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9111.2.png",
+    "status": null,
+    "slot": "3B"
+   },
+   {
+    "key": "469.p.9584",
+    "name": "Corey Seager",
+    "team": "TEX",
+    "pos": "SS",
+    "eligible": [
+     "SS",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 608369,
+    "mlb_team_id": 140,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/TkjsEpEa7RngQCR3hEIzRg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9584.1.png",
+    "status": null,
+    "slot": "SS"
+   },
+   {
+    "key": "469.p.10626",
+    "name": "Juan Soto",
+    "team": "NYM",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 665742,
+    "mlb_team_id": 121,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/fhx6y6D0UhW0SGl9QmDVPA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10626.1.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.62914",
+    "name": "Jonah Cox",
+    "team": "SF",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 813841,
+    "mlb_team_id": 137,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/TcM85WhJ.fAOHWf2QKLjIw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMDA7Y3I9MTtjdz0xNTM7ZHg9NzQ7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/dh/ap/default/140828/silhouette@2x.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.8861",
+    "name": "Mike Trout",
+    "team": "LAA",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 545361,
+    "mlb_team_id": 108,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/mb.TC03B9_xZIpIotNG.yA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/8861.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
+    "key": "469.p.1000001",
+    "name": "Shohei Ohtani (Batter)",
+    "team": "LAD",
+    "pos": "Util",
+    "eligible": [
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 660271,
+    "mlb_team_id": 119,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/n8I0Pc77w7vGpGIWKP_5Cg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10835.png",
+    "status": null,
+    "slot": "Util"
+   },
+   {
+    "key": "469.p.10964",
+    "name": "Luis Garc\u00eda Jr.",
+    "team": "NYY",
+    "pos": "1B,2B",
+    "eligible": [
+     "1B",
+     "2B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 671277,
+    "mlb_team_id": 147,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/shbwLLb24t21SxudQuqs6A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10964.3.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.10572",
+    "name": "Josh Naylor",
+    "team": "SEA",
+    "pos": "1B",
+    "eligible": [
+     "1B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 647304,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/If7ZRO8sqMYRyHeU2Ejz3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/10572.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.60309",
+    "name": "Henry Bolte",
+    "team": "ATH",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 703607,
+    "mlb_team_id": 133,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/pbPTQXDets2A73U4NDJ.4Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05152026/60309.1.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.63537",
+    "name": "Franklin Arias",
+    "team": "BOS",
+    "pos": "SS",
+    "eligible": [
+     "SS",
+     "Util",
+     "NA"
+    ],
+    "type": "B",
+    "mlb_id": 808265,
+    "mlb_team_id": null,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/TcM85WhJ.fAOHWf2QKLjIw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMDA7Y3I9MTtjdz0xNTM7ZHg9NzQ7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/dh/ap/default/140828/silhouette@2x.png",
+    "status": "NA",
+    "slot": "NA"
+   },
+   {
+    "key": "469.p.10909",
+    "name": "Trevor Rogers",
+    "team": "BAL",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 669432,
+    "mlb_team_id": 110,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ElqEChBI_.EZGEUO8OOcuw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10909.png",
+    "status": null,
+    "slot": "SP"
+   },
+   {
+    "key": "469.p.60262",
+    "name": "Logan Henderson",
+    "team": "MIL",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 701656,
+    "mlb_team_id": 158,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/wa.UqLhK3Wgu5stQV92ktw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/60262.png",
+    "status": null,
+    "slot": "SP"
+   },
+   {
+    "key": "469.p.12746",
+    "name": "Abner Uribe",
+    "team": "MIL",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 682842,
+    "mlb_team_id": 158,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/N_zmwyoltUVH1ajAkAJfEw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/12746.png",
+    "status": null,
+    "slot": "RP"
+   },
+   {
+    "key": "469.p.12695",
+    "name": "Louis Varland",
+    "team": "TOR",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 686973,
+    "mlb_team_id": 141,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/RAzLCeWjvzAdeQwd20kOVA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/12695.1.png",
+    "status": null,
+    "slot": "RP"
+   },
+   {
+    "key": "469.p.62935",
+    "name": "Nolan McLean",
+    "team": "NYM",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 690997,
+    "mlb_team_id": 121,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/u9Id2zTl1NUbyytLSmznTQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/62935.1.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.63091",
+    "name": "Erik Sabrowski",
+    "team": "CLE",
+    "pos": "RP",
+    "eligible": [
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 681870,
+    "mlb_team_id": 114,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/gq0FiMSA2qkmTUeek83LjQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/63091.2.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.60907",
+    "name": "Jared Jones",
+    "team": "PIT",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 683003,
+    "mlb_team_id": 134,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/.k1VFYb6HbrvsOGB._NRjQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03122025/60907.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.9121",
+    "name": "Gerrit Cole",
+    "team": "NYY",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 543037,
+    "mlb_team_id": 147,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/Qn0a.T8L9AjMFYRTTF.y5w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9121.1.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.60584",
+    "name": "Bryan Woo",
+    "team": "SEA",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 693433,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/LlR94PnA8AxkmB4x_AxBTw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/60584.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.12114",
+    "name": "Tyler Wells",
+    "team": "TB",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 669330,
+    "mlb_team_id": 139,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/MHo3fdj7sRmkVgHf1uieKQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/12114.1.png",
+    "status": null,
+    "slot": "BN"
+   },
+   {
+    "key": "469.p.10185",
+    "name": "Joe Musgrove",
+    "team": "SD",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P",
+     "IL"
+    ],
+    "type": "P",
+    "mlb_id": 605397,
+    "mlb_team_id": null,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/uLfM0T96zWLgmPvX6fGncA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10185.2.png",
+    "status": "IL60",
+    "slot": "IL"
+   },
+   {
+    "key": "469.p.63187",
+    "name": "Jack Wenninger",
+    "team": "NYM",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P",
+     "NA"
+    ],
+    "type": "P",
+    "mlb_id": 811307,
+    "mlb_team_id": null,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/TcM85WhJ.fAOHWf2QKLjIw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMDA7Y3I9MTtjdz0xNTM7ZHg9NzQ7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/dh/ap/default/140828/silhouette@2x.png",
+    "status": "NA",
+    "slot": "NA"
+   }
+  ]
+ },
+ "lineups": {
+  "a": {},
+  "b": {}
+ },
+ "free_agents": [
+  {
+   "key": "469.p.7590",
+   "name": "Justin Verlander",
+   "team": "DET",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 434378,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VI3vzwWlAnPxcK47uNhu3A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/7590.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.7977",
+   "name": "Andrew McCutchen",
+   "team": "TEX",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 457705,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/btO.i2O5cZoMXDpS22pYCg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03042025/7977.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.8185",
+   "name": "Carlos Carrasco",
+   "team": "ATL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 471911,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/DxOqR0Y4O8fVe1Nalaqr.g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08012025/8185.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.8619",
+   "name": "Carlos Santana",
+   "team": "AZ",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 467793,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/uy46Gk324d_05X7N4mRVow--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/8619.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.8622",
+   "name": "Craig Kimbrel",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 518886,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/LbzHU0YA3OFDWh4026PKpQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/8622.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.8634",
+   "name": "Giancarlo Stanton",
+   "team": "NYY",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 519317,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9VIUZjBXhJt7TcmlB9TKBg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/8634.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.8652",
+   "name": "Mart\u00edn P\u00e9rez",
+   "team": "ATL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 527048,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/5a06i8kSNx4v_3xISj570w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07102026/8652.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.8967",
+   "name": "Paul Goldschmidt",
+   "team": "NYY",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 502671,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/iIBvt0uswG8buHzt.vxwpA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/8967.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9068",
+   "name": "Drew Pomeranz",
+   "team": "CHC",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 519141,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/NUxKu0yiQciQ.1FzthBwHA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9068.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9096",
+   "name": "Travis d'Arnaud",
+   "team": "LAA",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 518595,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/lnGDTMGbSIGjQQI1B_mnPQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9096.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9097",
+   "name": "Gary S\u00e1nchez",
+   "team": "MIL",
+   "pos": "C,1B",
+   "eligible": [
+    "C",
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 596142,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ld_iaOUbrgHGLeJLjtW4iA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9097.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9105",
+   "name": "Nolan Arenado",
+   "team": "AZ",
+   "pos": "3B",
+   "eligible": [
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 571448,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/IIo108T.j4ixyPE39Kview--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/9105.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9108",
+   "name": "Nick Castellanos",
+   "team": "SD",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 592206,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9RhDo_SAKIyRY0VVYlPKcw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9108.2.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9118",
+   "name": "Starling Marte",
+   "team": "KC",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 516782,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/rW5YUP53kfrEUyD5gtEHKQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9118.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9120",
+   "name": "Anthony Gose",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 543238,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.Aon.qLCMd3VFjgQ9mURvw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06052022/9120.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9123",
+   "name": "Jameson Taillon",
+   "team": "TOR",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 592791,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MNSVtaGLe14wIosBw5BeGQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/9123.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.9168",
+   "name": "Patrick Corbin",
+   "team": "TOR",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 571578,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/LAITqcQd7fvPtSIuSrW.8Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04242026/9168.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9173",
+   "name": "Miles Mikolas",
+   "team": "WSH",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 571945,
+   "mlb_team_id": 120,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8d.dU65Q8Pqm9d8mJAcDWw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9173.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9176",
+   "name": "Jose Quintana",
+   "team": "COL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 500779,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/TuTV.km8iT__L70tGfCBJQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9176.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9180",
+   "name": "Sandy Le\u00f3n",
+   "team": "ATL",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 506702,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/qJbN2QRcEw46Ty.CBoiWWQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222025/9180.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9228",
+   "name": "Jorge Soler",
+   "team": "LAA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 624585,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/hXmkrk2OnW_AIb79Wg879Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9228.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9319",
+   "name": "Xander Bogaerts",
+   "team": "SD",
+   "pos": "SS",
+   "eligible": [
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 593428,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/zZ5At8T4.ZI3zxkm_bEAZQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9319.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9320",
+   "name": "Christian Yelich",
+   "team": "MIL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 592885,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xvDsVh4Oy95pCEZtl58jMw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9320.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9321",
+   "name": "Taijuan Walker",
+   "team": "PHI",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 592836,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/OMEbrjFs0KD9TGoxdisvOw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9321.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9336",
+   "name": "Austin Hedges",
+   "team": "CLE",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 595978,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/zXswS_gnaiG_fxGxoeuong--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9336.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9385",
+   "name": "Marcell Ozuna",
+   "team": "PIT",
+   "pos": "Util",
+   "eligible": [
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 542303,
+   "mlb_team_id": 134,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Qa3fx2jPC.c2n6J4DJ4KRA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9385.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9392",
+   "name": "Burch Smith",
+   "team": "DET",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 572143,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/tY_8kzbcb0M_BlJHTg.Edw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07312026/9392.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9402",
+   "name": "Caleb Thielbar",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 573204,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/KLDQuyheo003cT7xcyA5sw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9402.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9414",
+   "name": "Joc Pederson",
+   "team": "TEX",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 592626,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/qcPI6uG.duG912j_kr3Jug--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9414.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9455",
+   "name": "Luis Garc\u00eda",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 472610,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/2VNU6TodjhsqNbOH4uJAIA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/9455.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9517",
+   "name": "Marcus Semien",
+   "team": "NYM",
+   "pos": "2B",
+   "eligible": [
+    "2B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 543760,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/k_VZCGSH8c2PC5sopm02dg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9517.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9544",
+   "name": "Lucas Sims",
+   "team": "CWS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 608371,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/nfQ25N6StrwOsh5wHYVvXw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/9544.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9547",
+   "name": "Hunter Harvey",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 640451,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/0obOOpI2BLFiZHWepS3r4g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9547.3.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9555",
+   "name": "Carl Edwards Jr.",
+   "team": "DET",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605218,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/aOSwmQ2YyjxiT.WBhWfguQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9555.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9557",
+   "name": "Javier B\u00e1ez",
+   "team": "DET",
+   "pos": "2B,3B,SS,OF",
+   "eligible": [
+    "2B",
+    "3B",
+    "SS",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 595879,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/dAeQgPB8W1.bbZSxcTuqqA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202025/9557.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9559",
+   "name": "Pierce Johnson",
+   "team": "CIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 572955,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/dA3b0Wpo_QGocTsAUMGoYg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9559.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9571",
+   "name": "Trevor Story",
+   "team": "BOS",
+   "pos": "SS",
+   "eligible": [
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 596115,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/uD7.BPO2KWw2uAjTC8Qv8w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/9571.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9573",
+   "name": "Carlos Correa",
+   "team": "HOU",
+   "pos": "3B,SS",
+   "eligible": [
+    "3B",
+    "SS",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 621043,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/wdZ6KWSHDA0WvuXtifHdsQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9573.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9575",
+   "name": "Lance McCullers Jr.",
+   "team": "MIL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 621121,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/o8GHEx4cLScN0S8_5moBWw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/9575.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9582",
+   "name": "Sean Manaea",
+   "team": "NYM",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 640455,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/dgAg149dLIaHt6U8xvn_Bw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9582.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9590",
+   "name": "Byron Buxton",
+   "team": "MIN",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 621439,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VFJCi8JMR4W3YY2XZEU4fQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9590.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.9595",
+   "name": "Dominic Smith",
+   "team": "ATL",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 642086,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/C.VoTZERQQmPzJ5o.R4Z1g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04242026/9595.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9599",
+   "name": "Steven Matz",
+   "team": "TB",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 571927,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/_72g55YaxwKRsUq4PtWIJg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9599.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9610",
+   "name": "J.P. Crawford",
+   "team": "SEA",
+   "pos": "3B,SS",
+   "eligible": [
+    "3B",
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 641487,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xiXC1.6MCIw9.V__9jh9bA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/9610.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9615",
+   "name": "Reese McGuire",
+   "team": "CWS",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 624512,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/y6ujjw95n2fzDUQ0wfvL7g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/9615.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9627",
+   "name": "Marco Gonzales",
+   "team": "TEX",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 594835,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/UcFVo7B9UkFP4OpMDy5SHA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/9627.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9640",
+   "name": "Lucas Giolito",
+   "team": "SD",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 608337,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Bl.x6lVCb5tqSlL4kxkQyw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/9640.3.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9653",
+   "name": "Tommy Kahnle",
+   "team": "BOS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 592454,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/B585yke35ihWTCzsgOlB3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202025/9653.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9668",
+   "name": "Aaron Brooks",
+   "team": "TB",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605156,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Qyt8L7MhT6wqjT0Q5oDwqg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242023/9668.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9672",
+   "name": "Blake Treinen",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 595014,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xfYT_feG42bnh2F8_Eu_NQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9672.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9684",
+   "name": "Chris Martin",
+   "team": "TEX",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 455119,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/4DRn00Bch.PbpZsWAM7bBA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9684.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9689",
+   "name": "Randal Grichuk",
+   "team": "CWS",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 545341,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Gdesh0Rkik61lRC3LK86cg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/9689.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9691",
+   "name": "Robbie Ray",
+   "team": "SD",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 592662,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/hApuetEvOOsOARWT35zf9Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/9691.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9718",
+   "name": "J.T. Realmuto",
+   "team": "PHI",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 592663,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ciLFcJw8MVom4rOlvVTfUA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9718.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9726",
+   "name": "Miguel Rojas",
+   "team": "LAD",
+   "pos": "2B,3B,SS",
+   "eligible": [
+    "2B",
+    "3B",
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 500743,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ErmnQ7TO9jKf4GRoTYvQVg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9726.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9727",
+   "name": "Kirby Yates",
+   "team": "PIT",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 489446,
+   "mlb_team_id": 134,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/a1nzHsgRsZmI.QR3ASW_ng--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/9727.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.9750",
+   "name": "Jorge Polanco",
+   "team": "NYM",
+   "pos": "2B,3B",
+   "eligible": [
+    "2B",
+    "3B",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 593871,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YXlwbrnQiI1lrx6q.AoRVw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9750.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9754",
+   "name": "Enrique Hern\u00e1ndez",
+   "team": "LAD",
+   "pos": "1B,2B,3B,OF",
+   "eligible": [
+    "1B",
+    "2B",
+    "3B",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 571771,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/CkxIiQebpE0NQYGppKSOhg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102025/9754.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9762",
+   "name": "Christian V\u00e1zquez",
+   "team": "HOU",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 543877,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/6UH0ZPcbTznxN5v4oJaGYw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/9762.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9818",
+   "name": "James McCann",
+   "team": "AZ",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 543510,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/AO3JL5aPDSqfgmYLL5kpuw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/9818.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9842",
+   "name": "Tommy Pham",
+   "team": "CWS",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 502054,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/KUyHo.d5IRT_ukROEETaEg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03122025/9842.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.9844",
+   "name": "Danny Coulombe",
+   "team": "BOS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 543056,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9lSQc.nYefILc0vCVhEzIQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08052025/9844.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9851",
+   "name": "Rob Refsnyder",
+   "team": "SEA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 608701,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/r4RwUf2WSjDNbYzJro.0Fw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/9851.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9863",
+   "name": "Kyle Freeland",
+   "team": "COL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 607536,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/sMCd7nBeayHBLTUHftFmjQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9863.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.9866",
+   "name": "Derek Hill",
+   "team": "PHI",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 656537,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/NbfkoVmF5GO8Kxcbw30I.g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/9866.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9868",
+   "name": "Sean Newcomb",
+   "team": "CWS",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656794,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/11jJ8YTAGPyzhqyA_lBwSQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/9868.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9871",
+   "name": "Orlando Arcia",
+   "team": "CIN",
+   "pos": "1B,2B,3B,SS",
+   "eligible": [
+    "1B",
+    "2B",
+    "3B",
+    "SS",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 606115,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/5xEM4hcDrNE69ybztbekUQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05302025/9871.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9875",
+   "name": "Michael Conforto",
+   "team": "CHC",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 624424,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VaAMEXuCj0bLtvNCdjjTVA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/9875.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9879",
+   "name": "Luis Severino",
+   "team": "ATH",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 622663,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/6OAh22RWrcIqVr1x8j.3LA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/9879.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9885",
+   "name": "Alex Jackson",
+   "team": "MIN",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 656577,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/HE0aQ9wMrB4RJQBDvSca3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9885.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9893",
+   "name": "Willy Adames",
+   "team": "SF",
+   "pos": "SS",
+   "eligible": [
+    "SS",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 642715,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/oLSehGe1g39jr26D9SEOGw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9893.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.9896",
+   "name": "Jeff Hoffman",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656546,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/v5kPOU1VLB4BsUa26Jiwew--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/9896.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9900",
+   "name": "Yo\u00e1n Moncada",
+   "team": "LAA",
+   "pos": "3B",
+   "eligible": [
+    "3B",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 660162,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/23FjkfpZXeIANVg_OqOd5w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/9900.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9949",
+   "name": "Michael Lorenzen (Pitcher)",
+   "team": "TOR",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 547179,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/A8kWuPAotLcBgXvpjARZgA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/9949.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.9987",
+   "name": "Joe Ross",
+   "team": "TEX",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605452,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/iI2EqpDImjo6n6.5SynhZw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142025/9987.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.9992",
+   "name": "Vince Velasquez",
+   "team": "CHC",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 592826,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/qPedZIIiBZ2c_tka.SnGeA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272023/9992.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10011",
+   "name": "Matthew Boyd",
+   "team": "CHC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 571510,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/StT9gJHJ8Yk5gOffM9T0uw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10011.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10047",
+   "name": "Shawn Armstrong",
+   "team": "CLE",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 542888,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/6Wn_nqCTsUc8Sddn6IeaPg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10047.2.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10068",
+   "name": "Luke Maile",
+   "team": "KC",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 571912,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8BzuXOusyNol9kh16JlZkA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07072025/10068.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10076",
+   "name": "Elias D\u00edaz",
+   "team": "TEX",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 553869,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/TI4HndGsG5Mk4aCdulRO4Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/10076.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10095",
+   "name": "Max Kepler",
+   "team": "AZ",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 596146,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xsdX49tFK_pbKNk_Qa4qwA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10095.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10098",
+   "name": "Adrian Houser",
+   "team": "SF",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 605288,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/SFO.Y7CB.e3kLq3HpqhlHw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10098.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10109",
+   "name": "Steven Okert",
+   "team": "HOU",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 595345,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3bPEkNQO9tn.ydUXgqPaJg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10109.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10119",
+   "name": "Mike Yastrzemski",
+   "team": "ATL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 573262,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3JxnwLeQyFd3TvjUA94dGQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10119.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10133",
+   "name": "Taylor Rogers",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 573124,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/OKAqZwaiFP13Ydg5SpZlmA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10133.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10141",
+   "name": "Zach Eflin",
+   "team": "BAL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 621107,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/cDGrq0RdjF1qp9gYYOgEDQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10141.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10144",
+   "name": "Trevor Williams",
+   "team": "TEX",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 592866,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/nvPMjmF78lnxubIEa.hlkw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03282025/10144.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10145",
+   "name": "Tyron Guerrero",
+   "team": "BOS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 594027,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xUJFnTSVGaJDWNIhGTCjNQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10145.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10147",
+   "name": "Ryan Yarbrough",
+   "team": "NYY",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 642232,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/c0N5mPFuWOnyn1rin0TJ1A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10147.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10152",
+   "name": "Reynaldo L\u00f3pez",
+   "team": "ATL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 625643,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/GXMdAWXZF4.suLpytl_.jQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10152.3.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10153",
+   "name": "Austin Voth",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 608723,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/R6rBRFNrcT5l.NmSYsnNwA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/02282024/10153.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10157",
+   "name": "Trey Mancini",
+   "team": "LAA",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 641820,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.JU1KFKOIG.pPCzpdsMKEw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03072023/10157.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10159",
+   "name": "Andrew Benintendi",
+   "team": "CWS",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 643217,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/HO3rTYIZEVU7TfeEtnAKgQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10159.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10175",
+   "name": "Ryan McMahon",
+   "team": "NYY",
+   "pos": "3B",
+   "eligible": [
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 641857,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/hsF.7UYI3fzvbYAYiZrSyA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10175.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10176",
+   "name": "Antonio Senzatela",
+   "team": "MIL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 622608,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/sgwylOgJYmbJRMQFOgeMFw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10176.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10178",
+   "name": "Sam Moll",
+   "team": "CIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 594580,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/C.aoQgHDgsmn4q.nYXpdgg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10178.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10179",
+   "name": "Michael Fulmer",
+   "team": "NYY",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 605242,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/p34VYugwjQn.XL_FsLUGmQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06242025/10179.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10195",
+   "name": "Tyrone Taylor",
+   "team": "CHC",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 621438,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/h199VRHKXPVtuNu2zTRJ8g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10195.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10214",
+   "name": "Edwin D\u00edaz",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 621242,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/oCvtuwMQk87xMSALPMWEHg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10214.2.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10215",
+   "name": "Tyler O'Neill",
+   "team": "BAL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 641933,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kdMM0..9UkutpccjsW60MQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10215.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10217",
+   "name": "Luke Weaver",
+   "team": "PIT",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 596133,
+   "mlb_team_id": 134,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Y3bo3HYplOb69PLx0iibMg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10217.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10220",
+   "name": "Andrew Velazquez",
+   "team": "KC",
+   "pos": "2B,SS,OF",
+   "eligible": [
+    "2B",
+    "SS",
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 623205,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/WugaoqpKyTAoZE.e_xUAuQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/10220.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10227",
+   "name": "Victor Robles",
+   "team": "SEA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 645302,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/OSjLxMHDIHKERwEDprerDA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/10227.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10229",
+   "name": "Erick Fedde",
+   "team": "CWS",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 607200,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/_X9SuX38kvfln4FGPdeWRQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10229.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10233",
+   "name": "Amed Rosario",
+   "team": "NYY",
+   "pos": "2B,3B",
+   "eligible": [
+    "2B",
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 642708,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/fEAjNjBrfp0PKAMfNvtyBQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10233.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10234",
+   "name": "Dansby Swanson",
+   "team": "CHC",
+   "pos": "SS",
+   "eligible": [
+    "SS",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 621020,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/fSiqt.gjbC0TxA66BXbRKA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10234.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10236",
+   "name": "Gleyber Torres",
+   "team": "DET",
+   "pos": "2B",
+   "eligible": [
+    "2B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 650402,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/_BR.v96et1272F107.sBJg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10236.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10239",
+   "name": "Jorge Mateo",
+   "team": "TB",
+   "pos": "2B,SS,OF",
+   "eligible": [
+    "2B",
+    "SS",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 622761,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/fTJSsSdnfQXWfo.bqs1hZA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10239.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10264",
+   "name": "Chris Devenski",
+   "team": "NYM",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 606965,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/bEnY4W8d8sc4Aj3LuKqBNQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07242026/10264.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10269",
+   "name": "Derek Law",
+   "team": "AZ",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 571882,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/SAXwaCV0IngXdRkpEkoORw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03282025/10269.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10274",
+   "name": "Carlos Est\u00e9vez",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 608032,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VSRTHANRwrHFxAfjR7WTEQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242025/10274.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10285",
+   "name": "Albert Su\u00e1rez",
+   "team": "BAL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 544150,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/CG.5iyV_EK1uzkdGd3mkRg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132025/10285.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10322",
+   "name": "Adam Frazier",
+   "team": "LAA",
+   "pos": "2B,OF",
+   "eligible": [
+    "2B",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 624428,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/4Zzt.MZP05FMSqOJVyCwiw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10322.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10325",
+   "name": "Brock Stewart",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 592779,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/i3.yQd9b8Stn.nQd4Bhscw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10325.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10326",
+   "name": "Seth Lugo",
+   "team": "KC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 607625,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/gXUtYJHcCl4wFKUMN58hBA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10326.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10328",
+   "name": "Jeimer Candelario",
+   "team": "LAA",
+   "pos": "1B,3B",
+   "eligible": [
+    "1B",
+    "3B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 600869,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/UzCfpM.sHhL0iCOUYr4GtQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192025/10328.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10355",
+   "name": "Matt Strahm",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 621381,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.qSXSP7hYF0cx1BkSHnoIQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10355.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10370",
+   "name": "Brent Suter",
+   "team": "ATL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 608718,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kp29jEOQhsFWKdVcS_qL4w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10370.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10383",
+   "name": "Ty Blach",
+   "team": "CHC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 621389,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/0VCe2Ny7ZmgGr8hTkblJzQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04182023/10383.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10391",
+   "name": "Wandy Peralta",
+   "team": "SD",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 593974,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/voD8a1jPTPRFz1eI6wd_og--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10391.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10393",
+   "name": "Joe Mantiply",
+   "team": "TOR",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 573009,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/KidrXVnuo_ia4_vQFfASTA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10393.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10395",
+   "name": "Carson Kelly",
+   "team": "CHC",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 608348,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/DpoejfsVA1DsQdi1K2fDow--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10395.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10402",
+   "name": "Germ\u00e1n M\u00e1rquez",
+   "team": "MIN",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 608566,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/y4gynMSXvosxWoqmk5cpOA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/10402.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10413",
+   "name": "Anthony Banda",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 607455,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/nOBz5MT7mr4PNCA9yjJevA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10413.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10415",
+   "name": "Taylor Clarke",
+   "team": "AZ",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 664199,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/7B7st37rnZig8FZ_jT9NKA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/10415.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10418",
+   "name": "Brad Keller",
+   "team": "PHI",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 641745,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/_moEHsUbIbgeHKdnuykUyA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10418.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10422",
+   "name": "Kolby Allard",
+   "team": "PHI",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 663465,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/biLAghGCT431CcHVE6ZEAQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06022025/10422.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10423",
+   "name": "Michael Soroka",
+   "team": "AZ",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 647336,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/DMWVT9SUb80jwUwNt6yeaw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/10423.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10429",
+   "name": "Ryan Mountcastle",
+   "team": "BAL",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 663624,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/BTI.Kkol_ljDDcHQ8Jb_7g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10429.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10431",
+   "name": "Keegan Akin",
+   "team": "BAL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 669211,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/dCRs54krLHJe2R0QM7o0QQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10431.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10439",
+   "name": "Eloy Jim\u00e9nez",
+   "team": "TOR",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 650391,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/u5_nwZRDbe03.Jum4sM2kA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08122024/10439.8.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10464",
+   "name": "Will Benson",
+   "team": "CIN",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 666181,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Tv458siIeu75PQ9r2ZOTcA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10464.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10467",
+   "name": "Peter Lambert",
+   "team": "HOU",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663567,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9KFvqVQqhriicqjY2zLCUA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04282026/10467.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10469",
+   "name": "Tyler Alexander",
+   "team": "TEX",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 641302,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/e22bgWQSKhiq6L8X8wHOVA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10469.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10476",
+   "name": "Jos\u00e9 Az\u00f3car",
+   "team": "ATL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 640492,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/hBH4xZXxKyVmhs2IhYlP6A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03262025/10476.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10478",
+   "name": "Garrett Stubbs",
+   "team": "PHI",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 596117,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/vRMjq1Prg9W5qtZqIb12Ow--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10478.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10481",
+   "name": "Daz Cameron",
+   "team": "TOR",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 663662,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Kc8.0E8_UQuft.8WbpfWqg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05062025/10481.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10488",
+   "name": "Scott Blewett",
+   "team": "ATH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656240,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/sX9LEPYioZlbp4zyxgOyEQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06182025/10488.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10489",
+   "name": "Foster Griffin",
+   "team": "CLE",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656492,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/aCPiPsjx1wm9qwWzlnUSsw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10489.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10494",
+   "name": "Jakob Junis",
+   "team": "TEX",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 596001,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Fhkg0KznJvH1uSLEoZCCrg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10494.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10498",
+   "name": "Jahmai Jones",
+   "team": "BOS",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 663330,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/m_YCBA8v2geV04BQXdnNcQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10498.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10513",
+   "name": "Braxton Garrett",
+   "team": "CHC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 666129,
+   "mlb_team_id": 146,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/2.skpDEAawd3e6WB3c08jw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08072026/10513.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10514",
+   "name": "Luis Castillo",
+   "team": "CWS",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 622491,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MTEtD6egcFUjMTgEN76gcw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10514.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10522",
+   "name": "Trent Grisham",
+   "team": "NYY",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 663757,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/WW0MnomGlYuBRlfiprNsgA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10522.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10524",
+   "name": "Mauricio Dub\u00f3n",
+   "team": "ATL",
+   "pos": "2B,3B,SS,OF",
+   "eligible": [
+    "2B",
+    "3B",
+    "SS",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 643289,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3_BNxZO5cdgiZzgti.vd5A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10524.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10526",
+   "name": "Cody Ponce",
+   "team": "TOR",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 664074,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MSkkSrnuKpn9xx.uBCoZcg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/10526.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10533",
+   "name": "Ben Rortvedt",
+   "team": "LAD",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 666163,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kbM2AERquIThwVnQZjeX7Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10533.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10538",
+   "name": "Anthony Kay",
+   "team": "CWS",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 641743,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/eBrHhoY2CWkCi2Pv6diQSA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10538.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10544",
+   "name": "Miguel Andujar",
+   "team": "SD",
+   "pos": "3B,OF",
+   "eligible": [
+    "3B",
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 609280,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/H3NwKlsAMFVYK5h6bxz2hg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10544.2.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10549",
+   "name": "Grant Holmes",
+   "team": "ATL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656550,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/WT8nvX9kpX93BpLWvp1TIw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10549.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10556",
+   "name": "Rhys Hoskins",
+   "team": "CLE",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 656555,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/4JKp0N2OFgDHrNc5Q_jTkA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10556.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10557",
+   "name": "Mickey Moniak",
+   "team": "COL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666160,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/jqyXQCKZI.3Bn1Cej0Bs7Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10557.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10558",
+   "name": "Scott Kingery",
+   "team": "CHC",
+   "pos": "2B",
+   "eligible": [
+    "2B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 664068,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Rc2PN_qY110VEQi9KLVVTg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03252025/10558.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10565",
+   "name": "Mitch Keller",
+   "team": "PIT",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 656605,
+   "mlb_team_id": 134,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YZ2kZQlxf65DO2mGdHxWQQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10565.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10566",
+   "name": "Ke'Bryan Hayes",
+   "team": "CIN",
+   "pos": "3B",
+   "eligible": [
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 663647,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/A41iVG346jnf5odZahJvhw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10566.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10570",
+   "name": "Luis Ur\u00edas",
+   "team": "TOR",
+   "pos": "2B,3B",
+   "eligible": [
+    "2B",
+    "3B",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 649966,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9RhnbycUWqemKGpskpbXtw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10570.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10575",
+   "name": "Chris Paddack",
+   "team": "TEX",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 663978,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ypsKaBXEFLUsQ0l8XPtSZg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10575.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10576",
+   "name": "Eric Lauer",
+   "team": "LAD",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 641778,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/RWQXpaFGlQCGH.wH8gsCUQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07082026/10576.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10578",
+   "name": "Aramis Garcia",
+   "team": "AZ",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 605244,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ZS0SusnXxCoBXMH4Jqny7w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03282023/10578.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10591",
+   "name": "Harrison Bader",
+   "team": "SF",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 664056,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VXjFojwT7U4TTnxOn7n2sw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10591.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10592",
+   "name": "Jack Flaherty",
+   "team": "DET",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 656427,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/co6_7pPxxT7bzgqgdCMKHg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10592.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10594",
+   "name": "Edmundo Sosa",
+   "team": "PHI",
+   "pos": "2B,3B,SS,OF",
+   "eligible": [
+    "2B",
+    "3B",
+    "SS",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 624641,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/oueDoRHpFaAn4mdbimMzgg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10594.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10601",
+   "name": "Josh Lowe",
+   "team": "LAA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666139,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Zi0c6y5LjAljJzdw0RdcFg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10601.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10606",
+   "name": "Ryne Stanek",
+   "team": "STL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 592773,
+   "mlb_team_id": 138,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kNf.sZHJtYxVxeEhDhzv_g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/10606.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10607",
+   "name": "Andy Ib\u00e1\u00f1ez",
+   "team": "SEA",
+   "pos": "2B,3B",
+   "eligible": [
+    "2B",
+    "3B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 628451,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/AnFfHQT4h_kTgErhU4yooQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10607.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10608",
+   "name": "Leody Taveras",
+   "team": "BAL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 665750,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MtnppjXfCBA0Pw2lisXqZA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10608.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10610",
+   "name": "Cole Ragans",
+   "team": "KC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 666142,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kbLVgoIRDjKS5exK5FDedg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10610.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10616",
+   "name": "Lourdes Gurriel Jr.",
+   "team": "AZ",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666971,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/NICwiGI.xzqRPDEmwSZCbg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/10616.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10620",
+   "name": "Rowdy Tellez",
+   "team": "ATL",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 642133,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/oNhcLT5yUHmWtmnYoDp65Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07212025/10620.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10643",
+   "name": "Dylan Carlson",
+   "team": "CHC",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 666185,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/mwHOe0rBhNqkbRp2rIgNjw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132025/10643.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10644",
+   "name": "Cionel P\u00e9rez",
+   "team": "NYM",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 672335,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/atB_wfvfobXtStbO6a.hlw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/10644.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10659",
+   "name": "Lucas Erceg",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 668674,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/E9vVbvtn7mQVC8cY6qvRdQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10659.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10660",
+   "name": "Jordan Montgomery",
+   "team": "TEX",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656756,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/anx7HaKLeK8wrGTUu.vDPg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10660.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10669",
+   "name": "Luis Torrens",
+   "team": "NYM",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 620443,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/pNdJvlOduNqH1XE4LdIhXA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10669.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10678",
+   "name": "Kyle Higashioka",
+   "team": "TEX",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 543309,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9M1JJ5qEKK6VTXcKNm6Ttg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10678.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10681",
+   "name": "Mark Leiter Jr.",
+   "team": "ATH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 643410,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/g8Vo.AOhR5p7tds8vPCEUw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10681.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10692",
+   "name": "Jos\u00e9 Alvarado",
+   "team": "PHI",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 621237,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VhvZTeH4nPhdqI2jvV8KZg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10692.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10711",
+   "name": "John Brebbia",
+   "team": "BOS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605154,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/UA_c3K9JjuEsDr_5wpFTXA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202025/10711.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10719",
+   "name": "Austin Slater",
+   "team": "TB",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 596103,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/v1zAti5lSv24FKeWhAI7dw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08012025/10719.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10729",
+   "name": "Phil Maton",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 664208,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/wXwe2abGg7JPCjI2JUCJ7Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10729.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10730",
+   "name": "Brandon Woodruff",
+   "team": "MIL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 605540,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ro.8nXOgH1MVkJ40AN9CIQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10730.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10736",
+   "name": "Hoby Milner",
+   "team": "SEA",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 571948,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/X8ZdSb5YCYkiXPtugPNI8g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10736.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10748",
+   "name": "Victor Caratini",
+   "team": "MIN",
+   "pos": "C,1B",
+   "eligible": [
+    "C",
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 605170,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VF6rncF4ergJLLBRvK9JaQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10748.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10752",
+   "name": "Ildemaro Vargas",
+   "team": "AZ",
+   "pos": "1B,2B",
+   "eligible": [
+    "1B",
+    "2B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 545121,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/UZ1F_xj9GTUApidOAz5W_w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06242025/10752.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10756",
+   "name": "Paul Blackburn",
+   "team": "NYY",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 621112,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/GoDcOsttRh8CQnkNDvjm.w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10756.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10763",
+   "name": "Andrew Kittredge",
+   "team": "BAL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 552640,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kkkxKIqNHrqihbIgPLAdbQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10763.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10765",
+   "name": "Luis Robert Jr.",
+   "team": "BAL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 673357,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/FSb5O3Xy2NR22GFg.rZJYg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10765.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10773",
+   "name": "Aaron Bummer",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 607481,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/elxrLeAIr5Mxk7PFEYF9dA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10773.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10775",
+   "name": "Kyle Farmer",
+   "team": "ATL",
+   "pos": "1B,2B,3B,SS",
+   "eligible": [
+    "1B",
+    "2B",
+    "3B",
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 571657,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/zBbUQLRAIwG1heS_pSYKkQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202025/10775.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10779",
+   "name": "Drew Anderson",
+   "team": "DET",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 623454,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/33Ftg_bMv.2vEQVR9azjGQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10779.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10783",
+   "name": "Dietrich Enns",
+   "team": "BAL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 608650,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/5lihaHeBa6TK6fhrEpGGCg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10783.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10787",
+   "name": "Tim Mayza",
+   "team": "PHI",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 641835,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/As8kajmEt1sRZbLapxxAFQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07242026/10787.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10789",
+   "name": "Mitch Garver",
+   "team": "NYY",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 641598,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/IRestSY8SUYp27DRRHauKg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/02282024/10789.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10792",
+   "name": "Yacksel R\u00edos",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605441,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/xYdNdEqbKwCqfSn30pbpZQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04282021/10792.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10794",
+   "name": "A.J. Minter",
+   "team": "MIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 621345,
+   "mlb_team_id": 142,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/eJpJw7Oe5XERmsqmDPieNQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10794.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10826",
+   "name": "Austin Hays",
+   "team": "SD",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 669720,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.pDV6blu1sFcBjwVxmN.Vw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10826.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10842",
+   "name": "Pavin Smith",
+   "team": "AZ",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 656976,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/PsVF2SE7WetnVUMtO.rqqQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/10842.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10843",
+   "name": "Daulton Varsho",
+   "team": "HOU",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 662139,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/h9Xmcf7ru1PoSVZGn9pydg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10843.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10846",
+   "name": "Bryse Wilson",
+   "team": "MIL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 669060,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/1Nk6H7R8CUu68J5ZlnggCg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/10846.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10848",
+   "name": "DL Hall",
+   "team": "MIL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 669084,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8zbTyPLYFbd2_3r23WREOw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10848.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10849",
+   "name": "Cedric Mullins",
+   "team": "TB",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 656775,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/nQrlZjRHKL2IzyVljihJhw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10849.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10850",
+   "name": "Jalen Beeks",
+   "team": "TEX",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 656222,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VKwSIf1Qj3ykE8_Cmobe1Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10850.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10860",
+   "name": "Alex Lange",
+   "team": "KC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656638,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ERIDZc18HxJH871QTkThwQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10860.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10861",
+   "name": "Brendon Little",
+   "team": "TOR",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663893,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/oBp0QDjsc.sqQTeW4Nzpdg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10861.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10862",
+   "name": "Hunter Greene",
+   "team": "CIN",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 668881,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ht5jSOkqROKaHMkiAbgr9w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10862.3.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10864",
+   "name": "Tony Santillan",
+   "team": "CIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663574,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Cb2Lw.L43XEKBYBvCdrtJg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10864.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10865",
+   "name": "Jose Siri",
+   "team": "LAA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 642350,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/TQqj5EPD9QJ3Z_1qb_KhDg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/10865.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10866",
+   "name": "Taylor Trammell",
+   "team": "HOU",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666211,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/B7CqtMhWEH2hHtiwHB6z1w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212025/10866.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10867",
+   "name": "Shane Bieber",
+   "team": "TOR",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 669456,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/UsquzO61G3vjs4B.dKX4hA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10867.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10868",
+   "name": "Willi Castro",
+   "team": "COL",
+   "pos": "1B,2B,3B,SS,OF",
+   "eligible": [
+    "1B",
+    "2B",
+    "3B",
+    "SS",
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 650489,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/U31OEunhcVbZtR.FvEOldA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10868.1.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10869",
+   "name": "Aaron Civale",
+   "team": "CHC",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 650644,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/RPhnJKfrEJIeDbF14HZpAQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10869.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10875",
+   "name": "Ryan Vilade",
+   "team": "TB",
+   "pos": "1B,2B,OF",
+   "eligible": [
+    "1B",
+    "2B",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 668723,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/aOFngPO_l.ZfGLV2PnpRSw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10875.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10877",
+   "name": "Jake Burger",
+   "team": "TEX",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 669394,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/NNWnRMwj9cKm_xAopaXVkA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10877.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10879",
+   "name": "Gavin Sheets",
+   "team": "SD",
+   "pos": "1B,OF",
+   "eligible": [
+    "1B",
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 657757,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/5MbeeDBgO03knC.HKmTo_A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10879.2.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.10889",
+   "name": "Richard Lovelady",
+   "team": "WSH",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 663992,
+   "mlb_team_id": 120,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/uDo0XDOZ7w5jd.YgdCi5Kw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10889.3.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10891",
+   "name": "MJ Melendez",
+   "team": "NYM",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 669004,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/qpnf7JvAY_OqxmdIzO1NlQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10891.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10893",
+   "name": "Jo Adell",
+   "team": "CLE",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666176,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/51Ds0CqxO1YCf.6e18gz6Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10893.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10894",
+   "name": "Griffin Canning",
+   "team": "SD",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656288,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3cHZFRRwKts13Du7bkuDqA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10894.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10898",
+   "name": "Dustin May",
+   "team": "MIL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 669160,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3dfY3k4x_KygMsHPNQzb3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10898.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10899",
+   "name": "Keibert Ruiz",
+   "team": "WSH",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 660688,
+   "mlb_team_id": 120,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/i0pPYnTqZg29klWHBPNgaA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10899.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10900",
+   "name": "Jake Rogers",
+   "team": "CWS",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 668670,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/sCyf8UZqbrlT461Bs0EneA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10900.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10901",
+   "name": "Dennis Santana",
+   "team": "AZ",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 642701,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/4XKkks8fofVbogkJ8tjBnw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10901.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10903",
+   "name": "Edward Cabrera",
+   "team": "CHC",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 665795,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/JcEX06FNO9nEcZenu77F7Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10903.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10917",
+   "name": "Brent Rooker",
+   "team": "ATH",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 667670,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/EQkQVa3QrAZIIpIa5ixgqA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10917.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10919",
+   "name": "Andr\u00e9s Gim\u00e9nez",
+   "team": "TOR",
+   "pos": "2B,SS",
+   "eligible": [
+    "2B",
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 665926,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/4izMIZqNBehlPe5Jwe6TYg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/10919.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10921",
+   "name": "David Peterson",
+   "team": "CHC",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656849,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/WDuISmh50Il80JKtkfzPJA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10921.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10922",
+   "name": "Mark Vientos",
+   "team": "NYM",
+   "pos": "1B,3B",
+   "eligible": [
+    "1B",
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 668901,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/agCYXh.zmrVnBW8B7kOjsA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10922.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10927",
+   "name": "Nick Solak",
+   "team": "SD",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 669256,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/GpXgkUkBT5ytRjZyrv6Wwg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05202025/10927.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10929",
+   "name": "Sean Murphy",
+   "team": "ATL",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 669221,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/PwcyP33peEPFKlufKTR6oQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10929.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10934",
+   "name": "Shane Baz",
+   "team": "BAL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 669358,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/OHNyrcs2jLZ8YHdEPKNwFw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10934.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10941",
+   "name": "Joey Lucchesi",
+   "team": "LAA",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 664192,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/NbluSWMDmEEA1vlxec9ozQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06242025/10941.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10944",
+   "name": "Heliot Ramos",
+   "team": "NYY",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 671218,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YNXfn._GVMBQGmGxkFxY3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/10944.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10946",
+   "name": "Ryan Helsley",
+   "team": "BAL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 664854,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3w5o8llPUvnL81P9zVbC5Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10946.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.10947",
+   "name": "Jordan Hicks",
+   "team": "CWS",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663855,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/PWKXsL7AhjiOz2ErrMCK5Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10947.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10951",
+   "name": "Jes\u00fas S\u00e1nchez",
+   "team": "TOR",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 660821,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/t4qSKFu1ZFSPTPGC4xNtLg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/10951.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10958",
+   "name": "Ryan Borucki",
+   "team": "CLE",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 621366,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/b__Q2e2xmodcTEZOAIDCHg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/10958.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10959",
+   "name": "Danny Jansen",
+   "team": "TEX",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 643376,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Js7JohJNndl3dv4BorQurw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10959.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10965",
+   "name": "Daniel Johnson",
+   "team": "HOU",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 669288,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/5_irx5gEzlyHMO1hDJHSYA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06242025/10965.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10972",
+   "name": "Elieser Hern\u00e1ndez",
+   "team": "ATL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 622694,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ZdjsEEQKtErYttFrPK0D9A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/10972.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10976",
+   "name": "Julian Fern\u00e1ndez",
+   "team": "WSH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 642759,
+   "mlb_team_id": 120,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8qP_dZEoDOwivBpemxmUew--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/06212023/10976.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10985",
+   "name": "Tyler Kinley",
+   "team": "DET",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 641755,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/WhXCyggzAM4xuq2G0dfuMw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10985.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10986",
+   "name": "Tim Hill",
+   "team": "NYY",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 657612,
+   "mlb_team_id": 147,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/CF8MldO8tc6tEaVMtMYTgA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/10986.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10988",
+   "name": "Trevor Richards",
+   "team": "CWS",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 670950,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/d0NDCNYFd.3DngPVCnHjrQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/10988.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10989",
+   "name": "Tanner Rainey",
+   "team": "DET",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 663432,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/RpEYzmBa2.KihnBMjKH_Hg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05202025/10989.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10992",
+   "name": "Isiah Kiner-Falefa",
+   "team": "BOS",
+   "pos": "2B,3B,SS",
+   "eligible": [
+    "2B",
+    "3B",
+    "SS",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 643396,
+   "mlb_team_id": 111,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ceZoKa3RMBrD2VH5aT_VWw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10992.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.10997",
+   "name": "Lou Trivino III",
+   "team": "PHI",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 642152,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/BZkvpRow84es47fJsiA.8g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07242026/10997.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.10998",
+   "name": "Scott Barlow",
+   "team": "ATH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 605130,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/jGzeP4UMQ_y_K1lhpSrfpg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/10998.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11009",
+   "name": "Jason Adam",
+   "team": "SD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 592094,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/jFuzuq.9KzY6SeCKT7ly5g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11009.2.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11011",
+   "name": "Seranthony Dom\u00ednguez",
+   "team": "SEA",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 622554,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/aa7j_70uDZug5Xo1CzRyQA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/11011.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11033",
+   "name": "Austin Wynns",
+   "team": "CHC",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 642851,
+   "mlb_team_id": 140,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/AiL5TGIZ32EsIkOqdl_Xiw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/11033.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11035",
+   "name": "Zack Littell",
+   "team": "AZ",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 641793,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/mjb9dUF7OOko5bgsKy2Iew--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07302026/11035.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11036",
+   "name": "Caleb Ferguson",
+   "team": "STL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 657571,
+   "mlb_team_id": 138,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/efqRIF9oaBYDG7llxvujUg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11036.3.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11044",
+   "name": "Jonathan Lo\u00e1isiga",
+   "team": "AZ",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 642528,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.BOGThTd733bq2tBXJrCXA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11044.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11045",
+   "name": "Jose Trevino",
+   "team": "CIN",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 624431,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/DNI_ttTK6TAFgzz.puL2ng--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11045.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11052",
+   "name": "Evan Phillips",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 623465,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/SgvPmmcXAGwc77Q_r5sBqQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102025/11052.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11053",
+   "name": "Robert Stock",
+   "team": "NYM",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 476594,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/L6QCa1JdUPR2CwIGhSLftQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05242023/11053.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11064",
+   "name": "Enyel De Los Santos",
+   "team": "HOU",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 660853,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8DmjQUjVSafoWmMBUBCCrw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11064.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11066",
+   "name": "Thomas Pannone",
+   "team": "MIL",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 623381,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/L7nE0wTnt3SZgBlH8Mn7NA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04122023/11066.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11068",
+   "name": "Matt Festa",
+   "team": "CLE",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 670036,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MvQztFjUDYFUy4qxTkhbBg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11068.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11075",
+   "name": "Miguel Amaya",
+   "team": "CHC",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 665804,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/724HvKkiLG_zRIGprOwrJQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11075.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11077",
+   "name": "Eric Haase",
+   "team": "SF",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 606992,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ClePHZpTSmmfQ.GQXLa0ZA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03182025/11077.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11083",
+   "name": "Casey Mize",
+   "team": "SD",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663554,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/TWwWA2Aw4.MkSDjT.3cxuQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/11083.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11090",
+   "name": "Nathaniel Lowe",
+   "team": "CLE",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 663993,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/6clu4Qww61RUBXDSPqKsMw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/11090.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11093",
+   "name": "Patrick Wisdom",
+   "team": "SEA",
+   "pos": "1B,3B",
+   "eligible": [
+    "1B",
+    "3B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 621550,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/bL7B6saHG0zjMFZs1n7c9A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04082024/11093.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11097",
+   "name": "Joey Bart",
+   "team": "CWS",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 663698,
+   "mlb_team_id": 145,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/C67gthfVDEwvh_sTbjdMog--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11097.3.png",
+   "status": "IL10",
+   "slot": null
+  },
+  {
+   "key": "469.p.11098",
+   "name": "Shaun Anderson",
+   "team": "LAA",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 641312,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/e1HmU.CL1jRkWWeRr_sYqA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04052022/11098.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11102",
+   "name": "Joey Meneses",
+   "team": "ATH",
+   "pos": "1B",
+   "eligible": [
+    "1B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 608841,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/6or0jLraUIn5E.DnNE7aDg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04282024/11102.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11103",
+   "name": "Cole Irvin",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 608344,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YZ3QEcmkctRvycc0rTTeTg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11103.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11116",
+   "name": "Zac Gallen",
+   "team": "AZ",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 668678,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/rtjlGpGUzLJe60BUozlp5g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/11116.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11124",
+   "name": "Ram\u00f3n Laureano",
+   "team": "SD",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 657656,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3VDvxSqSwMcfbmo2a8Z4Rg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11124.2.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11127",
+   "name": "Adolis Garc\u00eda",
+   "team": "PHI",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 666969,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ievbJNcDgBbGht7f88c__g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03272026/11127.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11142",
+   "name": "Ian Hamilton",
+   "team": "ATL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 641656,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.s1exnhfx.uT5PCOlg9jlA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/11142.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11165",
+   "name": "Myles Straw",
+   "team": "TOR",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 664702,
+   "mlb_team_id": 141,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/loGntqKPFR4YCzWwsustTg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/11165.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11172",
+   "name": "Dylan Moore",
+   "team": "PHI",
+   "pos": "1B,2B,3B,OF",
+   "eligible": [
+    "1B",
+    "2B",
+    "3B",
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 664238,
+   "mlb_team_id": 143,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/J3_lmNpXB6JJ0oKyNZeCEA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/09102025/11172.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11174",
+   "name": "LaMonte Wade Jr.",
+   "team": "HOU",
+   "pos": "1B,OF",
+   "eligible": [
+    "1B",
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 664774,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3OCUYU3ul6Ut53viRv1Ibw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/11174.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11191",
+   "name": "Jonathan Hern\u00e1ndez",
+   "team": "LAD",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 642546,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/SghJR9RDzcbYlfVvnUCNvg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11191.2.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11193",
+   "name": "Joel Payamps",
+   "team": "ATL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 606303,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/3mulGXfATFho2xNguq8_Cw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/11193.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11203",
+   "name": "Jimmy Herget",
+   "team": "COL",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 623474,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/MbKa8I_piq8ZFXHgbC7M9w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11203.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11204",
+   "name": "Sam Hentges",
+   "team": "SF",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 656529,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/r9Ffvblc8grCcBoZtI2OgA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11204.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.11207",
+   "name": "Justin Lawrence",
+   "team": "WSH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 664875,
+   "mlb_team_id": 120,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/9uJS4GUWQ4uNdIMXO6gR8g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07232026/11207.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11210",
+   "name": "Luis Rengifo",
+   "team": "SD",
+   "pos": "2B,3B,OF",
+   "eligible": [
+    "2B",
+    "3B",
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 650859,
+   "mlb_team_id": 135,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YU5qpT.KB2VuLUkaX1QX5g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07242026/11210.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11211",
+   "name": "Jos\u00e9 Suarez",
+   "team": "ATH",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 660761,
+   "mlb_team_id": 133,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/kpVxBy9Od.y5x7aE_7w0RA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07242026/11211.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11227",
+   "name": "JT Brubaker",
+   "team": "SF",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "IL"
+   ],
+   "type": "P",
+   "mlb_id": 664141,
+   "mlb_team_id": 137,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/RlvtdARi8S.uI5k4v_m4oA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11227.1.png",
+   "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.11238",
+   "name": "Lane Thomas",
+   "team": "ATL",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 657041,
+   "mlb_team_id": 144,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/qlcagXZTGuXjnDR2Xgjy7w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11238.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11239",
+   "name": "Ram\u00f3n Ur\u00edas",
+   "team": "STL",
+   "pos": "2B,3B",
+   "eligible": [
+    "2B",
+    "3B",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 602104,
+   "mlb_team_id": 138,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/LB7lWZ_SHatjchz1w1BCOA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/11239.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11241",
+   "name": "Brock Burke",
+   "team": "CIN",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 656271,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/0wdZLRv.Krawbxcot3UlWQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11241.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11247",
+   "name": "Trent Thornton",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 663423,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/N8AUjueb3ck3LVvkDDZHkg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11247.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11248",
+   "name": "Jacob Waguespack",
+   "team": "DET",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 621097,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/7wcQEbGqe8fWjnUSv2gbOg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07312026/11248.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11251",
+   "name": "Merrill Kelly",
+   "team": "AZ",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 518876,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/wU5xoV8LDfdzGdRivAlBEg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/11251.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11253",
+   "name": "Jordan Romano",
+   "team": "COL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 605447,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ubs9ByossubISR9D3VcVZw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07222026/11253.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11256",
+   "name": "Connor Joe",
+   "team": "SEA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 656582,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/ghd4NoBGPXCT5740yBzv4A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05132025/11256.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11267",
+   "name": "Alek Thomas",
+   "team": "LAD",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 677950,
+   "mlb_team_id": 119,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/7IaEIgsPe90M2DAmibQalQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03102026/11267.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11271",
+   "name": "Cristian Pache",
+   "team": "NYM",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 665506,
+   "mlb_team_id": 121,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/IYn2FXDAg6o595p3z.0ruQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03052024/11271.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11277",
+   "name": "Grayson Rodriguez",
+   "team": "LAA",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 680570,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/.N7gnFeAGFdH2nnrkgaa0Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11277.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11286",
+   "name": "Michael Rucker",
+   "team": "SEA",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 621074,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/2EjkBBUl5B6BzkmmTWLIvA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/11286.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11287",
+   "name": "Keegan Thompson",
+   "team": "COL",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P",
+    "NA"
+   ],
+   "type": "P",
+   "mlb_id": 624522,
+   "mlb_team_id": 115,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/o8InqHBjO1PvH9nZLA1WXA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11287.1.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11289",
+   "name": "Stuart Fairchild",
+   "team": "SEA",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 656413,
+   "mlb_team_id": 136,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/YwHgA1FCd0Teh8tzSLp8Gg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11289.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11290",
+   "name": "TJ Friedl",
+   "team": "CIN",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 670770,
+   "mlb_team_id": 113,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/QbSNGNiqsSZYi0b1JyPluA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11290.3.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11292",
+   "name": "Jonathan India",
+   "team": "KC",
+   "pos": "2B,3B,OF",
+   "eligible": [
+    "2B",
+    "3B",
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 663697,
+   "mlb_team_id": 118,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/Zi5uqWWmq2Bok7FX5_r4RA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11292.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11293",
+   "name": "Michael Siani",
+   "team": "DET",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 672279,
+   "mlb_team_id": 110,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/zDqk1vJzQQoVA9SNRX9Oug--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11293.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11296",
+   "name": "Bo Naylor",
+   "team": "MIL",
+   "pos": "C",
+   "eligible": [
+    "C",
+    "Util"
+   ],
+   "type": "B",
+   "mlb_id": 666310,
+   "mlb_team_id": 158,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/1g_xfHzc2.Do516T585N1g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11296.2.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11298",
+   "name": "George Valera",
+   "team": "CLE",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 671655,
+   "mlb_team_id": 114,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/X0r9Fnqlk0ifnT8hSO67lw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11298.2.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11301",
+   "name": "Ryan Rolison",
+   "team": "CHC",
+   "pos": "RP",
+   "eligible": [
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 669020,
+   "mlb_team_id": 112,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/VUfs8s0vTFL.QicyGEiWHQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11301.1.png",
+   "status": null,
+   "slot": null
+  },
+  {
+   "key": "469.p.11306",
+   "name": "Nick Madrigal",
+   "team": "TB",
+   "pos": "2B",
+   "eligible": [
+    "2B",
+    "Util",
+    "NA"
+   ],
+   "type": "B",
+   "mlb_id": 663611,
+   "mlb_team_id": 108,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/bIXZNuTysc4vy52zkeMdEw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04162025/11306.png",
+   "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.11310",
+   "name": "Parker Meadows",
+   "team": "DET",
+   "pos": "OF",
+   "eligible": [
+    "OF",
+    "Util",
+    "IL"
+   ],
+   "type": "B",
+   "mlb_id": 678009,
+   "mlb_team_id": 116,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/8z2yyM3sJ4WpERs5dI16Bg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11310.1.png",
+   "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.11315",
+   "name": "Cristian Javier",
+   "team": "HOU",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 664299,
+   "mlb_team_id": 117,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/nlRA2LBsmd6XJP7DZzPCMA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11315.1.png",
+   "status": null,
+   "slot": null
+  }
+ ],
+ "transactions": [],
+ "locks": {
+  "2026-09-08": {
+   "110": "2026-09-08T22:35:00Z",
+   "114": "2026-09-08T22:35:00Z",
+   "116": "2026-09-08T22:40:00Z",
+   "142": "2026-09-08T22:40:00Z",
+   "143": "2026-09-08T22:40:00Z",
+   "117": "2026-09-08T22:40:00Z",
+   "146": "2026-09-08T22:40:00Z",
+   "121": "2026-09-08T22:40:00Z",
+   "111": "2026-09-08T22:45:00Z",
+   "108": "2026-09-08T22:45:00Z",
+   "147": "2026-09-08T23:05:00Z",
+   "115": "2026-09-08T23:05:00Z",
+   "144": "2026-09-08T23:15:00Z",
+   "139": "2026-09-08T23:15:00Z",
+   "118": "2026-09-08T23:40:00Z",
+   "109": "2026-09-08T23:40:00Z",
+   "145": "2026-09-08T23:40:00Z",
+   "134": "2026-09-08T23:40:00Z",
+   "158": "2026-09-08T23:40:00Z",
+   "112": "2026-09-08T23:40:00Z",
+   "135": "2026-09-09T01:40:00Z",
+   "120": "2026-09-09T01:40:00Z",
+   "136": "2026-09-09T01:40:00Z",
+   "140": "2026-09-09T01:40:00Z",
+   "133": "2026-09-09T01:40:00Z",
+   "141": "2026-09-09T01:40:00Z",
+   "137": "2026-09-09T01:45:00Z",
+   "138": "2026-09-09T01:45:00Z",
+   "119": "2026-09-09T02:10:00Z",
+   "113": "2026-09-09T02:10:00Z"
+  },
+  "2026-09-09": {
+   "116": "2026-09-09T17:10:00Z",
+   "142": "2026-09-09T17:10:00Z",
+   "133": "2026-09-09T19:05:00Z",
+   "141": "2026-09-09T19:05:00Z",
+   "137": "2026-09-09T19:45:00Z",
+   "138": "2026-09-09T19:45:00Z",
+   "135": "2026-09-09T20:10:00Z",
+   "120": "2026-09-09T20:10:00Z",
+   "136": "2026-09-09T20:10:00Z",
+   "140": "2026-09-09T20:10:00Z",
+   "110": "2026-09-09T22:35:00Z",
+   "114": "2026-09-09T22:35:00Z",
+   "143": "2026-09-09T22:40:00Z",
+   "117": "2026-09-09T22:40:00Z",
+   "146": "2026-09-09T22:40:00Z",
+   "121": "2026-09-09T22:40:00Z",
+   "111": "2026-09-09T22:45:00Z",
+   "108": "2026-09-09T22:45:00Z",
+   "147": "2026-09-09T23:05:00Z",
+   "115": "2026-09-09T23:05:00Z",
+   "144": "2026-09-09T23:15:00Z",
+   "139": "2026-09-09T23:15:00Z",
+   "118": "2026-09-09T23:40:00Z",
+   "109": "2026-09-09T23:40:00Z",
+   "145": "2026-09-09T23:40:00Z",
+   "134": "2026-09-09T23:40:00Z",
+   "158": "2026-09-09T23:40:00Z",
+   "112": "2026-09-09T23:40:00Z",
+   "119": "2026-09-10T02:10:00Z",
+   "113": "2026-09-10T02:10:00Z"
+  },
+  "2026-09-10": {
+   "144": "2026-09-10T16:15:00Z",
+   "139": "2026-09-10T16:15:00Z",
+   "143": "2026-09-10T17:05:00Z",
+   "117": "2026-09-10T17:05:00Z",
+   "136": "2026-09-10T20:10:00Z",
+   "140": "2026-09-10T20:10:00Z",
+   "147": "2026-09-10T23:05:00Z",
+   "115": "2026-09-10T23:05:00Z",
+   "145": "2026-09-10T23:40:00Z",
+   "134": "2026-09-10T23:40:00Z"
+  },
+  "2026-09-11": {
+   "112": "2026-09-11T18:20:00Z",
+   "134": "2026-09-11T18:20:00Z",
+   "116": "2026-09-11T22:40:00Z",
+   "115": "2026-09-11T22:40:00Z",
+   "120": "2026-09-11T22:45:00Z",
+   "108": "2026-09-11T22:45:00Z",
+   "147": "2026-09-11T23:05:00Z",
+   "121": "2026-09-11T23:05:00Z",
+   "141": "2026-09-11T23:07:00Z",
+   "110": "2026-09-11T23:07:00Z",
+   "111": "2026-09-11T23:10:00Z",
+   "118": "2026-09-11T23:10:00Z",
+   "139": "2026-09-11T23:10:00Z",
+   "117": "2026-09-11T23:10:00Z",
+   "146": "2026-09-11T23:10:00Z",
+   "119": "2026-09-11T23:10:00Z",
+   "144": "2026-09-11T23:15:00Z",
+   "143": "2026-09-11T23:15:00Z",
+   "158": "2026-09-11T23:45:00Z",
+   "113": "2026-09-11T23:45:00Z",
+   "142": "2026-09-12T00:10:00Z",
+   "114": "2026-09-12T00:10:00Z",
+   "138": "2026-09-12T00:15:00Z",
+   "145": "2026-09-12T00:15:00Z",
+   "133": "2026-09-12T01:40:00Z",
+   "136": "2026-09-12T01:40:00Z",
+   "109": "2026-09-12T01:40:00Z",
+   "140": "2026-09-12T01:40:00Z",
+   "137": "2026-09-12T02:15:00Z",
+   "135": "2026-09-12T02:15:00Z"
+  },
+  "2026-09-12": {
+   "116": "2026-09-12T17:10:00Z",
+   "115": "2026-09-12T17:10:00Z",
+   "147": "2026-09-12T17:35:00Z",
+   "121": "2026-09-12T17:35:00Z",
+   "112": "2026-09-12T18:20:00Z",
+   "134": "2026-09-12T18:20:00Z",
+   "141": "2026-09-12T19:07:00Z",
+   "110": "2026-09-12T19:07:00Z",
+   "120": "2026-09-12T20:05:00Z",
+   "108": "2026-09-12T20:05:00Z",
+   "137": "2026-09-12T20:05:00Z",
+   "135": "2026-09-12T20:05:00Z",
+   "111": "2026-09-12T20:10:00Z",
+   "118": "2026-09-12T20:10:00Z",
+   "142": "2026-09-12T20:10:00Z",
+   "114": "2026-09-12T20:10:00Z",
+   "146": "2026-09-12T20:10:00Z",
+   "119": "2026-09-12T20:10:00Z",
+   "139": "2026-09-12T22:10:00Z",
+   "117": "2026-09-12T22:10:00Z",
+   "158": "2026-09-12T23:10:00Z",
+   "113": "2026-09-12T23:10:00Z",
+   "144": "2026-09-12T23:15:00Z",
+   "143": "2026-09-12T23:15:00Z",
+   "138": "2026-09-12T23:15:00Z",
+   "145": "2026-09-12T23:15:00Z",
+   "109": "2026-09-13T00:10:00Z",
+   "140": "2026-09-13T00:10:00Z",
+   "133": "2026-09-13T01:40:00Z",
+   "136": "2026-09-13T01:40:00Z"
+  },
+  "2026-09-13": {
+   "116": "2026-09-13T16:10:00Z",
+   "115": "2026-09-13T16:10:00Z",
+   "111": "2026-09-13T17:35:00Z",
+   "118": "2026-09-13T17:35:00Z",
+   "120": "2026-09-13T17:35:00Z",
+   "108": "2026-09-13T17:35:00Z",
+   "144": "2026-09-13T17:35:00Z",
+   "143": "2026-09-13T17:35:00Z",
+   "147": "2026-09-13T17:35:00Z",
+   "121": "2026-09-13T17:35:00Z",
+   "141": "2026-09-13T17:37:00Z",
+   "110": "2026-09-13T17:37:00Z",
+   "139": "2026-09-13T17:40:00Z",
+   "117": "2026-09-13T17:40:00Z",
+   "146": "2026-09-13T17:40:00Z",
+   "119": "2026-09-13T17:40:00Z",
+   "142": "2026-09-13T18:10:00Z",
+   "114": "2026-09-13T18:10:00Z",
+   "158": "2026-09-13T18:10:00Z",
+   "113": "2026-09-13T18:10:00Z",
+   "138": "2026-09-13T18:15:00Z",
+   "145": "2026-09-13T18:15:00Z",
+   "112": "2026-09-13T18:20:00Z",
+   "134": "2026-09-13T18:20:00Z",
+   "133": "2026-09-13T20:05:00Z",
+   "136": "2026-09-13T20:05:00Z",
+   "109": "2026-09-13T20:10:00Z",
+   "140": "2026-09-13T20:10:00Z",
+   "137": "2026-09-13T23:20:00Z",
+   "135": "2026-09-13T23:20:00Z"
+  }
+ }
+}

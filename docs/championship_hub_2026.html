@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F3C6;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Championship Hub</title>
+<style>
+  /* Team identity. Validated for colour-vision deficiency against the #1e293b
+     surface: protan dE 25.9. The site's blue/purple gradient pair measures 1.3
+     and is effectively one colour to a red-green colourblind reader. */
+  :root {
+    --a: #0ea5e9;
+    --b: #f97316;
+    --a-dim: #0ea5e922;
+    --b-dim: #f9731622;
+    --ink: #e2e8f0;
+    --muted: #94a3b8;
+    --faint: #64748b;
+    --line: #1e293b;
+    --edge: #334155;
+    --surface: #1e293b;
+    --good: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  /* Sections carry display:grid/flex, which outranks the browser's own
+     [hidden] rule - without this the empty matchup header shows through
+     while the page is waiting on the finalists. */
+  [hidden] { display: none !important; }
+
+  /* ── Matchup header ─────────────────────────────────────────────────── */
+  .eyebrow {
+    text-align: center; color: var(--faint); font-size: .78em;
+    letter-spacing: .18em; text-transform: uppercase; margin: 8px 0 18px;
+  }
+  .matchup {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px;
+    align-items: stretch; margin-bottom: 12px;
+  }
+  .side {
+    background: var(--surface); border: 1px solid var(--edge);
+    border-radius: 14px; padding: 18px 20px; position: relative; overflow: hidden;
+  }
+  .side::before {
+    content: ''; position: absolute; inset: 0 auto 0 0; width: 4px;
+  }
+  .side.a::before { background: var(--a); }
+  .side.b::before { background: var(--b); }
+  .side.b { text-align: right; }
+  .side .mgr { font-size: 1.45em; font-weight: 700; color: var(--ink); line-height: 1.15; }
+  .side .tname {
+    color: var(--muted); font-size: .92em; margin-top: 4px;
+    overflow-wrap: anywhere;
+  }
+  .side .seed { color: var(--faint); font-size: .78em; margin-top: 8px; letter-spacing: .06em; }
+  .side.lead { border-color: currentColor; }
+  .side.a.lead { border-color: var(--a); background: linear-gradient(90deg, var(--a-dim), var(--surface) 60%); }
+  .side.b.lead { border-color: var(--b); background: linear-gradient(270deg, var(--b-dim), var(--surface) 60%); }
+
+  .tally {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 190px; padding: 10px 8px;
+  }
+  .tally .nums { display: flex; align-items: baseline; gap: 12px; font-weight: 800; }
+  .tally .n { font-size: 3.4em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tally .n.a { color: var(--a); }
+  .tally .n.b { color: var(--b); }
+  .tally .dash { color: var(--edge); font-size: 2em; }
+  .tally .cap { color: var(--faint); font-size: .72em; letter-spacing: .16em; text-transform: uppercase; margin-top: 8px; }
+  .tally .ties { color: var(--faint); font-size: .78em; margin-top: 3px; }
+
+  .statusbar {
+    display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 26px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--surface); border: 1px solid var(--edge); border-radius: 999px;
+    padding: 6px 14px; font-size: .82em; color: var(--muted);
+  }
+  .pill b { color: var(--ink); font-weight: 600; }
+  .pill.live { border-color: #16a34a55; color: #86efac; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+  .dot.pulse { animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  .pill.demo { border-color: #f59e0b55; color: #fcd34d; }
+
+  /* ── 14-day timeline ────────────────────────────────────────────────── */
+  .timeline { margin-bottom: 30px; }
+  .tl-legend {
+    display: flex; gap: 18px; justify-content: center; margin-bottom: 10px;
+    font-size: .76em; color: var(--faint);
+  }
+  .tl-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .tl-days { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+  .tl-day {
+    border-radius: 6px; padding: 7px 2px 8px; text-align: center;
+    background: #0f172a; border: 1px solid var(--line); font-size: .68em;
+    color: var(--faint); line-height: 1.5;
+  }
+  .tl-day.w1 { border-color: #334155; }
+  .tl-day.w2 { border-color: #7c3aed55; background: #7c3aed12; }
+  .tl-day.done { color: var(--muted); }
+  .tl-day.today { border-color: var(--good); background: #22c55e18; color: #bbf7d0; }
+  .tl-day .d { font-weight: 700; font-size: 1.25em; display: block; color: inherit; }
+
+  /* ── Category scoreboard ────────────────────────────────────────────── */
+  .board { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; overflow: hidden; }
+  /* A category is a diverging comparison: both bars grow outward from the
+     centre label, so the longer bar is the winner at a glance. */
+  .board-head, .cat {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) 168px minmax(0, 1fr) 56px;
+    gap: 12px; align-items: center; padding: 10px 20px;
+  }
+  .board-head {
+    background: #172033; border-bottom: 1px solid var(--edge);
+    font-size: .72em; letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
+  }
+  .board-head .ha { grid-column: 1 / 3; }
+  .board-head .hc { text-align: center; }
+  .board-head .hb { grid-column: 4 / 6; text-align: right; }
+  .grp {
+    padding: 8px 20px; background: #16203288; font-size: .7em; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--faint);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .cat { border-bottom: 1px solid var(--line); }
+  .cat:last-child { border-bottom: none; }
+  .cat:hover { background: #0f172a55; }
+  .cat .v {
+    font-size: 1.05em; font-weight: 700; font-variant-numeric: tabular-nums;
+    color: var(--faint); white-space: nowrap;
+  }
+  .cat .v.va { text-align: right; }
+  .cat .v.vb { text-align: left; }
+  .cat .v.win.va { color: var(--a); }
+  .cat .v.win.vb { color: var(--b); }
+  .cat .label { text-align: center; }
+  .cat .label .nm { font-weight: 600; color: var(--ink); font-size: .88em; }
+  .cat .label .hint {
+    display: block; color: #475569; font-size: .68em; margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bar { height: 7px; background: #0f172a; border-radius: 4px; display: flex; }
+  .bar.ba { justify-content: flex-end; }
+  .bar i { display: block; height: 100%; border-radius: 4px; }
+  .bar.ba i { background: var(--a); }
+  .bar.bb i { background: var(--b); }
+  .bar i.lose { opacity: .38; }
+  .cat.forfeit .v { color: #475569; }
+  .ffnote {
+    padding: 9px 20px; background: #ef444410; border-bottom: 1px solid var(--line);
+    color: #fca5a5; font-size: .78em;
+  }
+  .tag {
+    font-size: .68em; color: #475569; margin-left: 5px; vertical-align: middle;
+  }
+
+  /* ── Innings watch ──────────────────────────────────────────────────── */
+  .ipwatch { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 26px 0; }
+  .ipcard { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; padding: 16px 18px; }
+  .ipcard.risk { border-color: #ef444455; }
+  .ipcard .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .ipcard .who { font-weight: 600; font-size: .9em; }
+  .ipcard .num { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.05em; }
+  .ipbar { height: 9px; background: #0f172a; border-radius: 5px; overflow: hidden; position: relative; }
+  .ipbar i { display: block; height: 100%; border-radius: 5px; }
+  .ipbar .goal { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .5; }
+  .ipnote { margin-top: 9px; font-size: .76em; color: var(--faint); }
+  .ipnote.bad { color: #fca5a5; }
+
+  /* ── Trend chart ────────────────────────────────────────────────────── */
+  .chartcard { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; padding: 18px 20px 10px; }
+  .chart-legend { display: flex; gap: 18px; font-size: .8em; color: var(--muted); margin-bottom: 6px; }
+  .chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .chart-wrap { position: relative; }
+  svg.trend { width: 100%; height: 210px; display: block; overflow: visible; }
+  svg.trend .grid { stroke: #22304a; stroke-width: 1; }
+  svg.trend .axis { fill: #475569; font-size: 10px; }
+  svg.trend .ser { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  svg.trend .mk { stroke: var(--surface); stroke-width: 2; }
+  .tip {
+    position: absolute; pointer-events: none; opacity: 0; transition: opacity .1s;
+    background: #0b1220; border: 1px solid var(--edge); border-radius: 8px;
+    padding: 8px 10px; font-size: .78em; white-space: nowrap; z-index: 5;
+    box-shadow: 0 6px 18px #0008;
+  }
+  .tip .td { color: var(--faint); font-size: .9em; margin-bottom: 4px; }
+  .tip .tr { display: flex; align-items: center; gap: 7px; color: var(--ink); }
+
+  /* ── Who am I ───────────────────────────────────────────────────────── */
+  .whoami {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    flex-wrap: wrap; background: var(--surface); border: 1px solid var(--edge);
+    border-radius: 12px; padding: 12px 18px; margin-bottom: 26px;
+  }
+  .whoami .lab { color: var(--faint); font-size: .8em; }
+  .seg { display: flex; background: #0f172a; border-radius: 9px; padding: 3px; gap: 3px; }
+  .seg button {
+    background: none; border: none; color: var(--muted); font-family: inherit;
+    font-size: .85em; padding: 7px 15px; border-radius: 7px; cursor: pointer;
+  }
+  .seg button:hover { color: var(--ink); }
+  .seg button.on { background: var(--edge); color: var(--ink); font-weight: 600; }
+  .seg button.on.sa { background: var(--a); color: #04283b; }
+  .seg button.on.sb { background: var(--b); color: #3b1a04; }
+  .whoami .spacer { flex: 1; }
+  .linkbtn {
+    background: none; border: 1px solid var(--edge); color: var(--faint);
+    border-radius: 7px; padding: 6px 12px; font-size: .78em; cursor: pointer; font-family: inherit;
+  }
+  .linkbtn:hover { border-color: #ef444488; color: #fca5a5; }
+
+  /* ── Roster controls ────────────────────────────────────────────────── */
+  .lucard.mine { border-color: #38bdf866; }
+  .lucard.theirs { opacity: .72; }
+  .slot .acts { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+
+  /* ── Drag and drop ──────────────────────────────────────────────────── */
+  /* Built on pointer events rather than HTML5 drag-and-drop, which does not
+     fire on touch at all - and both managers will be doing this on a phone. */
+  .slot.grabbable { cursor: grab; touch-action: none; }
+  .slot.grabbable:active { cursor: grabbing; }
+  .slot .grip {
+    color: #475569; font-size: 1em; line-height: 1; letter-spacing: -2px;
+    user-select: none;
+  }
+  .slot.grabbable:hover .grip { color: var(--muted); }
+  .slot.dragging { opacity: .35; }
+  .slot.sel { background: #38bdf815; box-shadow: inset 3px 0 0 #38bdf8; }
+
+  /* Targets light up only while something is in the air. */
+  .slot.tgt { background: #22c55e10; box-shadow: inset 0 0 0 1px #22c55e55; }
+  .slot.tgt .pos { background: #22c55e22; color: #86efac; }
+  .slot.over { background: #22c55e26; box-shadow: inset 0 0 0 2px #22c55e; }
+  .slot.no { opacity: .3; }
+
+  .ghost {
+    position: fixed; z-index: 400; pointer-events: none;
+    background: #1e293b; border: 1px solid #38bdf8; border-radius: 10px;
+    padding: 9px 14px; box-shadow: 0 14px 34px #000a;
+    font-size: .86em; color: var(--ink); max-width: 260px;
+  }
+  .ghost .gmeta { color: var(--faint); font-size: .8em; margin-top: 2px; }
+  .ghost .gslot {
+    display: inline-block; margin-top: 5px; font-size: .72em; font-weight: 700;
+    color: #86efac;
+  }
+  body.dragging-active { user-select: none; }
+
+  .hint-line {
+    color: var(--faint); font-size: .78em; text-align: center; margin: -4px 0 14px;
+  }
+  .xbtn {
+    background: none; border: 1px solid var(--edge); color: var(--faint);
+    border-radius: 6px; padding: 3px 8px; font-size: .74em; cursor: pointer; font-family: inherit;
+  }
+  .xbtn:hover:not(:disabled) { border-color: #ef4444; color: #fca5a5; }
+  .xbtn:disabled { opacity: .3; cursor: not-allowed; }
+  .slot.added { box-shadow: inset 3px 0 0 var(--good); }
+  .slot .flag { font-size: .68em; color: #4ade80; margin-left: 6px; }
+  .slot { grid-template-columns: 44px 1fr auto; }
+
+  .adds-left { font-weight: 700; color: var(--ink); }
+  .adds-none { color: #fca5a5; }
+
+  /* ── Modal ──────────────────────────────────────────────────────────── */
+  .scrim {
+    position: fixed; inset: 0; background: #020617cc; z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal {
+    background: #0f172a; border: 1px solid var(--edge); border-radius: 16px;
+    max-width: 520px; width: 100%; max-height: 84vh; display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px #000a;
+  }
+  .modal header { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }
+  .modal header h3 { border: none; margin: 0; padding: 0; color: var(--ink); font-size: 1.1em; }
+  .modal header p { color: var(--faint); font-size: .84em; margin-top: 5px; }
+  .modal .body { overflow-y: auto; padding: 6px 0; }
+  .modal footer {
+    padding: 14px 22px; border-top: 1px solid var(--line);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .drop-opt {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
+    padding: 9px 22px; cursor: pointer; font-size: .87em; border: none; width: 100%;
+    background: none; color: var(--ink); font-family: inherit; text-align: left;
+  }
+  .drop-opt:hover:not(:disabled) { background: #1e293b; }
+  .drop-opt:disabled { opacity: .35; cursor: not-allowed; }
+  .drop-opt .pos {
+    font-size: .72em; font-weight: 700; color: var(--faint); background: #1e293b;
+    border-radius: 5px; padding: 4px 0; text-align: center;
+  }
+  .drop-opt .why { font-size: .74em; color: var(--faint); }
+  .btn.primary { border-color: #38bdf8; color: #38bdf8; }
+  .toast {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: 26px;
+    background: #0f172a; border: 1px solid var(--good); color: #bbf7d0;
+    padding: 11px 20px; border-radius: 10px; font-size: .87em; z-index: 300;
+    box-shadow: 0 10px 30px #0008;
+  }
+  .toast.bad { border-color: var(--bad); color: #fca5a5; }
+
+  /* ── Waiting on the finalists ───────────────────────────────────────── */
+  .await {
+    text-align: center; padding: 34px 24px 8px;
+  }
+  .await h2 {
+    border: none; margin: 0 0 10px; padding: 0; color: var(--ink);
+    font-size: 2em; font-weight: 800;
+  }
+  .await p { color: var(--muted); font-size: 1em; max-width: 60ch; margin: 0 auto; line-height: 1.6; }
+  .await .when { color: #fcd34d; font-weight: 600; }
+
+  .rounds { display: grid; gap: 16px; margin-top: 26px; }
+  .round > h3 {
+    border: none; margin: 0 0 10px; padding: 0; color: var(--faint);
+    font-size: .74em; letter-spacing: .16em; text-transform: uppercase;
+  }
+  .round .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .game {
+    background: var(--surface); border: 1px solid var(--edge);
+    border-radius: 12px; overflow: hidden;
+  }
+  .game .grow {
+    display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+    padding: 12px 16px;
+  }
+  .game .grow + .grow { border-top: 1px solid var(--line); }
+  .game .gname { font-weight: 700; color: var(--ink); }
+  .game .gteam { color: var(--faint); font-size: .8em; margin-top: 2px; overflow-wrap: anywhere; }
+  .game .gcats {
+    font-size: 1.5em; font-weight: 800; font-variant-numeric: tabular-nums;
+    color: var(--faint);
+  }
+  .game .grow.won { background: #22c55e0f; }
+  .game .grow.won .gcats { color: #4ade80; }
+  .game .grow.won .gname::after { content: ' ✓'; color: #4ade80; font-size: .8em; }
+  .game .grow.out { opacity: .5; }
+  .game footer {
+    padding: 7px 16px; background: #16203288; color: var(--faint);
+    font-size: .7em; letter-spacing: .12em; text-transform: uppercase;
+  }
+
+  /* ── Section chrome ─────────────────────────────────────────────────── */
+  .sec { margin-top: 40px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .sec-head h2 { border: none; margin: 0; padding: 0; font-size: 1.15em; }
+  .sec-head .sub { color: var(--faint); font-size: .82em; }
+
+  /* ── Lineup editor ──────────────────────────────────────────────────── */
+  .daytabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .daytab {
+    background: var(--surface); border: 1px solid var(--edge); color: var(--muted);
+    border-radius: 9px; padding: 7px 13px; cursor: pointer; font-size: .82em;
+    font-family: inherit; line-height: 1.4; text-align: center; min-width: 62px;
+  }
+  .daytab b { display: block; color: var(--ink); font-size: 1.1em; }
+  .daytab:hover { border-color: #64748b; }
+  .daytab.on { border-color: var(--good); background: #22c55e14; color: #bbf7d0; }
+  .daytab.locked b::after { content: ' \1F512'; font-size: .7em; }
+
+  .lineups { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .lucard { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; overflow: hidden; }
+  .lucard > header {
+    padding: 12px 16px; border-bottom: 1px solid var(--edge);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .lucard.a > header { border-left: 4px solid var(--a); }
+  .lucard.b > header { border-left: 4px solid var(--b); }
+  .lucard .who { font-weight: 600; }
+  .lucard .adds { font-size: .74em; color: var(--faint); }
+  .slot {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
+    padding: 7px 14px; border-bottom: 1px solid var(--line); font-size: .86em;
+  }
+  .slot:last-child { border-bottom: none; }
+  .slot .pos {
+    font-size: .72em; font-weight: 700; color: var(--faint); letter-spacing: .06em;
+    background: #0f172a; border-radius: 5px; padding: 4px 0; text-align: center;
+  }
+  .slot.bench .pos { color: #475569; }
+  .slot .pname { overflow-wrap: anywhere; }
+  .slot .pmeta { color: var(--faint); font-size: .82em; }
+  .slot .game { color: var(--faint); font-size: .74em; text-align: right; white-space: nowrap; }
+  .slot.empty .pname { color: #475569; font-style: italic; }
+  .slot.lockd { opacity: .5; }
+  .slot.lockd .game::after { content: ' \1F512'; }
+  .slot.sel { background: #38bdf815; box-shadow: inset 3px 0 0 #38bdf8; }
+  .slot.tgt { background: #22c55e12; cursor: pointer; }
+  .slot.pick { cursor: pointer; }
+  .slot.pick:hover { background: #0f172a88; }
+  .bench-head {
+    padding: 7px 14px; background: #16203288; font-size: .66em; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--line);
+  }
+  /* Batting and pitching are the two halves of the card; their benches and the
+     reserve list are quieter subheadings inside them. */
+  .bench-head.grp-bat, .bench-head.grp-pit, .bench-head.grp-res {
+    font-size: .72em; font-weight: 700; color: var(--ink);
+    background: #0f172a; border-top: 1px solid var(--edge);
+    padding: 9px 14px;
+  }
+  .bench-head.grp-bat { box-shadow: inset 3px 0 0 #38bdf8; }
+  .bench-head.grp-pit { box-shadow: inset 3px 0 0 #a78bfa; }
+  .bench-head.grp-res { box-shadow: inset 3px 0 0 #475569; color: var(--muted); }
+  .bench-head.sub {
+    background: transparent; font-size: .62em; color: #475569;
+    padding: 8px 14px 5px; border-bottom: none;
+  }
+
+  /* ── Free agents ────────────────────────────────────────────────────── */
+  .fa-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  input.search, select.filter {
+    background: var(--surface); border: 1px solid var(--edge); color: var(--ink);
+    border-radius: 9px; padding: 9px 13px; font-size: .88em; font-family: inherit;
+  }
+  input.search { flex: 1; min-width: 200px; }
+  input.search:focus, select.filter:focus { outline: none; border-color: #38bdf8; }
+  .fa-list { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; overflow: hidden; }
+  .fa-row {
+    display: grid; grid-template-columns: 1fr 120px auto; gap: 12px; align-items: center;
+    padding: 9px 16px; border-bottom: 1px solid var(--line); font-size: .87em;
+  }
+  .fa-row:last-child { border-bottom: none; }
+  .fa-row:hover { background: #0f172a55; }
+  .fa-row .pmeta { color: var(--faint); font-size: .85em; }
+  .btn {
+    background: #0f172a; border: 1px solid var(--edge); color: var(--muted);
+    border-radius: 7px; padding: 5px 12px; font-size: .82em; cursor: pointer; font-family: inherit;
+  }
+  .btn:hover { border-color: var(--good); color: #bbf7d0; }
+  .btn.a:hover { border-color: var(--a); color: var(--a); }
+  .btn.b:hover { border-color: var(--b); color: var(--b); }
+  .btn-row { display: flex; gap: 6px; }
+  .empty-note { padding: 26px; text-align: center; color: var(--faint); font-size: .88em; }
+
+  /* ── Rules ──────────────────────────────────────────────────────────── */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .rule { background: var(--surface); border: 1px solid var(--edge); border-radius: 12px; padding: 15px 17px; }
+  .rule h4 { color: #38bdf8; font-size: .8em; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 7px; }
+  .rule p { color: var(--muted); font-size: .85em; line-height: 1.55; }
+  .rule b { color: var(--ink); }
+
+  .proto {
+    margin-top: 34px; padding: 14px 18px; border-radius: 12px;
+    background: #f59e0b10; border: 1px solid #f59e0b44; color: #fcd34d; font-size: .84em; line-height: 1.6;
+  }
+  .proto b { color: #fde68a; }
+
+  @media (max-width: 860px) {
+    .matchup { grid-template-columns: 1fr; }
+    .side.b { text-align: left; }
+    .tally { min-width: 0; }
+    .lineups, .ipwatch { grid-template-columns: 1fr; }
+    .tl-days { grid-template-columns: repeat(7, 1fr); }
+    /* Too narrow for bars on both flanks; keep the numbers and the label. */
+    .board-head, .cat {
+      grid-template-columns: 1fr 132px 1fr; gap: 8px; padding: 10px 14px;
+    }
+    .board-head .ha { grid-column: 1; }
+    .board-head .hb { grid-column: 3; }
+    .cat .bar { display: none; }
+  }
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="wrap">
+  <div class="eyebrow" id="eyebrow">2026 Championship</div>
+
+  <div class="matchup live-only">
+    <div class="side a" id="sideA">
+      <div class="mgr" id="mgrA">&nbsp;</div>
+      <div class="tname" id="tnameA"></div>
+      <div class="seed" id="seedA"></div>
+    </div>
+    <div class="tally">
+      <div class="nums">
+        <span class="n a" id="catsA">0</span>
+        <span class="dash">&ndash;</span>
+        <span class="n b" id="catsB">0</span>
+      </div>
+      <div class="cap">Categories</div>
+      <div class="ties" id="ties"></div>
+    </div>
+    <div class="side b" id="sideB">
+      <div class="mgr" id="mgrB">&nbsp;</div>
+      <div class="tname" id="tnameB"></div>
+      <div class="seed" id="seedB"></div>
+    </div>
+  </div>
+
+  <div class="statusbar" id="statusbar"></div>
+
+  <div id="pending" hidden></div>
+
+  <div class="whoami live-only" id="whoami"></div>
+
+  <div class="timeline live-only">
+    <div class="tl-legend">
+      <span><i class="swatch" style="background:#334155"></i> Week 1 &middot; scored by Yahoo</span>
+      <span><i class="swatch" style="background:#7c3aed"></i> Week 2 &middot; scored here</span>
+    </div>
+    <div class="tl-days" id="timeline"></div>
+  </div>
+
+  <div class="board live-only" id="board"></div>
+
+  <div class="ipwatch live-only" id="ipwatch"></div>
+
+  <div class="sec live-only">
+    <div class="sec-head">
+      <h2>Category lead over the championship</h2>
+      <div class="sub">Categories held at the end of each day</div>
+    </div>
+    <div class="chartcard">
+      <div class="chart-legend" id="chartLegend"></div>
+      <div class="chart-wrap">
+        <svg class="trend" id="trend" role="img" aria-label="Categories led per day"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec live-only">
+    <div class="sec-head">
+      <h2>Week 2 lineups</h2>
+      <div class="sub" id="luSub">Drag a player into any eligible slot</div>
+    </div>
+    <div class="daytabs" id="daytabs"></div>
+    <div class="lineups" id="lineups"></div>
+  </div>
+
+  <div class="sec live-only">
+    <div class="sec-head">
+      <h2>Free agents</h2>
+      <div class="sub" id="faSub"></div>
+    </div>
+    <div class="fa-controls">
+      <input class="search" id="faSearch" type="search" placeholder="Search free agents&hellip;" autocomplete="off">
+      <select class="filter" id="faPos">
+        <option value="">All positions</option>
+      </select>
+    </div>
+    <div class="fa-list" id="faList"></div>
+  </div>
+
+  <div class="sec live-only">
+    <div class="sec-head"><h2>Transactions</h2></div>
+    <div class="fa-list" id="txList"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head"><h2>Format</h2></div>
+    <div class="rules" id="rules"></div>
+  </div>
+
+  <div class="proto" id="proto"></div>
+</div>
+
+<div id="modalHost"></div>
+<div id="toastHost"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var A = '#0ea5e9', B = '#f97316';
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt !== undefined && txt !== null) n.textContent = txt;
+    return n;
+  };
+
+  var D = null;              // the payload
+  var day = null;            // selected week-2 date
+
+  // Everything a manager does lives here. It is the shape the write API will
+  // take, so swapping localStorage for a fetch later touches only save().
+  var S = null;
+  var LS = 'champ-hub-2026-v2';
+
+  function blankState() {
+    return {
+      actingAs: 'a',          // 'a', 'b', or 'commish'
+      lineups: {},            // "side|date|playerKey" -> slot
+      added: { a: [], b: [] },   // free agents picked up
+      dropped: { a: [], b: [] }, // player keys let go
+      lockout: {},            // playerKey -> ISO time it can be re-added
+      addsUsed: { a: 0, b: 0 },
+      tx: []
+    };
+  }
+  function load() {
+    try {
+      S = JSON.parse(localStorage.getItem(LS)) || blankState();
+    } catch (e) { S = blankState(); }
+    var fresh = blankState();
+    Object.keys(fresh).forEach(function (k) {
+      if (S[k] === undefined) S[k] = fresh[k];
+    });
+  }
+  function save() {
+    try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) { /* private mode */ }
+  }
+  function resetState() {
+    S = blankState();
+    save();
+  }
+
+  // Who the viewer is acting as, for a given side.
+  function canEdit(side) {
+    return S.actingAs === 'commish' || S.actingAs === side;
+  }
+
+  // Base roster plus adds minus drops.
+  function rosterOf(side) {
+    var out = D.rosters[side].filter(function (p) {
+      return S.dropped[side].indexOf(p.key) === -1;
+    });
+    return out.concat(S.added[side]);
+  }
+
+  function toast(msg, bad) {
+    var host = $('toastHost');
+    host.innerHTML = '';
+    var t = el('div', 'toast' + (bad ? ' bad' : ''), msg);
+    host.appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 3200);
+  }
+
+  // ── formatting ────────────────────────────────────────────────────────
+  var RATIO = { OPS: 3, ERA: 2, WHIP: 2, K9: 2 };
+  function fmt(cat, v) {
+    if (v === null || v === undefined) return '–';
+    if (RATIO[cat] !== undefined) {
+      var s = Number(v).toFixed(RATIO[cat]);
+      return cat === 'OPS' ? s.replace(/^0/, '') : s;
+    }
+    return String(v);
+  }
+  function shortDate(iso) {
+    var p = iso.split('-');
+    return Number(p[1]) + '/' + Number(p[2]);
+  }
+  function dow(iso) {
+    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
+      new Date(iso + 'T12:00:00Z').getUTCDay()];
+  }
+  function clockOf(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+  function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+  // Kept short enough to stay on one line inside the label column.
+  var CAT_HINT = {
+    OPS: 'On-base + slugging', K9: 'Strikeouts per 9',
+    QS: 'Quality starts', SVH: 'Saves + holds',
+    TB: 'Total bases allowed', ERA: 'Earned run average',
+    WHIP: 'Walks + hits / inn', R: 'Runs', H: 'Hits',
+    HR: 'Home runs', RBI: 'Runs batted in', SB: 'Stolen bases'
+  };
+
+  // ── header ────────────────────────────────────────────────────────────
+  function renderHeader() {
+    var s = D.sides, sb = D.scoreboard, r = D.rules;
+    $('eyebrow').textContent = '2026 Championship · ' +
+      shortDate(r.week1[0]) + ' – ' + shortDate(r.week2[1]) + ' · 14 days';
+
+    ['a', 'b'].forEach(function (k) {
+      var up = k.toUpperCase();
+      $('mgr' + up).textContent = s[k].manager || s[k].name;
+      $('tname' + up).textContent = s[k].manager ? s[k].name : '';
+      $('seed' + up).textContent = 'Team ' + s[k].team_id;
+    });
+    $('catsA').textContent = sb.a_cats;
+    $('catsB').textContent = sb.b_cats;
+    $('ties').textContent = sb.ties ? sb.ties + ' tied' : '';
+    if (sb.leader === 'a') $('sideA').classList.add('lead');
+    if (sb.leader === 'b') $('sideB').classList.add('lead');
+
+    var bar = $('statusbar');
+    bar.innerHTML = '';
+    var today = todayISO();
+    var inW2 = today >= r.week2[0] && today <= r.week2[1];
+    var inW1 = today >= r.week1[0] && today <= r.week1[1];
+
+    var phase = el('div', 'pill' + (inW1 || inW2 ? ' live' : ''));
+    if (inW1 || inW2) phase.appendChild(el('i', 'dot pulse'));
+    var dayNum = Math.round(
+      (Date.parse(today) - Date.parse(r.week1[0])) / 86400000) + 1;
+    phase.appendChild(el('span', null,
+      inW2 ? 'Week 2 · hosted here' : (inW1 ? 'Week 1 · on Yahoo' : 'Not started')));
+    if (inW1 || inW2) {
+      var b = el('b', null, ' Day ' + dayNum + ' of 14');
+      phase.appendChild(b);
+    }
+    bar.appendChild(phase);
+
+    var lead = el('div', 'pill');
+    lead.appendChild(el('span', null, sb.leader === 'tie' ? 'All square' :
+      (s[sb.leader].manager || s[sb.leader].name) + ' leads'));
+    bar.appendChild(lead);
+
+    var upd = el('div', 'pill');
+    upd.appendChild(el('span', null, 'Updated '));
+    upd.appendChild(el('b', null, clockOf(D.generated_at)));
+    bar.appendChild(upd);
+
+    if (D.demo) {
+      var dm = el('div', 'pill demo');
+      dm.appendChild(el('span', null,
+        'Demo data · real rosters scored over a past window'));
+      bar.appendChild(dm);
+    }
+  }
+
+  // ── 14-day timeline ───────────────────────────────────────────────────
+  function renderTimeline() {
+    var r = D.rules, host = $('timeline'), today = todayISO();
+    host.innerHTML = '';
+    function span(from, to, cls) {
+      var d = new Date(from + 'T12:00:00Z'), end = new Date(to + 'T12:00:00Z');
+      while (d <= end) {
+        var iso = d.toISOString().slice(0, 10);
+        var cell = el('div', 'tl-day ' + cls + (iso < today ? ' done' : '') +
+          (iso === today ? ' today' : ''));
+        cell.appendChild(el('span', 'd', String(d.getUTCDate())));
+        cell.appendChild(document.createTextNode(dow(iso)));
+        cell.title = iso;
+        host.appendChild(cell);
+        d.setUTCDate(d.getUTCDate() + 1);
+      }
+    }
+    span(r.week1[0], r.week1[1], 'w1');
+    span(r.week2[0], r.week2[1], 'w2');
+  }
+
+  // ── category board ────────────────────────────────────────────────────
+  function renderBoard() {
+    var r = D.rules, sb = D.scoreboard, host = $('board');
+    host.innerHTML = '';
+
+    var head = el('div', 'board-head');
+    head.appendChild(el('div', 'ha', D.sides.a.manager || D.sides.a.name));
+    head.appendChild(el('div', 'hc', 'Category'));
+    head.appendChild(el('div', 'hb', D.sides.b.manager || D.sides.b.name));
+    host.appendChild(head);
+
+    [['Hitting', r.hitting], ['Pitching', r.pitching]].forEach(function (g) {
+      host.appendChild(el('div', 'grp', g[0]));
+
+      // Say why the pitching half is greyed out, rather than just greying it.
+      if (g[0] === 'Pitching') {
+        var out = ['a', 'b'].filter(function (k) { return D.totals[k].forfeits_pitching; });
+        if (out.length) {
+          var who = out.length === 2 ? 'Both teams are'
+            : (D.sides[out[0]].manager || D.sides[out[0]].name) + ' is';
+          host.appendChild(el('div', 'ffnote', who + ' short of the ' + r.min_ip_total +
+            '-inning minimum — these six categories are forfeit as things stand.'));
+        }
+      }
+
+      g[1].forEach(function (cat) {
+        var c = sb.categories[cat];
+        if (!c) return;
+        var lower = r.lower_is_better.indexOf(cat) !== -1;
+        var ff = g[0] === 'Pitching' &&
+          (D.totals.a.forfeits_pitching || D.totals.b.forfeits_pitching);
+        var share = shares(c.a, c.b, lower);
+
+        var row = el('div', 'cat' + (ff ? ' forfeit' : ''));
+        row.appendChild(el('div', 'v va' + (c.winner === 'a' ? ' win' : ''), fmt(cat, c.a)));
+        row.appendChild(sideBar('ba', share.a, c.winner === 'a'));
+
+        var lab = el('div', 'label');
+        var nm = el('div', 'nm');
+        nm.appendChild(document.createTextNode(cat));
+        if (lower) {
+          var t = el('span', 'tag', '▼');
+          t.title = 'Lower is better';
+          nm.appendChild(t);
+        }
+        lab.appendChild(nm);
+        lab.appendChild(el('span', 'hint', CAT_HINT[cat] || ''));
+        row.appendChild(lab);
+
+        row.appendChild(sideBar('bb', share.b, c.winner === 'b'));
+        row.appendChild(el('div', 'v vb' + (c.winner === 'b' ? ' win' : ''), fmt(cat, c.b)));
+        host.appendChild(row);
+      });
+    });
+  }
+
+  // Bar length repeats who leads, so the board still reads without colour.
+  // The leader's bar is full and the trailer's is scaled against it.
+  function shares(a, b, lower) {
+    a = Number(a); b = Number(b);
+    if (!isFinite(a) || !isFinite(b)) return { a: 0.5, b: 0.5 };
+    var sa = lower ? (a > 0 ? 1 / a : 0) : a;
+    var sb = lower ? (b > 0 ? 1 / b : 0) : b;
+    var max = Math.max(sa, sb);
+    if (max <= 0) return { a: 0.06, b: 0.06 };
+    return { a: Math.max(0.04, sa / max), b: Math.max(0.04, sb / max) };
+  }
+
+  function sideBar(cls, share, won) {
+    var bar = el('div', 'bar ' + cls);
+    var fill = el('i', won ? '' : 'lose');
+    fill.style.width = (share * 100) + '%';
+    bar.appendChild(fill);
+    return bar;
+  }
+
+  // ── innings watch ─────────────────────────────────────────────────────
+  function renderIP() {
+    var host = $('ipwatch'), goal = D.rules.min_ip_total;
+    host.innerHTML = '';
+    ['a', 'b'].forEach(function (k) {
+      var t = D.totals[k], ip = Number(t.IP) || 0;
+      var short = ip < goal;
+      var card = el('div', 'ipcard' + (short ? ' risk' : ''));
+      var top = el('div', 'top');
+      top.appendChild(el('div', 'who', D.sides[k].manager || D.sides[k].name));
+      top.appendChild(el('div', 'num', ip.toFixed(1) + ' / ' + goal + ' IP'));
+      card.appendChild(top);
+
+      var bar = el('div', 'ipbar');
+      var fill = el('i');
+      fill.style.width = Math.min(100, (ip / goal) * 100) + '%';
+      fill.style.background = short ? (ip / goal > 0.75 ? '#f59e0b' : '#ef4444') : '#22c55e';
+      bar.appendChild(fill);
+      var g = el('div', 'goal'); g.style.left = '100%';
+      bar.appendChild(g);
+      card.appendChild(bar);
+
+      card.appendChild(el('div', 'ipnote' + (short ? ' bad' : ''),
+        short
+          ? 'Short by ' + (goal - ip).toFixed(1) + ' IP — all six pitching categories forfeit'
+          : 'Innings minimum met'));
+      host.appendChild(card);
+    });
+  }
+
+  // ── trend chart ───────────────────────────────────────────────────────
+  function renderTrend() {
+    var host = $('trend'), pts = D.trend || [];
+    var leg = $('chartLegend');
+    leg.innerHTML = '';
+    [['a', A], ['b', B]].forEach(function (p) {
+      var s = el('span');
+      var sw = el('i', 'swatch'); sw.style.background = p[1];
+      s.appendChild(sw);
+      s.appendChild(document.createTextNode(D.sides[p[0]].manager || D.sides[p[0]].name));
+      leg.appendChild(s);
+    });
+
+    host.innerHTML = '';
+    if (pts.length < 2) {
+      host.style.height = 'auto';
+      var note = el('div', 'empty-note', 'The chart fills in once the championship is under way.');
+      host.parentNode.appendChild(note);
+      return;
+    }
+
+    var W = host.clientWidth || 900, H = 210;
+    var m = { t: 12, r: 30, b: 24, l: 26 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b;
+    host.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var maxY = 12;
+    var x = function (i) { return m.l + (pts.length === 1 ? iw / 2 : (i / (pts.length - 1)) * iw); };
+    var y = function (v) { return m.t + ih - (v / maxY) * ih; };
+    var NS = 'http://www.w3.org/2000/svg';
+    function node(n, at) {
+      var e = document.createElementNS(NS, n);
+      for (var k in at) e.setAttribute(k, at[k]);
+      return e;
+    }
+
+    [0, 3, 6, 9, 12].forEach(function (v) {
+      host.appendChild(node('line', {
+        class: 'grid', x1: m.l, x2: m.l + iw, y1: y(v), y2: y(v)
+      }));
+      var t = node('text', { class: 'axis', x: m.l - 7, y: y(v) + 3, 'text-anchor': 'end' });
+      t.textContent = v;
+      host.appendChild(t);
+    });
+
+    // Six categories is the dead heat; mark it so a crossing reads instantly.
+    var mid = node('line', { class: 'grid', x1: m.l, x2: m.l + iw, y1: y(6), y2: y(6) });
+    mid.setAttribute('stroke-dasharray', '3 4');
+    mid.setAttribute('stroke', '#475569');
+    host.appendChild(mid);
+
+    pts.forEach(function (p, i) {
+      if (pts.length > 9 && i % 2) return;
+      var t = node('text', { class: 'axis', x: x(i), y: H - 6, 'text-anchor': 'middle' });
+      t.textContent = shortDate(p.date);
+      host.appendChild(t);
+    });
+
+    [['a_cats', A], ['b_cats', B]].forEach(function (s) {
+      var d = pts.map(function (p, i) {
+        return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p[s[0]]).toFixed(1);
+      }).join(' ');
+      host.appendChild(node('path', { class: 'ser', d: d, stroke: s[1] }));
+      var last = pts.length - 1;
+      host.appendChild(node('circle', {
+        class: 'mk', cx: x(last), cy: y(pts[last][s[0]]), r: 4.5, fill: s[1]
+      }));
+      var lbl = node('text', {
+        class: 'axis', x: x(last) + 9, y: y(pts[last][s[0]]) + 4, fill: s[1]
+      });
+      lbl.setAttribute('font-weight', '700');
+      lbl.textContent = pts[last][s[0]];
+      host.appendChild(lbl);
+    });
+
+    var hair = node('line', {
+      x1: 0, x2: 0, y1: m.t, y2: m.t + ih, stroke: '#64748b', 'stroke-width': 1, opacity: 0
+    });
+    host.appendChild(hair);
+
+    var tip = $('tip');
+    host.addEventListener('mousemove', function (ev) {
+      var box = host.getBoundingClientRect();
+      var px = (ev.clientX - box.left) * (W / box.width);
+      var i = Math.round(((px - m.l) / iw) * (pts.length - 1));
+      i = Math.max(0, Math.min(pts.length - 1, i));
+      var p = pts[i];
+      hair.setAttribute('opacity', '.5');
+      hair.setAttribute('x1', x(i)); hair.setAttribute('x2', x(i));
+      tip.innerHTML = '';
+      tip.appendChild(el('div', 'td', p.date));
+      [['a', 'a_cats', A], ['b', 'b_cats', B]].forEach(function (s) {
+        var row = el('div', 'tr');
+        var sw = el('i', 'swatch'); sw.style.background = s[2];
+        row.appendChild(sw);
+        row.appendChild(document.createTextNode(
+          (D.sides[s[0]].manager || D.sides[s[0]].name) + ' — ' + p[s[1]]));
+        tip.appendChild(row);
+      });
+      tip.style.opacity = '1';
+      var left = (x(i) / W) * box.width + 14;
+      if (left > box.width - 190) left -= 200;
+      tip.style.left = left + 'px';
+      tip.style.top = '10px';
+    });
+    host.addEventListener('mouseleave', function () {
+      tip.style.opacity = '0';
+      hair.setAttribute('opacity', '0');
+    });
+  }
+
+  // ── lineups ───────────────────────────────────────────────────────────
+  function slotList() {
+    var slots = [], rs = D.rules.roster_slots;
+    D.rules.slot_order.forEach(function (p) {
+      for (var i = 0; i < (rs[p] || 0); i++) slots.push(p);
+    });
+    return slots;
+  }
+
+  function lineupFor(side, date) {
+    // Server lineup first, then whatever the manager changed locally.
+    var base = {};
+    var served = (D.lineups[side] || {})[date];
+    if (served) {
+      Object.keys(served).forEach(function (k) { base[k] = served[k]; });
+    } else {
+      rosterOf(side).forEach(function (p) { base[p.key] = p.slot || 'BN'; });
+    }
+    rosterOf(side).forEach(function (p) {
+      if (base[p.key] === undefined) base[p.key] = 'BN';
+    });
+    var pre = side + '|' + date + '|';
+    Object.keys(S.lineups).forEach(function (k) {
+      if (k.indexOf(pre) === 0) base[k.slice(pre.length)] = S.lineups[k];
+    });
+    return base;
+  }
+
+  function isLocked(side, date, player) {
+    if (date < todayISO()) return true;
+    var byTeam = (D.locks || {})[date];
+    if (!byTeam || !player.mlb_team_id) return false;
+    var start = byTeam[String(player.mlb_team_id)];
+    return start ? Date.parse(start) <= Date.now() : false;
+  }
+
+  function gameLabel(date, player) {
+    var byTeam = (D.locks || {})[date];
+    if (!byTeam || !player.mlb_team_id) return '—';
+    var start = byTeam[String(player.mlb_team_id)];
+    return start ? clockOf(start) : 'No game';
+  }
+
+  function renderDayTabs() {
+    var host = $('daytabs');
+    host.innerHTML = '';
+    D.week2_dates.forEach(function (d) {
+      var t = el('button', 'daytab' + (d === day ? ' on' : '') +
+        (d < todayISO() ? ' locked' : ''));
+      t.appendChild(el('b', null, dow(d)));
+      t.appendChild(document.createTextNode(shortDate(d)));
+      t.addEventListener('click', function () { day = d; moving = null; render(); });
+      host.appendChild(t);
+    });
+  }
+
+  // Managers see their own team first and in full; the opponent is read-only.
+  function renderLineups() {
+    var host = $('lineups');
+    host.innerHTML = '';
+    var order = S.actingAs === 'b' ? ['b', 'a'] : ['a', 'b'];
+    order.forEach(function (side) { host.appendChild(lineupCard(side)); });
+  }
+
+  function lineupCard(side) {
+    var mine = canEdit(side);
+    var card = el('div', 'lucard ' + side + (mine ? ' mine' : ' theirs'));
+    var head = el('header');
+    var who = el('div', 'who', D.sides[side].manager || D.sides[side].name);
+    if (mine) who.appendChild(el('span', 'flag', ' — your team'));
+    head.appendChild(who);
+
+    var left = D.rules.max_adds - S.addsUsed[side];
+    var adds = el('div', 'adds');
+    adds.appendChild(el('span', 'adds-left' + (left ? '' : ' adds-none'), String(left)));
+    adds.appendChild(document.createTextNode(' of ' + D.rules.max_adds + ' adds left'));
+    head.appendChild(adds);
+    card.appendChild(head);
+
+    var lineup = lineupFor(side, day);
+    var byKey = {};
+    rosterOf(side).forEach(function (p) { byKey[p.key] = p; });
+
+    // Hitters and pitchers are read as two separate lineups, so the card is
+    // laid out that way: batting starters, batting bench, then the same for
+    // pitching. The bench is one shared pool, split here only for reading.
+    var taken = {}, idx = 0;
+
+    function seat(pos) {
+      var found = null;
+      for (var k in lineup) {
+        if (lineup[k] === pos && !taken[k] && byKey[k]) { found = k; taken[k] = 1; break; }
+      }
+      card.appendChild(slotRow(side, pos, found ? byKey[found] : null, mine, idx++));
+    }
+    function starters(positions) {
+      slotList().forEach(function (pos) {
+        if (positions.indexOf(pos) !== -1) seat(pos);
+      });
+    }
+    function benched(wantBatters) {
+      rosterOf(side).forEach(function (p) {
+        if (taken[p.key] || lineup[p.key] !== 'BN') return;
+        if (isBatter(p) !== wantBatters) return;
+        taken[p.key] = 1;
+        card.appendChild(slotRow(side, 'BN', p, mine, idx++));
+      });
+    }
+
+    card.appendChild(el('div', 'bench-head grp-bat', 'Batting'));
+    starters(['C', '1B', '2B', '3B', 'SS', 'OF', 'Util']);
+    card.appendChild(el('div', 'bench-head sub', 'Batting bench'));
+    benched(true);
+
+    card.appendChild(el('div', 'bench-head grp-pit', 'Pitching'));
+    starters(['SP', 'RP', 'P']);
+    card.appendChild(el('div', 'bench-head sub', 'Pitching bench'));
+    benched(false);
+
+    // Unused bench capacity is shared between the two, so it is shown once,
+    // after both, rather than pretending each half has its own.
+    var open = (D.rules.roster_slots['BN'] || 0) - Object.keys(lineup).filter(function (k) {
+      return lineup[k] === 'BN' && byKey[k];
+    }).length;
+    if (open > 0) {
+      card.appendChild(el('div', 'bench-head sub', 'Open bench'));
+      for (var i = 0; i < open; i++) seat('BN');
+    }
+
+    card.appendChild(el('div', 'bench-head grp-res', 'Injured & inactive'));
+    starters(['IL', 'NA']);
+
+    // Anyone still unseated (a slot that no longer exists, say).
+    rosterOf(side).forEach(function (p) {
+      if (!taken[p.key]) card.appendChild(slotRow(side, 'BN', p, mine, idx++));
+    });
+    return card;
+  }
+
+  function slotRow(side, pos, player, mine, index) {
+    var bench = pos === 'BN' || pos === 'IL' || pos === 'NA';
+    var row = el('div', 'slot' + (bench ? ' bench' : '') + (player ? '' : ' empty'));
+    if (player && isAdded(side, player.key)) row.classList.add('added');
+
+    // The drag controller reads the whole move off the row itself.
+    row.dataset.side = side;
+    row.dataset.pos = pos;
+    row.dataset.index = index;
+    if (player) row.dataset.player = player.key;
+
+    row.appendChild(el('div', 'pos', pos));
+
+    var mid = el('div');
+    if (player) {
+      var nm = el('div', 'pname', player.name);
+      if (isAdded(side, player.key)) nm.appendChild(el('span', 'flag', 'ADDED'));
+      mid.appendChild(nm);
+      mid.appendChild(el('div', 'pmeta',
+        (player.team || '') + ' · ' + (player.pos || '') + ' · ' + gameLabel(day, player)));
+    } else {
+      mid.appendChild(el('div', 'pname', 'Empty'));
+    }
+    row.appendChild(mid);
+
+    var acts = el('div', 'acts');
+    var locked = player ? isLocked(side, day, player) : (day < todayISO());
+    if (locked) row.classList.add('lockd');
+
+    if (player && mine && !locked) {
+      row.classList.add('grabbable');
+      row.setAttribute('tabindex', '0');
+      row.setAttribute('role', 'button');
+      row.setAttribute('aria-label', 'Move ' + player.name + ' from ' + pos);
+      acts.appendChild(el('div', 'grip', '⠿'));
+      row.addEventListener('pointerdown', function (e) { beginDrag(e, row, side, player, pos); });
+      // Keyboard and screen-reader path: pick up, then choose a slot.
+      row.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectForMove(side, player, pos);
+        }
+      });
+    }
+
+    if (player && mine) {
+      var drop = el('button', 'xbtn', 'Drop');
+      drop.disabled = locked;
+      drop.title = locked ? 'Locked — his game has started' : 'Drop ' + player.name;
+      drop.addEventListener('click', function (e) {
+        e.stopPropagation();
+        confirmDrop(side, player);
+      });
+      acts.appendChild(drop);
+    } else if (player) {
+      acts.appendChild(el('div', 'game', locked ? '🔒' : ''));
+    }
+    row.appendChild(acts);
+
+    // Highlighting for whichever move is in progress.
+    if (moving && moving.side === side) {
+      if (moving.player.key === (player && player.key)) {
+        row.classList.add('sel');
+      } else if (validTarget(side, moving.player, pos, player)) {
+        row.classList.add('tgt');
+        row.addEventListener('click', function () {
+          dropOnto(side, moving.player, pos, player);
+        });
+      } else {
+        row.classList.add('no');
+      }
+    }
+    return row;
+  }
+
+  // A slot can take this player if he is eligible for it, whoever is sitting
+  // there is not locked, and that man has somewhere legal to go. Checking the
+  // last part here means a slot is never highlighted as legal and then
+  // refused on drop.
+  function validTarget(side, player, pos, sitting) {
+    if (!eligibleFor(player, pos)) return false;
+    if (!sitting) return true;
+    if (sitting.key === player.key) return false;
+    if (isLocked(side, day, sitting)) return false;
+    return !!plannedDisplacement(side, player, pos, sitting).landing;
+  }
+
+  // Works out where both men end up, without committing anything.
+  function plannedDisplacement(side, player, pos, sitting) {
+    var lineup = lineupFor(side, day);
+    var from = lineup[player.key] || 'BN';
+    var pending = {};
+    Object.keys(lineup).forEach(function (k) { pending[k] = lineup[k]; });
+    delete pending[player.key];
+    delete pending[sitting.key];
+    pending[player.key] = pos;
+    return {
+      from: from,
+      landing: landingSpot(sitting, from, freeSlots(pending, []))
+    };
+  }
+
+  function isAdded(side, key) {
+    return S.added[side].some(function (p) { return p.key === key; });
+  }
+
+  // Yahoo's frozen pool plus anyone the two finalists have let go. A dropped
+  // player really is available again - after his lockout expires.
+  function faPool() {
+    var onRoster = {};
+    ['a', 'b'].forEach(function (side) {
+      rosterOf(side).forEach(function (p) { onRoster[p.key] = 1; });
+    });
+    var seen = {}, pool = [];
+    ['a', 'b'].forEach(function (side) {
+      S.dropped[side].forEach(function (key) {
+        var p = null;
+        D.rosters[side].forEach(function (q) { if (q.key === key) p = q; });
+        if (p && !onRoster[p.key] && !seen[p.key]) { seen[p.key] = 1; pool.push(p); }
+      });
+    });
+    D.free_agents.forEach(function (p) {
+      if (!onRoster[p.key] && !seen[p.key]) { seen[p.key] = 1; pool.push(p); }
+    });
+    return pool;
+  }
+
+  var BAT_SLOTS = ['C', '1B', '2B', '3B', 'SS', 'OF', 'Util'];
+  var PIT_SLOTS = ['SP', 'RP', 'P'];
+
+  function isBatter(p) { return p && p.type !== 'P'; }
+
+  // Batters and pitchers are entirely separate: neither can ever occupy the
+  // other's slots. Within the batting side, Util takes any batter whatever his
+  // position; within pitching, P takes any pitcher, while SP and RP still want
+  // real eligibility - a reliever cannot start.
+  function eligibleFor(player, pos) {
+    if (pos === 'BN') return true;
+    if (pos === 'IL') return !!player.status;
+    if (pos === 'NA') return false;
+
+    var pitcher = !isBatter(player);
+    if (PIT_SLOTS.indexOf(pos) !== -1) {
+      if (!pitcher) return false;
+      return pos === 'P' || (player.eligible || []).indexOf(pos) !== -1;
+    }
+    if (pitcher) return false;
+    if (pos === 'Util') return true;
+    return (player.eligible || []).indexOf(pos) !== -1;
+  }
+
+  // ── drag and drop ─────────────────────────────────────────────────────
+  // One pointer gesture serves mouse and touch. A press that moves past a few
+  // pixels is a drag; a press that does not is a tap, which selects the player
+  // so the next tap places him - the same path the keyboard uses.
+  var moving = null;   // { side, player, pos } currently in hand
+  var drag = null;     // live gesture state
+
+  function selectForMove(side, player, pos) {
+    moving = (moving && moving.player.key === player.key)
+      ? null
+      : { side: side, player: player, pos: pos };
+    renderLineups();
+  }
+
+  function beginDrag(e, row, side, player, pos) {
+    if (e.button !== undefined && e.button !== 0) return;
+    if (e.target.closest('button')) return;      // the Drop button owns its clicks
+    // With a player already in hand, a tap on a legal destination is a place,
+    // not a new pick-up: let the row's click handler have it.
+    if (moving && row.classList.contains('tgt')) return;
+    drag = {
+      side: side, player: player, pos: pos, row: row,
+      x0: e.clientX, y0: e.clientY, live: false, over: null, id: e.pointerId
+    };
+    // Listeners go on the window, not the row: starting a drag re-renders the
+    // lineup, which would destroy the row and with it any capture or handler
+    // bound to it, stranding the gesture half-finished.
+    window.addEventListener('pointermove', onDragMove, { passive: false });
+    window.addEventListener('pointerup', onDragEnd);
+    window.addEventListener('pointercancel', onDragEnd);
+  }
+
+  function onDragMove(e) {
+    if (!drag) return;
+    var dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.live) {
+      if (Math.sqrt(dx * dx + dy * dy) < 6) return;   // still just a press
+      drag.live = true;
+      moving = { side: drag.side, player: drag.player, pos: drag.pos };
+      renderLineups();
+      document.body.classList.add('dragging-active');
+      drag.row = document.querySelector(
+        '.slot[data-player="' + cssEscape(drag.player.key) + '"]');
+      if (drag.row) drag.row.classList.add('dragging');
+      drag.ghost = makeGhost(drag.player);
+      document.body.appendChild(drag.ghost);
+    }
+    e.preventDefault();
+    drag.ghost.style.left = (e.clientX + 14) + 'px';
+    drag.ghost.style.top = (e.clientY - 12) + 'px';
+
+    // elementFromPoint is the only reliable hit test for a touch drag.
+    drag.ghost.style.visibility = 'hidden';
+    var under = document.elementFromPoint(e.clientX, e.clientY);
+    drag.ghost.style.visibility = '';
+    var slot = under && under.closest ? under.closest('.slot') : null;
+    var target = (slot && slot.classList.contains('tgt')) ? slot : null;
+    if (drag.over !== target) {
+      if (drag.over) drag.over.classList.remove('over');
+      if (target) target.classList.add('over');
+      drag.over = target;
+      var tag = drag.ghost.querySelector('.gslot');
+      tag.textContent = target ? 'Drop into ' + target.dataset.pos : '';
+    }
+  }
+
+  function onDragEnd(e) {
+    if (!drag) return;
+    var d = drag;
+    drag = null;
+    window.removeEventListener('pointermove', onDragMove);
+    window.removeEventListener('pointerup', onDragEnd);
+    window.removeEventListener('pointercancel', onDragEnd);
+    document.body.classList.remove('dragging-active');
+    if (d.ghost && d.ghost.parentNode) d.ghost.parentNode.removeChild(d.ghost);
+
+    if (!d.live) {
+      // A tap: leave the player selected so the next tap can place him.
+      selectForMove(d.side, d.player, d.pos);
+      return;
+    }
+    if (d.over) {
+      var key = d.over.dataset.player;
+      var sitting = key ? byKeyOf(d.side, key) : null;
+      moving = null;
+      dropOnto(d.side, d.player, d.over.dataset.pos, sitting);
+    } else {
+      moving = null;
+      renderLineups();
+    }
+  }
+
+  function makeGhost(player) {
+    var g = el('div', 'ghost');
+    g.appendChild(el('div', null, player.name));
+    g.appendChild(el('div', 'gmeta', (player.team || '') + ' · ' + (player.pos || '')));
+    g.appendChild(el('div', 'gslot', ''));
+    return g;
+  }
+
+  function cssEscape(v) {
+    return String(v).replace(/["\\]/g, '\\$&');
+  }
+
+  // How many of each slot are unfilled, given a lineup and players in transit.
+  function freeSlots(lineup, ignoreKeys) {
+    var cap = {}, used = {};
+    slotList().forEach(function (p) { cap[p] = (cap[p] || 0) + 1; });
+    Object.keys(lineup).forEach(function (k) {
+      if (ignoreKeys.indexOf(k) !== -1) return;
+      used[lineup[k]] = (used[lineup[k]] || 0) + 1;
+    });
+    var free = {};
+    Object.keys(cap).forEach(function (p) { free[p] = cap[p] - (used[p] || 0); });
+    return free;
+  }
+
+  // Where the displaced player goes. A straight swap only works if he can
+  // actually play the slot being vacated - a third baseman bumped out of Util
+  // by a catcher cannot take the catcher's spot, so he goes to the bench.
+  function landingSpot(displaced, vacated, free) {
+    if (eligibleFor(displaced, vacated) && free[vacated] > 0) return vacated;
+    // Otherwise the bench, always. A move never fails for want of a bench
+    // slot: the starting spot he just left is now empty, so the roster still
+    // holds the same number of players and the bench simply runs long.
+    return 'BN';
+  }
+
+  // Dropping onto an occupied slot moves the sitting player out of the way.
+  function dropOnto(side, player, pos, sitting) {
+    moving = null;
+    var lineup = lineupFor(side, day);
+    var from = lineup[player.key] || 'BN';
+    if (sitting && sitting.key === player.key) { renderLineups(); return; }
+
+    if (sitting) {
+      if (isLocked(side, day, sitting)) {
+        toast(sitting.name + ' is locked — his game has started', true);
+        renderLineups();
+        return;
+      }
+      var landing = plannedDisplacement(side, player, pos, sitting).landing;
+      if (!landing) {
+        toast('No legal spot for ' + sitting.name + ' — free a bench slot first', true);
+        renderLineups();
+        return;
+      }
+      S.lineups[side + '|' + day + '|' + sitting.key] = landing;
+      S.lineups[side + '|' + day + '|' + player.key] = pos;
+      save();
+      render();
+      toast(landing === from
+        ? player.name + ' ↔ ' + sitting.name
+        : player.name + ' → ' + pos + ', ' + sitting.name + ' → ' + landing);
+      return;
+    }
+    S.lineups[side + '|' + day + '|' + player.key] = pos;
+    save();
+    render();
+    toast(player.name + ' → ' + pos);
+  }
+
+  function byKeyOf(side, key) {
+    var found = null;
+    rosterOf(side).forEach(function (p) { if (p.key === key) found = p; });
+    return found;
+  }
+
+  // ── free agents ───────────────────────────────────────────────────────
+  function renderFA() {
+    var list = $('faList'), q = ($('faSearch').value || '').toLowerCase();
+    var pos = $('faPos').value;
+    $('faSub').textContent = faPool().length +
+      ' available · pool frozen at the end of week 1, plus anyone dropped since';
+
+    var hits = faPool().filter(function (p) {
+      if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return false;
+      if (pos && (p.eligible || []).indexOf(pos) === -1) return false;
+      return true;
+    });
+    // The pool runs to hundreds; a wall of names buries the rest of the page.
+    var CAP = 12;
+    var rows = hits.slice(0, CAP);
+
+    list.innerHTML = '';
+    if (!rows.length) {
+      list.appendChild(el('div', 'empty-note', 'No free agents match that search.'));
+      return;
+    }
+    rows.forEach(function (p) {
+      var row = el('div', 'fa-row');
+      var mid = el('div');
+      mid.appendChild(el('div', 'pname', p.name));
+      mid.appendChild(el('div', 'pmeta', (p.team || 'FA') + ' · ' + (p.pos || '')));
+      row.appendChild(mid);
+
+      var until = S.lockout[p.key];
+      var held = until && Date.parse(until) > Date.now();
+      row.appendChild(el('div', 'pmeta', held
+        ? 'Locked until ' + clockOf(until)
+        : (p.eligible || []).join(', ')));
+
+      var btns = el('div', 'btn-row');
+      ['a', 'b'].forEach(function (side) {
+        if (!canEdit(side)) return;
+        var left = D.rules.max_adds - S.addsUsed[side];
+        var b = el('button', 'btn ' + side, '+ Add');
+        if (S.actingAs === 'commish') {
+          b.textContent = '+ ' + (D.sides[side].manager || 'Team ' + D.sides[side].team_id);
+        }
+        b.disabled = held || left <= 0;
+        b.title = held ? 'Dropped within the last ' + D.rules.drop_lockout_hours + ' hours'
+          : (left <= 0 ? 'No adds left' : 'Add ' + p.name);
+        if (b.disabled) { b.style.opacity = '.35'; b.style.cursor = 'not-allowed'; }
+        b.addEventListener('click', function () { startAdd(side, p); });
+        btns.appendChild(b);
+      });
+      if (!btns.children.length) {
+        btns.appendChild(el('div', 'pmeta', 'View only'));
+      }
+      row.appendChild(btns);
+      list.appendChild(row);
+    });
+    if (hits.length > CAP) {
+      list.appendChild(el('div', 'empty-note',
+        'Showing ' + CAP + ' of ' + hits.length + ' matches — search or filter to narrow it down.'));
+    }
+  }
+
+  // ── add / drop ────────────────────────────────────────────────────────
+  // The roster is a fixed size, so an add is always paired with a drop.
+  function startAdd(side, incoming) {
+    openModal({
+      title: 'Add ' + incoming.name,
+      sub: (incoming.team || 'FA') + ' · ' + (incoming.pos || '') +
+        ' — pick who to drop. This uses one of your ' +
+        (D.rules.max_adds - S.addsUsed[side]) + ' remaining adds.',
+      side: side,
+      onPick: function (outgoing) { commitAddDrop(side, incoming, outgoing); }
+    });
+  }
+
+  function confirmDrop(side, player) {
+    if (isLocked(side, day, player)) {
+      toast(player.name + ' is locked — his game has started', true);
+      return;
+    }
+    openModal({
+      title: 'Drop ' + player.name + '?',
+      sub: 'He returns to the free agent pool and cannot be re-added for ' +
+        D.rules.drop_lockout_hours + ' hours. This does not use an add.',
+      confirmOnly: true,
+      onConfirm: function () { commitDrop(side, player); }
+    });
+  }
+
+  function commitAddDrop(side, incoming, outgoing) {
+    if (S.addsUsed[side] >= D.rules.max_adds) {
+      toast('No adds left', true);
+      return;
+    }
+    dropPlayer(side, outgoing);
+    S.added[side].push(incoming);
+    S.lineups[side + '|' + day + '|' + incoming.key] = 'BN';
+    S.addsUsed[side] += 1;
+    logTx(side, 'add/drop', incoming.name + ' in, ' + outgoing.name + ' out');
+    save();
+    closeModal();
+    render();
+    renderTx();
+    toast(incoming.name + ' added, ' + outgoing.name + ' dropped');
+  }
+
+  function commitDrop(side, player) {
+    dropPlayer(side, player);
+    logTx(side, 'drop', player.name + ' dropped');
+    save();
+    closeModal();
+    render();
+    renderTx();
+    toast(player.name + ' dropped');
+  }
+
+  function dropPlayer(side, player) {
+    if (isAdded(side, player.key)) {
+      S.added[side] = S.added[side].filter(function (p) { return p.key !== player.key; });
+    } else {
+      S.dropped[side].push(player.key);
+    }
+    // Stops a manager streaming the same arm out and back on the same day.
+    S.lockout[player.key] = new Date(
+      Date.now() + D.rules.drop_lockout_hours * 3600000).toISOString();
+    Object.keys(S.lineups).forEach(function (k) {
+      if (k.indexOf(side + '|') === 0 && k.slice(k.lastIndexOf('|') + 1) === player.key) {
+        delete S.lineups[k];
+      }
+    });
+  }
+
+  function logTx(side, type, detail) {
+    S.tx.unshift({
+      at: new Date().toISOString(), side: side, type: type, detail: detail
+    });
+  }
+
+  function renderTx() {
+    var host = $('txList');
+    host.innerHTML = '';
+    var all = (S && S.tx ? S.tx : []).concat(D.transactions || []);
+    if (!all.length) {
+      host.appendChild(el('div', 'empty-note',
+        'No moves yet. Every add and drop in week 2 lands here with a timestamp.'));
+      return;
+    }
+    all.forEach(function (t) {
+      var row = el('div', 'fa-row');
+      row.appendChild(el('div', null, t.detail));
+      row.appendChild(el('div', 'pmeta',
+        D.sides[t.side] ? (D.sides[t.side].manager || D.sides[t.side].name) : t.side));
+      row.appendChild(el('div', 'pmeta', clockOf(t.at)));
+      host.appendChild(row);
+    });
+  }
+
+  // ── modal ─────────────────────────────────────────────────────────────
+  function closeModal() { $('modalHost').innerHTML = ''; }
+
+  function openModal(opts) {
+    var host = $('modalHost');
+    host.innerHTML = '';
+    var scrim = el('div', 'scrim');
+    var box = el('div', 'modal');
+
+    var head = el('header');
+    head.appendChild(el('h3', null, opts.title));
+    if (opts.sub) head.appendChild(el('p', null, opts.sub));
+    box.appendChild(head);
+
+    if (!opts.confirmOnly) {
+      var body = el('div', 'body');
+      var lineup = lineupFor(opts.side, day);
+      rosterOf(opts.side).slice().sort(function (x, y) {
+        return (lineup[x.key] || 'BN').localeCompare(lineup[y.key] || 'BN');
+      }).forEach(function (p) {
+        var locked = isLocked(opts.side, day, p);
+        var b = el('button', 'drop-opt');
+        b.disabled = locked;
+        b.appendChild(el('div', 'pos', lineup[p.key] || 'BN'));
+        var mid = el('div');
+        mid.appendChild(el('div', null, p.name));
+        mid.appendChild(el('div', 'why', (p.team || '') + ' · ' + (p.pos || '')));
+        b.appendChild(mid);
+        b.appendChild(el('div', 'why', locked ? 'locked' : 'drop'));
+        b.addEventListener('click', function () { opts.onPick(p); });
+        body.appendChild(b);
+      });
+      box.appendChild(body);
+    }
+
+    var foot = el('footer');
+    var cancel = el('button', 'btn', 'Cancel');
+    cancel.addEventListener('click', closeModal);
+    foot.appendChild(cancel);
+    if (opts.confirmOnly) {
+      var ok = el('button', 'btn primary', 'Confirm drop');
+      ok.addEventListener('click', opts.onConfirm);
+      foot.appendChild(ok);
+    }
+    box.appendChild(foot);
+
+    scrim.appendChild(box);
+    scrim.addEventListener('click', function (e) { if (e.target === scrim) closeModal(); });
+    host.appendChild(scrim);
+  }
+
+  // ── acting as ─────────────────────────────────────────────────────────
+  function renderWhoAmI() {
+    var host = $('whoami');
+    host.innerHTML = '';
+    host.appendChild(el('div', 'lab', 'Acting as'));
+
+    var seg = el('div', 'seg');
+    [['a', D.sides.a.manager || D.sides.a.name, 'sa'],
+     ['b', D.sides.b.manager || D.sides.b.name, 'sb'],
+     ['commish', 'Commissioner', '']].forEach(function (o) {
+      var b = el('button', (S.actingAs === o[0] ? 'on ' + o[2] : ''), o[1]);
+      b.addEventListener('click', function () {
+        S.actingAs = o[0];
+        moving = null;
+        save();
+        render();
+        renderTx();
+      });
+      seg.appendChild(b);
+    });
+    host.appendChild(seg);
+
+    host.appendChild(el('div', 'lab', S.actingAs === 'commish'
+      ? 'You can edit both teams'
+      : 'You can only edit your own roster'));
+
+    var reset = el('button', 'linkbtn', 'Reset test data');
+    reset.addEventListener('click', function () {
+      if (!confirm('Clear every lineup change and transaction made in this browser?')) return;
+      resetState();
+      render();
+      renderTx();
+      toast('Test data cleared');
+    });
+    host.appendChild(reset);
+  }
+
+  // ── rules ─────────────────────────────────────────────────────────────
+  function renderRules() {
+    var r = D.rules, host = $('rules');
+    var cards = [
+      ['Two weeks, one matchup',
+        'Yahoo only runs a one-week final, so week one is played on Yahoo and week two is played here. ' +
+        'Every stat from both weeks is added together into a <b>single 12-category matchup</b>. ' +
+        'Win seven categories, win the title.'],
+      ['Innings minimum',
+        'A team needs <b>' + r.min_ip_total + ' innings pitched</b> across the two weeks. ' +
+        'Fall short and all six pitching categories are forfeited, however good they were.'],
+      ['Adds and drops',
+        '<b>' + r.max_adds + ' adds</b> for the championship, free agents only, first come first served. ' +
+        'The pool is frozen when Yahoo locks. A dropped player cannot be re-added for ' +
+        r.drop_lockout_hours + ' hours.'],
+      ['Lineup locks',
+        'Each player locks at <b>his own first pitch</b>, exactly like Yahoo. ' +
+        'A player already locked cannot be moved into or out of a slot for that day.'],
+      ['Lower is better',
+        'Three categories reward the smaller number: <b>' + r.lower_is_better.join(', ') + '</b>. ' +
+        'TB here is total bases <i>allowed</i> by your pitchers.'],
+      ['Deadline',
+        'Week two ends <b>' + r.week2[1] + '</b>, the last day of the MLB regular season. ' +
+        'There is no extra day if something slips.']
+    ];
+    host.innerHTML = '';
+    cards.forEach(function (c) {
+      var d = el('div', 'rule');
+      d.appendChild(el('h4', null, c[0]));
+      var p = el('p');
+      p.innerHTML = c[1];
+      d.appendChild(p);
+      host.appendChild(d);
+    });
+  }
+
+  function renderProto() {
+    $('proto').innerHTML = D.status === 'pending'
+      ? '<b>Standing by.</b> The bracket above is live from Yahoo. Lineups, free agents ' +
+        'and the scoreboard switch on automatically as soon as the championship matchup is set.'
+      : '<b>Prototype.</b> Rosters, the free agent pool, lock times and the scoreboard are ' +
+        'live data, and every rule is enforced for real — the ' + D.rules.max_adds +
+        '-add cap, the ' + D.rules.drop_lockout_hours + '-hour re-add lockout, position ' +
+        'eligibility and first-pitch locks. Moves are saved <b>in this browser only</b>, so ' +
+        'the two managers cannot yet see each other\'s changes; that needs the write API. ' +
+        'Use <b>Acting as</b> above to test both sides, and <b>Reset test data</b> to start over.';
+  }
+
+  // ── waiting on the finalists ──────────────────────────────────────────
+  function renderPending() {
+    var r = D.rules, host = $('pending');
+    $('eyebrow').textContent = '2026 Championship · ' +
+      shortDate(r.week1[0]) + ' – ' + shortDate(r.week2[1]) + ' · 14 days';
+
+    var bar = $('statusbar');
+    bar.innerHTML = '';
+    var p1 = el('div', 'pill');
+    p1.appendChild(el('span', null, 'Waiting on the semifinals'));
+    bar.appendChild(p1);
+    var p2 = el('div', 'pill');
+    p2.appendChild(el('span', null, 'Week 1 starts '));
+    p2.appendChild(el('b', null, shortDate(r.week1[0])));
+    bar.appendChild(p2);
+    var p3 = el('div', 'pill');
+    p3.appendChild(el('span', null, 'Updated '));
+    p3.appendChild(el('b', null, clockOf(D.generated_at)));
+    bar.appendChild(p3);
+
+    host.hidden = false;
+    host.innerHTML = '';
+
+    var head = el('div', 'await');
+    head.appendChild(el('h2', null, 'The finalists are still being decided'));
+    var p = el('p');
+    p.appendChild(document.createTextNode('Yahoo creates the championship matchup once the ' +
+      'semifinals end. When it does, this page fills in with the live scoreboard, ' +
+      'week 2 lineups and the free agent pool. Week 1 begins '));
+    p.appendChild(el('span', 'when', shortDate(r.week1[0])));
+    p.appendChild(document.createTextNode('.'));
+    head.appendChild(p);
+    host.appendChild(head);
+
+    var rounds = el('div', 'rounds');
+    (D.bracket || []).forEach(function (rnd, i) {
+      var last = i === (D.bracket.length - 1);
+      var box = el('div', 'round');
+      box.appendChild(el('h3', null, last ? 'Semifinals' : 'Round ' + (i + 1) +
+        ' · week ' + rnd.week));
+      var games = el('div', 'games');
+      rnd.matchups.forEach(function (m) { games.appendChild(gameCard(m)); });
+      box.appendChild(games);
+      rounds.appendChild(box);
+    });
+    host.appendChild(rounds);
+  }
+
+  function gameCard(m) {
+    var card = el('div', 'game');
+    var done = m.status === 'postevent';
+    var top = Math.max.apply(null, m.teams.map(function (t) { return t.cats; }));
+    m.teams.forEach(function (t) {
+      var won = done && t.cats === top;
+      var row = el('div', 'grow' + (won ? ' won' : (done ? ' out' : '')));
+      var who = el('div');
+      who.appendChild(el('div', 'gname', t.manager || t.name));
+      who.appendChild(el('div', 'gteam', t.name));
+      row.appendChild(who);
+      row.appendChild(el('div', 'gcats', String(t.cats)));
+      card.appendChild(row);
+    });
+    card.appendChild(el('footer', null,
+      (done ? 'Final' : 'In progress') + ' · week ' + m.week + ' · categories won'));
+    return card;
+  }
+
+  function render() {
+    renderHeader();
+    renderWhoAmI();
+    renderTimeline();
+    renderBoard();
+    renderIP();
+    renderDayTabs();
+    renderLineups();
+    renderFA();
+  }
+
+  // ?demo renders a populated example built from real rosters over a past
+  // window, for reviewing the layout before the final actually starts.
+  var SRC = /[?&]demo/.test(window.location.search)
+    ? 'data/championship_2026_demo.json'
+    : 'data/championship_2026.json';
+
+  fetch(SRC)
+    .then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      D = data;
+
+      // Before the semifinals resolve there is no matchup to show, so the page
+      // runs as a bracket plus the rules and waits.
+      if (D.status === 'pending') {
+        Array.prototype.forEach.call(document.querySelectorAll('.live-only'),
+          function (n) { n.hidden = true; });
+        renderPending();
+        renderRules();
+        renderProto();
+        return;
+      }
+
+      load();
+      day = D.week2_dates[0];
+      var today = todayISO();
+      D.week2_dates.forEach(function (d) { if (d === today) day = d; });
+
+      var seen = {};
+      D.free_agents.forEach(function (p) {
+        (p.eligible || []).forEach(function (e) { seen[e] = 1; });
+      });
+      var sel = $('faPos');
+      D.rules.slot_order.forEach(function (p) {
+        if (!seen[p] || p === 'BN' || p === 'IL' || p === 'NA') return;
+        var o = el('option', null, p);
+        o.value = p;
+        sel.appendChild(o);
+      });
+
+      render();
+      renderTrend();
+      renderTx();
+      renderRules();
+      renderProto();
+
+      $('faSearch').addEventListener('input', renderFA);
+      sel.addEventListener('change', renderFA);
+      var rt;
+      window.addEventListener('resize', function () {
+        clearTimeout(rt);
+        rt = setTimeout(renderTrend, 200);
+      });
+    })
+    .catch(function (e) {
+      document.querySelector('.wrap').innerHTML =
+        '<div class="empty-note">Could not load championship data (' + e.message + ').<br>' +
+        'Run <code>python scripts/gen_championship_hub.py</code> first.</div>';
+    });
+})();
+</script>
+</body>
+</html>

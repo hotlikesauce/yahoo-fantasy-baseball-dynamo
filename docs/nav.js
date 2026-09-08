@@ -89,6 +89,11 @@
       display: flex;
       align-items: center;
     }
+    /* Sits in the 2026 list just above Playoff Hub - tinted so it is easy to
+       find, but not shouting while the final has not started yet. */
+    .champ-item { color: #fcd34d !important; }
+    .champ-item:hover { color: #fde68a !important; }
+
     .ss-nav-link {
       color: #94a3b8;
       text-decoration: none;
@@ -341,7 +346,7 @@
   const nav = document.getElementById('nav');
   if (!nav) return;
 
-  const pages2026    = ['draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','trade_grades_2026.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html','positional_strength_2026.html','playoff_scenarios_2026.html','playoff_hub_2026.html','superlatives_2026.html'];
+  const pages2026    = ['championship_hub_2026.html','draft_picks_2026.html','draft_results_2026.html','trade_analyzer.html','trade_grades_2026.html','keepers_2026.html','live_standings_2026.html','season_trends_2026.html','luck_analysis_2026.html','positional_strength_2026.html','playoff_scenarios_2026.html','playoff_hub_2026.html','superlatives_2026.html'];
   const pagesYoY     = ['season_trends_2025.html','luck_analysis_2025.html','draft_picks_2025.html','season_trends_2024.html','season_trends_2023.html','season_trends_2022.html'];
 
   nav.innerHTML = `
@@ -357,6 +362,7 @@
               <a href="live_standings_2026.html" class="${isActive('live_standings_2026.html').trim()}">Live Standings</a>
               <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
               <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
+              <a href="championship_hub_2026.html" class="champ-item ${isActive('championship_hub_2026.html').trim()}">&#127942; Championship Hub</a>
               <a href="playoff_hub_2026.html" class="${isActive('playoff_hub_2026.html').trim()}">Playoff Hub</a>
               <a href="playoff_scenarios_2026.html" class="${isActive('playoff_scenarios_2026.html').trim()}">Playoff Scenarios</a>
               <a href="superlatives_2026.html" class="${isActive('superlatives_2026.html').trim()}">Superlatives</a>
@@ -406,6 +412,7 @@
       <!-- Mobile panel -->
       <div class="ss-mobile-menu" id="ssMobileMenu">
 
+
         <!-- 2026 Season accordion -->
         <button class="ss-mob-section-btn${sectionActive(pages2026)}" data-target="mob2026">
           2026 Season <span class="ss-mob-arrow">&#9660;</span>
@@ -414,6 +421,7 @@
           <a href="live_standings_2026.html" class="${isActive('live_standings_2026.html').trim()}">Live Standings</a>
           <a href="season_trends_2026.html" class="${isActive('season_trends_2026.html').trim()}">Season Trends</a>
           <a href="luck_analysis_2026.html" class="${isActive('luck_analysis_2026.html').trim()}">Luck Analysis</a>
+          <a href="championship_hub_2026.html" class="champ-item ${isActive('championship_hub_2026.html').trim()}">&#127942; Championship Hub</a>
           <a href="playoff_hub_2026.html" class="${isActive('playoff_hub_2026.html').trim()}">Playoff Hub</a>
           <a href="playoff_scenarios_2026.html" class="${isActive('playoff_scenarios_2026.html').trim()}">Playoff Scenarios</a>
           <a href="superlatives_2026.html" class="${isActive('superlatives_2026.html').trim()}">Superlatives</a>
