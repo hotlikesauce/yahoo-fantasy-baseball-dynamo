@@ -695,6 +695,48 @@
     background: #0f172a; color: var(--ink); font: inherit; font-size: 16px;
   }
   .login-form input:focus { outline: none; border-color: #38bdf8; }
+
+  /* Phones and tablets: no sideways scrolling, ever. Each player is two lines -
+     slot, name and game on top, all seven stats across the full width below,
+     under one shared header row - the way Yahoo's app lays it out. */
+  @media (max-width: 1099px) {
+    .lucard { overflow-x: visible; }
+    .lucard > * { min-width: 0 !important; }
+    .slot {
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      column-gap: 2px; row-gap: 6px; padding: 9px 10px;
+    }
+    .slot .pos, .slot .pname { position: static; box-shadow: none; background: none; }
+    .slot .pos { grid-column: 1; grid-row: 1; align-self: center; justify-self: start; min-width: 34px; }
+    .slot .pname { grid-column: 2 / 6; grid-row: 1; padding-right: 0; }
+    .slot .acts { grid-column: 6 / 8; grid-row: 1; }
+    .slot .stat { grid-row: 2; text-align: center; font-size: .95em; }
+    .slot.empty .stat { display: none; }
+
+    /* The header row is just the seven labels, lined up over the stat columns. */
+    .slot.colhead { padding-top: 6px; padding-bottom: 6px; }
+    .slot.colhead .pos, .slot.colhead .pname, .slot.colhead .acts { display: none; }
+    .slot.colhead .stat { grid-row: 1; }
+
+    .slot.totalrow .pname { grid-column: 2 / 8; }
+    .slot.totalrow .acts { display: none; }
+    .slot.totalrow .stat { font-size: 1em; }
+  }
+
+  /* Locked players stay readable; the lock icon says they're locked. */
+  .slot.lockd { opacity: 1; }
+  .slot.lockd .nmline { color: var(--muted); }
+  .slot.lockd .game::after { content: none; }
+
+  /* Phones and tablets: all eight days fit across - no sideways scrolling. */
+  @media (max-width: 1099px) {
+    .daytabs {
+      display: grid; grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 3px; overflow: visible; flex-wrap: nowrap;
+    }
+    .daytab { min-width: 0; padding: 5px 0; font-size: .7em; }
+    .daytab b { font-size: 1.05em; }
+  }
 </style>
 </head>
 <body>
