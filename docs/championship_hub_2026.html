@@ -784,6 +784,49 @@
 
   .slot.newbench.full { cursor: default; }
   .slot.newbench.full .nmline { color: #fca5a5; }
+
+  /* Move Player sheet - Yahoo's layout. Bottom sheet on phones. */
+  .modal.sheet { max-width: 560px; }
+  .modal .sheet-head { position: relative; text-align: center; padding: 18px 60px 14px; }
+  .modal .sheet-head h3 { font-size: 1.25em; }
+  .modal .sheet-head p { color: var(--ink); font-size: .9em; }
+  .sheet-x {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer;
+    background: #e2e8f0; color: #0f172a; font-size: 1.1em; font-weight: 700;
+  }
+  .modal .sheet-body { padding: 8px 12px 18px; }
+  .mv-row {
+    display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 12px; align-items: center;
+    width: 100%; min-height: 78px; padding: 8px 10px; margin: 2px 0; border: none; border-radius: 8px;
+    background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer;
+  }
+  .mv-row:hover:not(:disabled) { background: #1e293b; }
+  .mv-row.current { background: #123a5c; }
+  .mv-row.current:hover { background: #164570; }
+  .mv-pos {
+    width: 56px; height: 56px; border-radius: 50%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; line-height: 1.15;
+    background: #334155; color: #e2e8f0; font-weight: 700; font-size: .85em;
+  }
+  .mv-pos.go { background: #4fc3f7; color: #0b1a2a; }
+  .mv-arrow { font-size: 1.05em; }
+  .mv-who { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .mv-who img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; background: #e2e8f0; flex: none; }
+  .mv-txt { min-width: 0; }
+  .mv-name { font-weight: 700; font-size: 1.05em; }
+  .mv-meta { color: var(--muted); font-size: .88em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mv-empty {
+    border: 2px dashed #64748b; border-radius: 12px; padding: 22px 12px;
+    text-align: center; font-weight: 600; color: var(--ink);
+  }
+  .mv-row.disabled { cursor: default; }
+  .mv-row.disabled .mv-empty { color: #fca5a5; border-color: #7f1d1d; }
+  .mv-none { color: var(--faint); padding: 16px; text-align: center; }
+  @media (max-width: 1099px) {
+    .scrim.sheet-scrim { align-items: flex-end; padding: 0; }
+    .modal.sheet { max-width: none; border-radius: 18px 18px 0 0; max-height: 82vh; border-bottom: none; }
+  }
 </style>
 </head>
 <body>
@@ -1923,9 +1966,9 @@
       badge.addEventListener('click', function (e) {
         e.stopPropagation();
         moving = null;
-        filling = (filling && filling.side === side && filling.index === index)
-          ? null : { side: side, pos: pos, index: index, sitting: player };
-        renderLineups();
+        filling = null;
+        if (player) openMoveSheet(side, player, pos);
+        else openFillSheet(side, pos);
       });
     }
     if (filling && filling.side === side) {
@@ -1958,6 +2001,118 @@
     }
     return row;
   }
+
+  // ── Move Player sheet (Yahoo's layout) ────────────────────────────────
+  // Every seat of the given slot types: occupied ones, then the empty ones.
+  // The bench has no empty seats - it grows as players are sent to it.
+  function slotSeats(side, types) {
+    var lineup = lineupFor(side, day), rs = D.rules.roster_slots, seats = [];
+    types.forEach(function (t) {
+      var occ = rosterOf(side).filter(function (p) { return (lineup[p.key] || 'BN') === t; });
+      occ.forEach(function (p) { seats.push({ pos: t, player: p }); });
+      if (t === 'BN') return;
+      for (var i = occ.length; i < (+rs[t] || 0); i++) seats.push({ pos: t, player: null });
+    });
+    return seats;
+  }
+
+  function sheetRow(label, player, opts) {
+    var row = el('button', 'mv-row' + (opts.current ? ' current' : '') + (opts.disabled ? ' disabled' : ''));
+    row.type = 'button';
+    if (opts.disabled) row.disabled = true;
+    var circ = el('div', 'mv-pos' + (opts.current || opts.disabled ? '' : ' go'));
+    circ.appendChild(el('span', null, label));
+    if (!opts.current && !opts.disabled) circ.appendChild(el('span', 'mv-arrow', '⇄'));
+    row.appendChild(circ);
+    if (player) {
+      var who = el('div', 'mv-who');
+      if (player.mlb_id) {
+        var shot = el('img');
+        shot.alt = '';
+        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_96,h_96,c_fill,g_face,q_auto:good/v1/people/' +
+          player.mlb_id + '/headshot/67/current';
+        shot.onerror = function () { shot.remove(); };
+        who.appendChild(shot);
+      }
+      var txt = el('div', 'mv-txt');
+      txt.appendChild(el('div', 'mv-name', player.name));
+      txt.appendChild(el('div', 'mv-meta', (player.team || '') + ' – ' + (player.pos || '')));
+      txt.appendChild(el('div', 'mv-meta', gameLabel(day, player)));
+      who.appendChild(txt);
+      row.appendChild(who);
+    } else {
+      row.appendChild(el('div', 'mv-empty', opts.emptyText || 'Empty'));
+    }
+    if (!opts.disabled) {
+      row.addEventListener('click', function () { closeModal(); if (opts.onTap) opts.onTap(); });
+    }
+    return row;
+  }
+
+  function openSheet(title, sub, rows) {
+    var host = $('modalHost');
+    host.innerHTML = '';
+    var scrim = el('div', 'scrim sheet-scrim');
+    var box = el('div', 'modal sheet');
+    var head = el('header', 'sheet-head');
+    head.appendChild(el('h3', null, title));
+    head.appendChild(el('p', null, sub));
+    var x = el('button', 'sheet-x', '✕');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Close');
+    x.addEventListener('click', closeModal);
+    head.appendChild(x);
+    box.appendChild(head);
+    var body = el('div', 'body sheet-body');
+    rows.forEach(function (r) { body.appendChild(r); });
+    box.appendChild(body);
+    scrim.appendChild(box);
+    scrim.addEventListener('click', function (e) { if (e.target === scrim) closeModal(); });
+    host.appendChild(scrim);
+  }
+
+  function openMoveSheet(side, player, pos) {
+    var types = (isBatter(player) ? BAT_SLOTS : PIT_SLOTS).concat(['BN', 'IL']);
+    var onBench = pos === 'BN';
+    var rows = [sheetRow(pos, player, { current: true })];
+    slotSeats(side, types).forEach(function (seat) {
+      if (seat.player && seat.player.key === player.key) return;
+      if (seat.pos === pos) return;                             // same slot, nothing gained
+      if (seat.pos === 'BN') {
+        // A bench player of the same kind can come in and take this slot.
+        if (onBench || isBatter(seat.player) !== isBatter(player)) return;
+        if (!validTarget(side, seat.player, pos, player)) return;
+        rows.push(sheetRow('BN', seat.player, { onTap: function () { dropOnto(side, seat.player, pos, player); } }));
+        return;
+      }
+      if (!validTarget(side, player, seat.pos, seat.player)) return;
+      rows.push(sheetRow(seat.pos, seat.player, { onTap: function () { dropOnto(side, player, seat.pos, seat.player); } }));
+    });
+    // A fresh, empty bench spot - the bench grows to fit.
+    if (!onBench) {
+      rows.push(validTarget(side, player, 'BN', null)
+        ? sheetRow('BN', null, { onTap: function () { dropOnto(side, player, 'BN', null); } })
+        : sheetRow('BN', null, { disabled: true, emptyText: 'Roster full (' + activeLimit() + ' active max)' }));
+    }
+    openSheet('Move Player', 'Select a new position for ' + player.name +
+      ' or keep the player in the ' + pos + ' slot', rows);
+  }
+
+  function openFillSheet(side, pos) {
+    var lineup = lineupFor(side, day);
+    var rows = [sheetRow(pos, null, { current: true })];
+    rosterOf(side).forEach(function (p) {
+      var from = lineup[p.key] || 'BN';
+      if (from === pos || isLocked(side, day, p) || !validTarget(side, p, pos, null)) return;
+      rows.push(sheetRow(from, p, { onTap: function () { dropOnto(side, p, pos, null); } }));
+    });
+    if (rows.length === 1) rows.push(el('div', 'mv-none', 'Nobody on your roster can play ' + pos + ' right now.'));
+    openSheet('Fill ' + pos, 'Pick who plays ' + pos, rows);
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && $('modalHost').firstChild) closeModal();
+  });
 
   // A slot can take this player if he is eligible for it, whoever is sitting
   // there is not locked, and that man has somewhere legal to go. Checking the
@@ -2148,10 +2303,8 @@
 
   function selectForMove(side, player, pos) {
     filling = null;
-    moving = (moving && moving.player.key === player.key)
-      ? null
-      : { side: side, player: player, pos: pos };
-    renderLineups();
+    moving = null;
+    openMoveSheet(side, player, pos);
   }
 
   function beginDrag(e, row, side, player, pos) {
