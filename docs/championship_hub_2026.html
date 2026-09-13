@@ -827,6 +827,45 @@
     .scrim.sheet-scrim { align-items: flex-end; padding: 0; }
     .modal.sheet { max-width: none; border-radius: 18px 18px 0 0; max-height: 82vh; border-bottom: none; }
   }
+
+  /* Free agents: a sortable stat table, two lines per player. */
+  #faList { overflow: visible; }
+  .fa-group { display: flex; gap: 6px; padding: 10px 12px 2px; }
+  .fa-group button {
+    flex: 1; font: inherit; font-weight: 600; padding: 8px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--edge); background: #0f172a; color: var(--muted);
+  }
+  .fa-group button.on { background: #4fc3f7; border-color: #4fc3f7; color: #0b1a2a; }
+  .fa-head {
+    position: sticky; top: 0; z-index: 2; background: var(--surface);
+    padding: 6px 12px 4px; border-bottom: 1px solid var(--line);
+  }
+  .fa-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+  .fa-sort {
+    font: inherit; font-size: .74em; font-weight: 700; letter-spacing: .03em; white-space: nowrap;
+    background: none; border: none; color: var(--faint); cursor: pointer; padding: 6px 0; border-radius: 6px;
+  }
+  .fa-head > .fa-sort { padding: 2px 4px; }
+  .fa-sort:hover { color: var(--ink); background: #0f172a; }
+  .fa-sort.on { color: #4fc3f7; }
+  .fa-r { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .fa-r:hover { background: #0f172a55; }
+  .fa-top { display: flex; align-items: center; gap: 10px; }
+  .fa-shot { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #e2e8f0; flex: none; }
+  .fa-who { min-width: 0; flex: 1; }
+  .fa-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fa-meta { color: var(--faint); font-size: .78em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fa-add { flex: none; }
+  .fa-add:disabled { opacity: .35; cursor: not-allowed; }
+  .fa-vals { margin-top: 6px; }
+  .fa-v { text-align: center; font-variant-numeric: tabular-nums; font-size: .92em; color: var(--ink); }
+  .fa-v.on { color: #4fc3f7; font-weight: 700; }
+  .fa-more { display: block; width: calc(100% - 24px); margin: 10px 12px; padding: 9px; }
+
+  .fa-r.unq .fa-vals { opacity: .5; }
+
+  /* Headshots zoomed out ~20%: the padded 5:6 portrait, cropped to the circle. */
+  .slot .headshot, .mv-who img, .fa-shot { object-fit: cover; object-position: center 25%; }
 </style>
 </head>
 <body>
@@ -1906,7 +1945,7 @@
         var shot = el('img', 'headshot');
         shot.loading = 'lazy';
         shot.alt = '';
-        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_96,h_96,c_fill,g_face,q_auto:good/v1/people/' +
+        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_160,h_192,c_pad,b_auto,q_auto:good/v1/people/' +
           player.mlb_id + '/headshot/67/current';
         shot.onerror = function () { shot.remove(); };
         mid.insertBefore(shot, mid.firstChild);
@@ -2038,7 +2077,7 @@
       if (player.mlb_id) {
         var shot = el('img');
         shot.alt = '';
-        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_96,h_96,c_fill,g_face,q_auto:good/v1/people/' +
+        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_160,h_192,c_pad,b_auto,q_auto:good/v1/people/' +
           player.mlb_id + '/headshot/67/current';
         shot.onerror = function () { shot.remove(); };
         who.appendChild(shot);
@@ -2246,7 +2285,9 @@
   // Announced to start on the selected day. Batters never qualify.
   function startingToday(player) {
     if (!player || isBatter(player) || !player.mlb_id) return null;
-    var byId = (D.probables || {})[day];
+    var live = DAYS[day] && DAYS[day].probables;
+    if (live) return live[String(player.mlb_id)] || null;
+    var byId = (D.probables || {})[day];                 // until MLB answers
     return (byId && byId[String(player.mlb_id)]) || null;
   }
 
@@ -2497,12 +2538,15 @@
   }
 
   // ── free agents ───────────────────────────────────────────────────────
-  // ── free agent stats ──────────────────────────────────────────────────
-  // A free agent is judged on the same twelve categories, over a chosen
-  // window: today (live) or the last 7, 14 or 30 days. Built from per-game
-  // logs summed into components, so ratios are exact and quality starts count.
-  var FA_STATS = {};            // "days|mlbId" -> { at, totals, games }
-  var FA_LOADING = {};
+  // A sortable stat table over the whole pool. MLB's byDateRange totals cover
+  // every player in two requests; ratios are rebuilt from the summed
+  // components. Quality starts come from game logs, because a range total
+  // cannot tell one six-inning start from two three-inning ones.
+  var FA_RANGE = {};   // days -> { at, loading, byId: {mlbId: {bat, pit}}, qs: {mlbId: n}, qsPending }
+  var FA_SORT = { bat: { col: 'R', dir: -1 }, pit: { col: 'IP', dir: -1 } };
+  var FA_GROUP = 'bat';
+  var FA_SHOW = 25;
+  var LOWER_BETTER = { ERA: 1, WHIP: 1, TB: 1 };
 
   function faRangeDays() {
     var sel = $('faRange');
@@ -2515,128 +2559,259 @@
     return d.toISOString().slice(0, 10);
   }
 
-  function faStatsLine(p) {
-    var box = el('div', 'fastats');
-    if (!p.mlb_id) return box;
-    var days = faRangeDays();
-    var hit = FA_STATS[days + '|' + p.mlb_id];
-    if (!hit) {
-      box.appendChild(el('span', 'fawait', 'Loading stats…'));
-      return box;
-    }
-    if (!hit.games) {
-      box.appendChild(el('span', 'fawait', days === 1 ? 'No stats today' : 'No games'));
-      return box;
-    }
-    var fin = finalizeTotals(hit.totals);
-    (p.type === 'P' ? PIT_COLS : BAT_COLS).forEach(function (c) {
-      var cell = el('span', 'fastat');
-      cell.appendChild(el('b', null, fmt(c, c === 'AB' ? hit.totals.AB : fin[c])));
-      cell.appendChild(document.createTextNode(' ' + c));
-      box.appendChild(cell);
-    });
-    return box;
-  }
-
-  function loadFaStats(rows) {
-    var days = faRangeDays();
+  function loadFaRange(days) {
+    var st = FA_RANGE[days];
     var fresh = days === 1 ? 60000 : 600000;     // today is live; longer windows barely move
-    var need = rows.filter(function (p) {
-      if (!p.mlb_id) return false;
-      var key = days + '|' + p.mlb_id;
-      var hit = FA_STATS[key];
-      return !FA_LOADING[key] && (!hit || Date.now() - hit.at > fresh);
-    });
-    if (!need.length) return;
-    need.forEach(function (p) { FA_LOADING[days + '|' + p.mlb_id] = 1; });
-    var url = MLB + '/v1/people?personIds=' + need.map(function (p) { return p.mlb_id; }).join(',') +
-      '&hydrate=stats(group=[hitting,pitching],type=[gameLog],startDate=' + rangeStart(days) +
-      ',endDate=' + todayISO() + ')';
-    jget(url).then(function (data) {
-      var byId = {};
-      (data.people || []).forEach(function (person) {
-        var totals = emptyTotals(), games = {};
-        (person.stats || []).forEach(function (s) {
-          var group = (s.group || {}).displayName;
-          (s.splits || []).forEach(function (sp) {
-            // MLB can repeat a line under an "All" sport; count the MLB one only.
-            if (sp.sport && sp.sport.id && sp.sport.id !== 1) return;
-            games[(sp.game || {}).gamePk || sp.date] = 1;
-            if (group === 'hitting') addInto(totals, batLine(sp.stat || {}));
-            else if (group === 'pitching') addInto(totals, pitLine(sp.stat || {}));
-          });
+    if (st && (st.loading || Date.now() - st.at < fresh)) return;
+    st = FA_RANGE[days] = {
+      at: Date.now(), loading: true,
+      byId: st ? st.byId : null, qs: st ? st.qs : {}, qsPending: st ? st.qsPending : false
+    };
+    var base = MLB + '/v1/stats?stats=byDateRange&sportId=1&playerPool=ALL&limit=5000&startDate=' +
+      rangeStart(days) + '&endDate=' + todayISO() + '&group=';
+    Promise.all([jget(base + 'hitting'), jget(base + 'pitching')]).then(function (res) {
+      var byId = {}, starters = [];
+      res.forEach(function (data, g) {
+        (((data.stats || [])[0] || {}).splits || []).forEach(function (sp) {
+          var id = sp.player && sp.player.id;
+          if (!id) return;
+          var t = byId[id] || (byId[id] = { bat: null, pit: null });
+          var stat = sp.stat || {};
+          if (g === 0) {
+            t.bat = addInto(t.bat || emptyTotals(), batLine(stat));
+          } else {
+            var line = pitLine(stat);
+            if (days !== 1) {
+              line.QS = 0;                               // filled in from game logs
+              if ((+stat.gamesStarted || 0) > 0) starters.push(id);
+            }
+            t.pit = addInto(t.pit || emptyTotals(), line);
+          }
         });
-        byId[person.id] = { totals: totals, games: Object.keys(games).length };
       });
-      need.forEach(function (p) {
-        var key = days + '|' + p.mlb_id;
-        var got = byId[p.mlb_id] || {};
-        delete FA_LOADING[key];
-        FA_STATS[key] = { at: Date.now(), totals: got.totals || emptyTotals(), games: got.games || 0 };
-      });
+      st.byId = byId;
+      st.loading = false;
+      st.at = Date.now();
+      if (days !== 1) loadFaQs(days, starters);
       if (faRangeDays() === days) renderFA();
     }).catch(function () {
-      need.forEach(function (p) { delete FA_LOADING[days + '|' + p.mlb_id]; });
+      st.loading = false;
+      st.at = 0;
+      if (faRangeDays() === days) renderFA();
     });
+  }
+
+  function loadFaQs(days, starterIds) {
+    var st = FA_RANGE[days];
+    var inPool = {};
+    faPool().forEach(function (p) { if (p.mlb_id) inPool[String(p.mlb_id)] = 1; });
+    var seen = {}, ids = starterIds.filter(function (id) {
+      if (!inPool[String(id)] || seen[id]) return false;
+      seen[id] = 1;
+      return true;
+    });
+    if (!ids.length) return;
+    st.qsPending = true;
+    var batches = [];
+    for (var k = 0; k < ids.length; k += 40) batches.push(ids.slice(k, k + 40));
+    Promise.all(batches.map(function (b) {
+      return jget(MLB + '/v1/people?personIds=' + b.join(',') +
+        '&hydrate=stats(group=[pitching],type=[gameLog],startDate=' + rangeStart(days) +
+        ',endDate=' + todayISO() + ')').then(function (data) {
+        (data.people || []).forEach(function (person) {
+          var n = 0;
+          (person.stats || []).forEach(function (sg) {
+            (sg.splits || []).forEach(function (sp) {
+              if (sp.sport && sp.sport.id && sp.sport.id !== 1) return;
+              n += pitLine(sp.stat || {}).QS;
+            });
+          });
+          st.qs[String(person.id)] = n;
+        });
+      });
+    })).catch(function () { /* QS stays unknown */ }).then(function () {
+      st.qsPending = false;
+      if (faRangeDays() === days) renderFA();
+    });
+  }
+
+  // One free agent's window totals, finalized. null = still loading;
+  // { none: true } = no games in the window.
+  function faLine(p, days) {
+    var st = FA_RANGE[days];
+    if (!st || !st.byId) return null;
+    var t = st.byId[p.mlb_id];
+    var raw = t && (p.type === 'P' ? t.pit : t.bat);
+    if (!raw) return { none: true };
+    var fin = finalizeTotals(raw);
+    fin.AB = raw.AB;
+    fin.IP = raw.IP;
+    if (days !== 1) {
+      var q = st.qs[String(p.mlb_id)];
+      fin.QS = q !== undefined ? q : (st.qsPending ? null : 0);
+    }
+    fin._raw = raw;
+    return fin;
+  }
+
+  // The number a column sorts on; null sinks to the bottom (no games, or a
+  // ratio with nothing to divide by).
+  function faValue(fin, col) {
+    if (!fin || fin.none) return null;
+    var raw = fin._raw;
+    if (col === 'OPS' && !(raw.AB + raw.BB + raw.HBP + raw.SF)) return null;
+    if ((col === 'ERA' || col === 'WHIP' || col === 'K9' || col === 'TB') && !raw.IP) return null;
+    var v = fin[col];
+    return (v === null || v === undefined) ? null : +v;
   }
 
   function renderFA() {
     var list = $('faList'), q = ($('faSearch').value || '').toLowerCase();
-    var pos = $('faPos').value;
-    $('faSub').textContent = faPool().length +
-      ' available · pool frozen at the end of week 1, plus anyone dropped since';
+    var pos = $('faPos').value, days = faRangeDays();
+    if (pos) FA_GROUP = PIT_SLOTS.indexOf(pos) !== -1 ? 'pit' : 'bat';
+    var pool = faPool();
+    $('faSub').textContent = pool.length + ' available';
+    loadFaRange(days);
+    var st = FA_RANGE[days];
+    var ready = !!(st && st.byId);
+    var cols = FA_GROUP === 'pit' ? PIT_COLS : BAT_COLS;
+    var sort = FA_SORT[FA_GROUP];
 
-    var hits = faPool().filter(function (p) {
+    var hits = pool.filter(function (p) {
+      if (!p.mlb_id) return false;
+      if ((p.type === 'P') !== (FA_GROUP === 'pit')) return false;
       if (q && (p.name || '').toLowerCase().indexOf(q) === -1) return false;
       if (pos && (p.eligible || []).indexOf(pos) === -1) return false;
       return true;
+    }).map(function (p) { return { p: p, fin: faLine(p, days) }; });
+
+    // A 1-for-1 day is not a 2.000 OPS hitter: ratio sorts rank players with
+    // enough playing time for the window first, then everyone else.
+    var RATIO_SORT = { OPS: 1, ERA: 1, WHIP: 1, K9: 1, TB: 1 };
+    function qualified(fin) {
+      if (!fin || fin.none) return false;
+      var raw = fin._raw;
+      return FA_GROUP === 'pit' ? raw.IP >= Math.max(1, days / 3)
+        : (raw.AB + raw.BB + raw.HBP + raw.SF) >= Math.max(3, days * 2);
+    }
+
+    hits.sort(function (x, y) {
+      var byName = (x.p.name || '').localeCompare(y.p.name || '');
+      if (sort.col === 'name') return byName * sort.dir;
+      var a = faValue(x.fin, sort.col), b = faValue(y.fin, sort.col);
+      if (a === null && b === null) return byName;
+      if (a === null) return 1;
+      if (b === null) return -1;
+      if (RATIO_SORT[sort.col]) {
+        var qa = qualified(x.fin), qb = qualified(y.fin);
+        if (qa !== qb) return qa ? -1 : 1;
+      }
+      return a === b ? byName : (a < b ? -1 : 1) * sort.dir;
     });
-    // The pool runs to hundreds; a wall of names buries the rest of the page.
-    var CAP = 12;
-    var rows = hits.slice(0, CAP);
 
     list.innerHTML = '';
-    if (!rows.length) {
+    var seg = el('div', 'fa-group');
+    [['bat', 'Batters'], ['pit', 'Pitchers']].forEach(function (o) {
+      var b = el('button', FA_GROUP === o[0] ? 'on' : '', o[1]);
+      b.type = 'button';
+      b.addEventListener('click', function () {
+        FA_GROUP = o[0];
+        FA_SHOW = 25;
+        var ps = $('faPos');
+        if (ps.value && (PIT_SLOTS.indexOf(ps.value) !== -1) !== (o[0] === 'pit')) ps.value = '';
+        renderFA();
+      });
+      seg.appendChild(b);
+    });
+    list.appendChild(seg);
+
+    function sortBtn(col, label) {
+      var on = sort.col === col;
+      var b = el('button', 'fa-sort' + (on ? ' on' : ''),
+        label + (on ? (sort.dir === -1 ? ' ▼' : ' ▲') : ''));
+      b.type = 'button';
+      b.title = 'Sort by ' + label;
+      b.addEventListener('click', function () {
+        if (sort.col === col) sort.dir = -sort.dir;
+        else {
+          sort.col = col;
+          // Best first: A-Z for names, low for ERA/WHIP/TB, high for the rest.
+          sort.dir = (col === 'name' || LOWER_BETTER[col]) ? 1 : -1;
+        }
+        FA_SHOW = 25;
+        renderFA();
+      });
+      return b;
+    }
+    var head = el('div', 'fa-head');
+    head.appendChild(sortBtn('name', 'Player'));
+    var labels = el('div', 'fa-grid');
+    cols.forEach(function (c) { labels.appendChild(sortBtn(c, c)); });
+    head.appendChild(labels);
+    list.appendChild(head);
+
+    if (!hits.length) {
       list.appendChild(el('div', 'empty-note', 'No free agents match that search.'));
       return;
     }
-    rows.forEach(function (p) {
-      var row = el('div', 'fa-row');
-      var mid = el('div');
-      mid.appendChild(el('div', 'pname', p.name));
-      mid.appendChild(el('div', 'pmeta', (p.team || 'FA') + ' · ' + (p.pos || '')));
-      mid.appendChild(faStatsLine(p));
-      row.appendChild(mid);
+    if (!ready && st && !st.loading) {
+      list.appendChild(el('div', 'empty-note', 'MLB stats are unavailable right now.'));
+    }
 
+    var side = faSide();
+    var canAdd = canEdit(side) && ownsRoster(side);
+    var left = maxAdds(side) - addsUsed(side);
+    hits.slice(0, FA_SHOW).forEach(function (h) {
+      var p = h.p, fin = h.fin;
+      var row = el('div', 'fa-r');
+      if (RATIO_SORT[sort.col] && fin && !fin.none && !qualified(fin)) row.classList.add('unq');
+      var top = el('div', 'fa-top');
+      var shot = el('img', 'fa-shot');
+      shot.loading = 'lazy';
+      shot.alt = '';
+      shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_120,h_144,c_pad,b_auto,q_auto:good/v1/people/' +
+        p.mlb_id + '/headshot/67/current';
+      shot.onerror = function () { shot.style.visibility = 'hidden'; };
+      top.appendChild(shot);
+      var who = el('div', 'fa-who');
+      who.appendChild(el('div', 'fa-name', p.name));
       var until = lockoutUntil(p.key);
       var held = until && Date.parse(until) > Date.now();
-      row.appendChild(el('div', 'pmeta', held
-        ? 'Locked until ' + clockOf(until)
-        : (p.eligible || []).join(', ')));
-
-      var btns = el('div', 'btn-row');
-      // One button, for the team whose lineup is on screen.
-      [faSide()].forEach(function (side) {
-        if (!canEdit(side) || !ownsRoster(side)) return;
-        var left = maxAdds(side) - addsUsed(side);
-        var b = el('button', 'btn ' + side, '+ Add');
+      who.appendChild(el('div', 'fa-meta', (p.team || 'FA') + ' · ' + (p.pos || '') +
+        (held ? ' · locked until ' + clockOf(until) : '')));
+      top.appendChild(who);
+      if (canAdd) {
+        var b = el('button', 'btn fa-add ' + side, '+ Add');
+        b.type = 'button';
         b.disabled = held || left <= 0;
         b.title = held ? 'Dropped within the last ' + D.rules.drop_lockout_hours + ' hours'
           : (left <= 0 ? 'No adds left' : 'Add ' + p.name);
-        if (b.disabled) { b.style.opacity = '.35'; b.style.cursor = 'not-allowed'; }
         b.addEventListener('click', function () { startAdd(side, p); });
-        btns.appendChild(b);
-      });
-      if (!btns.children.length) {
-        btns.appendChild(el('div', 'pmeta', 'View only'));
+        top.appendChild(b);
       }
-      row.appendChild(btns);
+      row.appendChild(top);
+
+      var grid = el('div', 'fa-grid fa-vals');
+      cols.forEach(function (c) {
+        var text;
+        if (!fin) text = '…';
+        else if (fin.none) text = '–';
+        else if (c === 'QS' && fin.QS === null) text = '…';
+        else {
+          var v = faValue(fin, c);
+          text = v === null ? '–' : fmt(c, v);
+        }
+        grid.appendChild(el('div', 'fa-v' + (sort.col === c ? ' on' : ''), text));
+      });
+      row.appendChild(grid);
       list.appendChild(row);
     });
-    loadFaStats(rows);
-    if (hits.length > CAP) {
-      list.appendChild(el('div', 'empty-note',
-        'Showing ' + CAP + ' of ' + hits.length + ' matches — search or filter to narrow it down.'));
+
+    if (hits.length > FA_SHOW) {
+      var more = el('button', 'btn fa-more', 'Show more · ' + (hits.length - FA_SHOW) + ' left');
+      more.type = 'button';
+      more.addEventListener('click', function () { FA_SHOW += 25; renderFA(); });
+      list.appendChild(more);
     }
   }
 
@@ -3164,16 +3339,29 @@
     if (st.loading || (st.done && date !== todayISO())) return Promise.resolve(st);
     st.loading = true;
 
-    return jget(MLB + '/v1/schedule?sportId=1&date=' + date + '&hydrate=linescore,team')
+    return jget(MLB + '/v1/schedule?sportId=1&date=' + date + '&hydrate=linescore,team,probablePitcher')
       .then(function (sched) {
         var mine = rosterTeamIds();
         var games = [];
+        var probables = {};
         (sched.dates || []).forEach(function (d) {
           (d.games || []).forEach(function (g) {
             var home = ((g.teams || {}).home || {}).team || {};
             var away = ((g.teams || {}).away || {}).team || {};
             if (!mine[home.id] && !mine[away.id]) return;
             var ls = g.linescore || {};
+            // Announced starters, straight from MLB - replaces the generated
+            // snapshot, which only reaches a few days out and never updates.
+            var coded = ((g.status || {}).codedGameState || '');
+            if (coded !== 'D' && coded !== 'C') {
+              [['home', away], ['away', home]].forEach(function (pair) {
+                var pp = ((g.teams || {})[pair[0]] || {}).probablePitcher;
+                if (pp && pp.id) {
+                  probables[String(pp.id)] = { name: pp.fullName, opponent: pair[1].abbreviation,
+                                               home: pair[0] === 'home', start_utc: g.gameDate };
+                }
+              });
+            }
             var info = {
               state: (g.status || {}).abstractGameState,
               detail: (g.status || {}).detailedState || '',
@@ -3201,6 +3389,7 @@
             });
           });
         });
+        st.probables = probables;
         st.inProgress = games.filter(function (g) { return g.state === 'Live'; }).length;
         st.done = games.length > 0 && games.every(function (g) { return g.state === 'Final'; });
 
