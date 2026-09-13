@@ -737,6 +737,53 @@
     .daytab { min-width: 0; padding: 5px 0; font-size: .7em; }
     .daytab b { font-size: 1.05em; }
   }
+
+  /* Big round slot badges - tap one to choose who plays there. */
+  .slot .pos {
+    width: 38px; height: 38px; padding: 0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: .74em;
+  }
+  .slot .pos.tap { background: #1d4ed8; color: #e0f2fe; cursor: pointer; }
+  .slot .pos.tap:hover { background: #2563eb; }
+  .slot.bench .pos.tap { background: #334155; color: var(--ink); }
+  .slot.sel .pos { box-shadow: 0 0 0 3px #38bdf8; }
+  .mvnone { color: var(--faint); font-size: .85em; align-self: center; }
+  @media (max-width: 1099px) {
+    .slot .pos { width: 44px; height: 44px; font-size: .8em; }
+  }
+
+  /* Yahoo-style rows: cyan slot circle, headshot, bold name, team-pos, game. */
+  .slot .pos.tap { background: #4fc3f7; color: #0b1a2a; font-weight: 700; }
+  .slot .pos.tap:hover { background: #81d4fa; }
+  .slot.bench .pos.tap { background: #2b3a55; color: #cfe8ff; }
+  .slot .pname.has-shot {
+    display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 10px; align-items: center;
+  }
+  .slot .pname.has-shot > .headshot { grid-row: 1 / span 3; }
+  .slot .pname.has-shot > :not(.headshot) { grid-column: 2; }
+  .slot .headshot {
+    width: 44px; height: 44px; border-radius: 50%; object-fit: cover; object-position: top;
+    background: #e2e8f0;
+  }
+  .slot .nmline { font-weight: 700; color: var(--ink); }
+  .slot .pmeta { color: var(--muted); }
+  .slot .pgame { color: var(--muted); font-size: .8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slot.lockd .nmline { color: var(--ink); }
+  @media (max-width: 1099px) {
+    .slot .pname.has-shot { grid-template-columns: 48px minmax(0, 1fr); }
+    .slot .headshot { width: 48px; height: 48px; }
+    .slot .pname { grid-column: 2 / 7; }
+    .slot .acts { grid-column: 7 / 8; flex-direction: column; gap: 4px; }
+    .slot .nmline { font-size: 1.02em; }
+  }
+
+  .slot .headshot { object-position: center; }
+
+  .slot.newbench { cursor: pointer; }
+  .slot.newbench .nmline { color: #86efac; font-style: normal; font-weight: 600; }
+
+  .slot.newbench.full { cursor: default; }
+  .slot.newbench.full .nmline { color: #fca5a5; }
 </style>
 </head>
 <body>
@@ -843,11 +890,6 @@
         <div class="tip" id="tip"></div>
       </div>
     </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head"><h2>Format</h2></div>
-    <div class="rules" id="rules"></div>
   </div>
 
   <div class="proto" id="proto"></div>
@@ -1045,6 +1087,13 @@
     var today = todayISO();
     var dates = playDates();
     return dates.filter(function (d) { return d >= today; })[0] || dates[dates.length - 1];
+  }
+
+  // Whose roster a signed-in manager may add to and drop from: his own. The
+  // commissioner may act on either.
+  function ownsRoster(side) {
+    if (!serverMode()) return true;
+    return SRV.role === 'commish' || SRV.role === side;
   }
 
   // Any sign-in may change either roster; without one the page is view-only.
@@ -1537,7 +1586,7 @@
       t.appendChild(el('b', null, dow(d)));
       t.appendChild(document.createTextNode(shortDate(d)));
       t.addEventListener('click', function () {
-        day = d; moving = null; render(); ensureDay(d);
+        day = d; moving = null; filling = null; render(); ensureDay(d);
       });
       host.appendChild(t);
     });
@@ -1546,8 +1595,10 @@
   // A manager sees only his own roster. Nobody wants the other guy studying
   // their bench, and the commissioner still needs both to fix things.
   function renderLineups() {
+    ensureStatuses();
     var host = $('lineups');
     host.innerHTML = '';
+    if (serverMode() && TOKEN && (SRV.role === 'a' || SRV.role === 'b')) S.actingAs = SRV.role;
     var sides = S.actingAs === 'commish' ? ['a', 'b'] : [S.actingAs];
     host.classList.toggle('single', sides.length === 1);
     $('luSub').textContent = sides.length === 1
@@ -1616,11 +1667,29 @@
       });
     }
 
+    function openBenchSlot(wantBatters) {
+      var mover = (moving && moving.side === side) ? moving.player
+        : ((filling && filling.side === side && filling.sitting) ? filling.sitting : null);
+      if (!mover || isBatter(mover) !== wantBatters) return;
+      if ((lineup[mover.key] || 'BN') === 'BN') return;
+      var full = !validTarget(side, mover, 'BN', null);
+      var row = el('div', 'slot bench empty newbench' + (full ? ' full' : ' tgt'));
+      row.appendChild(el('div', 'pos' + (full ? '' : ' tap'), 'BN'));
+      var mid = el('div', 'pname');
+      mid.appendChild(el('div', 'nmline', full
+        ? 'Roster full (' + activeLimit() + ' active max) - drop someone to activate ' + mover.name
+        : 'Move ' + mover.name + ' to the bench'));
+      row.appendChild(mid);
+      if (!full) row.addEventListener('click', function () { dropOnto(side, mover, 'BN', null); });
+      card.appendChild(row);
+    }
+
     card.appendChild(el('div', 'bench-head grp-bat', 'Batting'));
     card.appendChild(colHeader(BAT_COLS));
     starters(['C', '1B', '2B', '3B', 'SS', 'OF', 'Util']);
     card.appendChild(el('div', 'bench-head sub', 'Batting bench'));
     benched(true);
+    openBenchSlot(true);
     card.appendChild(totalRow(BAT_COLS, totals.bat, haveStats, 'Batting total'));
 
     var pitHead = el('div', 'bench-head grp-pit', 'Pitching');
@@ -1635,6 +1704,7 @@
     starters(['SP', 'RP', 'P']);
     card.appendChild(el('div', 'bench-head sub', 'Pitching bench'));
     benched(false);
+    openBenchSlot(false);
     card.appendChild(totalRow(PIT_COLS, totals.pit, haveStats, 'Pitching total'));
 
     // Unused bench capacity is shared between the two, so it is shown once,
@@ -1680,6 +1750,30 @@
       opts.appendChild(cancel);
       bar.appendChild(opts);
       card.insertBefore(bar, card.children[1]);
+    }
+
+    if (filling && filling.side === side) {
+      var fbar = el('div', 'movebar');
+      fbar.appendChild(el('div', 'mvlab', filling.sitting
+        ? 'Who replaces ' + filling.sitting.name + ' at ' + filling.pos + '?'
+        : 'Who plays ' + filling.pos + '?'));
+      var fopts = el('div', 'mvopts');
+      var cands = card.querySelectorAll('.slot.tgt[data-player]');
+      Array.prototype.forEach.call(cands, function (r) {
+        var nm = r.querySelector('.nmline');
+        var b = el('button', 'btn', (nm ? nm.childNodes[0].textContent.trim() : '') +
+          ' (' + r.dataset.pos + ')');
+        b.addEventListener('click', function () { r.click(); });
+        fopts.appendChild(b);
+      });
+      if (!cands.length) {
+        fopts.appendChild(el('div', 'mvnone', 'Nobody who can play ' + filling.pos + ' is movable right now.'));
+      }
+      var fcancel = el('button', 'btn ghostbtn', 'Cancel');
+      fcancel.addEventListener('click', function () { filling = null; renderLineups(); });
+      fopts.appendChild(fcancel);
+      fbar.appendChild(fopts);
+      card.insertBefore(fbar, card.children[1]);
     }
     return card;
   }
@@ -1752,8 +1846,20 @@
       }
       if (isAdded(side, player.key)) nm.appendChild(el('span', 'flag', 'ADDED'));
       mid.appendChild(nm);
-      var meta = (player.team || '') + ' · ' + (player.pos || '') + ' · ' + gameLabel(day, player);
+      var meta = (player.team || '') + ' · ' + (player.pos || '');
+      var gameLine = gameLabel(day, player);
       mid.appendChild(el('div', 'pmeta', meta));
+      mid.appendChild(el('div', 'pgame', gameLine));
+      if (player.mlb_id) {
+        var shot = el('img', 'headshot');
+        shot.loading = 'lazy';
+        shot.alt = '';
+        shot.src = 'https://img.mlbstatic.com/mlb-photos/image/upload/w_96,h_96,c_fill,g_face,q_auto:good/v1/people/' +
+          player.mlb_id + '/headshot/67/current';
+        shot.onerror = function () { shot.remove(); };
+        mid.insertBefore(shot, mid.firstChild);
+        mid.classList.add('has-shot');
+      }
     } else {
       mid.appendChild(el('div', 'nmline empty-name', 'Empty'));
     }
@@ -1768,7 +1874,8 @@
     var locked = player ? isLocked(side, day, player) : (day < todayISO());
     if (locked) row.classList.add('lockd');
 
-    if (player && !(mine && !locked) && !(moving && moving.side === side)) {
+    if (player && !(mine && !locked) && !(moving && moving.side === side) &&
+        !(filling && filling.side === side)) {
       row.addEventListener('click', function (e) {
         if (e.target.closest('button')) return;
         toast(!mine ? 'Enter your password to change lineups.'
@@ -1793,7 +1900,7 @@
       });
     }
 
-    if (player && mine) {
+    if (player && mine && ownsRoster(side)) {
       var drop = el('button', 'xbtn', 'Drop');
       drop.disabled = locked;
       drop.title = locked ? 'Locked — his game has started' : 'Drop ' + player.name;
@@ -1806,6 +1913,35 @@
       acts.appendChild(el('div', 'game', locked ? '🔒' : ''));
     }
     row.appendChild(acts);
+
+    // Tapping a slot's badge asks "who can play here?" - Yahoo's way round.
+    if (mine && day >= todayISO() && !(player && locked)) {
+      var badge = row.querySelector('.pos');
+      badge.classList.add('tap');
+      badge.setAttribute('role', 'button');
+      badge.title = player ? 'Replace ' + player.name : 'Fill this ' + pos + ' slot';
+      badge.addEventListener('click', function (e) {
+        e.stopPropagation();
+        moving = null;
+        filling = (filling && filling.side === side && filling.index === index)
+          ? null : { side: side, pos: pos, index: index, sitting: player };
+        renderLineups();
+      });
+    }
+    if (filling && filling.side === side) {
+      if (filling.index === index) {
+        row.classList.add('sel');
+      } else if (player && !locked && !(filling.sitting && filling.sitting.key === player.key) &&
+                 validTarget(side, player, filling.pos, filling.sitting)) {
+        row.classList.add('tgt');
+        row.addEventListener('click', function () {
+          var f = filling;
+          dropOnto(side, player, f.pos, f.sitting);
+        });
+      } else {
+        row.classList.add('no');
+      }
+    }
 
     // Highlighting for whichever move is in progress.
     if (moving && moving.side === side) {
@@ -1828,13 +1964,49 @@
   // last part here means a slot is never highlighted as legal and then
   // refused on drop.
   function validTarget(side, player, pos, sitting) {
-    // The bench takes anyone, any time, and never moves someone else to make room.
-    if (pos === 'BN') return !sitting || sitting.key !== player.key;
+    var change = {};
+    change[player.key] = pos;
+    // The bench never moves someone else to make room.
+    if (pos === 'BN') {
+      if (sitting && sitting.key === player.key) return false;
+      return !wouldOverfill(side, change);
+    }
     if (!eligibleFor(player, pos)) return false;
-    if (!sitting) return true;
-    if (sitting.key === player.key) return false;
-    if (isLocked(side, day, sitting)) return false;
-    return !!plannedDisplacement(side, player, pos, sitting).landing;
+    if (sitting) {
+      if (sitting.key === player.key) return false;
+      if (isLocked(side, day, sitting)) return false;
+      var landing = plannedDisplacement(side, player, pos, sitting).landing;
+      if (!landing) return false;
+      change[sitting.key] = landing;
+    }
+    return !wouldOverfill(side, change);
+  }
+
+  // Players outside IL and NA may not outnumber the starting slots plus the
+  // bench. A roster Yahoo handed over already past that is not forced down,
+  // but may not grow. Same rule as the server's rules.check_roster_size.
+  function activeLimit() {
+    var rs = D.rules.roster_slots, n = 0;
+    Object.keys(rs).forEach(function (p) { if (p !== 'IL' && p !== 'NA') n += +rs[p] || 0; });
+    return n;
+  }
+  function activeCount(side, change) {
+    var lineup = lineupFor(side, day), n = 0;
+    rosterOf(side).forEach(function (p) {
+      var slot = (change && change[p.key]) || lineup[p.key] || 'BN';
+      if (slot !== 'IL' && slot !== 'NA') n++;
+    });
+    return n;
+  }
+  function wouldOverfill(side, change) {
+    var after = activeCount(side, change);
+    return after > activeLimit() && after > activeCount(side, null);
+  }
+  // An add lands on the bench, so dropping an IL/NA man for him needs room.
+  function addWouldOverfill(side, outgoing) {
+    var slot = lineupFor(side, day)[outgoing.key] || 'BN';
+    if (slot !== 'IL' && slot !== 'NA') return false;
+    return activeCount(side, null) + 1 > activeLimit();
   }
 
   // Works out where both men end up, without committing anything.
@@ -1918,9 +2090,42 @@
   // other's slots. Within the batting side, Util takes any batter whatever his
   // position; within pitching, P takes any pitcher, while SP and RP still want
   // real eligibility - a reliever cannot start.
+  // Yahoo's statuses froze with the snapshot, so injured-list status is read
+  // from MLB's 40-man rosters. Same rule as the server's with_live_status.
+  var MLB_ROSTER = {};       // mlb_id -> status code
+  var MLB_ROSTER_ASKED = {};  // mlb team id -> true
+  function ensureStatuses() {
+    var want = [];
+    ['a', 'b'].forEach(function (s) {
+      (rosterOf(s) || []).forEach(function (p) {
+        if (p && p.mlb_team_id && !MLB_ROSTER_ASKED[p.mlb_team_id]) {
+          MLB_ROSTER_ASKED[p.mlb_team_id] = true;
+          want.push(p.mlb_team_id);
+        }
+      });
+    });
+    if (!want.length) return;
+    Promise.all(want.map(function (tid) {
+      return fetch('https://statsapi.mlb.com/api/v1/teams/' + tid + '/roster?rosterType=40Man')
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          ((j && j.roster) || []).forEach(function (e) {
+            MLB_ROSTER[String(e.person.id)] = (e.status && e.status.code) || '';
+          });
+        })
+        .catch(function () { MLB_ROSTER_ASKED[tid] = false; });
+    })).then(function () { safeRender(); });
+  }
+  function liveStatus(player) {
+    var code = player.mlb_id ? MLB_ROSTER[String(player.mlb_id)] : undefined;
+    if (code === undefined) return player.status || null;
+    if (/^D\d+$/.test(code)) return 'IL' + code.slice(1);
+    return /^IL/.test(player.status || '') ? null : (player.status || null);
+  }
+
   function eligibleFor(player, pos) {
     if (pos === 'BN') return true;
-    if (pos === 'IL') return !!player.status;
+    if (pos === 'IL') return /^IL/.test(liveStatus(player) || '');
     if (pos === 'NA') return false;
 
     var pitcher = !isBatter(player);
@@ -1938,9 +2143,11 @@
   // pixels is a drag; a press that does not is a tap, which selects the player
   // so the next tap places him - the same path the keyboard uses.
   var moving = null;   // { side, player, pos } currently in hand
+  var filling = null;  // { side, pos, index, sitting } - a slot asking who can play it
   var drag = null;     // live gesture state
 
   function selectForMove(side, player, pos) {
+    filling = null;
     moving = (moving && moving.player.key === player.key)
       ? null
       : { side: side, player: player, pos: pos };
@@ -1950,9 +2157,10 @@
   function beginDrag(e, row, side, player, pos) {
     if (e.button !== undefined && e.button !== 0) return;
     if (e.target.closest('button')) return;      // the Drop button owns its clicks
+    if (e.target.closest('.pos.tap')) return;    // the slot badge owns its clicks
     // With a player already in hand, a tap on a legal destination is a place,
     // not a new pick-up: let the row's click handler have it.
-    if (moving && row.classList.contains('tgt')) return;
+    if ((moving || filling) && row.classList.contains('tgt')) return;
     drag = {
       side: side, player: player, pos: pos, row: row,
       x0: e.clientX, y0: e.clientY, live: false, over: null, id: e.pointerId,
@@ -2078,6 +2286,7 @@
   // Dropping onto an occupied slot moves the sitting player out of the way.
   function dropOnto(side, player, pos, sitting) {
     moving = null;
+    filling = null;
     if (pos === 'BN') sitting = null;      // benching a player never displaces anyone
     if (sitting && sitting.key === player.key) { renderLineups(); return; }
     if (serverMode()) {
@@ -2245,10 +2454,10 @@
 
       var btns = el('div', 'btn-row');
       ['a', 'b'].forEach(function (side) {
-        if (!canEdit(side)) return;
+        if (!canEdit(side) || !ownsRoster(side)) return;
         var left = maxAdds(side) - addsUsed(side);
         var b = el('button', 'btn ' + side, '+ Add');
-        if (serverMode() || S.actingAs === 'commish') {
+        if (serverMode() ? SRV.role === 'commish' : S.actingAs === 'commish') {
           b.textContent = '+ ' + (D.sides[side].manager || 'Team ' + D.sides[side].team_id);
         }
         b.disabled = held || left <= 0;
@@ -2280,7 +2489,17 @@
         ' — pick who to drop. This uses one of your ' +
         (maxAdds(side) - addsUsed(side)) + ' remaining adds.',
       side: side,
-      onPick: function (outgoing) { commitAddDrop(side, incoming, outgoing); }
+      onPick: function (outgoing) {
+        openModal({
+          title: 'Add ' + incoming.name + ', drop ' + outgoing.name + '?',
+          sub: 'Uses 1 of your ' + (maxAdds(side) - addsUsed(side)) + ' remaining adds. ' +
+            outgoing.name + ' goes back to free agents and can\'t be re-added for ' +
+            D.rules.drop_lockout_hours + ' hours.',
+          confirmOnly: true,
+          confirmLabel: 'Confirm add & drop',
+          onConfirm: function () { commitAddDrop(side, incoming, outgoing); }
+        });
+      }
     });
   }
 
@@ -2406,14 +2625,15 @@
         return (lineup[x.key] || 'BN').localeCompare(lineup[y.key] || 'BN');
       }).forEach(function (p) {
         var locked = isLocked(opts.side, day, p);
+        var full = !locked && addWouldOverfill(opts.side, p);
         var b = el('button', 'drop-opt');
-        b.disabled = locked;
+        b.disabled = locked || full;
         b.appendChild(el('div', 'pos', lineup[p.key] || 'BN'));
         var mid = el('div');
         mid.appendChild(el('div', null, p.name));
         mid.appendChild(el('div', 'why', (p.team || '') + ' · ' + (p.pos || '')));
         b.appendChild(mid);
-        b.appendChild(el('div', 'why', locked ? 'locked' : 'drop'));
+        b.appendChild(el('div', 'why', locked ? 'locked' : (full ? 'roster full' : 'drop')));
         b.addEventListener('click', function () { opts.onPick(p); });
         body.appendChild(b);
       });
@@ -2425,7 +2645,7 @@
     cancel.addEventListener('click', closeModal);
     foot.appendChild(cancel);
     if (opts.confirmOnly) {
-      var ok = el('button', 'btn primary', 'Confirm drop');
+      var ok = el('button', 'btn primary', opts.confirmLabel || 'Confirm drop');
       ok.addEventListener('click', opts.onConfirm);
       foot.appendChild(ok);
     }
@@ -2523,7 +2743,10 @@
       b.addEventListener('click', function () { S.actingAs = o[0]; moving = null; save(); render(); });
       seg.appendChild(b);
     });
-    host.appendChild(seg);
+    // A signed-in manager sees his own team only; the switch is for the
+    // commissioner and for visitors.
+    var ownOnly = !DEMO && SRV && TOKEN && (SRV.role === 'a' || SRV.role === 'b');
+    if (!ownOnly) host.appendChild(seg);
 
     if (DEMO) return;
     if (!SRV) {
@@ -2546,42 +2769,6 @@
       host.appendChild(open);
     }
     if (SRV.mode !== 'production') host.appendChild(el('div', 'mini-mode', 'playground'));
-  }
-
-  // ── rules ─────────────────────────────────────────────────────────────
-  function renderRules() {
-    var r = D.rules, host = $('rules');
-    var cards = [
-      ['Two weeks, one matchup',
-        'Yahoo only runs a one-week final, so week one is played on Yahoo and week two is played here. ' +
-        'Every stat from both weeks is added together into a <b>single 12-category matchup</b>. ' +
-        'Win seven categories, win the title.'],
-      ['Innings minimum',
-        'A team needs <b>' + r.min_ip_total + ' innings pitched</b> across the two weeks. ' +
-        'Fall short and all six pitching categories are forfeited, however good they were.'],
-      ['Adds and drops',
-        '<b>' + r.max_adds + ' adds</b> during week two, free agents only, first come first served. ' +
-        'The pool is frozen when Yahoo locks. A dropped player cannot be re-added for ' +
-        r.drop_lockout_hours + ' hours.'],
-      ['Lineup locks',
-        'Each player locks at <b>his own first pitch</b>, exactly like Yahoo. ' +
-        'A player already locked cannot be moved into or out of a slot for that day.'],
-      ['Lower is better',
-        'Three categories reward the smaller number: <b>' + r.lower_is_better.join(', ') + '</b>. ' +
-        'TB here is total bases <i>allowed</i> by your pitchers.'],
-      ['Deadline',
-        'Week two ends <b>' + r.week2[1] + '</b>, the last day of the MLB regular season. ' +
-        'There is no extra day if something slips.']
-    ];
-    host.innerHTML = '';
-    cards.forEach(function (c) {
-      var d = el('div', 'rule');
-      d.appendChild(el('h4', null, c[0]));
-      var p = el('p');
-      p.innerHTML = c[1];
-      d.appendChild(p);
-      host.appendChild(d);
-    });
   }
 
   function renderProto() {
@@ -2690,7 +2877,7 @@
   function safeRender() {
     var typing = document.activeElement && document.activeElement.closest &&
       document.activeElement.closest('.pwform');
-    if (drag || moving || typing) { pendingRender = true; return; }
+    if (drag || moving || filling || typing) { pendingRender = true; return; }
     pendingRender = false;
     render();
   }
@@ -3048,7 +3235,6 @@
         Array.prototype.forEach.call(document.querySelectorAll('.live-only'),
           function (n) { n.hidden = true; });
         renderPending();
-        renderRules();
         renderProto();
         return;
       }
@@ -3073,7 +3259,6 @@
       render();
       renderTrend();
       renderTx();
-      renderRules();
       renderProto();
       startLive();
       // First visit, or the 7 days are up: ask who this is.

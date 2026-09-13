@@ -22,6 +22,7 @@ Triggered by: Lambda Function URL (HTTPS).
 import hashlib
 import json
 import logging
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -93,6 +94,45 @@ def schedule_games(date):
     games = [g for d in json.loads(raw).get('dates', []) for g in d.get('games', [])]
     _SCHEDULE[date] = (time.time(), games)
     return games
+
+
+_ROSTER_STATUS = {}
+ROSTER_STATUS_TTL = 600
+
+
+def mlb_roster_status(team_id):
+    """{mlb_id: status code} for one club's 40-man roster, cached briefly."""
+    hit = _ROSTER_STATUS.get(team_id)
+    if hit and time.time() - hit[0] < ROSTER_STATUS_TTL:
+        return hit[1]
+    raw = urlopen('{}/v1/teams/{}/roster?rosterType=40Man'.format(MLB, team_id), timeout=8).read()
+    out = {str(e['person']['id']): (e.get('status') or {}).get('code') or ''
+           for e in json.loads(raw).get('roster', [])}
+    _ROSTER_STATUS[team_id] = (time.time(), out)
+    return out
+
+
+def with_live_status(players):
+    """Yahoo's statuses froze with the snapshot, so injured-list status comes
+    from MLB: D10/D15/D60 becomes IL10/IL15/IL60, anything else clears an IL
+    status. A player MLB cannot place (unreachable, or traded off the club we
+    know) keeps what the snapshot said."""
+    for p in players.values():
+        tid, mid = p.get('mlb_team_id'), p.get('mlb_id')
+        if not tid or not mid:
+            continue
+        try:
+            code = mlb_roster_status(int(tid)).get(str(int(mid)))
+        except Exception:
+            logger.warning('40-man roster unavailable for team %s', tid)
+            continue
+        if code is None:
+            continue
+        if re.match(r'^D\d+$', code):
+            p['status'] = 'IL' + code[1:]
+        elif str(p.get('status') or '').startswith('IL'):
+            p['status'] = None
+    return players
 
 
 # ── reads ─────────────────────────────────────────────────────────────────
@@ -231,6 +271,7 @@ def act_set_slot(side, body, snap, when):
     mover = body.get('player_key')
     displaced = body.get('displaced_key')
     players = read_players([k for k in (mover, displaced) if k] + list(lineup))
+    with_live_status({k: players[k] for k in (mover, displaced) if k})
     try:
         change = rules.plan_move(lineup, capacity_from(snap), players, mover,
                                  body.get('slot'), displaced)
@@ -252,6 +293,14 @@ def act_set_slot(side, body, snap, when):
     later = {d: read_lineup(side, d) for d in dates if d > date}
     later[date] = lineup
     apply_to = rules.propagation_dates(later, dates, date, before)
+    # Carry forward only while the later day stays within the roster limit.
+    capacity = capacity_from(snap)
+    for i, d in enumerate(apply_to):
+        try:
+            rules.check_roster_size(later[d], change, capacity)
+        except rules.MoveError:
+            apply_to = apply_to[:i]
+            break
 
     ops = []
     for d in apply_to:
@@ -301,6 +350,25 @@ def act_add_drop(side, body, snap, when, with_add=True):
     stamp = when.isoformat()
     lockout = (when + timedelta(hours=config.DROP_LOCKOUT_HOURS)).isoformat()
     forward = [d for d in dates if d >= today]
+
+    # The new man joins the bench, so dropping an IL/NA player to make room
+    # only works if the active roster has space for him.
+    if with_add:
+        capacity = capacity_from(snap)
+        for d in forward:
+            day_lineup = lineup if d == today else read_lineup(side, d)
+            if day_lineup.get(drop_key) not in rules.INACTIVE:
+                continue
+            after = dict(day_lineup)
+            after.pop(drop_key, None)
+            after[add_key] = 'BN'
+            if rules.active_count(after) > rules.active_limit(capacity) and \
+                    rules.active_count(after) > rules.active_count(day_lineup):
+                raise Refused(409, 'Roster full ({} active max). {} is on the {}, so dropping him leaves no room '
+                              'for {}. Drop an active player instead.'.format(
+                                  rules.active_limit(capacity), players[drop_key].get('name'),
+                                  day_lineup[drop_key], players[add_key].get('name')))
+
     ops = [
         # The dropped player must really be ours; he returns to the pool, held
         # out for the lockout so he cannot be streamed back.
@@ -469,6 +537,10 @@ def lambda_handler(event, context):
 
         role = authenticate(body.get('token'))
         side = side_for(role, body)
+        # Lineups may be set for either team, but a manager's pickups and drops
+        # are his own. Only the commissioner acts on another team's roster.
+        if action in ('add_drop', 'drop') and role in ('a', 'b') and side != role:
+            raise Refused(403, 'You can only add and drop players for your own team.')
         snap = meta()
 
         prior = claim_request(rid)

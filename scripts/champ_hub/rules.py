@@ -7,6 +7,7 @@ anyway. Keep this file and the page's eligibleFor / landingSpot in step.
 BAT_SLOTS = ('C', '1B', '2B', '3B', 'SS', 'OF', 'Util')
 PIT_SLOTS = ('SP', 'RP', 'P')
 BENCH = ('BN', 'IL', 'NA')
+INACTIVE = ('IL', 'NA')
 
 
 class MoveError(ValueError):
@@ -23,7 +24,9 @@ def eligible(player, pos):
     if pos == 'BN':
         return True
     if pos == 'IL':
-        return bool(player.get('status'))
+        # IL10 / IL15 / IL60 - read live from MLB by the API. Day-to-day or NA
+        # (minor leaguer) does not qualify.
+        return str(player.get('status') or '').startswith('IL')
     if pos == 'NA':
         return False
     pitcher = not is_batter(player)
@@ -36,6 +39,28 @@ def eligible(player, pos):
     if pos == 'Util':
         return True
     return pos in (player.get('eligible_positions') or [])
+
+
+def active_limit(capacity):
+    """How many players may sit outside IL and NA: every starting slot plus the bench."""
+    return sum(int(n) for pos, n in capacity.items() if pos not in INACTIVE)
+
+
+def active_count(lineup):
+    return sum(1 for slot in lineup.values() if slot not in INACTIVE)
+
+
+def check_roster_size(lineup, change, capacity, players=None):
+    """Refuses a change that takes the active roster past its limit. A roster
+    already over (as Yahoo handed it over) is not forced down, but may not grow."""
+    after = dict(lineup)
+    after.update(change)
+    before_n, after_n, limit = active_count(lineup), active_count(after), active_limit(capacity)
+    if after_n > limit and after_n > before_n:
+        names = [((players or {}).get(k) or {}).get('name') for k, s in change.items()
+                 if s not in INACTIVE and lineup.get(k) in INACTIVE]
+        who = next((n for n in names if n), 'That player')
+        raise MoveError('Roster full ({} active max). Drop someone before activating {}.'.format(limit, who))
 
 
 def plan_move(lineup, capacity, players, mover_key, target_pos, displaced_key=None):
@@ -65,6 +90,7 @@ def plan_move(lineup, capacity, players, mover_key, target_pos, displaced_key=No
             taken = sum(1 for k, s in lineup.items() if s == target_pos and k != mover_key)
             if taken >= capacity.get(target_pos, 0):
                 raise MoveError('{} is full. Drop him onto the player he replaces.'.format(target_pos))
+        check_roster_size(lineup, {mover_key: target_pos}, capacity, players)
         return {mover_key: target_pos}
 
     if displaced_key == mover_key:
@@ -77,7 +103,9 @@ def plan_move(lineup, capacity, players, mover_key, target_pos, displaced_key=No
     # vacated starting slot is now empty and the roster size is unchanged.
     displaced = players[displaced_key]
     landing = source if eligible(displaced, source) else 'BN'
-    return {mover_key: target_pos, displaced_key: landing}
+    change = {mover_key: target_pos, displaced_key: landing}
+    check_roster_size(lineup, change, capacity, players)
+    return change
 
 
 def propagation_dates(lineups_by_date, dates, start_date, before):
