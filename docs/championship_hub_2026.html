@@ -245,6 +245,14 @@
   }
   .pwform input:focus { outline: none; border-color: #38bdf8; }
 
+  /* A free agent's category line for the chosen window. */
+  .fastats {
+    display: flex; flex-wrap: wrap; gap: 2px 11px; margin-top: 5px;
+    font-size: .74em; color: var(--faint);
+  }
+  .fastat b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .fawait { color: #475569; }
+
   /* ── Roster controls ────────────────────────────────────────────────── */
   .lucard.mine { border-color: #38bdf866; }
   .lucard.theirs { opacity: .72; }
@@ -584,6 +592,109 @@
     .board-head .hb { grid-column: 3; }
     .cat .bar { display: none; }
   }
+
+  /* The matchup is a summary, not the page - managers come for the lineup, so
+     the score sits in one slim strip and the detail lives at the bottom. */
+  .eyebrow { margin: 2px 0 10px; }
+  .matchup { gap: 10px; margin-bottom: 8px; }
+  .side { padding: 9px 14px; border-radius: 10px; }
+  .side .mgr { font-size: 1.05em; }
+  .side .tname { font-size: .76em; margin-top: 1px; }
+  .side .seed { display: none; }
+  .tally { min-width: 104px; padding: 2px 4px; }
+  .tally .n { font-size: 1.9em; }
+  .tally .dash { font-size: 1.2em; }
+  .tally .cap { margin-top: 1px; font-size: .6em; }
+  .tally .ties { font-size: .68em; margin-top: 0; }
+  .statusbar { margin-bottom: 14px; }
+  .whoami { margin-bottom: 14px; }
+  .detail-head { margin-top: 56px; }
+  .detail-head .sec-head { margin-bottom: 4px; }
+  @media (max-width: 860px) {
+    .matchup { grid-template-columns: 1fr auto 1fr; gap: 6px; }
+    .side.b { text-align: right; }
+    .side .tname { display: none; }
+    .tally { min-width: 76px; }
+  }
+
+  /* Nothing above the lineup but one thin line. */
+  .eyebrow, .matchup, .statusbar { display: none !important; }
+  .whoami {
+    justify-content: flex-start; gap: 6px 12px; padding: 6px 10px; margin: 0 0 10px;
+    border-radius: 8px; font-size: .84em;
+  }
+  .whoami .mini-score { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .whoami .mini-score b { font-size: 1.1em; padding: 0 2px; }
+  .whoami .mini-score b.a { color: var(--a); }
+  .whoami .mini-score b.b { color: var(--b); }
+  .whoami .mini-live { color: #86efac; white-space: nowrap; }
+  .whoami .seg { padding: 2px; }
+  .whoami .seg button { padding: 3px 10px; font-size: .9em; }
+  .whoami .lab { font-size: .95em; }
+  .whoami .linkbtn { padding: 3px 9px; }
+  .whoami .pwform input { width: 110px; padding: 5px 8px; }
+  .whoami .pwform .btn { padding: 5px 10px; }
+  .whoami .mini-mode { color: #fcd34d; font-size: .8em; letter-spacing: .06em; text-transform: uppercase; }
+  .wrap { padding-top: 10px; }
+
+  /* The roster starts right under the one-line bar. */
+  .whoami + .sec { margin-top: 10px; }
+  .whoami + .sec .sec-head { margin-bottom: 8px; }
+  .whoami + .sec .sec-head h2 { font-size: 1em; }
+  .daytabs { margin-bottom: 10px; }
+  @media (max-width: 860px) {
+    .whoami + .sec .sec-head .sub { display: none; }
+    .daytabs { flex-wrap: nowrap; overflow-x: auto; gap: 5px; }
+    .daytab { flex: none; min-width: 46px; padding: 5px 7px; }
+  }
+
+  /* Lineup section spacing (it now sits inside the workspace). */
+  .lineup-sec { margin-top: 10px; }
+  .lineup-sec .sec-head { margin-bottom: 8px; }
+  .lineup-sec .sec-head h2 { font-size: 1em; }
+
+  /* Desktop: roster on the left filling the width, free agents and
+     transactions in a panel on the right that stays in view. */
+  @media (min-width: 1100px) {
+    .wrap { max-width: 1560px; }
+    .workspace {
+      display: grid; grid-template-columns: minmax(0, 1fr) 430px;
+      gap: 24px; align-items: start;
+    }
+    .lineups.single { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+    .sidepanel {
+      position: sticky; top: 62px; max-height: calc(100vh - 76px); overflow-y: auto;
+      padding-right: 4px;
+    }
+    .sidepanel .sec { margin-top: 10px; }
+    .sidepanel .fa-controls { flex-wrap: wrap; }
+    .sidepanel input.search { min-width: 0; flex-basis: 100%; }
+    .sidepanel .fa-row { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 12px; }
+    .sidepanel .fa-row > .pmeta { display: none; }
+    .slot { grid-template-columns: 40px minmax(170px, 1fr) repeat(7, minmax(44px, 62px)) 84px; }
+  }
+  /* Phone and tablet: everything stacks. */
+  @media (max-width: 1099px) {
+    .lineup-sec .sec-head .sub { display: none; }
+  }
+
+  /* "Who are you?" sign-in popup. */
+  .modal.login { max-width: 360px; }
+  .login-people { display: grid; gap: 8px; padding: 14px 22px 6px; }
+  .login-person {
+    font: inherit; font-size: 1.05em; font-weight: 600; text-align: left; cursor: pointer;
+    padding: 13px 14px; border-radius: 10px; border: 1px solid var(--edge);
+    background: #1e293b; color: var(--ink);
+  }
+  .login-person:hover { border-color: #38bdf8; }
+  .login-person.sa { box-shadow: inset 4px 0 0 var(--a); }
+  .login-person.sb { box-shadow: inset 4px 0 0 var(--b); }
+  .login-form input {
+    display: block; margin: 16px 22px 6px; width: calc(100% - 44px); box-sizing: border-box;
+    padding: 11px 12px; border-radius: 9px; border: 1px solid var(--edge);
+    background: #0f172a; color: var(--ink); font: inherit; font-size: 16px;
+  }
+  .login-form input:focus { outline: none; border-color: #38bdf8; }
 </style>
 </head>
 <body>
@@ -620,6 +731,52 @@
 
   <div class="whoami live-only" id="whoami"></div>
 
+  <div class="workspace live-only">
+  <div class="sec live-only lineup-sec">
+    <div class="sec-head">
+      <h2>Lineup</h2>
+      <div class="sub" id="luSub">Drag a player into any eligible slot</div>
+    </div>
+    <div class="daytabs" id="daytabs"></div>
+    <div class="lineups" id="lineups"></div>
+  </div>
+
+  <div class="sidepanel">
+
+  <div class="sec live-only">
+    <div class="sec-head">
+      <h2>Free agents</h2>
+      <div class="sub" id="faSub"></div>
+    </div>
+    <div class="fa-controls">
+      <input class="search" id="faSearch" type="search" placeholder="Search free agents&hellip;" autocomplete="off">
+      <select class="filter" id="faRange" aria-label="Stats period">
+        <option value="1">Stats: Today</option>
+        <option value="7">Last 7 days</option>
+        <option value="14">Last 14 days</option>
+        <option value="30">Last 30 days</option>
+      </select>
+      <select class="filter" id="faPos">
+        <option value="">All positions</option>
+      </select>
+    </div>
+    <div class="fa-list" id="faList"></div>
+  </div>
+
+  <div class="sec live-only">
+    <div class="sec-head"><h2>Transactions</h2></div>
+    <div class="fa-list" id="txList"></div>
+  </div>
+  </div>
+  </div>
+
+  <div class="sec live-only detail-head">
+    <div class="sec-head">
+      <h2>Matchup detail</h2>
+      <div class="sub">Every category, the innings minimum and how the lead has moved</div>
+    </div>
+  </div>
+
   <div class="timeline live-only">
     <div class="tl-legend">
       <span><i class="swatch" style="background:#334155"></i> Week 1 &middot; scored by Yahoo</span>
@@ -644,34 +801,6 @@
         <div class="tip" id="tip"></div>
       </div>
     </div>
-  </div>
-
-  <div class="sec live-only">
-    <div class="sec-head">
-      <h2>Week 2 lineups</h2>
-      <div class="sub" id="luSub">Drag a player into any eligible slot</div>
-    </div>
-    <div class="daytabs" id="daytabs"></div>
-    <div class="lineups" id="lineups"></div>
-  </div>
-
-  <div class="sec live-only">
-    <div class="sec-head">
-      <h2>Free agents</h2>
-      <div class="sub" id="faSub"></div>
-    </div>
-    <div class="fa-controls">
-      <input class="search" id="faSearch" type="search" placeholder="Search free agents&hellip;" autocomplete="off">
-      <select class="filter" id="faPos">
-        <option value="">All positions</option>
-      </select>
-    </div>
-    <div class="fa-list" id="faList"></div>
-  </div>
-
-  <div class="sec live-only">
-    <div class="sec-head"><h2>Transactions</h2></div>
-    <div class="fa-list" id="txList"></div>
   </div>
 
   <div class="sec">
@@ -754,6 +883,12 @@
         var q = window.location.search.replace(/([?&])t=[^&#]*&?/, '$1').replace(/[?&]$/, '');
         history.replaceState(null, '', window.location.pathname + q + window.location.hash);
       }
+      var exp = +localStorage.getItem(KEY + '-exp') || 0;
+      if (exp && Date.now() > exp) {        // remembered for 7 days, then ask again
+        localStorage.removeItem(KEY);
+        localStorage.removeItem(KEY + '-exp');
+        return '';
+      }
       return localStorage.getItem(KEY) || '';
     } catch (e) {
       return m ? decodeURIComponent(m[1]) : '';
@@ -782,13 +917,18 @@
   function setToken(t) {
     TOKEN = t;
     try {
-      if (t) localStorage.setItem('champ-hub-token', t);
-      else localStorage.removeItem('champ-hub-token');
+      if (t) {
+        localStorage.setItem('champ-hub-token', t);
+        localStorage.setItem('champ-hub-token-exp', String(Date.now() + 7 * 86400000));
+      } else {
+        localStorage.removeItem('champ-hub-token');
+        localStorage.removeItem('champ-hub-token-exp');
+      }
     } catch (e) { /* private mode: signed in for this visit only */ }
   }
 
   // Passwords are lower-cased so a phone's automatic capital letter still works.
-  function signIn(typed) {
+  function signIn(typed, wantRole) {
     var pw = String(typed || '').trim().toLowerCase();
     if (!pw) return;
     fetch(API_URL + '?token=' + encodeURIComponent(pw), { cache: 'no-store' })
@@ -797,7 +937,10 @@
         return r.json();
       })
       .then(function (body) {
+        if (wantRole && body.role !== wantRole) throw new Error('wrong');
         setToken(pw);
+        closeModal();
+        if (body.role === 'a' || body.role === 'b') { S.actingAs = body.role; save(); }
         SRV = body;
         SRV_ERR = null;
         render();
@@ -893,6 +1036,11 @@
   var RATIO = { OPS: 3, ERA: 2, WHIP: 2, K9: 2, IP: 1 };
   function fmt(cat, v) {
     if (v === null || v === undefined) return '–';
+    // Innings are written in thirds: 26 2/3 innings is 26.2, never 26.7.
+    if (cat === 'IP') {
+      var outs = Math.round(Number(v) * 3);
+      return Math.floor(outs / 3) + '.' + (outs % 3);
+    }
     if (RATIO[cat] !== undefined) {
       var s = Number(v).toFixed(RATIO[cat]);
       return cat === 'OPS' ? s.replace(/^0/, '') : s;
@@ -1120,7 +1268,7 @@
       var card = el('div', 'ipcard' + (short ? ' risk' : ''));
       var top = el('div', 'top');
       top.appendChild(el('div', 'who', D.sides[k].manager || D.sides[k].name));
-      top.appendChild(el('div', 'num', ip.toFixed(1) + ' / ' + goal + ' IP'));
+      top.appendChild(el('div', 'num', fmt('IP', ip) + ' / ' + goal + ' IP'));
       card.appendChild(top);
 
       var bar = el('div', 'ipbar');
@@ -1134,7 +1282,7 @@
 
       card.appendChild(el('div', 'ipnote' + (short ? ' bad' : ''),
         short
-          ? 'Short by ' + (goal - ip).toFixed(1) + ' IP — all six pitching categories forfeit'
+          ? 'Short by ' + fmt('IP', goal - ip) + ' IP — all six pitching categories forfeit'
           : 'Innings minimum met'));
       host.appendChild(card);
     });
@@ -1296,12 +1444,19 @@
   var MLB_ABBR = {};
   fetch('https://statsapi.mlb.com/api/v1/teams?sportId=1')
     .then(function (r) { return r.json(); })
-    .then(function (t) { (t.teams || []).forEach(function (x) { MLB_ABBR[x.id] = x.abbreviation; }); })
+    .then(function (t) {
+      (t.teams || []).forEach(function (x) { MLB_ABBR[x.id] = x.abbreviation; });
+      safeRender();                       // anything drawn before this arrived gets its opponent
+    })
     .catch(function () { /* opponent falls back to a generic label */ });
+
+  function oppAbbr(g, atHome) {
+    return (atHome ? g.awayAbbr : g.homeAbbr) || MLB_ABBR[atHome ? g.awayId : g.homeId] || 'opp';
+  }
 
   function liveGameText(g, teamId) {
     var atHome = g.homeId === teamId;
-    var where = (atHome ? 'vs ' : '@ ') + (MLB_ABBR[atHome ? g.awayId : g.homeId] || 'opp');
+    var where = (atHome ? 'vs ' : '@ ') + oppAbbr(g, atHome);
     if (/^(Postponed|Cancelled)/.test(g.detail)) return where + ' · ' + g.detail.split(':')[0];
     var mine = +(atHome ? g.homeRuns : g.awayRuns) || 0;
     var theirs = +(atHome ? g.awayRuns : g.homeRuns) || 0;
@@ -1321,7 +1476,7 @@
       var underway = g.state === 'Final' || (g.state === 'Live' && !/^Warmup/.test(g.detail));
       if (underway) return liveGameText(g, player.mlb_team_id);
       var atHome = g.homeId === player.mlb_team_id;
-      return (atHome ? 'vs ' : '@ ') + (MLB_ABBR[atHome ? g.awayId : g.homeId] || 'opp') +
+      return (atHome ? 'vs ' : '@ ') + oppAbbr(g, atHome) +
         ' · ' + clockOf(g.start) + (/Delayed/.test(g.detail) ? ' · delayed' : '');
     }
     if (player.mlb_team_id && DAYS[date] && DAYS[date].updated) return 'No game';
@@ -1631,6 +1786,8 @@
   // last part here means a slot is never highlighted as legal and then
   // refused on drop.
   function validTarget(side, player, pos, sitting) {
+    // The bench takes anyone, any time, and never moves someone else to make room.
+    if (pos === 'BN') return !sitting || sitting.key !== player.key;
     if (!eligibleFor(player, pos)) return false;
     if (!sitting) return true;
     if (sitting.key === player.key) return false;
@@ -1879,6 +2036,7 @@
   // Dropping onto an occupied slot moves the sitting player out of the way.
   function dropOnto(side, player, pos, sitting) {
     moving = null;
+    if (pos === 'BN') sitting = null;      // benching a player never displaces anyone
     if (sitting && sitting.key === player.key) { renderLineups(); return; }
     if (serverMode()) {
       // Say what we want; the server checks locks and eligibility and decides
@@ -1926,6 +2084,89 @@
   }
 
   // ── free agents ───────────────────────────────────────────────────────
+  // ── free agent stats ──────────────────────────────────────────────────
+  // A free agent is judged on the same twelve categories, over a chosen
+  // window: today (live) or the last 7, 14 or 30 days. Built from per-game
+  // logs summed into components, so ratios are exact and quality starts count.
+  var FA_STATS = {};            // "days|mlbId" -> { at, totals, games }
+  var FA_LOADING = {};
+
+  function faRangeDays() {
+    var sel = $('faRange');
+    return (sel && +sel.value) || 1;
+  }
+
+  function rangeStart(days) {
+    var d = new Date(todayISO() + 'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate() - (days - 1));
+    return d.toISOString().slice(0, 10);
+  }
+
+  function faStatsLine(p) {
+    var box = el('div', 'fastats');
+    if (!p.mlb_id) return box;
+    var days = faRangeDays();
+    var hit = FA_STATS[days + '|' + p.mlb_id];
+    if (!hit) {
+      box.appendChild(el('span', 'fawait', 'Loading stats…'));
+      return box;
+    }
+    if (!hit.games) {
+      box.appendChild(el('span', 'fawait', days === 1 ? 'No stats today' : 'No games'));
+      return box;
+    }
+    var fin = finalizeTotals(hit.totals);
+    (p.type === 'P' ? PIT_COLS : BAT_COLS).forEach(function (c) {
+      var cell = el('span', 'fastat');
+      cell.appendChild(el('b', null, fmt(c, c === 'AB' ? hit.totals.AB : fin[c])));
+      cell.appendChild(document.createTextNode(' ' + c));
+      box.appendChild(cell);
+    });
+    return box;
+  }
+
+  function loadFaStats(rows) {
+    var days = faRangeDays();
+    var fresh = days === 1 ? 60000 : 600000;     // today is live; longer windows barely move
+    var need = rows.filter(function (p) {
+      if (!p.mlb_id) return false;
+      var key = days + '|' + p.mlb_id;
+      var hit = FA_STATS[key];
+      return !FA_LOADING[key] && (!hit || Date.now() - hit.at > fresh);
+    });
+    if (!need.length) return;
+    need.forEach(function (p) { FA_LOADING[days + '|' + p.mlb_id] = 1; });
+    var url = MLB + '/v1/people?personIds=' + need.map(function (p) { return p.mlb_id; }).join(',') +
+      '&hydrate=stats(group=[hitting,pitching],type=[gameLog],startDate=' + rangeStart(days) +
+      ',endDate=' + todayISO() + ')';
+    jget(url).then(function (data) {
+      var byId = {};
+      (data.people || []).forEach(function (person) {
+        var totals = emptyTotals(), games = {};
+        (person.stats || []).forEach(function (s) {
+          var group = (s.group || {}).displayName;
+          (s.splits || []).forEach(function (sp) {
+            // MLB can repeat a line under an "All" sport; count the MLB one only.
+            if (sp.sport && sp.sport.id && sp.sport.id !== 1) return;
+            games[(sp.game || {}).gamePk || sp.date] = 1;
+            if (group === 'hitting') addInto(totals, batLine(sp.stat || {}));
+            else if (group === 'pitching') addInto(totals, pitLine(sp.stat || {}));
+          });
+        });
+        byId[person.id] = { totals: totals, games: Object.keys(games).length };
+      });
+      need.forEach(function (p) {
+        var key = days + '|' + p.mlb_id;
+        var got = byId[p.mlb_id] || {};
+        delete FA_LOADING[key];
+        FA_STATS[key] = { at: Date.now(), totals: got.totals || emptyTotals(), games: got.games || 0 };
+      });
+      if (faRangeDays() === days) renderFA();
+    }).catch(function () {
+      need.forEach(function (p) { delete FA_LOADING[days + '|' + p.mlb_id]; });
+    });
+  }
+
   function renderFA() {
     var list = $('faList'), q = ($('faSearch').value || '').toLowerCase();
     var pos = $('faPos').value;
@@ -1951,6 +2192,7 @@
       var mid = el('div');
       mid.appendChild(el('div', 'pname', p.name));
       mid.appendChild(el('div', 'pmeta', (p.team || 'FA') + ' · ' + (p.pos || '')));
+      mid.appendChild(faStatsLine(p));
       row.appendChild(mid);
 
       var until = lockoutUntil(p.key);
@@ -1980,6 +2222,7 @@
       row.appendChild(btns);
       list.appendChild(row);
     });
+    loadFaStats(rows);
     if (hits.length > CAP) {
       list.appendChild(el('div', 'empty-note',
         'Showing ' + CAP + ' of ' + hits.length + ' matches — search or filter to narrow it down.'));
@@ -2152,74 +2395,115 @@
   }
 
   // ── acting as ─────────────────────────────────────────────────────────
+  // The whole top of the page is this one line: score, live games, whose
+  // lineup is shown, and sign-in. The lineup starts right under it.
+  // "Who are you?" - pick a name, enter that person's password, and this device
+  // remembers you for 7 days.
+  function openLogin() {
+    var host = $('modalHost');
+    host.innerHTML = '';
+    var scrim = el('div', 'scrim');
+    var box = el('div', 'modal login');
+    scrim.appendChild(box);
+    host.appendChild(scrim);
+
+    function pickStep() {
+      box.innerHTML = '';
+      var head = el('header');
+      head.appendChild(el('h3', null, 'Who are you?'));
+      head.appendChild(el('p', null, 'Sign in once and this device remembers you for 7 days.'));
+      box.appendChild(head);
+      var people = el('div', 'login-people');
+      [['a', D.sides.a.manager || 'Team A', 'sa'], ['b', D.sides.b.manager || 'Team B', 'sb'],
+       ['commish', 'Commissioner', '']].forEach(function (o) {
+        var b = el('button', 'login-person ' + o[2], o[1]);
+        b.addEventListener('click', function () { passwordStep(o[0], o[1]); });
+        people.appendChild(b);
+      });
+      box.appendChild(people);
+      var foot = el('footer');
+      var watch = el('button', 'btn', 'Just watching');
+      watch.addEventListener('click', function () {
+        try { sessionStorage.setItem('champ-hub-watching', '1'); } catch (e) { /* ignore */ }
+        closeModal();
+      });
+      foot.appendChild(watch);
+      box.appendChild(foot);
+    }
+
+    function passwordStep(role, label) {
+      box.innerHTML = '';
+      var head = el('header');
+      head.appendChild(el('h3', null, label));
+      head.appendChild(el('p', null, 'Enter your password.'));
+      box.appendChild(head);
+      var form = el('form', 'login-form');
+      var input = el('input');
+      input.type = 'password';
+      input.placeholder = 'Password';
+      input.autocomplete = 'current-password';
+      input.setAttribute('autocapitalize', 'none');
+      form.appendChild(input);
+      var foot = el('footer');
+      var back = el('button', 'btn', 'Back');
+      back.type = 'button';
+      back.addEventListener('click', pickStep);
+      var go = el('button', 'btn primary', 'Sign in');
+      go.type = 'submit';
+      foot.appendChild(back);
+      foot.appendChild(go);
+      form.appendChild(foot);
+      form.addEventListener('submit', function (e) { e.preventDefault(); signIn(input.value, role); });
+      box.appendChild(form);
+      setTimeout(function () { input.focus(); }, 30);
+    }
+
+    pickStep();
+  }
+
   function renderWhoAmI() {
     var host = $('whoami');
     host.innerHTML = '';
-    host.appendChild(el('div', 'lab', 'Acting as'));
+    var sb = SCORE && SCORE.board;
+    var score = el('div', 'mini-score');
+    score.appendChild(document.createTextNode((D.sides.a.manager || 'A') + ' '));
+    score.appendChild(el('b', 'a', String(sb ? sb.a_cats : 0)));
+    score.appendChild(document.createTextNode('–'));
+    score.appendChild(el('b', 'b', String(sb ? sb.b_cats : 0)));
+    score.appendChild(document.createTextNode(' ' + (D.sides.b.manager || 'B')));
+    host.appendChild(score);
+
+    if (LIVE.day && LIVE.inProgress) host.appendChild(el('div', 'mini-live', '● ' + LIVE.inProgress + ' live'));
 
     var seg = el('div', 'seg');
-    [['a', D.sides.a.manager || D.sides.a.name, 'sa'],
-     ['b', D.sides.b.manager || D.sides.b.name, 'sb'],
-     ['commish', 'Commissioner', '']].forEach(function (o) {
-      var b = el('button', (S.actingAs === o[0] ? 'on ' + o[2] : ''), o[1]);
-      b.addEventListener('click', function () {
-        S.actingAs = o[0];
-        moving = null;
-        save();
-        render();
-        renderTx();
-      });
+    [['a', D.sides.a.manager || 'A', 'sa'], ['b', D.sides.b.manager || 'B', 'sb']].forEach(function (o) {
+      var b = el('button', S.actingAs === o[0] ? 'on ' + o[2] : '', o[1]);
+      b.addEventListener('click', function () { S.actingAs = o[0]; moving = null; save(); render(); });
       seg.appendChild(b);
     });
     host.appendChild(seg);
 
-    if (!DEMO) {
-      if (!SRV) {
-        host.appendChild(el('div', 'lab srv-err',
-          'Live rosters unavailable (' + (SRV_ERR || 'no answer') + ') — view only'));
-        return;
-      }
-      if (TOKEN) {
-        var name = (SRV.role === 'a' || SRV.role === 'b') ? SRV.teams[SRV.role].manager
-          : (SRV.role === 'commish' ? 'Commissioner' : 'signed in');
-        host.appendChild(el('div', 'lab', 'Signed in as ' + name));
-        var signOut = el('button', 'linkbtn', 'Sign out');
-        signOut.addEventListener('click', function () {
-          setToken('');
-          fetchState().then(function () { render(); renderTx(); });
-        });
-        host.appendChild(signOut);
-      } else {
-        var form = el('form', 'pwform');
-        var input = el('input');
-        input.type = 'password';
-        input.placeholder = 'Password';
-        input.autocomplete = 'current-password';
-        input.setAttribute('autocapitalize', 'none');
-        var go = el('button', 'btn primary', 'Sign in');
-        go.type = 'submit';
-        form.appendChild(input);
-        form.appendChild(go);
-        form.addEventListener('submit', function (e) { e.preventDefault(); signIn(input.value); });
-        host.appendChild(form);
-      }
-      host.appendChild(el('div', 'modebadge ' + (SRV.mode || ''),
-        SRV.mode === 'production' ? 'LIVE · WEEK 2 COUNTS' : 'PLAYGROUND · RESETS NIGHTLY'));
+    if (DEMO) return;
+    if (!SRV) {
+      host.appendChild(el('div', 'lab srv-err', 'Rosters unavailable — view only'));
       return;
     }
-    host.appendChild(el('div', 'lab', S.actingAs === 'commish'
-      ? 'You see and can edit both rosters'
-      : 'You see only your own roster'));
-
-    var reset = el('button', 'linkbtn', 'Reset test data');
-    reset.addEventListener('click', function () {
-      if (!confirm('Clear every lineup change and transaction made in this browser?')) return;
-      resetState();
-      render();
-      renderTx();
-      toast('Test data cleared');
-    });
-    host.appendChild(reset);
+    if (TOKEN) {
+      var who = (SRV.role === 'a' || SRV.role === 'b') ? SRV.teams[SRV.role].manager
+        : (SRV.role === 'commish' ? 'Commissioner' : 'you');
+      host.appendChild(el('div', 'lab', 'Signed in as ' + who));
+      var signOut = el('button', 'linkbtn', 'Sign out');
+      signOut.addEventListener('click', function () {
+        setToken('');
+        fetchState().then(function () { render(); renderTx(); });
+      });
+      host.appendChild(signOut);
+    } else {
+      var open = el('button', 'btn primary', 'Sign in');
+      open.addEventListener('click', openLogin);
+      host.appendChild(open);
+    }
+    if (SRV.mode !== 'production') host.appendChild(el('div', 'mini-mode', 'playground'));
   }
 
   // ── rules ─────────────────────────────────────────────────────────────
@@ -2234,7 +2518,7 @@
         'A team needs <b>' + r.min_ip_total + ' innings pitched</b> across the two weeks. ' +
         'Fall short and all six pitching categories are forfeited, however good they were.'],
       ['Adds and drops',
-        '<b>' + r.max_adds + ' adds</b> for the championship, free agents only, first come first served. ' +
+        '<b>' + r.max_adds + ' adds</b> during week two, free agents only, first come first served. ' +
         'The pool is frozen when Yahoo locks. A dropped player cannot be re-added for ' +
         r.drop_lockout_hours + ' hours.'],
       ['Lineup locks',
@@ -2491,7 +2775,7 @@
     if (st.loading || (st.done && date !== todayISO())) return Promise.resolve(st);
     st.loading = true;
 
-    return jget(MLB + '/v1/schedule?sportId=1&date=' + date + '&hydrate=linescore')
+    return jget(MLB + '/v1/schedule?sportId=1&date=' + date + '&hydrate=linescore,team')
       .then(function (sched) {
         var mine = rosterTeamIds();
         var games = [];
@@ -2505,6 +2789,7 @@
               state: (g.status || {}).abstractGameState,
               detail: (g.status || {}).detailedState || '',
               homeId: home.id, awayId: away.id,
+              homeAbbr: home.abbreviation, awayAbbr: away.abbreviation,
               homeRuns: ((ls.teams || {}).home || {}).runs,
               awayRuns: ((ls.teams || {}).away || {}).runs,
               half: ls.inningHalf || ls.inningState || '', inning: ls.currentInningOrdinal || '',
@@ -2749,9 +3034,14 @@
       renderRules();
       renderProto();
       startLive();
+      // First visit, or the 7 days are up: ask who this is.
+      var watching = false;
+      try { watching = sessionStorage.getItem('champ-hub-watching') === '1'; } catch (e) { /* ignore */ }
+      if (!DEMO && SRV && !TOKEN && !watching) openLogin();
 
       $('faSearch').addEventListener('input', renderFA);
       sel.addEventListener('change', renderFA);
+      $('faRange').addEventListener('change', renderFA);
       var rt;
       window.addEventListener('resize', function () {
         clearTimeout(rt);

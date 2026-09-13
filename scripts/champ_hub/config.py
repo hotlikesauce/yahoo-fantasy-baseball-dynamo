@@ -27,11 +27,12 @@ SCORING_MODE = 'cumulative'
 # league's weekly floor is 50; across two weeks that is 100.
 MIN_IP_TOTAL = 100.0
 
-# Acquisitions are capped across BOTH weeks, not per week. Adds a finalist makes
-# on Yahoo during week one count against this, so week two starts with whatever
-# is left. Free agents only, first come first served, from the Sept 20 snapshot.
-MAX_ADDS = 20
-ADDS_SPAN = 'both_weeks'
+# Acquisitions are capped at 10 during week two only (commissioner, 2026-09-13,
+# replacing the earlier 20-across-both-weeks rule). Week one's Yahoo adds do not
+# count; each finalist starts week two at 0. Free agents only, first come first
+# served, from the Sept 20 snapshot.
+MAX_ADDS = 10
+ADDS_SPAN = 'week2_only'
 DROP_LOCKOUT_HOURS = 24
 
 # Commissioner's rulings, 2026-09-13.

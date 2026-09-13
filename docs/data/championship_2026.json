@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-13T17:50:28.652836+00:00",
+ "generated_at": "2026-09-13T18:34:29.006146+00:00",
  "status": "set",
  "demo": false,
  "rules": {
   "scoring_mode": "cumulative",
   "min_ip_total": 100.0,
-  "max_adds": 20,
+  "max_adds": 10,
   "drop_lockout_hours": 24,
   "week1": [
    "2026-09-14",
@@ -415,7 +415,7 @@
     ],
     "type": "B",
     "mlb_id": 815888,
-    "mlb_team_id": null,
+    "mlb_team_id": 133,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/TcM85WhJ.fAOHWf2QKLjIw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMDA7Y3I9MTtjdz0xNTM7ZHg9NzQ7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/dh/ap/default/140828/silhouette@2x.png",
     "status": "NA",
     "slot": "NA"
@@ -659,7 +659,7 @@
     ],
     "type": "P",
     "mlb_id": 642585,
-    "mlb_team_id": null,
+    "mlb_team_id": 110,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/tPSd_qB89Lu9xZL79u_fJw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132025/12346.png",
     "status": "IL60",
     "slot": "IL"
@@ -876,7 +876,7 @@
     ],
     "type": "B",
     "mlb_id": 806964,
-    "mlb_team_id": null,
+    "mlb_team_id": 140,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/3VovcbMMHu4GvisUw6CUtg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05152026/63633.1.png",
     "status": "NA",
     "slot": "NA"
@@ -3786,13 +3786,12 @@
    "pos": "OF",
    "eligible": [
     "OF",
-    "Util",
-    "NA"
+    "Util"
    ],
    "type": "B",
    "mlb_id": 666971,
    "mlb_team_id": 109,
-   "status": "NA",
+   "status": null,
    "slot": null
   },
   {
@@ -7872,13 +7871,12 @@
    "eligible": [
     "2B",
     "SS",
-    "Util",
-    "NA"
+    "Util"
    ],
    "type": "B",
    "mlb_id": 683083,
    "mlb_team_id": 120,
-   "status": "NA",
+   "status": null,
    "slot": null
   },
   {
@@ -12372,7 +12370,7 @@
    "type": "B",
    "mlb_id": 665877,
    "mlb_team_id": 138,
-   "status": null,
+   "status": "DTD",
    "slot": null
   },
   {
@@ -18266,12 +18264,13 @@
     "1B",
     "3B",
     "SS",
-    "Util"
+    "Util",
+    "NA"
    ],
    "type": "B",
    "mlb_id": 699912,
    "mlb_team_id": 109,
-   "status": null,
+   "status": "NA",
    "slot": null
   },
   {
@@ -19388,6 +19387,21 @@
    "mlb_id": 701474,
    "mlb_team_id": 145,
    "status": "NA",
+   "slot": null
+  },
+  {
+   "key": "469.p.66164",
+   "name": "Yunior Marte",
+   "team": "SF",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 805074,
+   "mlb_team_id": 137,
+   "status": null,
    "slot": null
   },
   {

@@ -171,7 +171,9 @@ def load(mode, dates, adds_through, dry_run=False):
             batch.put_item(Item={
                 'pk': 'TEAM#' + side, 'sk': 'STATE',
                 'team_id': config.FINALISTS[side],
-                'adds_used': len(adds[side]), 'max_adds': config.MAX_ADDS,
+                # Week two's cap counts week-two pickups only, so every load starts
+                # the counter at 0. Week one's Yahoo adds are kept for the record.
+                'adds_used': 0, 'max_adds': config.MAX_ADDS,
                 'week1_adds': json.dumps(adds[side]),
             })
             for p in roster:
