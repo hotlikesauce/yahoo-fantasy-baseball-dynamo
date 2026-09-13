@@ -57,6 +57,44 @@ def schedule(date):
     return games
 
 
+_ABBR = {}
+
+
+def team_abbr(team_id):
+    """MLB team abbreviation by id. The schedule feed omits it."""
+    if not _ABBR:
+        for t in get('{}/teams?sportId=1'.format(API)).get('teams', []):
+            _ABBR[t['id']] = t.get('abbreviation')
+    return _ABBR.get(team_id)
+
+
+def probable_pitchers(date):
+    """{mlb_person_id: {opponent, home}} for everyone announced to start.
+
+    A starting pitcher is the one lineup decision that actually swings a week,
+    so the hub marks who is taking the ball rather than making a manager check
+    elsewhere. MLB announces these a day or two out; an unannounced game simply
+    contributes nobody.
+    """
+    data = get('{}/schedule?sportId=1&date={}&hydrate=probablePitcher'.format(API, date))
+    out = {}
+    for day in data.get('dates', []):
+        for g in day.get('games', []):
+            teams = g.get('teams', {})
+            for side, other in (('home', 'away'), ('away', 'home')):
+                pp = teams.get(side, {}).get('probablePitcher')
+                if not pp or not pp.get('id'):
+                    continue
+                opp = teams.get(other, {}).get('team', {})
+                out[pp['id']] = {
+                    'name': pp.get('fullName'),
+                    'opponent': team_abbr(opp.get('id')) or opp.get('name'),
+                    'home': side == 'home',
+                    'start_utc': g.get('gameDate'),
+                }
+    return out
+
+
 def first_pitch_by_team(date):
     """{mlb_team_id: earliest start time} - doubleheaders lock on game one."""
     out = {}

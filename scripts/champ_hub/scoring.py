@@ -115,3 +115,20 @@ def matchup(a_final, b_final):
     ties = sum(1 for c in result.values() if c['winner'] == 'tie')
     return {'categories': result, 'a_cats': a_wins, 'b_cats': b_wins, 'ties': ties,
             'leader': 'a' if a_wins > b_wins else ('b' if b_wins > a_wins else 'tie')}
+
+
+def decide(board, tiebreak_side=None):
+    """Who wins the title from a finished matchup board.
+
+    board: the dict returned by matchup(). tiebreak_side: the frozen ruling for
+    this pairing from tiebreak.resolve() - 'a', 'b' or 'split' - used only when
+    the two teams won the same number of categories. That covers 6-6 and also a
+    5-5 with two categories dead level, which is just as much a tie.
+    """
+    if board['a_cats'] > board['b_cats']:
+        return {'winner': 'a', 'decided_by': 'categories'}
+    if board['b_cats'] > board['a_cats']:
+        return {'winner': 'b', 'decided_by': 'categories'}
+    if tiebreak_side in ('a', 'b'):
+        return {'winner': tiebreak_side, 'decided_by': 'tiebreak'}
+    return {'winner': 'split', 'decided_by': 'tiebreak'}

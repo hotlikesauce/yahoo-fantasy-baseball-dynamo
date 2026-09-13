@@ -20,7 +20,7 @@ try:
 except AttributeError:
     pass
 
-from champ_hub import config, mlb_api, players as P, scoring, yahoo_pub as Y
+from champ_hub import capture, config, mlb_api, players as P, scoring, yahoo_pub as Y
 
 DOCS = Path(__file__).resolve().parent.parent / 'docs'
 OUT = DOCS / 'data' / config.SNAPSHOT_JSON
@@ -165,9 +165,12 @@ def score_range(team_ids, rosters, dates, index, abbr_ids):
     totals = {tid: scoring.empty_totals() for tid in team_ids}
     known = {tid: {p['player_key']: p for p in rosters[tid]} for tid in team_ids}
     trend = []
-    today = datetime.now(timezone.utc).date().isoformat()
+    # Today is deliberately excluded: the browser scores the current day live
+    # from MLB box scores, so a stale server-side copy of it never fights with
+    # what the page is showing.
+    today = config.league_today()
     for d in dates:
-        if d > today:
+        if d >= today:
             break
         print('  scoring {} ...'.format(d), flush=True)
         day_lines = mlb_api.boxscore_lines(d)
@@ -190,10 +193,20 @@ def score_range(team_ids, rosters, dates, index, abbr_ids):
 def lock_times(dates):
     """{date: {mlb_team_id: first pitch ISO}} - drives the per-player lock."""
     out = {}
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = config.league_today()
     for d in dates:
         if d >= today:
             out[d] = {str(k): v for k, v in mlb_api.first_pitch_by_team(d).items()}
+    return out
+
+
+def probables(dates):
+    """{date: {mlb_person_id: matchup}} - who is announced to start each day."""
+    out = {}
+    for d in dates:
+        starters = mlb_api.probable_pitchers(d)
+        if starters:
+            out[d] = {str(k): v for k, v in starters.items()}
     return out
 
 
@@ -253,7 +266,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--teams', help='the two finalist team ids, e.g. 11,12')
     ap.add_argument('--demo', help='same, but scored over a past window so the UI has real data')
-    ap.add_argument('--fa-limit', type=int, default=400)
+    ap.add_argument('--fa-limit', type=int, default=0, help='0 = the entire pool')
     args = ap.parse_args()
 
     names = Y.teams()
@@ -299,8 +312,11 @@ def main():
     board = scoring.matchup(finals[team_ids[0]], finals[team_ids[1]])
 
     print('Loading free agent pool ...')
-    fa_raw = Y.free_agents(limit=args.fa_limit)
+    fa_raw = capture.full_free_agent_pool() if args.fa_limit <= 0 else Y.free_agents(limit=args.fa_limit)
     fa, _ = P.match(fa_raw, index, abbr_ids, use_search=False)
+
+    # Before week one, today is a playground test day: give it starters and locks.
+    test_days = [config.league_today()] if not demo and config.league_today() < config.WEEK1_START else []
 
     rules = base_rules()
     rules['week1'] = [w1[0], w1[-1]]
@@ -319,14 +335,22 @@ def main():
         },
         'scoreboard': board,
         'totals': {'a': finals[team_ids[0]], 'b': finals[team_ids[1]]},
+        # Raw, unfinalised component sums through the last completed day. The
+        # page adds today's live components to these and does the ratio maths
+        # itself, so a live scoreboard and a final one are the same arithmetic.
+        'baseline': {'a': totals[team_ids[0]], 'b': totals[team_ids[1]]},
+        'baseline_through': (date.fromisoformat(config.league_today())
+                             - timedelta(days=1)).isoformat(),
         'trend': trend,
         'week2_dates': w2,
         'rosters': {'a': [slim(p) for p in rosters[team_ids[0]]],
                     'b': [slim(p) for p in rosters[team_ids[1]]]},
         'lineups': {'a': {}, 'b': {}},
-        'free_agents': [slim(p) for p in fa],
+        # Headshots dropped for the pool: 2,000+ URLs the page never shows.
+        'free_agents': [{k: v for k, v in slim(p).items() if k != 'headshot'} for p in fa],
         'transactions': [],
-        'locks': lock_times(w2),
+        'locks': lock_times(test_days + w1 + w2),
+        'probables': probables(test_days + w1 + w2),
     }
 
     # A demo payload is written alongside the real one, so the page can serve

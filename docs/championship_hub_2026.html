@@ -218,6 +218,16 @@
   }
   .linkbtn:hover { border-color: #ef444488; color: #fca5a5; }
 
+  /* Which system the page is talking to: the nightly-reset playground, or the
+     week-two production rosters. */
+  .modebadge {
+    font-size: .68em; font-weight: 700; letter-spacing: .1em; padding: 5px 11px;
+    border-radius: 999px; border: 1px solid var(--edge); color: var(--muted);
+  }
+  .modebadge.sandbox { color: #fcd34d; border-color: #f59e0b66; background: #f59e0b14; }
+  .modebadge.production { color: #86efac; border-color: #22c55e66; background: #22c55e14; }
+  .whoami .srv-err { color: #fca5a5; }
+
   /* ── Roster controls ────────────────────────────────────────────────── */
   .lucard.mine { border-color: #38bdf866; }
   .lucard.theirs { opacity: .72; }
@@ -226,7 +236,10 @@
   /* ── Drag and drop ──────────────────────────────────────────────────── */
   /* Built on pointer events rather than HTML5 drag-and-drop, which does not
      fire on touch at all - and both managers will be doing this on a phone. */
-  .slot.grabbable { cursor: grab; touch-action: none; }
+  /* On a phone the roster is mostly draggable rows, so a row must still let a
+     finger scroll the page. Only the grip handle captures touch for a drag. */
+  .slot.grabbable { cursor: grab; touch-action: pan-y; }
+  .slot.grabbable .grip { touch-action: none; }
   .slot.grabbable:active { cursor: grabbing; }
   .slot .grip {
     color: #475569; font-size: 1em; line-height: 1; letter-spacing: -2px;
@@ -266,7 +279,38 @@
   .xbtn:disabled { opacity: .3; cursor: not-allowed; }
   .slot.added { box-shadow: inset 3px 0 0 var(--good); }
   .slot .flag { font-size: .68em; color: #4ade80; margin-left: 6px; }
-  .slot { grid-template-columns: 44px 1fr auto; }
+  .slot .starting { font-size: .82em; margin-left: 6px; cursor: help; }
+  /* Today's line, distinct from the fixture text beside it. */
+  /* The day's category totals, sitting under each half's heading. */
+  .statstrip {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+    gap: 1px; background: var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .statstrip.waiting { opacity: .45; }
+  .statcell { background: #131c2f; padding: 7px 4px 6px; text-align: center; }
+  .statcell .sv {
+    font-size: .95em; font-weight: 700; color: var(--ink);
+    font-variant-numeric: tabular-nums; line-height: 1.2;
+  }
+  .statcell .sl {
+    font-size: .58em; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--faint); margin-top: 2px;
+  }
+  @media (max-width: 620px) {
+    .statcell .sv { font-size: .82em; }
+    .statcell .sl { font-size: .52em; letter-spacing: .04em; }
+  }
+
+  .slot .livestat {
+    margin-left: 8px; color: #7dd3fc; font-weight: 600;
+    padding-left: 8px; border-left: 1px solid var(--edge);
+  }
+  /* Count of announced starters, shown on the pitching header. */
+  .bench-head .starters {
+    float: right; font-size: .92em; letter-spacing: 0; text-transform: none;
+    color: #4ade80; font-weight: 600;
+  }
 
   .adds-left { font-weight: 700; color: var(--ink); }
   .adds-none { color: #fca5a5; }
@@ -370,6 +414,8 @@
   .daytab.locked b::after { content: ' \1F512'; font-size: .7em; }
 
   .lineups { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  /* One roster on screen gets the full width rather than half of a two-up. */
+  .lineups.single { grid-template-columns: minmax(0, 720px); justify-content: center; }
   .lucard { background: var(--surface); border: 1px solid var(--edge); border-radius: 14px; overflow: hidden; }
   .lucard > header {
     padding: 12px 16px; border-bottom: 1px solid var(--edge);
@@ -380,9 +426,38 @@
   .lucard .who { font-weight: 600; }
   .lucard .adds { font-size: .74em; color: var(--faint); }
   .slot {
-    display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
-    padding: 7px 14px; border-bottom: 1px solid var(--line); font-size: .86em;
+    display: grid;
+    grid-template-columns: 38px minmax(120px, 1fr) repeat(7, minmax(38px, 46px)) 78px;
+    gap: 6px; align-items: center;
+    padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: .86em;
   }
+  .slot .stat {
+    text-align: right; font-variant-numeric: tabular-nums; color: var(--muted);
+    font-size: .92em; white-space: nowrap;
+  }
+  .slot .nmline { overflow-wrap: anywhere; }
+  .slot .empty-name { color: #475569; font-style: italic; }
+
+  /* Column labels, repeated for each half of the roster. */
+  .slot.colhead {
+    padding-top: 4px; padding-bottom: 4px; border-bottom: 1px solid var(--edge);
+    background: #101827;
+  }
+  .slot.colhead .stat, .slot.colhead .pname {
+    font-size: .62em; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600;
+  }
+  .slot.colhead:hover { background: #101827; }
+
+  /* Sum of the started players only - the bench does not score. */
+  .slot.totalrow {
+    background: #16203a; border-top: 1px solid var(--edge);
+    border-bottom: 2px solid var(--edge);
+  }
+  .slot.totalrow .pos { background: none; color: var(--faint); font-size: .9em; }
+  .slot.totalrow .pname { color: var(--muted); font-size: .82em; letter-spacing: .04em; }
+  .slot.totalrow .stat { color: var(--ink); font-weight: 700; font-size: 1em; }
+  .slot.totalrow:hover { background: #16203a; }
   .slot:last-child { border-bottom: none; }
   .slot .pos {
     font-size: .72em; font-weight: 700; color: var(--faint); letter-spacing: .06em;
@@ -462,6 +537,27 @@
     .side.b { text-align: left; }
     .tally { min-width: 0; }
     .lineups, .ipwatch { grid-template-columns: 1fr; }
+    .lucard { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .lucard > * { min-width: 600px; }
+    .slot { grid-template-columns: 34px 132px repeat(7, 40px) 70px; gap: 4px; padding: 7px 8px; }
+    .slot .pos, .slot .pname {
+      position: sticky; z-index: 1; background: var(--surface);
+    }
+    .slot .pos { left: 0; }
+    .slot .pname { left: 38px; padding-right: 4px; box-shadow: 6px 0 6px -6px #0008; }
+    .slot.colhead .pos, .slot.colhead .pname { background: #101827; }
+    .slot.totalrow .pos, .slot.totalrow .pname { background: #16203a; }
+    .slot .pmeta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .slot .grip { font-size: 1.3em; padding: 6px 4px; }
+    .xbtn { padding: 7px 10px; font-size: .8em; }
+    .lucard > header, .bench-head { position: sticky; left: 0; }
+    .fa-row { grid-template-columns: 1fr auto; }
+    .fa-row > .pmeta { display: none; }
+    .btn { padding: 8px 12px; }
+    .daytab { min-width: 52px; padding: 8px 9px; }
+    .wrap { padding: 16px 12px 70px; }
+    .whoami { gap: 8px; padding: 10px 12px; }
+    .seg button { padding: 8px 11px; }
     .tl-days { grid-template-columns: repeat(7, 1fr); }
     /* Too narrow for bars on both flanks; keep the numbers and the label. */
     .board-head, .cat {
@@ -621,13 +717,114 @@
     save();
   }
 
-  // Who the viewer is acting as, for a given side.
+  // ── league server ─────────────────────────────────────────────────────
+  // From the final on, the server owns both rosters. The page shows what the
+  // server says and asks it to change things; it never decides a lock, an
+  // eligibility question or a claim itself. ?demo keeps the old browser-only
+  // sandbox for layout work.
+  var API_URL = 'https://jlepnelw5z2qmhqaacnj6uw73e0gzeed.lambda-url.us-west-2.on.aws/';
+  var DEMO = /[?&]demo/.test(window.location.search);
+  var SRV = null;           // the last state the server returned
+  var SRV_ERR = null;       // why the server could not be read, if it could not
+  var BUSY = false;         // a change is in flight
+  var TOKEN = (function () {
+    var KEY = 'champ-hub-token';
+    var m = /[?&]t=([^&#]+)/.exec(window.location.search);
+    try {
+      if (m) {
+        localStorage.setItem(KEY, decodeURIComponent(m[1]));
+        // Keep the sign-in secret out of the address bar, history and screenshots.
+        var q = window.location.search.replace(/([?&])t=[^&#]*&?/, '$1').replace(/[?&]$/, '');
+        history.replaceState(null, '', window.location.pathname + q + window.location.hash);
+      }
+      return localStorage.getItem(KEY) || '';
+    } catch (e) {
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+  })();
+
+  function serverMode() { return !DEMO && !!SRV; }
+
+  function playDates() { return serverMode() ? SRV.play_dates : D.week2_dates; }
+
+  // Never rejects: a failure is recorded, and the page falls back to view-only.
+  function fetchState() {
+    return fetch(API_URL, { cache: 'no-store' })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error((res.body && res.body.reason) || 'server error');
+        SRV = res.body;
+        SRV_ERR = null;
+      })
+      .catch(function (e) { SRV_ERR = e.message || String(e); });
+  }
+
+  function newRequestId() {
+    return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+
+  // Every change goes through here. A text/plain body keeps it a "simple"
+  // request, so there is no CORS preflight to fail. The request id lets the
+  // server answer a retried tap without acting twice.
+  function apiChange(payload, success) {
+    if (BUSY) { toast('Still saving the last change…', true); return; }
+    if (!TOKEN) { toast('Open your sign-in link to make changes.', true); return; }
+    BUSY = true;
+    payload.token = TOKEN;
+    payload.request_id = newRequestId();
+    fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' },
+                     body: JSON.stringify(payload) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+      .then(function (res) {
+        if (res.ok && res.body.ok) { if (success) toast(success); }
+        else toast((res.body && res.body.reason) || 'That change was refused.', true);
+      })
+      .catch(function () { toast('Could not reach the server — nothing was changed.', true); })
+      .then(fetchState)
+      .then(function () {
+        BUSY = false;
+        closeModal();
+        safeRender();
+        renderTx();
+      });
+  }
+
+  // A server player in the shape the page's renderers expect.
+  function srvPlayer(key) {
+    var info = SRV && SRV.players && SRV.players[key];
+    if (!info) return null;
+    return {
+      key: key, name: info.name, team: info.team_abbr, pos: info.display_position,
+      eligible: info.eligible_positions || [], type: info.position_type,
+      mlb_id: info.mlb_id, mlb_team_id: info.mlb_team_id, status: info.status,
+      stat_side: info.stat_side
+    };
+  }
+
+  function addsUsed(side) { return serverMode() ? +SRV.sides[side].adds_used : S.addsUsed[side]; }
+  function maxAdds(side) { return serverMode() ? +SRV.sides[side].max_adds : D.rules.max_adds; }
+  function lockoutUntil(key) { return serverMode() ? (SRV.lockouts || {})[key] : S.lockout[key]; }
+
+  // The first play date that has not already passed - the roster as it stands.
+  function currentPlayDate() {
+    var today = todayISO();
+    var dates = playDates();
+    return dates.filter(function (d) { return d >= today; })[0] || dates[dates.length - 1];
+  }
+
+  // Any sign-in may change either roster; without one the page is view-only.
   function canEdit(side) {
+    if (serverMode()) return !!TOKEN;
     return S.actingAs === 'commish' || S.actingAs === side;
   }
 
-  // Base roster plus adds minus drops.
+  // The roster on the day being viewed: a player dropped today still shows on
+  // the days he actually played.
   function rosterOf(side) {
+    if (serverMode()) {
+      var d = (day && SRV.sides[side].lineups[day]) ? day : currentPlayDate();
+      return Object.keys(SRV.sides[side].lineups[d] || {}).map(srvPlayer).filter(Boolean);
+    }
     var out = D.rosters[side].filter(function (p) {
       return S.dropped[side].indexOf(p.key) === -1;
     });
@@ -643,7 +840,7 @@
   }
 
   // ── formatting ────────────────────────────────────────────────────────
-  var RATIO = { OPS: 3, ERA: 2, WHIP: 2, K9: 2 };
+  var RATIO = { OPS: 3, ERA: 2, WHIP: 2, K9: 2, IP: 1 };
   function fmt(cat, v) {
     if (v === null || v === undefined) return '–';
     if (RATIO[cat] !== undefined) {
@@ -665,7 +862,22 @@
     var d = new Date(iso);
     return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
-  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  // MLB's official game date and the league's day both run on US Eastern time.
+  // The browser's UTC date rolls over at 8pm Eastern, which would mark every
+  // West Coast game as a past day - locking them and scoring the wrong date just
+  // as games go live. Never derive "today" from toISOString().
+  var ET_DATE = (function () {
+    try {
+      var f = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+      });
+      return function (d) { return f.format(d); };
+    } catch (e) {
+      // No time zone data: September 2026 is EDT throughout (DST ends Nov 1).
+      return function (d) { return new Date(d.getTime() - 4 * 3600000).toISOString().slice(0, 10); };
+    }
+  })();
+  function todayISO() { return ET_DATE(new Date()); }
 
   // Kept short enough to stay on one line inside the label column.
   var CAT_HINT = {
@@ -678,7 +890,7 @@
 
   // ── header ────────────────────────────────────────────────────────────
   function renderHeader() {
-    var s = D.sides, sb = D.scoreboard, r = D.rules;
+    var s = D.sides, sb = SCORE.board, r = D.rules;
     $('eyebrow').textContent = '2026 Championship · ' +
       shortDate(r.week1[0]) + ' – ' + shortDate(r.week2[1]) + ' · 14 days';
 
@@ -728,6 +940,27 @@
         'Demo data · real rosters scored over a past window'));
       bar.appendChild(dm);
     }
+
+    if (LIVE.day) {
+      var lp = el('div', 'pill' + (LIVE.inProgress ? ' live' : ''));
+      if (LIVE.inProgress) lp.appendChild(el('i', 'dot pulse'));
+      if (LIVE.error) {
+        lp.className = 'pill demo';
+        lp.appendChild(el('span', null, 'Live stats unavailable — ' + LIVE.error));
+      } else if (LIVE.inProgress) {
+        lp.appendChild(el('b', null, LIVE.inProgress));
+        lp.appendChild(el('span', null,
+          (LIVE.inProgress === 1 ? ' game' : ' games') + ' in progress'));
+      } else if (LIVE.lastUpdate) {
+        lp.appendChild(el('span', null, 'No games live right now'));
+      } else {
+        lp.appendChild(el('span', null, 'Loading live stats…'));
+      }
+      if (LIVE.lastUpdate && !LIVE.error) {
+        lp.appendChild(el('span', null, ' · ' + clockOf(LIVE.lastUpdate.toISOString())));
+      }
+      bar.appendChild(lp);
+    }
   }
 
   // ── 14-day timeline ───────────────────────────────────────────────────
@@ -753,7 +986,7 @@
 
   // ── category board ────────────────────────────────────────────────────
   function renderBoard() {
-    var r = D.rules, sb = D.scoreboard, host = $('board');
+    var r = D.rules, sb = SCORE.board, host = $('board');
     host.innerHTML = '';
 
     var head = el('div', 'board-head');
@@ -767,7 +1000,7 @@
 
       // Say why the pitching half is greyed out, rather than just greying it.
       if (g[0] === 'Pitching') {
-        var out = ['a', 'b'].filter(function (k) { return D.totals[k].forfeits_pitching; });
+        var out = ['a', 'b'].filter(function (k) { return SCORE.totals[k].forfeits_pitching; });
         if (out.length) {
           var who = out.length === 2 ? 'Both teams are'
             : (D.sides[out[0]].manager || D.sides[out[0]].name) + ' is';
@@ -781,7 +1014,7 @@
         if (!c) return;
         var lower = r.lower_is_better.indexOf(cat) !== -1;
         var ff = g[0] === 'Pitching' &&
-          (D.totals.a.forfeits_pitching || D.totals.b.forfeits_pitching);
+          (SCORE.totals.a.forfeits_pitching || SCORE.totals.b.forfeits_pitching);
         var share = shares(c.a, c.b, lower);
 
         var row = el('div', 'cat' + (ff ? ' forfeit' : ''));
@@ -832,7 +1065,7 @@
     var host = $('ipwatch'), goal = D.rules.min_ip_total;
     host.innerHTML = '';
     ['a', 'b'].forEach(function (k) {
-      var t = D.totals[k], ip = Number(t.IP) || 0;
+      var t = SCORE.totals[k], ip = Number(t.IP) || 0;
       var short = ip < goal;
       var card = el('div', 'ipcard' + (short ? ' risk' : ''));
       var top = el('div', 'top');
@@ -978,6 +1211,12 @@
   }
 
   function lineupFor(side, date) {
+    if (serverMode()) {
+      var fromServer = SRV.sides[side].lineups[date] || {};
+      var copy = {};
+      Object.keys(fromServer).forEach(function (k) { copy[k] = fromServer[k]; });
+      return copy;
+    }
     // Server lineup first, then whatever the manager changed locally.
     var base = {};
     var served = (D.lineups[side] || {})[date];
@@ -1014,23 +1253,36 @@
   function renderDayTabs() {
     var host = $('daytabs');
     host.innerHTML = '';
-    D.week2_dates.forEach(function (d) {
+    playDates().forEach(function (d) {
       var t = el('button', 'daytab' + (d === day ? ' on' : '') +
         (d < todayISO() ? ' locked' : ''));
       t.appendChild(el('b', null, dow(d)));
       t.appendChild(document.createTextNode(shortDate(d)));
-      t.addEventListener('click', function () { day = d; moving = null; render(); });
+      t.addEventListener('click', function () {
+        day = d; moving = null; render(); ensureDay(d);
+      });
       host.appendChild(t);
     });
   }
 
-  // Managers see their own team first and in full; the opponent is read-only.
+  // A manager sees only his own roster. Nobody wants the other guy studying
+  // their bench, and the commissioner still needs both to fix things.
   function renderLineups() {
     var host = $('lineups');
     host.innerHTML = '';
-    var order = S.actingAs === 'b' ? ['b', 'a'] : ['a', 'b'];
-    order.forEach(function (side) { host.appendChild(lineupCard(side)); });
+    var sides = S.actingAs === 'commish' ? ['a', 'b'] : [S.actingAs];
+    host.classList.toggle('single', sides.length === 1);
+    $('luSub').textContent = sides.length === 1
+      ? 'Drag a player into any eligible slot · ✅ marks a probable starter'
+      : 'Both rosters · drag a player into any eligible slot';
+    sides.forEach(function (side) { host.appendChild(lineupCard(side)); });
   }
+
+  // The seven columns each half of the roster is scored on. They are the
+  // league's own categories, so a manager reads the same numbers here that
+  // decide the matchup - plus AB / IP for context.
+  var BAT_COLS = ['AB', 'R', 'H', 'HR', 'RBI', 'SB', 'OPS'];
+  var PIT_COLS = ['IP', 'TB', 'ERA', 'WHIP', 'K9', 'QS', 'SVH'];
 
   function lineupCard(side) {
     var mine = canEdit(side);
@@ -1040,28 +1292,37 @@
     if (mine) who.appendChild(el('span', 'flag', ' — your team'));
     head.appendChild(who);
 
-    var left = D.rules.max_adds - S.addsUsed[side];
+    var left = maxAdds(side) - addsUsed(side);
     var adds = el('div', 'adds');
     adds.appendChild(el('span', 'adds-left' + (left ? '' : ' adds-none'), String(left)));
-    adds.appendChild(document.createTextNode(' of ' + D.rules.max_adds + ' adds left'));
+    adds.appendChild(document.createTextNode(' of ' + maxAdds(side) + ' adds left'));
     head.appendChild(adds);
     card.appendChild(head);
 
     var lineup = lineupFor(side, day);
     var byKey = {};
     rosterOf(side).forEach(function (p) { byKey[p.key] = p; });
+    var haveStats = Object.keys(linesFor(day)).length > 0;
 
-    // Hitters and pitchers are read as two separate lineups, so the card is
-    // laid out that way: batting starters, batting bench, then the same for
-    // pitching. The bench is one shared pool, split here only for reading.
+    // Only started players score, so only they are summed.
+    var totals = { bat: emptyTotals(), pit: emptyTotals() };
+
     var taken = {}, idx = 0;
-
     function seat(pos) {
       var found = null;
       for (var k in lineup) {
         if (lineup[k] === pos && !taken[k] && byKey[k]) { found = k; taken[k] = 1; break; }
       }
-      card.appendChild(slotRow(side, pos, found ? byKey[found] : null, mine, idx++));
+      var player = found ? byKey[found] : null;
+      card.appendChild(slotRow(side, pos, player, mine, idx++, haveStats));
+      tally(player, pos);
+    }
+    function tally(player, pos) {
+      if (!player) return;
+      var line = lineForPlayer(player, day);
+      if (!line) return;
+      if (BAT_SLOTS.indexOf(pos) !== -1 && player.stat_side !== 'pit') addInto(totals.bat, line.bat);
+      else if (PIT_SLOTS.indexOf(pos) !== -1 && player.stat_side !== 'bat') addInto(totals.pit, line.pit);
     }
     function starters(positions) {
       slotList().forEach(function (pos) {
@@ -1073,19 +1334,30 @@
         if (taken[p.key] || lineup[p.key] !== 'BN') return;
         if (isBatter(p) !== wantBatters) return;
         taken[p.key] = 1;
-        card.appendChild(slotRow(side, 'BN', p, mine, idx++));
+        card.appendChild(slotRow(side, 'BN', p, mine, idx++, haveStats));
       });
     }
 
     card.appendChild(el('div', 'bench-head grp-bat', 'Batting'));
+    card.appendChild(colHeader(BAT_COLS));
     starters(['C', '1B', '2B', '3B', 'SS', 'OF', 'Util']);
     card.appendChild(el('div', 'bench-head sub', 'Batting bench'));
     benched(true);
+    card.appendChild(totalRow(BAT_COLS, totals.bat, haveStats, 'Batting total'));
 
-    card.appendChild(el('div', 'bench-head grp-pit', 'Pitching'));
+    var pitHead = el('div', 'bench-head grp-pit', 'Pitching');
+    var going = rosterOf(side).filter(function (p) {
+      return PIT_SLOTS.indexOf(lineup[p.key]) !== -1 && startingToday(p);
+    }).length;
+    if (going) {
+      pitHead.appendChild(el('span', 'starters', '✅ ' + going + ' starting'));
+    }
+    card.appendChild(pitHead);
+    card.appendChild(colHeader(PIT_COLS));
     starters(['SP', 'RP', 'P']);
     card.appendChild(el('div', 'bench-head sub', 'Pitching bench'));
     benched(false);
+    card.appendChild(totalRow(PIT_COLS, totals.pit, haveStats, 'Pitching total'));
 
     // Unused bench capacity is shared between the two, so it is shown once,
     // after both, rather than pretending each half has its own.
@@ -1102,12 +1374,54 @@
 
     // Anyone still unseated (a slot that no longer exists, say).
     rosterOf(side).forEach(function (p) {
-      if (!taken[p.key]) card.appendChild(slotRow(side, 'BN', p, mine, idx++));
+      if (!taken[p.key]) card.appendChild(slotRow(side, 'BN', p, mine, idx++, haveStats));
     });
     return card;
   }
 
-  function slotRow(side, pos, player, mine, index) {
+  function colHeader(cols) {
+    var row = el('div', 'slot colhead');
+    row.appendChild(el('div', 'pos', ''));
+    row.appendChild(el('div', 'pname', 'Player'));
+    cols.forEach(function (c) { row.appendChild(el('div', 'stat', c)); });
+    row.appendChild(el('div', 'acts', ''));
+    return row;
+  }
+
+  // Ratios are recomputed from the summed components, never averaged.
+  function totalRow(cols, totals, have, label) {
+    var row = el('div', 'slot totalrow');
+    row.appendChild(el('div', 'pos', 'Σ'));
+    row.appendChild(el('div', 'pname', label));
+    var fin = finalizeTotals(totals);
+    cols.forEach(function (c) {
+      var v = c === 'AB' ? totals.AB : fin[c];
+      row.appendChild(el('div', 'stat', have ? fmt(c, v) : '–'));
+    });
+    row.appendChild(el('div', 'acts', ''));
+    return row;
+  }
+
+  // One player's own line for the day, in the same column order.
+  function statCells(player, pos, have) {
+    var pitchCols = PIT_SLOTS.indexOf(pos) !== -1 ||
+      (BENCH.indexOf(pos) !== -1 && !isBatter(player));
+    var cols = pitchCols ? PIT_COLS : BAT_COLS;
+    var line = player ? lineForPlayer(player, day) : null;
+    var raw = line ? (pitchCols ? line.pit : line.bat) : null;
+    var out = [];
+    if (!raw || !Object.keys(raw).length) {
+      cols.forEach(function () { out.push(have ? '·' : '–'); });
+      return out;
+    }
+    var fin = finalizeTotals(addInto(emptyTotals(), raw));
+    cols.forEach(function (c) {
+      out.push(fmt(c, c === 'AB' ? raw.AB : fin[c]));
+    });
+    return out;
+  }
+
+  function slotRow(side, pos, player, mine, index, haveStats) {
     var bench = pos === 'BN' || pos === 'IL' || pos === 'NA';
     var row = el('div', 'slot' + (bench ? ' bench' : '') + (player ? '' : ' empty'));
     if (player && isAdded(side, player.key)) row.classList.add('added');
@@ -1120,17 +1434,33 @@
 
     row.appendChild(el('div', 'pos', pos));
 
-    var mid = el('div');
+    var mid = el('div', 'pname');
     if (player) {
-      var nm = el('div', 'pname', player.name);
+      var nm = el('div', 'nmline', player.name);
+      var start = startingToday(player);
+      if (start) {
+        // The one decision that actually swings a pitching week.
+        var tick = el('span', 'starting', '✅');
+        tick.title = 'Probable starter' + (start.opponent
+          ? ' ' + (start.home ? 'vs ' : '@ ') + start.opponent : '');
+        nm.appendChild(tick);
+      }
       if (isAdded(side, player.key)) nm.appendChild(el('span', 'flag', 'ADDED'));
       mid.appendChild(nm);
-      mid.appendChild(el('div', 'pmeta',
-        (player.team || '') + ' · ' + (player.pos || '') + ' · ' + gameLabel(day, player)));
+      var meta = (player.team || '') + ' · ' + (player.pos || '') + ' · ' + gameLabel(day, player);
+      if (start && start.opponent) {
+        meta += ' · ' + (start.home ? 'vs ' : '@ ') + start.opponent;
+      }
+      mid.appendChild(el('div', 'pmeta', meta));
     } else {
-      mid.appendChild(el('div', 'pname', 'Empty'));
+      mid.appendChild(el('div', 'nmline empty-name', 'Empty'));
     }
     row.appendChild(mid);
+
+    // Stat columns, in the same order as the header above them.
+    var cells = player ? statCells(player, pos, haveStats)
+      : (PIT_SLOTS.indexOf(pos) !== -1 ? PIT_COLS : BAT_COLS).map(function () { return ''; });
+    cells.forEach(function (v) { row.appendChild(el('div', 'stat', v)); });
 
     var acts = el('div', 'acts');
     var locked = player ? isLocked(side, day, player) : (day < todayISO());
@@ -1210,12 +1540,33 @@
   }
 
   function isAdded(side, key) {
+    if (serverMode()) {
+      return (SRV.changes || []).some(function (c) { return c.side === side && c.added === key; });
+    }
     return S.added[side].some(function (p) { return p.key === key; });
   }
 
   // Yahoo's frozen pool plus anyone the two finalists have let go. A dropped
   // player really is available again - after his lockout expires.
   function faPool() {
+    if (serverMode()) {
+      var owned = {};
+      var cur = currentPlayDate();
+      ['a', 'b'].forEach(function (s) {
+        Object.keys(SRV.sides[s].lineups[cur] || {}).forEach(function (k) { owned[k] = 1; });
+      });
+      var taken = {}, out = [];
+      // Anyone the finalists let go is a free agent again, behind his lockout.
+      (SRV.changes || []).forEach(function (c) {
+        if (!c.dropped || owned[c.dropped] || taken[c.dropped]) return;
+        var p = srvPlayer(c.dropped);
+        if (p) { taken[c.dropped] = 1; out.push(p); }
+      });
+      D.free_agents.forEach(function (p) {
+        if (!owned[p.key] && !taken[p.key]) { taken[p.key] = 1; out.push(p); }
+      });
+      return out;
+    }
     var onRoster = {};
     ['a', 'b'].forEach(function (side) {
       rosterOf(side).forEach(function (p) { onRoster[p.key] = 1; });
@@ -1236,8 +1587,19 @@
 
   var BAT_SLOTS = ['C', '1B', '2B', '3B', 'SS', 'OF', 'Util'];
   var PIT_SLOTS = ['SP', 'RP', 'P'];
+  var BENCH = ['BN', 'IL', 'NA'];
+
+  // The live scoreboard for this render pass: baseline plus today.
+  var SCORE = null;
 
   function isBatter(p) { return p && p.type !== 'P'; }
+
+  // Announced to start on the selected day. Batters never qualify.
+  function startingToday(player) {
+    if (!player || isBatter(player) || !player.mlb_id) return null;
+    var byId = (D.probables || {})[day];
+    return (byId && byId[String(player.mlb_id)]) || null;
+  }
 
   // Batters and pitchers are entirely separate: neither can ever occupy the
   // other's slots. Within the batting side, Util takes any batter whatever his
@@ -1280,7 +1642,9 @@
     if (moving && row.classList.contains('tgt')) return;
     drag = {
       side: side, player: player, pos: pos, row: row,
-      x0: e.clientX, y0: e.clientY, live: false, over: null, id: e.pointerId
+      x0: e.clientX, y0: e.clientY, live: false, over: null, id: e.pointerId,
+      // A finger anywhere but the grip is a scroll or a tap, never a drag.
+      tapOnly: e.pointerType === 'touch' && !e.target.closest('.grip')
     };
     // Listeners go on the window, not the row: starting a drag re-renders the
     // lineup, which would destroy the row and with it any capture or handler
@@ -1295,6 +1659,7 @@
     var dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
     if (!drag.live) {
       if (Math.sqrt(dx * dx + dy * dy) < 6) return;   // still just a press
+      if (drag.tapOnly) { abandonDrag(); return; }    // the finger is scrolling
       drag.live = true;
       moving = { side: drag.side, player: drag.player, pos: drag.pos };
       renderLineups();
@@ -1324,8 +1689,17 @@
     }
   }
 
+  function abandonDrag() {
+    drag = null;
+    window.removeEventListener('pointermove', onDragMove);
+    window.removeEventListener('pointerup', onDragEnd);
+    window.removeEventListener('pointercancel', onDragEnd);
+  }
+
   function onDragEnd(e) {
     if (!drag) return;
+    // The browser took the gesture over (a scroll): not a tap, select nothing.
+    if (e.type === 'pointercancel' && !drag.live) { abandonDrag(); return; }
     var d = drag;
     drag = null;
     window.removeEventListener('pointermove', onDragMove);
@@ -1337,6 +1711,7 @@
     if (!d.live) {
       // A tap: leave the player selected so the next tap can place him.
       selectForMove(d.side, d.player, d.pos);
+      flushRender();
       return;
     }
     if (d.over) {
@@ -1347,6 +1722,7 @@
     } else {
       moving = null;
       renderLineups();
+      flushRender();
     }
   }
 
@@ -1389,9 +1765,18 @@
   // Dropping onto an occupied slot moves the sitting player out of the way.
   function dropOnto(side, player, pos, sitting) {
     moving = null;
+    if (sitting && sitting.key === player.key) { renderLineups(); return; }
+    if (serverMode()) {
+      // Say what we want; the server checks locks and eligibility and decides
+      // where the replaced player lands.
+      apiChange({ action: 'set_slot', side: side, date: day, player_key: player.key,
+                  slot: pos, displaced_key: sitting ? sitting.key : undefined },
+                player.name + ' → ' + pos);
+      renderLineups();
+      return;
+    }
     var lineup = lineupFor(side, day);
     var from = lineup[player.key] || 'BN';
-    if (sitting && sitting.key === player.key) { renderLineups(); return; }
 
     if (sitting) {
       if (isLocked(side, day, sitting)) {
@@ -1454,7 +1839,7 @@
       mid.appendChild(el('div', 'pmeta', (p.team || 'FA') + ' · ' + (p.pos || '')));
       row.appendChild(mid);
 
-      var until = S.lockout[p.key];
+      var until = lockoutUntil(p.key);
       var held = until && Date.parse(until) > Date.now();
       row.appendChild(el('div', 'pmeta', held
         ? 'Locked until ' + clockOf(until)
@@ -1463,9 +1848,9 @@
       var btns = el('div', 'btn-row');
       ['a', 'b'].forEach(function (side) {
         if (!canEdit(side)) return;
-        var left = D.rules.max_adds - S.addsUsed[side];
+        var left = maxAdds(side) - addsUsed(side);
         var b = el('button', 'btn ' + side, '+ Add');
-        if (S.actingAs === 'commish') {
+        if (serverMode() || S.actingAs === 'commish') {
           b.textContent = '+ ' + (D.sides[side].manager || 'Team ' + D.sides[side].team_id);
         }
         b.disabled = held || left <= 0;
@@ -1494,7 +1879,7 @@
       title: 'Add ' + incoming.name,
       sub: (incoming.team || 'FA') + ' · ' + (incoming.pos || '') +
         ' — pick who to drop. This uses one of your ' +
-        (D.rules.max_adds - S.addsUsed[side]) + ' remaining adds.',
+        (maxAdds(side) - addsUsed(side)) + ' remaining adds.',
       side: side,
       onPick: function (outgoing) { commitAddDrop(side, incoming, outgoing); }
     });
@@ -1515,6 +1900,11 @@
   }
 
   function commitAddDrop(side, incoming, outgoing) {
+    if (serverMode()) {
+      apiChange({ action: 'add_drop', side: side, add_key: incoming.key, drop_key: outgoing.key },
+                incoming.name + ' added, ' + outgoing.name + ' dropped');
+      return;
+    }
     if (S.addsUsed[side] >= D.rules.max_adds) {
       toast('No adds left', true);
       return;
@@ -1532,6 +1922,10 @@
   }
 
   function commitDrop(side, player) {
+    if (serverMode()) {
+      apiChange({ action: 'drop', side: side, drop_key: player.key }, player.name + ' dropped');
+      return;
+    }
     dropPlayer(side, player);
     logTx(side, 'drop', player.name + ' dropped');
     save();
@@ -1566,7 +1960,17 @@
   function renderTx() {
     var host = $('txList');
     host.innerHTML = '';
-    var all = (S && S.tx ? S.tx : []).concat(D.transactions || []);
+    var all = serverMode()
+      ? (SRV.changes || []).slice().reverse().map(function (c) {
+          var inn = c.added && srvPlayer(c.added);
+          var out = c.dropped && srvPlayer(c.dropped);
+          return {
+            side: c.side, at: String(c.sk).split('#')[0],
+            detail: (inn ? inn.name + ' in' : '') + (inn && out ? ', ' : '') +
+                    (out ? out.name + (inn ? ' out' : ' dropped') : '')
+          };
+        })
+      : (S && S.tx ? S.tx : []).concat(D.transactions || []);
     if (!all.length) {
       host.appendChild(el('div', 'empty-note',
         'No moves yet. Every add and drop in week 2 lands here with a timestamp.'));
@@ -1655,9 +2059,22 @@
     });
     host.appendChild(seg);
 
+    if (!DEMO) {
+      if (!SRV) {
+        host.appendChild(el('div', 'lab srv-err',
+          'Live rosters unavailable (' + (SRV_ERR || 'no answer') + ') — view only'));
+        return;
+      }
+      host.appendChild(el('div', 'lab', TOKEN
+        ? 'Signed in — you can change either roster'
+        : 'View only — open your sign-in link to make changes'));
+      host.appendChild(el('div', 'modebadge ' + (SRV.mode || ''),
+        SRV.mode === 'production' ? 'LIVE · WEEK 2 COUNTS' : 'PLAYGROUND · RESETS NIGHTLY'));
+      return;
+    }
     host.appendChild(el('div', 'lab', S.actingAs === 'commish'
-      ? 'You can edit both teams'
-      : 'You can only edit your own roster'));
+      ? 'You see and can edit both rosters'
+      : 'You see only your own roster'));
 
     var reset = el('button', 'linkbtn', 'Reset test data');
     reset.addEventListener('click', function () {
@@ -1710,6 +2127,14 @@
     $('proto').innerHTML = D.status === 'pending'
       ? '<b>Standing by.</b> The bracket above is live from Yahoo. Lineups, free agents ' +
         'and the scoreboard switch on automatically as soon as the championship matchup is set.'
+      : serverMode()
+        ? (SRV.mode === 'production'
+          ? '<b>Live.</b> Both rosters are held on the league server, and every change is checked ' +
+            'there - first-pitch locks, eligibility, the ' + D.rules.max_adds + '-acquisition limit ' +
+            'and the ' + D.rules.drop_lockout_hours + '-hour re-add lockout. Nothing is written back to Yahoo.'
+          : '<b>Playground.</b> Week one on the real rosters with the real rules, for testing. ' +
+            'Every move made here is <b>wiped at 3:30am ET</b> and reloaded from Yahoo, and nothing is ' +
+            'written back to Yahoo. Week two goes live on this same system at midnight on Sept 20.')
       : '<b>Prototype.</b> Rosters, the free agent pool, lock times and the scoreboard are ' +
         'live data, and every rule is enforced for real — the ' + D.rules.max_adds +
         '-add cap, the ' + D.rules.drop_lockout_hours + '-hour re-add lockout, position ' +
@@ -1785,7 +2210,320 @@
     return card;
   }
 
+  // ══ live scoring ══════════════════════════════════════════════════════
+  // MLB's StatsAPI sends Access-Control-Allow-Origin:*, so the page reads it
+  // straight from the browser - no proxy and no server of our own. Its own
+  // Cache-Control is max-age=20, which sets the sensible polling floor.
+  var MLB = 'https://statsapi.mlb.com/api';
+
+  // Box scores are cached per date, so the roster shows real numbers for
+  // whichever day you are looking at - not only for today.
+  var DAYS = {};
+  var LIVE = { day: null, timer: null };
+  var POLL_MS = 30000;
+  var pendingRender = false;
+
+  // A live refresh must never rebuild the roster while someone is holding a
+  // player: it would tear the row out from under their finger mid-drag. Defer
+  // the repaint until their hands are empty.
+  function safeRender() {
+    if (drag || moving) { pendingRender = true; return; }
+    pendingRender = false;
+    render();
+  }
+  function flushRender() {
+    if (pendingRender) { pendingRender = false; render(); }
+  }
+
+  var BAT_KEYS = ['R', 'H', 'HR', 'RBI', 'SB', 'AB', 'BB', 'HBP', 'SF', 'TB_bat'];
+  var PIT_KEYS = ['TB', 'IP', 'ER', 'H_ALLOWED', 'BB_ALLOWED', 'K', 'QS', 'SVH'];
+
+  function ipToFloat(v) {
+    var s = String(v === undefined || v === null ? 0 : v).split('.');
+    return (parseInt(s[0], 10) || 0) + (parseInt(s[1], 10) || 0) / 3;
+  }
+
+  // Deliberately mirrors scoring.py's _batting_line / _pitching_line.
+  function batLine(s) {
+    return {
+      R: +s.runs || 0, H: +s.hits || 0, HR: +s.homeRuns || 0,
+      RBI: +s.rbi || 0, SB: +s.stolenBases || 0,
+      AB: +s.atBats || 0, BB: +s.baseOnBalls || 0,
+      HBP: +s.hitByPitch || 0, SF: +s.sacFlies || 0,
+      TB_bat: +s.totalBases || 0
+    };
+  }
+  function pitLine(s) {
+    var h = +s.hits || 0, d = +s.doubles || 0, t = +s.triples || 0, hr = +s.homeRuns || 0;
+    var ip = ipToFloat(s.inningsPitched), er = +s.earnedRuns || 0;
+    return {
+      TB: Math.max(h - d - t - hr, 0) + 2 * d + 3 * t + 4 * hr,
+      IP: ip, ER: er,
+      H_ALLOWED: h, BB_ALLOWED: +s.baseOnBalls || 0, K: +s.strikeOuts || 0,
+      QS: ((+s.gamesStarted || 0) > 0 && ip >= 6 && er <= 3) ? 1 : 0,
+      SVH: (+s.saves || 0) + (+s.holds || 0)
+    };
+  }
+
+  function emptyTotals() {
+    var t = {};
+    BAT_KEYS.concat(PIT_KEYS).forEach(function (k) { t[k] = 0; });
+    return t;
+  }
+  function addInto(target, src) {
+    Object.keys(src).forEach(function (k) { target[k] = (target[k] || 0) + src[k]; });
+    return target;
+  }
+
+  // Port of scoring.finalize - ratios divided once, at the very end.
+  function finalizeTotals(t) {
+    var chances = t.AB + t.BB + t.HBP + t.SF;
+    var obp = chances ? (t.H + t.BB + t.HBP) / chances : 0;
+    var slg = t.AB ? t.TB_bat / t.AB : 0;
+    var ip = t.IP;
+    var floor = D.rules.min_ip_total;
+    return {
+      R: t.R, H: t.H, HR: t.HR, RBI: t.RBI, SB: t.SB,
+      OPS: +(obp + slg).toFixed(4),
+      TB: t.TB,
+      ERA: ip ? +(9 * t.ER / ip).toFixed(4) : 0,
+      WHIP: ip ? +((t.BB_ALLOWED + t.H_ALLOWED) / ip).toFixed(4) : 0,
+      K9: ip ? +(9 * t.K / ip).toFixed(4) : 0,
+      QS: t.QS, SVH: t.SVH,
+      IP: +ip.toFixed(2),
+      ip_minimum: floor,
+      forfeits_pitching: ip < floor
+    };
+  }
+
+  // Port of scoring.matchup.
+  function buildMatchup(af, bf) {
+    var cats = {}, aw = 0, bw = 0, ties = 0;
+    D.rules.categories.forEach(function (cat) {
+      var av = af[cat], bv = bf[cat];
+      var lower = D.rules.lower_is_better.indexOf(cat) !== -1;
+      var pitch = D.rules.pitching.indexOf(cat) !== -1;
+      var aOut = pitch && af.forfeits_pitching, bOut = pitch && bf.forfeits_pitching;
+      var w;
+      if (aOut && !bOut) w = 'b';
+      else if (bOut && !aOut) w = 'a';
+      else if (aOut && bOut) w = 'tie';
+      else if (av === bv) w = 'tie';
+      else if (lower) {
+        if ((cat === 'ERA' || cat === 'WHIP') && (af.IP === 0 || bf.IP === 0)) {
+          w = bf.IP === 0 ? 'a' : 'b';
+        } else w = av < bv ? 'a' : 'b';
+      } else w = av > bv ? 'a' : 'b';
+      cats[cat] = { a: av, b: bv, winner: w };
+      if (w === 'a') aw++; else if (w === 'b') bw++; else ties++;
+    });
+    return {
+      categories: cats, a_cats: aw, b_cats: bw, ties: ties,
+      leader: aw > bw ? 'a' : (bw > aw ? 'b' : 'tie')
+    };
+  }
+
+  function jget(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(url.split('/api')[1] + ' ' + r.status);
+      return r.json();
+    });
+  }
+
+  // Which MLB clubs the two rosters touch - only their games are worth loading.
+  function rosterTeamIds() {
+    var ids = {};
+    ['a', 'b'].forEach(function (side) {
+      rosterOf(side).forEach(function (p) {
+        if (p.mlb_team_id) ids[p.mlb_team_id] = 1;
+      });
+    });
+    return ids;
+  }
+
+  function dayState(date) {
+    return DAYS[date] || (DAYS[date] = {
+      games: {}, inProgress: 0, updated: null, error: null, loading: false, done: false
+    });
+  }
+
+  // Pull one date's box scores. Finished dates are fetched once and kept; a
+  // live date is re-checked, but only games that actually moved are refetched.
+  function loadDay(date) {
+    var st = dayState(date);
+    if (st.loading || (st.done && date !== todayISO())) return Promise.resolve(st);
+    st.loading = true;
+
+    return jget(MLB + '/v1/schedule?sportId=1&date=' + date + '&hydrate=linescore')
+      .then(function (sched) {
+        var mine = rosterTeamIds();
+        var games = [];
+        (sched.dates || []).forEach(function (d) {
+          (d.games || []).forEach(function (g) {
+            var home = ((g.teams || {}).home || {}).team || {};
+            var away = ((g.teams || {}).away || {}).team || {};
+            if (!mine[home.id] && !mine[away.id]) return;
+            var ls = g.linescore || {};
+            games.push({
+              pk: g.gamePk,
+              state: (g.status || {}).abstractGameState,
+              // A cheap fingerprint: refetch a box score only when the game
+              // has actually moved.
+              sig: [ls.currentInning, ls.inningState, ls.outs,
+                    (ls.teams || {}).home && ls.teams.home.runs,
+                    (ls.teams || {}).away && ls.teams.away.runs,
+                    (g.status || {}).detailedState].join('|')
+            });
+          });
+        });
+        st.inProgress = games.filter(function (g) { return g.state === 'Live'; }).length;
+        st.done = games.length > 0 && games.every(function (g) { return g.state === 'Final'; });
+
+        var need = games.filter(function (g) {
+          if (g.state === 'Preview') return false;          // nothing to score yet
+          var have = st.games[g.pk];
+          return !have || have.sig !== g.sig;               // new, or it moved
+        });
+        return Promise.all(need.map(function (g) {
+          return jget(MLB + '/v1/game/' + g.pk + '/boxscore').then(function (box) {
+            st.games[g.pk] = { state: g.state, sig: g.sig, lines: linesFrom(box) };
+          }).catch(function () { /* one bad game must not sink the poll */ });
+        }));
+      })
+      .then(function () { st.updated = new Date(); st.error = null; })
+      .catch(function (e) { st.error = e.message || String(e); })
+      .then(function () {
+        st.loading = false;
+        // The header's live pill reads these; keep it in step with today's load.
+        if (date === LIVE.day) {
+          LIVE.inProgress = st.inProgress;
+          LIVE.lastUpdate = st.updated;
+          LIVE.error = st.error;
+        }
+        return st;
+      });
+  }
+
+  function linesFrom(box) {
+    var out = {};
+    ['home', 'away'].forEach(function (side) {
+      var players = (((box.teams || {})[side] || {}).players) || {};
+      Object.keys(players).forEach(function (k) {
+        var p = players[k];
+        var id = (p.person || {}).id;
+        if (!id) return;
+        var st = p.stats || {};
+        var slot = out[id] || (out[id] = { bat: {}, pit: {} });
+        if (st.batting && Object.keys(st.batting).length) addInto(slot.bat, batLine(st.batting));
+        if (st.pitching && Object.keys(st.pitching).length) addInto(slot.pit, pitLine(st.pitching));
+      });
+    });
+    return out;
+  }
+
+  // Every player line known for a date, keyed by MLB id.
+  function linesFor(date) {
+    var st = DAYS[date];
+    if (!st) return {};
+    var byId = {};
+    Object.keys(st.games).forEach(function (pk) {
+      var lines = st.games[pk].lines;
+      Object.keys(lines).forEach(function (id) { byId[id] = lines[id]; });
+    });
+    return byId;
+  }
+
+  // One side's component totals for a date, from whoever they started.
+  function totalsFor(side, date) {
+    var t = emptyTotals();
+    var byId = linesFor(date);
+    if (!Object.keys(byId).length) return t;
+    var lineup = lineupFor(side, date);
+    rosterOf(side).forEach(function (p) {
+      var slot = lineup[p.key];
+      if (!slot || BENCH.indexOf(slot) !== -1 || !p.mlb_id) return;
+      var line = byId[p.mlb_id];
+      if (!line) return;
+      if (BAT_SLOTS.indexOf(slot) !== -1 && p.stat_side !== 'pit') addInto(t, line.bat);
+      else if (PIT_SLOTS.indexOf(slot) !== -1 && p.stat_side !== 'bat') addInto(t, line.pit);
+    });
+    return t;
+  }
+
+  function lineForPlayer(player, date) {
+    if (!player || !player.mlb_id) return null;
+    return linesFor(date)[player.mlb_id] || null;
+  }
+
+  // Baseline (server, through yesterday) + today (live, in the browser).
+  function currentScore() {
+    if (!D.baseline) return { board: D.scoreboard, totals: D.totals, live: false };
+    var out = {};
+    var today = todayISO();
+    ['a', 'b'].forEach(function (side) {
+      var t = addInto(emptyTotals(), D.baseline[side] || {});
+      addInto(t, totalsFor(side, today));
+      out[side] = finalizeTotals(t);
+    });
+    return { board: buildMatchup(out.a, out.b), totals: out, live: !!DAYS[today] };
+  }
+
+  function startLive() {
+    var today = todayISO();
+    var w1 = D.rules.week1, w2 = D.rules.week2;
+    // Live scoring only means anything on a day inside the championship.
+    if (today >= w1[0] && today <= w2[1]) LIVE.day = today;
+    // The playground may open a test day before the final; score it live too.
+    if (serverMode() && playDates().indexOf(today) !== -1) LIVE.day = today;
+
+    ensureDay(day);
+    if (LIVE.day && LIVE.day !== day) ensureDay(LIVE.day);
+
+    LIVE.timer = setInterval(function () {
+      if (document.hidden) return;      // don't burn a phone's battery in a pocket
+      refreshOpenDays();
+    }, POLL_MS);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refreshOpenDays();   // catch up the moment they return
+    });
+  }
+
+  // Load a date once, then repaint. Cheap for dates already cached.
+  function ensureDay(date) {
+    if (!date) return Promise.resolve();
+    var st = DAYS[date];
+    if (st && (st.loading || (st.done && date !== todayISO()))) return Promise.resolve();
+    return loadDay(date).then(safeRender);
+  }
+
+  function refreshOpenDays() {
+    var dates = {};
+    if (LIVE.day) dates[LIVE.day] = 1;
+    if (day) dates[day] = 1;                 // whatever the manager is looking at
+    var jobs = Object.keys(dates).map(loadDay);
+    if (!DEMO) jobs.push(fetchState());
+    return Promise.all(jobs).then(function () { safeRender(); renderTx(); });
+  }
+
+  // Debug handles. __finalize lets the scoring port be diffed against the
+  // Python engine; __forceLive points the live layer at another date, which is
+  // the only way to exercise it outside game hours.
+  window.__finalize = function (t) { return finalizeTotals(t); };
+  window.__LIVE = function () {
+    var st = DAYS[LIVE.day] || dayState(LIVE.day || todayISO());
+    return { day: LIVE.day, games: st.games, inProgress: st.inProgress, error: st.error };
+  };
+  window.__DAYS = function () { return DAYS; };
+  window.__pollNow = function () { return refreshOpenDays(); };
+  window.__forceLive = function (date) {
+    LIVE.day = date;
+    delete DAYS[date];
+    return loadDay(date).then(safeRender);
+  };
+
   function render() {
+    SCORE = currentScore();
+    SCORE = currentScore();
     renderHeader();
     renderWhoAmI();
     renderTimeline();
@@ -1802,11 +2540,27 @@
     ? 'data/championship_2026_demo.json'
     : 'data/championship_2026.json';
 
-  fetch(SRC)
-    .then(function (r) {
+  // Debug handles. __finalize lets the scoring port be diffed against the
+  // Python engine; __forceLive points the live layer at another date, which is
+  // the only way to exercise it outside game hours.
+  window.__finalize = function (t) { return finalizeTotals(t, 2); };
+  window.__LIVE = function () { return LIVE; };
+  window.__pollNow = function () { return pollLive(); };
+  window.__forceLive = function (date) {
+    LIVE.day = date;
+    LIVE.games = {};
+    return pollLive();
+  };
+
+  Promise.all([
+    fetch(SRC).then(function (r) {
       if (!r.ok) throw new Error(r.status);
       return r.json();
-    })
+    }),
+    // Rosters come from the league server; the page data carries everything else.
+    DEMO ? null : fetchState()
+  ])
+    .then(function (both) { return both[0]; })
     .then(function (data) {
       D = data;
 
@@ -1822,9 +2576,9 @@
       }
 
       load();
-      day = D.week2_dates[0];
+      day = playDates()[0];
       var today = todayISO();
-      D.week2_dates.forEach(function (d) { if (d === today) day = d; });
+      playDates().forEach(function (d) { if (d === today) day = d; });
 
       var seen = {};
       D.free_agents.forEach(function (p) {
@@ -1843,6 +2597,7 @@
       renderTx();
       renderRules();
       renderProto();
+      startLive();
 
       $('faSearch').addEventListener('input', renderFA);
       sel.addEventListener('change', renderFA);

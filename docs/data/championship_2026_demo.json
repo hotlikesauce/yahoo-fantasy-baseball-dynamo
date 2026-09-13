@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-08T03:41:09.126060+00:00",
+ "generated_at": "2026-09-09T13:21:20.379491+00:00",
  "status": "set",
  "demo": true,
  "rules": {
@@ -98,23 +98,23 @@
  "scoreboard": {
   "categories": {
    "R": {
-    "a": 27,
-    "b": 41,
+    "a": 30,
+    "b": 49,
     "winner": "b"
    },
    "H": {
-    "a": 50,
-    "b": 66,
+    "a": 59,
+    "b": 78,
     "winner": "b"
    },
    "HR": {
-    "a": 6,
-    "b": 8,
+    "a": 8,
+    "b": 10,
     "winner": "b"
    },
    "RBI": {
-    "a": 28,
-    "b": 24,
+    "a": 32,
+    "b": 31,
     "winner": "a"
    },
    "SB": {
@@ -123,32 +123,32 @@
     "winner": "a"
    },
    "OPS": {
-    "a": 0.7086,
-    "b": 0.7306,
+    "a": 0.7148,
+    "b": 0.7568,
     "winner": "b"
    },
    "TB": {
-    "a": 57,
-    "b": 108,
+    "a": 62,
+    "b": 110,
     "winner": "tie"
    },
    "ERA": {
-    "a": 3.75,
-    "b": 4.5874,
+    "a": 3.3488,
+    "b": 4.6731,
     "winner": "tie"
    },
    "WHIP": {
-    "a": 1.0833,
-    "b": 1.1796,
+    "a": 1.0,
+    "b": 1.226,
     "winner": "tie"
    },
    "K9": {
-    "a": 8.75,
-    "b": 9.3058,
+    "a": 9.4186,
+    "b": 9.2163,
     "winner": "tie"
    },
    "QS": {
-    "a": 1,
+    "a": 2,
     "b": 5,
     "winner": "tie"
    },
@@ -165,40 +165,83 @@
  },
  "totals": {
   "a": {
-   "R": 27,
-   "H": 50,
-   "HR": 6,
-   "RBI": 28,
+   "R": 30,
+   "H": 59,
+   "HR": 8,
+   "RBI": 32,
    "SB": 9,
-   "OPS": 0.7086,
-   "TB": 57,
-   "ERA": 3.75,
-   "WHIP": 1.0833,
-   "K9": 8.75,
-   "QS": 1,
+   "OPS": 0.7148,
+   "TB": 62,
+   "ERA": 3.3488,
+   "WHIP": 1.0,
+   "K9": 9.4186,
+   "QS": 2,
    "SVH": 7,
-   "IP": 36.0,
+   "IP": 43.0,
    "ip_minimum": 100.0,
    "forfeits_pitching": true
   },
   "b": {
-   "R": 41,
-   "H": 66,
-   "HR": 8,
-   "RBI": 24,
+   "R": 49,
+   "H": 78,
+   "HR": 10,
+   "RBI": 31,
    "SB": 7,
-   "OPS": 0.7306,
-   "TB": 108,
-   "ERA": 4.5874,
-   "WHIP": 1.1796,
-   "K9": 9.3058,
+   "OPS": 0.7568,
+   "TB": 110,
+   "ERA": 4.6731,
+   "WHIP": 1.226,
+   "K9": 9.2163,
    "QS": 5,
    "SVH": 4,
-   "IP": 68.67,
+   "IP": 69.33,
    "ip_minimum": 100.0,
    "forfeits_pitching": true
   }
  },
+ "baseline": {
+  "a": {
+   "R": 30,
+   "H": 59,
+   "HR": 8,
+   "RBI": 32,
+   "SB": 9,
+   "AB": 246,
+   "BB": 30,
+   "HBP": 4,
+   "SF": 3,
+   "TB_bat": 95,
+   "TB": 62,
+   "IP": 43.0,
+   "ER": 16,
+   "H_ALLOWED": 32,
+   "BB_ALLOWED": 11,
+   "K": 45,
+   "QS": 2,
+   "SVH": 7
+  },
+  "b": {
+   "R": 49,
+   "H": 78,
+   "HR": 10,
+   "RBI": 31,
+   "SB": 7,
+   "AB": 293,
+   "BB": 29,
+   "HBP": 5,
+   "SF": 2,
+   "TB_bat": 122,
+   "TB": 110,
+   "IP": 69.33333333333334,
+   "ER": 36,
+   "H_ALLOWED": 65,
+   "BB_ALLOWED": 20,
+   "K": 71,
+   "QS": 5,
+   "SVH": 4
+  }
+ },
+ "baseline_through": "2026-09-08",
  "trend": [
   {
    "date": "2026-08-31",
@@ -287,7 +330,7 @@
     "mlb_id": 641343,
     "mlb_team_id": 158,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/Ytg8aQAXR7fEFQnWLozjxQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10600.png",
-    "status": null,
+    "status": "DTD",
     "slot": "1B"
    },
    {
@@ -374,6 +417,22 @@
     "slot": "OF"
    },
    {
+    "key": "469.p.11384",
+    "name": "Julio Rodr\u00edguez",
+    "team": "SEA",
+    "pos": "OF",
+    "eligible": [
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 677594,
+    "mlb_team_id": 136,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ykRBf7qUe6fzLFAxnW3dfQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04012026/11384.3.png",
+    "status": null,
+    "slot": "OF"
+   },
+   {
     "key": "469.p.11760",
     "name": "Riley Greene",
     "team": "DET",
@@ -387,7 +446,24 @@
     "mlb_team_id": 116,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/yU0h1UrRQZEF5ZFG7goLfw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/11760.1.png",
     "status": null,
-    "slot": "OF"
+    "slot": "Util"
+   },
+   {
+    "key": "469.p.12372",
+    "name": "Coby Mayo",
+    "team": "BAL",
+    "pos": "1B,3B",
+    "eligible": [
+     "1B",
+     "3B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 691723,
+    "mlb_team_id": 110,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/F829dNEmHYRgNjXbZPooqg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/12372.png",
+    "status": null,
+    "slot": "BN"
    },
    {
     "key": "469.p.11817",
@@ -404,22 +480,6 @@
     "mlb_id": 681082,
     "mlb_team_id": 143,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/gXSiQdpFwvaKp_szxTyJbQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11817.1.png",
-    "status": null,
-    "slot": "Util"
-   },
-   {
-    "key": "469.p.11384",
-    "name": "Julio Rodr\u00edguez",
-    "team": "SEA",
-    "pos": "OF",
-    "eligible": [
-     "OF",
-     "Util"
-    ],
-    "type": "B",
-    "mlb_id": 677594,
-    "mlb_team_id": 136,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/ykRBf7qUe6fzLFAxnW3dfQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04012026/11384.3.png",
     "status": null,
     "slot": "BN"
    },
@@ -493,9 +553,9 @@
     "slot": "SP"
    },
    {
-    "key": "469.p.60418",
-    "name": "Ian Seymour",
-    "team": "TB",
+    "key": "469.p.11926",
+    "name": "Reid Detmers",
+    "team": "LAA",
     "pos": "SP,RP",
     "eligible": [
      "SP",
@@ -503,9 +563,9 @@
      "P"
     ],
     "type": "P",
-    "mlb_id": 693855,
-    "mlb_team_id": 139,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/wtVKBBSM89I9T2MotOJP6Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/60418.1.png",
+    "mlb_id": 672282,
+    "mlb_team_id": 108,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/sveBIqO1PTIj_FJyRntiUA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11926.png",
     "status": null,
     "slot": "SP"
    },
@@ -591,6 +651,22 @@
     "slot": "P"
    },
    {
+    "key": "469.p.9334",
+    "name": "Kevin Gausman",
+    "team": "CHC",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 592332,
+    "mlb_team_id": 112,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/mezKP93eLzc6K6Sit_Q2zw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08192026/9334.2.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
     "key": "469.p.11847",
     "name": "Joe Ryan",
     "team": "MIN",
@@ -604,21 +680,22 @@
     "mlb_team_id": 142,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/IFRw5y6sCU.G0J5m__4GNQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11847.png",
     "status": null,
-    "slot": "P"
+    "slot": "BN"
    },
    {
-    "key": "469.p.8193",
-    "name": "Max Scherzer",
-    "team": "TOR",
-    "pos": "SP",
+    "key": "469.p.60418",
+    "name": "Ian Seymour",
+    "team": "TB",
+    "pos": "SP,RP",
     "eligible": [
      "SP",
+     "RP",
      "P"
     ],
     "type": "P",
-    "mlb_id": 453286,
-    "mlb_team_id": 141,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/s8g6YiXpjDZT7uvFfgQhcQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03312025/8193.png",
+    "mlb_id": 693855,
+    "mlb_team_id": 139,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/wtVKBBSM89I9T2MotOJP6Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/60418.1.png",
     "status": null,
     "slot": "BN"
    },
@@ -635,39 +712,6 @@
     "mlb_id": 669923,
     "mlb_team_id": 136,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/l64JO7q8zIxIHamYYqDixA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/11826.png",
-    "status": null,
-    "slot": "BN"
-   },
-   {
-    "key": "469.p.9334",
-    "name": "Kevin Gausman",
-    "team": "CHC",
-    "pos": "SP",
-    "eligible": [
-     "SP",
-     "P"
-    ],
-    "type": "P",
-    "mlb_id": 592332,
-    "mlb_team_id": 112,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/mezKP93eLzc6K6Sit_Q2zw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08192026/9334.2.png",
-    "status": null,
-    "slot": "BN"
-   },
-   {
-    "key": "469.p.11926",
-    "name": "Reid Detmers",
-    "team": "LAA",
-    "pos": "SP,RP",
-    "eligible": [
-     "SP",
-     "RP",
-     "P"
-    ],
-    "type": "P",
-    "mlb_id": 672282,
-    "mlb_team_id": 108,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/sveBIqO1PTIj_FJyRntiUA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11926.png",
     "status": null,
     "slot": "BN"
    },
@@ -708,37 +752,35 @@
     "slot": "C"
    },
    {
-    "key": "469.p.11733",
-    "name": "Kyle Stowers",
-    "team": "MIA",
-    "pos": "1B,OF",
+    "key": "469.p.62957",
+    "name": "Bryce Eldridge",
+    "team": "SF",
+    "pos": "1B",
     "eligible": [
      "1B",
-     "OF",
      "Util"
     ],
     "type": "B",
-    "mlb_id": 669065,
-    "mlb_team_id": 146,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/mRSd3qLBKKKHD_WrNeSVVw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/11733.png",
+    "mlb_id": 805811,
+    "mlb_team_id": 137,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/.6SpEQ8RUFmciSCLXkUlew--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/62957.1.png",
     "status": null,
     "slot": "1B"
    },
    {
-    "key": "469.p.11118",
-    "name": "Jeff McNeil",
-    "team": "ATH",
-    "pos": "1B,2B,OF",
+    "key": "469.p.10964",
+    "name": "Luis Garc\u00eda Jr.",
+    "team": "NYY",
+    "pos": "1B,2B",
     "eligible": [
      "1B",
      "2B",
-     "OF",
      "Util"
     ],
     "type": "B",
-    "mlb_id": 643446,
-    "mlb_team_id": 133,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/fgdAS_y5vD_kwsurK9Fq0g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/11118.png",
+    "mlb_id": 671277,
+    "mlb_team_id": 147,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/shbwLLb24t21SxudQuqs6A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10964.3.png",
     "status": null,
     "slot": "2B"
    },
@@ -807,20 +849,54 @@
     "slot": "OF"
    },
    {
-    "key": "469.p.8861",
-    "name": "Mike Trout",
-    "team": "LAA",
+    "key": "469.p.60309",
+    "name": "Henry Bolte",
+    "team": "ATH",
     "pos": "OF",
     "eligible": [
      "OF",
      "Util"
     ],
     "type": "B",
-    "mlb_id": 545361,
-    "mlb_team_id": 108,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/mb.TC03B9_xZIpIotNG.yA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/8861.png",
+    "mlb_id": 703607,
+    "mlb_team_id": 133,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/pbPTQXDets2A73U4NDJ.4Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05152026/60309.1.png",
     "status": null,
     "slot": "OF"
+   },
+   {
+    "key": "469.p.10877",
+    "name": "Jake Burger",
+    "team": "TEX",
+    "pos": "1B",
+    "eligible": [
+     "1B",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 669394,
+    "mlb_team_id": 140,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/NNWnRMwj9cKm_xAopaXVkA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10877.1.png",
+    "status": null,
+    "slot": "Util"
+   },
+   {
+    "key": "469.p.11118",
+    "name": "Jeff McNeil",
+    "team": "ATH",
+    "pos": "1B,2B,OF",
+    "eligible": [
+     "1B",
+     "2B",
+     "OF",
+     "Util"
+    ],
+    "type": "B",
+    "mlb_id": 643446,
+    "mlb_team_id": 133,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/fgdAS_y5vD_kwsurK9Fq0g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03132026/11118.png",
+    "status": null,
+    "slot": "BN"
    },
    {
     "key": "469.p.1000001",
@@ -834,55 +910,6 @@
     "mlb_id": 660271,
     "mlb_team_id": 119,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/n8I0Pc77w7vGpGIWKP_5Cg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/10835.png",
-    "status": null,
-    "slot": "Util"
-   },
-   {
-    "key": "469.p.10964",
-    "name": "Luis Garc\u00eda Jr.",
-    "team": "NYY",
-    "pos": "1B,2B",
-    "eligible": [
-     "1B",
-     "2B",
-     "Util"
-    ],
-    "type": "B",
-    "mlb_id": 671277,
-    "mlb_team_id": 147,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/shbwLLb24t21SxudQuqs6A--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/10964.3.png",
-    "status": null,
-    "slot": "BN"
-   },
-   {
-    "key": "469.p.10572",
-    "name": "Josh Naylor",
-    "team": "SEA",
-    "pos": "1B",
-    "eligible": [
-     "1B",
-     "Util"
-    ],
-    "type": "B",
-    "mlb_id": 647304,
-    "mlb_team_id": 136,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/If7ZRO8sqMYRyHeU2Ejz3Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/10572.png",
-    "status": null,
-    "slot": "BN"
-   },
-   {
-    "key": "469.p.60309",
-    "name": "Henry Bolte",
-    "team": "ATH",
-    "pos": "OF",
-    "eligible": [
-     "OF",
-     "Util"
-    ],
-    "type": "B",
-    "mlb_id": 703607,
-    "mlb_team_id": 133,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/pbPTQXDets2A73U4NDJ.4Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/05152026/60309.1.png",
     "status": null,
     "slot": "BN"
    },
@@ -904,22 +931,6 @@
     "slot": "NA"
    },
    {
-    "key": "469.p.10909",
-    "name": "Trevor Rogers",
-    "team": "BAL",
-    "pos": "SP",
-    "eligible": [
-     "SP",
-     "P"
-    ],
-    "type": "P",
-    "mlb_id": 669432,
-    "mlb_team_id": 110,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/ElqEChBI_.EZGEUO8OOcuw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10909.png",
-    "status": null,
-    "slot": "SP"
-   },
-   {
     "key": "469.p.60262",
     "name": "Logan Henderson",
     "team": "MIL",
@@ -932,6 +943,22 @@
     "mlb_id": 701656,
     "mlb_team_id": 158,
     "headshot": "https://s.yimg.com/iu/api/res/1.2/wa.UqLhK3Wgu5stQV92ktw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03192026/60262.png",
+    "status": null,
+    "slot": "SP"
+   },
+   {
+    "key": "469.p.9121",
+    "name": "Gerrit Cole",
+    "team": "NYY",
+    "pos": "SP",
+    "eligible": [
+     "SP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 543037,
+    "mlb_team_id": 147,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/Qn0a.T8L9AjMFYRTTF.y5w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9121.1.png",
     "status": null,
     "slot": "SP"
    },
@@ -1016,18 +1043,35 @@
     "slot": "P"
    },
    {
-    "key": "469.p.9121",
-    "name": "Gerrit Cole",
-    "team": "NYY",
+    "key": "469.p.12114",
+    "name": "Tyler Wells",
+    "team": "TB",
+    "pos": "SP,RP",
+    "eligible": [
+     "SP",
+     "RP",
+     "P"
+    ],
+    "type": "P",
+    "mlb_id": 669330,
+    "mlb_team_id": 139,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/MHo3fdj7sRmkVgHf1uieKQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/12114.1.png",
+    "status": null,
+    "slot": "P"
+   },
+   {
+    "key": "469.p.10909",
+    "name": "Trevor Rogers",
+    "team": "BAL",
     "pos": "SP",
     "eligible": [
      "SP",
      "P"
     ],
     "type": "P",
-    "mlb_id": 543037,
-    "mlb_team_id": 147,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/Qn0a.T8L9AjMFYRTTF.y5w--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/9121.1.png",
+    "mlb_id": 669432,
+    "mlb_team_id": 110,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/ElqEChBI_.EZGEUO8OOcuw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03142026/10909.png",
     "status": null,
     "slot": "BN"
    },
@@ -1048,19 +1092,18 @@
     "slot": "BN"
    },
    {
-    "key": "469.p.12114",
-    "name": "Tyler Wells",
-    "team": "TB",
-    "pos": "SP,RP",
+    "key": "469.p.11235",
+    "name": "Logan Webb",
+    "team": "SF",
+    "pos": "SP",
     "eligible": [
      "SP",
-     "RP",
      "P"
     ],
     "type": "P",
-    "mlb_id": 669330,
-    "mlb_team_id": 139,
-    "headshot": "https://s.yimg.com/iu/api/res/1.2/MHo3fdj7sRmkVgHf1uieKQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08062026/12114.1.png",
+    "mlb_id": 657277,
+    "mlb_team_id": 137,
+    "headshot": "https://s.yimg.com/iu/api/res/1.2/k9nix73fLUdFT6vbZAqdyA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03202026/11235.1.png",
     "status": null,
     "slot": "BN"
    },
@@ -1893,6 +1936,23 @@
    "mlb_team_id": 135,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/Bl.x6lVCb5tqSlL4kxkQyw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/07292026/9640.3.png",
    "status": "IL60",
+   "slot": null
+  },
+  {
+   "key": "469.p.9651",
+   "name": "Nick Martinez",
+   "team": "TB",
+   "pos": "SP,RP",
+   "eligible": [
+    "SP",
+    "RP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 607259,
+   "mlb_team_id": 139,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/7Z_ZX_XzgoZwFcNUeMUQLQ--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/9651.1.png",
+   "status": null,
    "slot": null
   },
   {
@@ -2829,14 +2889,13 @@
    "pos": "OF",
    "eligible": [
     "OF",
-    "Util",
-    "NA"
+    "Util"
    ],
    "type": "B",
    "mlb_id": 645302,
    "mlb_team_id": 136,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/OSjLxMHDIHKERwEDprerDA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03212026/10227.png",
-   "status": "NA",
+   "status": null,
    "slot": null
   },
   {
@@ -4163,14 +4222,13 @@
    "pos": "RP",
    "eligible": [
     "RP",
-    "P",
-    "NA"
+    "P"
    ],
    "type": "P",
    "mlb_id": 571948,
    "mlb_team_id": 136,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/X8ZdSb5YCYkiXPtugPNI8g--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10736.1.png",
-   "status": "NA",
+   "status": null,
    "slot": null
   },
   {
@@ -4683,22 +4741,6 @@
    "slot": null
   },
   {
-   "key": "469.p.10877",
-   "name": "Jake Burger",
-   "team": "TEX",
-   "pos": "1B",
-   "eligible": [
-    "1B",
-    "Util"
-   ],
-   "type": "B",
-   "mlb_id": 669394,
-   "mlb_team_id": 140,
-   "headshot": "https://s.yimg.com/iu/api/res/1.2/NNWnRMwj9cKm_xAopaXVkA--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03242026/10877.1.png",
-   "status": null,
-   "slot": null
-  },
-  {
    "key": "469.p.10879",
    "name": "Gavin Sheets",
    "team": "SD",
@@ -4863,6 +4905,22 @@
    "mlb_team_id": 112,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/JcEX06FNO9nEcZenu77F7Q--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03162026/10903.1.png",
    "status": "IL15",
+   "slot": null
+  },
+  {
+   "key": "469.p.10910",
+   "name": "Corbin Burnes",
+   "team": "AZ",
+   "pos": "SP",
+   "eligible": [
+    "SP",
+    "P"
+   ],
+   "type": "P",
+   "mlb_id": 669203,
+   "mlb_team_id": 109,
+   "headshot": "https://s.yimg.com/iu/api/res/1.2/EX_RHlgDQB3aCduDgzgIVw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/03032025/10910.png",
+   "status": null,
    "slot": null
   },
   {
@@ -6094,13 +6152,14 @@
    "pos": "OF",
    "eligible": [
     "OF",
-    "Util"
+    "Util",
+    "NA"
    ],
    "type": "B",
    "mlb_id": 656413,
    "mlb_team_id": 136,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/YwHgA1FCd0Teh8tzSLp8Gg--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/08042026/11289.1.png",
-   "status": null,
+   "status": "NA",
    "slot": null
   },
   {
@@ -6211,14 +6270,13 @@
    "pos": "2B",
    "eligible": [
     "2B",
-    "Util",
-    "NA"
+    "Util"
    ],
    "type": "B",
    "mlb_id": 663611,
-   "mlb_team_id": 108,
+   "mlb_team_id": 139,
    "headshot": "https://s.yimg.com/iu/api/res/1.2/bIXZNuTysc4vy52zkeMdEw--~C/YXBwaWQ9eXNwb3J0cztjaD0yMzM2O2NyPTE7Y3c9MTc5MDtkeD04NTc7ZHk9MDtmaT11bGNyb3A7aD02MDtxPTEwMDt3PTQ2/https://s.yimg.com/xe/i/us/sp/v/mlb_cutout/players_l/04162025/11306.png",
-   "status": "NA",
+   "status": null,
    "slot": null
   },
   {
@@ -6258,38 +6316,6 @@
  ],
  "transactions": [],
  "locks": {
-  "2026-09-08": {
-   "110": "2026-09-08T22:35:00Z",
-   "114": "2026-09-08T22:35:00Z",
-   "116": "2026-09-08T22:40:00Z",
-   "142": "2026-09-08T22:40:00Z",
-   "143": "2026-09-08T22:40:00Z",
-   "117": "2026-09-08T22:40:00Z",
-   "146": "2026-09-08T22:40:00Z",
-   "121": "2026-09-08T22:40:00Z",
-   "111": "2026-09-08T22:45:00Z",
-   "108": "2026-09-08T22:45:00Z",
-   "147": "2026-09-08T23:05:00Z",
-   "115": "2026-09-08T23:05:00Z",
-   "144": "2026-09-08T23:15:00Z",
-   "139": "2026-09-08T23:15:00Z",
-   "118": "2026-09-08T23:40:00Z",
-   "109": "2026-09-08T23:40:00Z",
-   "145": "2026-09-08T23:40:00Z",
-   "134": "2026-09-08T23:40:00Z",
-   "158": "2026-09-08T23:40:00Z",
-   "112": "2026-09-08T23:40:00Z",
-   "135": "2026-09-09T01:40:00Z",
-   "120": "2026-09-09T01:40:00Z",
-   "136": "2026-09-09T01:40:00Z",
-   "140": "2026-09-09T01:40:00Z",
-   "133": "2026-09-09T01:40:00Z",
-   "141": "2026-09-09T01:40:00Z",
-   "137": "2026-09-09T01:45:00Z",
-   "138": "2026-09-09T01:45:00Z",
-   "119": "2026-09-09T02:10:00Z",
-   "113": "2026-09-09T02:10:00Z"
-  },
   "2026-09-09": {
    "116": "2026-09-09T17:10:00Z",
    "142": "2026-09-09T17:10:00Z",
@@ -6429,6 +6455,616 @@
    "140": "2026-09-13T20:10:00Z",
    "137": "2026-09-13T23:20:00Z",
    "135": "2026-09-13T23:20:00Z"
+  }
+ },
+ "probables": {
+  "2026-09-07": {
+   "666200": {
+    "name": "Jes\u00fas Luzardo",
+    "opponent": "ATL",
+    "home": true,
+    "start_utc": "2026-09-07T17:05:00Z"
+   },
+   "656550": {
+    "name": "Grant Holmes",
+    "opponent": "PHI",
+    "home": false,
+    "start_utc": "2026-09-07T17:05:00Z"
+   },
+   "691587": {
+    "name": "Eury P\u00e9rez",
+    "opponent": "NYM",
+    "home": true,
+    "start_utc": "2026-09-07T17:10:00Z"
+   },
+   "804636": {
+    "name": "Jonah Tong",
+    "opponent": "MIA",
+    "home": false,
+    "start_utc": "2026-09-07T17:10:00Z"
+   },
+   "678394": {
+    "name": "Brayan Bello",
+    "opponent": "LAA",
+    "home": true,
+    "start_utc": "2026-09-07T17:35:00Z"
+   },
+   "680570": {
+    "name": "Grayson Rodriguez",
+    "opponent": "BOS",
+    "home": false,
+    "start_utc": "2026-09-07T17:35:00Z"
+   },
+   "669432": {
+    "name": "Trevor Rogers",
+    "opponent": "CLE",
+    "home": true,
+    "start_utc": "2026-09-07T17:35:00Z"
+   },
+   "676282": {
+    "name": "Joey Cantillo",
+    "opponent": "BAL",
+    "home": false,
+    "start_utc": "2026-09-07T17:35:00Z"
+   },
+   "702070": {
+    "name": "Noah Cameron",
+    "opponent": "AZ",
+    "home": true,
+    "start_utc": "2026-09-07T18:10:00Z"
+   },
+   "571882": {
+    "name": "Derek Law",
+    "opponent": "KC",
+    "home": false,
+    "start_utc": "2026-09-07T18:10:00Z"
+   },
+   "688107": {
+    "name": "Robert Gasser",
+    "opponent": "CHC",
+    "home": true,
+    "start_utc": "2026-09-07T18:10:00Z"
+   },
+   "571510": {
+    "name": "Matthew Boyd",
+    "opponent": "MIL",
+    "home": false,
+    "start_utc": "2026-09-07T18:10:00Z"
+   },
+   "675512": {
+    "name": "Troy Melton",
+    "opponent": "MIN",
+    "home": true,
+    "start_utc": "2026-09-07T19:10:00Z"
+   },
+   "657746": {
+    "name": "Joe Ryan",
+    "opponent": "DET",
+    "home": false,
+    "start_utc": "2026-09-07T19:10:00Z"
+   },
+   "601713": {
+    "name": "Nick Pivetta",
+    "opponent": "WSH",
+    "home": true,
+    "start_utc": "2026-09-07T21:10:00Z"
+   },
+   "663623": {
+    "name": "Jake Irvin",
+    "opponent": "SD",
+    "home": false,
+    "start_utc": "2026-09-07T21:10:00Z"
+   },
+   "657277": {
+    "name": "Logan Webb",
+    "opponent": "STL",
+    "home": true,
+    "start_utc": "2026-09-08T00:10:00Z"
+   },
+   "700241": {
+    "name": "Michael McGreevy",
+    "opponent": "SF",
+    "home": false,
+    "start_utc": "2026-09-08T00:10:00Z"
+   },
+   "686218": {
+    "name": "Emmet Sheehan",
+    "opponent": "CIN",
+    "home": true,
+    "start_utc": "2026-09-08T01:10:00Z"
+   },
+   "695505": {
+    "name": "Chase Burns",
+    "opponent": "LAD",
+    "home": false,
+    "start_utc": "2026-09-08T01:10:00Z"
+   },
+   "682052": {
+    "name": "Jacob Lopez",
+    "opponent": "TOR",
+    "home": true,
+    "start_utc": "2026-09-08T02:05:00Z"
+   },
+   "656302": {
+    "name": "Dylan Cease",
+    "opponent": "ATH",
+    "home": false,
+    "start_utc": "2026-09-08T02:05:00Z"
+   }
+  },
+  "2026-09-08": {
+   "687064": {
+    "name": "Brandon Young",
+    "opponent": "CLE",
+    "home": true,
+    "start_utc": "2026-09-08T22:35:00Z"
+   },
+   "676440": {
+    "name": "Tanner Bibee",
+    "opponent": "BAL",
+    "home": false,
+    "start_utc": "2026-09-08T22:35:00Z"
+   },
+   "623454": {
+    "name": "Drew Anderson",
+    "opponent": "MIN",
+    "home": true,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "665152": {
+    "name": "Dean Kremer",
+    "opponent": "DET",
+    "home": false,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "691725": {
+    "name": "Andrew Painter",
+    "opponent": "HOU",
+    "home": true,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "669713": {
+    "name": "Hayden Wesneski",
+    "opponent": "PHI",
+    "home": false,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "645261": {
+    "name": "Sandy Alcantara",
+    "opponent": "NYM",
+    "home": true,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "640455": {
+    "name": "Sean Manaea",
+    "opponent": "MIA",
+    "home": false,
+    "start_utc": "2026-09-08T22:40:00Z"
+   },
+   "663776": {
+    "name": "Patrick Sandoval",
+    "opponent": "LAA",
+    "home": true,
+    "start_utc": "2026-09-08T22:45:00Z"
+   },
+   "672282": {
+    "name": "Reid Detmers",
+    "opponent": "BOS",
+    "home": false,
+    "start_utc": "2026-09-08T22:45:00Z"
+   },
+   "693645": {
+    "name": "Cam Schlittler",
+    "opponent": "COL",
+    "home": true,
+    "start_utc": "2026-09-08T23:05:00Z"
+   },
+   "687312": {
+    "name": "Gabriel Hughes",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-08T23:05:00Z"
+   },
+   "700363": {
+    "name": "AJ Smith-Shawver",
+    "opponent": "TB",
+    "home": true,
+    "start_utc": "2026-09-08T23:15:00Z"
+   },
+   "642547": {
+    "name": "Freddy Peralta",
+    "opponent": "ATL",
+    "home": false,
+    "start_utc": "2026-09-08T23:15:00Z"
+   },
+   "608379": {
+    "name": "Michael Wacha",
+    "opponent": "AZ",
+    "home": true,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "669203": {
+    "name": "Corbin Burnes",
+    "opponent": "KC",
+    "home": false,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "680732": {
+    "name": "Sean Burke",
+    "opponent": "PIT",
+    "home": true,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "696149": {
+    "name": "Bubba Chandler",
+    "opponent": "CWS",
+    "home": false,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "694819": {
+    "name": "Jacob Misiorowski",
+    "opponent": "CHC",
+    "home": true,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "656849": {
+    "name": "David Peterson",
+    "opponent": "MIL",
+    "home": false,
+    "start_utc": "2026-09-08T23:40:00Z"
+   },
+   "663554": {
+    "name": "Casey Mize",
+    "opponent": "WSH",
+    "home": true,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "683000": {
+    "name": "Riley Cornelio",
+    "opponent": "SD",
+    "home": false,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "682243": {
+    "name": "Bryce Miller",
+    "opponent": "TEX",
+    "home": true,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "615698": {
+    "name": "Cal Quantrill",
+    "opponent": "SEA",
+    "home": false,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "678022": {
+    "name": "Jack Perkins",
+    "opponent": "TOR",
+    "home": true,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "667755": {
+    "name": "Jos\u00e9 Soriano",
+    "opponent": "ATH",
+    "home": false,
+    "start_utc": "2026-09-09T01:40:00Z"
+   },
+   "694738": {
+    "name": "Landen Roupp",
+    "opponent": "STL",
+    "home": true,
+    "start_utc": "2026-09-09T01:45:00Z"
+   },
+   "687273": {
+    "name": "Quinn Mathews",
+    "opponent": "SF",
+    "home": false,
+    "start_utc": "2026-09-09T01:45:00Z"
+   },
+   "669373": {
+    "name": "Tarik Skubal",
+    "opponent": "CIN",
+    "home": true,
+    "start_utc": "2026-09-09T02:10:00Z"
+   },
+   "666157": {
+    "name": "Nick Lodolo",
+    "opponent": "LAD",
+    "home": false,
+    "start_utc": "2026-09-09T02:10:00Z"
+   }
+  },
+  "2026-09-09": {
+   "672456": {
+    "name": "Keider Montero",
+    "opponent": "MIN",
+    "home": true,
+    "start_utc": "2026-09-09T17:10:00Z"
+   },
+   "805673": {
+    "name": "Zebby Matthews",
+    "opponent": "DET",
+    "home": false,
+    "start_utc": "2026-09-09T17:10:00Z"
+   },
+   "669620": {
+    "name": "Brady Basso",
+    "opponent": "TOR",
+    "home": true,
+    "start_utc": "2026-09-09T19:05:00Z"
+   },
+   "680755": {
+    "name": "Braydon Fisher",
+    "opponent": "ATH",
+    "home": false,
+    "start_utc": "2026-09-09T19:05:00Z"
+   },
+   "694918": {
+    "name": "Blade Tidwell",
+    "opponent": "STL",
+    "home": true,
+    "start_utc": "2026-09-09T19:45:00Z"
+   },
+   "669467": {
+    "name": "Andre Pallante",
+    "opponent": "SF",
+    "home": false,
+    "start_utc": "2026-09-09T19:45:00Z"
+   },
+   "621111": {
+    "name": "Walker Buehler",
+    "opponent": "WSH",
+    "home": true,
+    "start_utc": "2026-09-09T20:10:00Z"
+   },
+   "800600": {
+    "name": "Jackson Kent",
+    "opponent": "SD",
+    "home": false,
+    "start_utc": "2026-09-09T20:10:00Z"
+   },
+   "807739": {
+    "name": "Kade Anderson",
+    "opponent": "TEX",
+    "home": true,
+    "start_utc": "2026-09-09T20:10:00Z"
+   },
+   "674003": {
+    "name": "Cody Bradford",
+    "opponent": "SEA",
+    "home": false,
+    "start_utc": "2026-09-09T20:10:00Z"
+   },
+   "669358": {
+    "name": "Shane Baz",
+    "opponent": "CLE",
+    "home": true,
+    "start_utc": "2026-09-09T22:35:00Z"
+   },
+   "656492": {
+    "name": "Foster Griffin",
+    "opponent": "BAL",
+    "home": false,
+    "start_utc": "2026-09-09T22:35:00Z"
+   },
+   "650911": {
+    "name": "Cristopher S\u00e1nchez",
+    "opponent": "HOU",
+    "home": true,
+    "start_utc": "2026-09-09T22:40:00Z"
+   },
+   "686613": {
+    "name": "Hunter Brown",
+    "opponent": "PHI",
+    "home": false,
+    "start_utc": "2026-09-09T22:40:00Z"
+   },
+   "676083": {
+    "name": "Janson Junk",
+    "opponent": "NYM",
+    "home": true,
+    "start_utc": "2026-09-09T22:40:00Z"
+   },
+   "476594": {
+    "name": "Robert Stock",
+    "opponent": "MIA",
+    "home": false,
+    "start_utc": "2026-09-09T22:40:00Z"
+   },
+   "687562": {
+    "name": "Jake Bennett",
+    "opponent": "LAA",
+    "home": true,
+    "start_utc": "2026-09-09T22:45:00Z"
+   },
+   "696270": {
+    "name": "Ryan Johnson",
+    "opponent": "BOS",
+    "home": false,
+    "start_utc": "2026-09-09T22:45:00Z"
+   },
+   "701542": {
+    "name": "Will Warren",
+    "opponent": "COL",
+    "home": true,
+    "start_utc": "2026-09-09T23:05:00Z"
+   },
+   "608372": {
+    "name": "Tomoyuki Sugano",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-09T23:05:00Z"
+   },
+   "643377": {
+    "name": "Griffin Jax",
+    "opponent": "ATL",
+    "home": false,
+    "start_utc": "2026-09-09T23:15:00Z"
+   },
+   "663738": {
+    "name": "Daniel Lynch IV",
+    "opponent": "AZ",
+    "home": true,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "668678": {
+    "name": "Zac Gallen",
+    "opponent": "KC",
+    "home": false,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "663436": {
+    "name": "Davis Martin",
+    "opponent": "PIT",
+    "home": true,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "669199": {
+    "name": "Lake Bachar",
+    "opponent": "CWS",
+    "home": false,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "701656": {
+    "name": "Logan Henderson",
+    "opponent": "CHC",
+    "home": true,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "592332": {
+    "name": "Kevin Gausman",
+    "opponent": "MIL",
+    "home": false,
+    "start_utc": "2026-09-09T23:40:00Z"
+   },
+   "808967": {
+    "name": "Yoshinobu Yamamoto",
+    "opponent": "CIN",
+    "home": true,
+    "start_utc": "2026-09-10T02:10:00Z"
+   },
+   "695076": {
+    "name": "Rhett Lowder",
+    "opponent": "LAD",
+    "home": false,
+    "start_utc": "2026-09-10T02:10:00Z"
+   }
+  },
+  "2026-09-10": {
+   "527048": {
+    "name": "Mart\u00edn P\u00e9rez",
+    "opponent": "TB",
+    "home": true,
+    "start_utc": "2026-09-10T16:15:00Z"
+   },
+   "607259": {
+    "name": "Nick Martinez",
+    "opponent": "ATL",
+    "home": false,
+    "start_utc": "2026-09-10T16:15:00Z"
+   },
+   "554430": {
+    "name": "Zack Wheeler",
+    "opponent": "HOU",
+    "home": true,
+    "start_utc": "2026-09-10T17:05:00Z"
+   },
+   "669302": {
+    "name": "Logan Gilbert",
+    "opponent": "TEX",
+    "home": true,
+    "start_utc": "2026-09-10T20:10:00Z"
+   },
+   "594798": {
+    "name": "Jacob deGrom",
+    "opponent": "SEA",
+    "home": false,
+    "start_utc": "2026-09-10T20:10:00Z"
+   },
+   "608331": {
+    "name": "Max Fried",
+    "opponent": "COL",
+    "home": true,
+    "start_utc": "2026-09-10T23:05:00Z"
+   },
+   "663372": {
+    "name": "Ryan Feltner",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-10T23:05:00Z"
+   },
+   "683003": {
+    "name": "Jared Jones",
+    "opponent": "CWS",
+    "home": false,
+    "start_utc": "2026-09-10T23:40:00Z"
+   }
+  },
+  "2026-09-11": {
+   "690997": {
+    "name": "Nolan McLean",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-11T23:05:00Z"
+   },
+   "519242": {
+    "name": "Chris Sale",
+    "opponent": "PHI",
+    "home": true,
+    "start_utc": "2026-09-11T23:15:00Z"
+   },
+   "690986": {
+    "name": "Kyle Harrison",
+    "opponent": "CIN",
+    "home": true,
+    "start_utc": "2026-09-11T23:45:00Z"
+   },
+   "800048": {
+    "name": "Parker Messick",
+    "opponent": "MIN",
+    "home": false,
+    "start_utc": "2026-09-12T00:10:00Z"
+   },
+   "605488": {
+    "name": "Jeffrey Springs",
+    "opponent": "SEA",
+    "home": true,
+    "start_utc": "2026-09-12T01:40:00Z"
+   }
+  },
+  "2026-09-12": {
+   "804267": {
+    "name": "Zac Thornton",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-12T17:35:00Z"
+   },
+   "668909": {
+    "name": "Gavin Williams",
+    "opponent": "MIN",
+    "home": false,
+    "start_utc": "2026-09-12T20:10:00Z"
+   },
+   "695611": {
+    "name": "Gage Jump",
+    "opponent": "SEA",
+    "home": true,
+    "start_utc": "2026-09-13T01:40:00Z"
+   }
+  },
+  "2026-09-13": {
+   "681035": {
+    "name": "Christian Scott",
+    "opponent": "NYY",
+    "home": false,
+    "start_utc": "2026-09-13T17:35:00Z"
+   },
+   "682052": {
+    "name": "Jacob Lopez",
+    "opponent": "SEA",
+    "home": true,
+    "start_utc": "2026-09-13T20:05:00Z"
+   }
   }
  }
 }
