@@ -1139,6 +1139,13 @@
     return SRV.role === 'commish' || SRV.role === side;
   }
 
+  // The team a free agent's "+ Add" is for: a manager's own, otherwise the
+  // team picked in the Josh | Kevin switch.
+  function faSide() {
+    if (serverMode() && (SRV.role === 'a' || SRV.role === 'b')) return SRV.role;
+    return S.actingAs === 'b' ? 'b' : 'a';
+  }
+
   // Any sign-in may change either roster; without one the page is view-only.
   function canEdit(side) {
     if (serverMode()) return !!TOKEN;
@@ -1642,6 +1649,8 @@
     var host = $('lineups');
     host.innerHTML = '';
     if (serverMode() && TOKEN && (SRV.role === 'a' || SRV.role === 'b')) S.actingAs = SRV.role;
+    // One team on screen at a time; the switch picks which.
+    if (serverMode() && S.actingAs !== 'a' && S.actingAs !== 'b') S.actingAs = 'a';
     var sides = S.actingAs === 'commish' ? ['a', 'b'] : [S.actingAs];
     host.classList.toggle('single', sides.length === 1);
     $('luSub').textContent = sides.length === 1
@@ -2606,13 +2615,11 @@
         : (p.eligible || []).join(', ')));
 
       var btns = el('div', 'btn-row');
-      ['a', 'b'].forEach(function (side) {
+      // One button, for the team whose lineup is on screen.
+      [faSide()].forEach(function (side) {
         if (!canEdit(side) || !ownsRoster(side)) return;
         var left = maxAdds(side) - addsUsed(side);
         var b = el('button', 'btn ' + side, '+ Add');
-        if (serverMode() ? SRV.role === 'commish' : S.actingAs === 'commish') {
-          b.textContent = '+ ' + (D.sides[side].manager || 'Team ' + D.sides[side].team_id);
-        }
         b.disabled = held || left <= 0;
         b.title = held ? 'Dropped within the last ' + D.rules.drop_lockout_hours + ' hours'
           : (left <= 0 ? 'No adds left' : 'Add ' + p.name);
