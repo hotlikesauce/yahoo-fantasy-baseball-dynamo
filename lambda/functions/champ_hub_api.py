@@ -107,11 +107,11 @@ def meta():
 
 def authenticate(token):
     if not token:
-        raise Refused(401, 'Missing sign-in link.')
+        raise Refused(401, 'Enter your password to make changes.')
     digest = hashlib.sha256(token.encode('utf-8')).hexdigest()
     found = TABLE.get_item(Key={'pk': 'TOKEN#' + digest, 'sk': 'AUTH'}).get('Item')
     if not found:
-        raise Refused(401, 'That sign-in link is not valid.')
+        raise Refused(401, 'Wrong password.')
     return found['role']                                   # 'a', 'b' or 'commish'
 
 

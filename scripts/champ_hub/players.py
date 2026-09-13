@@ -15,8 +15,10 @@ from . import mlb_api
 SUFFIXES = {'jr', 'sr', 'ii', 'iii', 'iv', 'v'}
 
 # Yahoo abbreviations that differ from MLB's.
-ABBR_FIXES = {'CHW': 'CWS', 'WSH': 'WSN', 'SD': 'SDP', 'SF': 'SFG',
-              'TB': 'TBR', 'KC': 'KCR', 'AZ': 'ARI', 'ARZ': 'ARI'}
+# MLB's StatsAPI uses the same codes as Yahoo (SD, SF, TB, KC, WSH, AZ) - the
+# Baseball-Reference forms (SDP, SFG, ...) match nothing there. Only the White
+# Sox differ.
+ABBR_FIXES = {'CHW': 'CWS', 'ARZ': 'AZ'}
 
 # Yahoo carries Shohei Ohtani as two roster spots. They share one MLB id, so
 # each entry has to be told which half of his box score it owns.
@@ -87,7 +89,10 @@ def match(yahoo_players, index=None, abbr_ids=None, season=2026, use_search=True
         if pick is None and use_search:
             pick = _choose(search_player(yp.get('name')), want_id, allow_single=True)
         if pick:
-            matched.append(dict(yp, mlb_id=pick['mlb_id'], mlb_team_id=pick['team_id'],
+            # People-search hits (injured list, prospects) carry no current club;
+            # fall back to Yahoo's, or the lock engine would treat him as locked
+            # forever and he could never be moved or dropped.
+            matched.append(dict(yp, mlb_id=pick['mlb_id'], mlb_team_id=pick['team_id'] or want_id,
                                 stat_side=stat_side(yp.get('name'))))
         else:
             unmatched.append(dict(yp, mlb_candidates=len(index.get(key, []))))

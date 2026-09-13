@@ -228,6 +228,23 @@
   .modebadge.production { color: #86efac; border-color: #22c55e66; background: #22c55e14; }
   .whoami .srv-err { color: #fca5a5; }
 
+  /* The "Move X to:" menu that opens when a player is tapped. */
+  .movebar {
+    position: sticky; top: 52px; z-index: 5; background: #0b1324;
+    border-bottom: 1px solid #38bdf866; padding: 10px 12px;
+  }
+  .movebar .mvlab { font-size: .82em; color: #7dd3fc; font-weight: 600; margin-bottom: 7px; }
+  .movebar .mvopts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .movebar .btn { padding: 7px 11px; }
+  .movebar .ghostbtn { color: var(--faint); }
+
+  .pwform { display: flex; gap: 6px; align-items: center; }
+  .pwform input {
+    background: #0f172a; border: 1px solid var(--edge); color: var(--ink);
+    border-radius: 8px; padding: 8px 11px; font: inherit; font-size: .88em; width: 150px;
+  }
+  .pwform input:focus { outline: none; border-color: #38bdf8; }
+
   /* ── Roster controls ────────────────────────────────────────────────── */
   .lucard.mine { border-color: #38bdf866; }
   .lucard.theirs { opacity: .72; }
@@ -749,14 +766,47 @@
 
   // Never rejects: a failure is recorded, and the page falls back to view-only.
   function fetchState() {
-    return fetch(API_URL, { cache: 'no-store' })
-      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, body: j }; }); })
+    var url = API_URL + (TOKEN ? '?token=' + encodeURIComponent(TOKEN) : '');
+    return fetch(url, { cache: 'no-store' })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, body: j }; }); })
       .then(function (res) {
+        // A remembered password that no longer works: forget it and look as a visitor.
+        if (res.status === 401 && TOKEN) { setToken(''); return fetchState(); }
         if (!res.ok) throw new Error((res.body && res.body.reason) || 'server error');
         SRV = res.body;
         SRV_ERR = null;
       })
       .catch(function (e) { SRV_ERR = e.message || String(e); });
+  }
+
+  function setToken(t) {
+    TOKEN = t;
+    try {
+      if (t) localStorage.setItem('champ-hub-token', t);
+      else localStorage.removeItem('champ-hub-token');
+    } catch (e) { /* private mode: signed in for this visit only */ }
+  }
+
+  // Passwords are lower-cased so a phone's automatic capital letter still works.
+  function signIn(typed) {
+    var pw = String(typed || '').trim().toLowerCase();
+    if (!pw) return;
+    fetch(API_URL + '?token=' + encodeURIComponent(pw), { cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 401) throw new Error('wrong');
+        return r.json();
+      })
+      .then(function (body) {
+        setToken(pw);
+        SRV = body;
+        SRV_ERR = null;
+        render();
+        renderTx();
+        toast('Signed in');
+      })
+      .catch(function (e) {
+        toast(e.message === 'wrong' ? 'Wrong password.' : 'Could not reach the server.', true);
+      });
   }
 
   function newRequestId() {
@@ -768,7 +818,7 @@
   // server answer a retried tap without acting twice.
   function apiChange(payload, success) {
     if (BUSY) { toast('Still saving the last change…', true); return; }
-    if (!TOKEN) { toast('Open your sign-in link to make changes.', true); return; }
+    if (!TOKEN) { toast('Enter your password to make changes.', true); return; }
     BUSY = true;
     payload.token = TOKEN;
     payload.request_id = newRequestId();
@@ -1243,7 +1293,38 @@
     return start ? Date.parse(start) <= Date.now() : false;
   }
 
+  var MLB_ABBR = {};
+  fetch('https://statsapi.mlb.com/api/v1/teams?sportId=1')
+    .then(function (r) { return r.json(); })
+    .then(function (t) { (t.teams || []).forEach(function (x) { MLB_ABBR[x.id] = x.abbreviation; }); })
+    .catch(function () { /* opponent falls back to a generic label */ });
+
+  function liveGameText(g, teamId) {
+    var atHome = g.homeId === teamId;
+    var where = (atHome ? 'vs ' : '@ ') + (MLB_ABBR[atHome ? g.awayId : g.homeId] || 'opp');
+    if (/^(Postponed|Cancelled)/.test(g.detail)) return where + ' · ' + g.detail.split(':')[0];
+    var mine = +(atHome ? g.homeRuns : g.awayRuns) || 0;
+    var theirs = +(atHome ? g.awayRuns : g.homeRuns) || 0;
+    if (g.state === 'Final') {
+      return where + ' · ' + (mine > theirs ? 'W ' : (mine < theirs ? 'L ' : '')) + mine + '-' + theirs + ' · Final';
+    }
+    var when = /Delayed|Suspended/.test(g.detail) ? g.detail.split(':')[0]
+      : ((g.half ? g.half.slice(0, 3) + ' ' : '') + g.inning).trim();
+    return where + ' · ' + mine + '-' + theirs + (when ? ' · ' + when : '');
+  }
+
   function gameLabel(date, player) {
+    var g = player.mlb_team_id && DAYS[date] && DAYS[date].teamGames[player.mlb_team_id];
+    if (g) {
+      // Under way or over: opponent and score. Not yet started - scheduled,
+      // pre-game, warmup or a delayed start - the first-pitch time instead.
+      var underway = g.state === 'Final' || (g.state === 'Live' && !/^Warmup/.test(g.detail));
+      if (underway) return liveGameText(g, player.mlb_team_id);
+      var atHome = g.homeId === player.mlb_team_id;
+      return (atHome ? 'vs ' : '@ ') + (MLB_ABBR[atHome ? g.awayId : g.homeId] || 'opp') +
+        ' · ' + clockOf(g.start) + (/Delayed/.test(g.detail) ? ' · delayed' : '');
+    }
+    if (player.mlb_team_id && DAYS[date] && DAYS[date].updated) return 'No game';
     var byTeam = (D.locks || {})[date];
     if (!byTeam || !player.mlb_team_id) return '—';
     var start = byTeam[String(player.mlb_team_id)];
@@ -1376,6 +1457,33 @@
     rosterOf(side).forEach(function (p) {
       if (!taken[p.key]) card.appendChild(slotRow(side, 'BN', p, mine, idx++, haveStats));
     });
+
+    // Tapping a player opens a plain menu of every legal destination, so moving
+    // someone never depends on knowing to drag or to tap a highlighted row.
+    if (moving && moving.side === side) {
+      var mover = moving.player;
+      var bar = el('div', 'movebar');
+      bar.appendChild(el('div', 'mvlab', 'Move ' + mover.name + ' to:'));
+      var opts = el('div', 'mvopts');
+      Array.prototype.forEach.call(card.querySelectorAll('.slot.tgt'), function (r) {
+        if (r.dataset.pos === 'BN') return;            // the Bench button covers these
+        var nm = r.querySelector('.nmline');
+        var who = (nm && !r.classList.contains('empty')) ? nm.childNodes[0].textContent.trim() : '';
+        var b = el('button', 'btn', r.dataset.pos + (who ? ' (replace ' + who + ')' : ''));
+        b.addEventListener('click', function () { r.click(); });
+        opts.appendChild(b);
+      });
+      if ((lineup[mover.key] || 'BN') !== 'BN') {
+        var benchBtn = el('button', 'btn', 'Bench');
+        benchBtn.addEventListener('click', function () { dropOnto(side, mover, 'BN', null); });
+        opts.appendChild(benchBtn);
+      }
+      var cancel = el('button', 'btn ghostbtn', 'Cancel');
+      cancel.addEventListener('click', function () { moving = null; renderLineups(); });
+      opts.appendChild(cancel);
+      bar.appendChild(opts);
+      card.insertBefore(bar, card.children[1]);
+    }
     return card;
   }
 
@@ -1448,9 +1556,6 @@
       if (isAdded(side, player.key)) nm.appendChild(el('span', 'flag', 'ADDED'));
       mid.appendChild(nm);
       var meta = (player.team || '') + ' · ' + (player.pos || '') + ' · ' + gameLabel(day, player);
-      if (start && start.opponent) {
-        meta += ' · ' + (start.home ? 'vs ' : '@ ') + start.opponent;
-      }
       mid.appendChild(el('div', 'pmeta', meta));
     } else {
       mid.appendChild(el('div', 'nmline empty-name', 'Empty'));
@@ -1465,6 +1570,15 @@
     var acts = el('div', 'acts');
     var locked = player ? isLocked(side, day, player) : (day < todayISO());
     if (locked) row.classList.add('lockd');
+
+    if (player && !(mine && !locked) && !(moving && moving.side === side)) {
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('button')) return;
+        toast(!mine ? 'Enter your password to change lineups.'
+          : (day < todayISO() ? 'That day is over - lineups are final.'
+            : player.name + ' is locked - his game has started.'), true);
+      });
+    }
 
     if (player && mine && !locked) {
       row.classList.add('grabbable');
@@ -2065,9 +2179,30 @@
           'Live rosters unavailable (' + (SRV_ERR || 'no answer') + ') — view only'));
         return;
       }
-      host.appendChild(el('div', 'lab', TOKEN
-        ? 'Signed in — you can change either roster'
-        : 'View only — open your sign-in link to make changes'));
+      if (TOKEN) {
+        var name = (SRV.role === 'a' || SRV.role === 'b') ? SRV.teams[SRV.role].manager
+          : (SRV.role === 'commish' ? 'Commissioner' : 'signed in');
+        host.appendChild(el('div', 'lab', 'Signed in as ' + name));
+        var signOut = el('button', 'linkbtn', 'Sign out');
+        signOut.addEventListener('click', function () {
+          setToken('');
+          fetchState().then(function () { render(); renderTx(); });
+        });
+        host.appendChild(signOut);
+      } else {
+        var form = el('form', 'pwform');
+        var input = el('input');
+        input.type = 'password';
+        input.placeholder = 'Password';
+        input.autocomplete = 'current-password';
+        input.setAttribute('autocapitalize', 'none');
+        var go = el('button', 'btn primary', 'Sign in');
+        go.type = 'submit';
+        form.appendChild(input);
+        form.appendChild(go);
+        form.addEventListener('submit', function (e) { e.preventDefault(); signIn(input.value); });
+        host.appendChild(form);
+      }
       host.appendChild(el('div', 'modebadge ' + (SRV.mode || ''),
         SRV.mode === 'production' ? 'LIVE · WEEK 2 COUNTS' : 'PLAYGROUND · RESETS NIGHTLY'));
       return;
@@ -2227,7 +2362,9 @@
   // player: it would tear the row out from under their finger mid-drag. Defer
   // the repaint until their hands are empty.
   function safeRender() {
-    if (drag || moving) { pendingRender = true; return; }
+    var typing = document.activeElement && document.activeElement.closest &&
+      document.activeElement.closest('.pwform');
+    if (drag || moving || typing) { pendingRender = true; return; }
     pendingRender = false;
     render();
   }
@@ -2343,7 +2480,7 @@
 
   function dayState(date) {
     return DAYS[date] || (DAYS[date] = {
-      games: {}, inProgress: 0, updated: null, error: null, loading: false, done: false
+      games: {}, teamGames: {}, inProgress: 0, updated: null, error: null, loading: false, done: false
     });
   }
 
@@ -2364,6 +2501,20 @@
             var away = ((g.teams || {}).away || {}).team || {};
             if (!mine[home.id] && !mine[away.id]) return;
             var ls = g.linescore || {};
+            var info = {
+              state: (g.status || {}).abstractGameState,
+              detail: (g.status || {}).detailedState || '',
+              homeId: home.id, awayId: away.id,
+              homeRuns: ((ls.teams || {}).home || {}).runs,
+              awayRuns: ((ls.teams || {}).away || {}).runs,
+              half: ls.inningHalf || ls.inningState || '', inning: ls.currentInningOrdinal || '',
+              start: g.gameDate
+            };
+            // On a doubleheader, never let a game still to come hide one in progress.
+            [home.id, away.id].forEach(function (tid) {
+              var prev = st.teamGames[tid];
+              if (!prev || prev.state !== 'Live' || info.state === 'Live') st.teamGames[tid] = info;
+            });
             games.push({
               pk: g.gamePk,
               state: (g.status || {}).abstractGameState,
