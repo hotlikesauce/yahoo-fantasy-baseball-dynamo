@@ -6,46 +6,66 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Trade Grades</title>
+<!-- head-meta -->
+<meta name="description" content="Grades for every completed 2026 trade, based on current player rankings and draft pick value.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Trade Grades">
+<meta property="og:description" content="Grades for every completed 2026 trade, based on current player rankings and draft pick value.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/trade_grades_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
   .trades-filter { margin-bottom: 20px; }
   .trades-filter select {
-    padding: 8px 14px; border-radius: 8px; background: #1e293b;
-    border: 1px solid #334155; color: #e2e8f0; font-size: 0.9em; cursor: pointer;
+    padding: 8px 12px; background: #0d0d2b; border: 0;
+    color: #f4f4f4; font-size: 20px; cursor: pointer;
+    box-shadow: inset 0 0 0 4px #000, inset 6px 6px 0 rgba(0,0,0,0.35);
   }
-  .trades-filter select:focus { outline: none; border-color: #3b82f6; }
+  .trades-filter select:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
   .trade-card {
-    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
-    padding: 20px; margin-bottom: 16px;
+    position: relative; background: #1f2160; border: 0;
+    padding: 20px; margin: 4px 4px 24px;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
   }
-  .trade-date { font-size: 0.78em; color: #475569; margin-bottom: 14px; }
+  .trade-date { font-family: var(--ui); font-size: 9px; line-height: 1.6; color: #9a9ac8; margin-bottom: 14px; }
   .trade-sides {
     display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0; align-items: stretch;
   }
   .trade-side { min-width: 0; }
   .trade-side-label {
-    font-size: 0.78em; color: #64748b; text-transform: uppercase;
-    letter-spacing: 0.06em; margin-bottom: 6px;
+    font-family: var(--ui); font-size: 8px; line-height: 1.6; color: #6e6ea8; text-transform: uppercase;
+    margin-bottom: 8px;
   }
   .trade-team-row {
     display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
   }
-  .trade-team-name { font-size: 0.95em; font-weight: 600; color: #e2e8f0; }
+  .trade-team-name { font-size: 1.05em; color: #f4f4f4; min-width: 0; overflow-wrap: anywhere; }
   .grade-badge {
-    font-size: 1.1em; font-weight: 800; padding: 2px 10px;
-    border-radius: 6px; letter-spacing: 0.02em; flex-shrink: 0;
+    font-family: var(--ui); font-size: 14px; line-height: 1; padding: 7px 8px 6px;
+    flex-shrink: 0; box-shadow: 3px 3px 0 #000;
   }
-  .adv-pct { font-size: 0.82em; font-weight: 700; flex-shrink: 0; }
-  .trade-value { font-size: 0.78em; color: #64748b; margin-left: auto; }
-  .trade-asset { padding: 4px 0; font-size: 0.85em; color: #cbd5e1; }
-  .trade-asset .asset-name { font-weight: 500; }
-  .trade-asset .asset-meta { color: #64748b; font-size: 0.82em; margin-left: 4px; }
-  .trade-asset .asset-rank { color: #94a3b8; }
-  .trade-asset .asset-adp  { color: #64748b; }
+  .adv-pct { font-family: var(--ui); font-size: 9px; flex-shrink: 0; }
+  .trade-value { font-size: 0.9em; color: #9a9ac8; margin-left: auto; flex-shrink: 0; }
+  .trade-asset { padding: 4px 0; font-size: 0.95em; color: #c8c8e8; border-bottom: 2px dashed rgba(0,0,0,0.45); }
+  .trade-asset:last-child { border-bottom: 0; }
+  .trade-asset .asset-meta { color: #6e6ea8; font-size: 0.9em; margin-left: 4px; }
+  .trade-asset .asset-rank { color: #9a9ac8; }
+  .trade-asset .asset-adp  { color: #6e6ea8; }
   .trade-arrow-col {
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.4em; color: #334155;
+    font-size: 28px; color: #ffd23f; text-shadow: 2px 2px 0 #000;
   }
-  .no-trades { color: #64748b; text-align: center; padding: 40px 0; font-size: 0.9em; }
+  .no-trades { color: #9a9ac8; text-align: center; padding: 40px 0; font-family: var(--ui); font-size: 10px; line-height: 1.8; text-transform: uppercase; }
+  .loading { color: #9a9ac8; text-align: center; padding: 40px 0; font-family: var(--ui); font-size: 10px; text-transform: uppercase; }
+  #generated-at { color: #9a9ac8; font-size: 0.9em; }
   @media (max-width: 700px) {
     .trade-sides { grid-template-columns: 1fr; }
     .trade-arrow-col { transform: rotate(90deg); padding: 8px 0; }
@@ -58,9 +78,9 @@
 <div class="container">
   <h1>Summertime Sadness Fantasy Baseball</h1>
   <p class="page-subtitle">2026 Trade Grades</p>
-  <p class="section-desc" style="color:#64748b;margin-bottom:8px;">
+  <p class="section-desc" style="margin-bottom:8px;">
     All completed trades graded using current player rankings + draft pick values (exponential decay — same scale as Draft Capital page).
-    Grades: <span style="color:#22c55e">A+</span> = you cleaned up &nbsp;&bull;&nbsp; <span style="color:#fbbf24">C</span> = even &nbsp;&bull;&nbsp; <span style="color:#ef4444">F</span> = you got robbed.
+    Grades: <span style="color:#2ecc40">A+</span> = received far more value than sent &nbsp;&bull;&nbsp; <span style="color:#ffe066">C</span> = even &nbsp;&bull;&nbsp; <span style="color:#ff3b3b">F</span> = received far less value than sent.
   </p>
   <div id="generated-at" style="margin-bottom:16px;"></div>
 
@@ -94,7 +114,7 @@ async function loadTradeGrades() {
     buildTeamFilter(ALL_TRADES);
     renderTrades(ALL_TRADES);
   } catch (e) {
-    container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:32px 0">Failed to load trade data: ' + e.message + '</p>';
+    container.innerHTML = '<p style="color:#ff3b3b;text-align:center;padding:32px 0">Failed to load trade data: ' + e.message + '</p>';
   }
 }
 
@@ -140,7 +160,7 @@ function renderTradeCard(trade) {
     <div class="trade-side">
       <div class="trade-side-label">Receives</div>
       <div class="trade-team-row">
-        <span class="grade-badge" style="background:${trader.grade_color}22;color:${trader.grade_color};border:1px solid ${trader.grade_color}55">${trader.grade}</span>
+        <span class="grade-badge" style="background:${trader.grade_color}22;color:${trader.grade_color};border:2px solid ${trader.grade_color}">${trader.grade}</span>
         <span class="adv-pct" style="color:${trader.grade_color}">${trader.advantage_pct > 0 ? '+' : ''}${trader.advantage_pct}%</span>
         <span class="trade-team-name">${trader.name}</span>
         <span class="trade-value">${trader.value} pts</span>
@@ -151,7 +171,7 @@ function renderTradeCard(trade) {
     <div class="trade-side">
       <div class="trade-side-label">Receives</div>
       <div class="trade-team-row">
-        <span class="grade-badge" style="background:${tradee.grade_color}22;color:${tradee.grade_color};border:1px solid ${tradee.grade_color}55">${tradee.grade}</span>
+        <span class="grade-badge" style="background:${tradee.grade_color}22;color:${tradee.grade_color};border:2px solid ${tradee.grade_color}">${tradee.grade}</span>
         <span class="adv-pct" style="color:${tradee.grade_color}">${tradee.advantage_pct > 0 ? '+' : ''}${tradee.advantage_pct}%</span>
         <span class="trade-team-name">${tradee.name}</span>
         <span class="trade-value">${tradee.value} pts</span>
@@ -172,7 +192,7 @@ function renderAssets(players, picks) {
       <span class="asset-meta">${p.pos || ''}</span>
       <span class="asset-meta asset-rank">&nbsp;Rank ${rankStr}</span>
       ${adpStr ? `<span class="asset-meta asset-adp">&nbsp;&bull; ${adpStr}</span>` : ''}
-      ${p.sp_boosted ? `<span class="asset-meta" style="color:#a78bfa;margin-left:4px">SP adj #${p.adj_rank}</span>` : ''}
+      ${p.sp_boosted ? `<span class="asset-meta" style="color:#a98cff;margin-left:4px">SP adj #${p.adj_rank}</span>` : ''}
     </div>`;
   });
   picks.forEach(pk => {

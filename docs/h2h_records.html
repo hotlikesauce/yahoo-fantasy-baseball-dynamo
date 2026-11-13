@@ -5,53 +5,57 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
   <link rel="stylesheet" href="common.css">
   <title>Summertime Sadness - H2H Records</title>
+  <!-- head-meta -->
+  <meta name="description" content="Every manager&#x27;s all-time head-to-head record against every other manager.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+  <link rel="manifest" href="manifest.json">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+  <meta property="og:title" content="Summertime Sadness - H2H Records">
+  <meta property="og:description" content="Every manager&#x27;s all-time head-to-head record against every other manager.">
+  <meta property="og:url" content="https://summertimesadnessfantasy.com/h2h_records.html">
+  <meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <!-- /head-meta -->
   <style>
-    .subtitle { color: #94a3b8; font-size: 0.95em; margin-bottom: 24px; }
+    .subtitle { color: #9a9ac8; font-size: 0.95em; margin-bottom: 24px; }
 
     .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-bar label { color: #94a3b8; font-size: 0.9em; }
-    .filter-btn {
-      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
-      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
-      transition: all 0.15s;
+    .filter-bar label { color: #9a9ac8; font-family: var(--ui); font-size: 9px; text-transform: uppercase; }
+    .filter-btn, .view-btn, .rivalry-view-btn {
+      font-family: var(--ui); font-size: 9px; line-height: 1.4;
+      background: #2b2e7a; color: #f4f4f4; border: 0;
+      padding: 9px 12px; cursor: pointer;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18);
     }
-    .filter-btn:hover { color: #e2e8f0; border-color: #475569; }
-    .filter-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-
-    .view-btn {
-      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
-      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
-      transition: all 0.15s;
+    .filter-btn:hover, .view-btn:hover, .rivalry-view-btn:hover { background: #3b6bff; }
+    .filter-btn.active, .view-btn.active, .rivalry-view-btn.active {
+      background: #1f9e33; color: #fff; box-shadow: inset 3px 3px 0 rgba(0,0,0,.45);
     }
-    .view-btn:hover { color: #e2e8f0; border-color: #475569; }
-    .view-btn.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
-
-    .rivalry-view-btn {
-      background: #1e293b; color: #94a3b8; border: 1px solid #334155;
-      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88em;
-      transition: all 0.15s;
-    }
-    .rivalry-view-btn:hover { color: #e2e8f0; border-color: #475569; }
-    .rivalry-view-btn.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
+    .sort-hint { color: #6e6ea8; font-size: 0.82em; margin-left: 16px; }
 
     .mgr-link { color: inherit; text-decoration: none; }
-    .mgr-link:hover { text-decoration: underline; color: #38bdf8; }
+    .mgr-link:hover { text-decoration: underline; color: #5ce1ff; }
 
     .matrix-wrap { overflow-x: auto; margin-bottom: 40px; }
     .matrix { border-collapse: collapse; font-size: 0.82em; white-space: nowrap; }
-    .matrix th, .matrix td { padding: 7px 10px; text-align: center; border: 1px solid #1e293b; }
-    .matrix th { background: #0f172a; color: #94a3b8; font-weight: 600; position: sticky; top: 0; }
+    .matrix th, .matrix td { padding: 7px 10px; text-align: center; border: 2px solid #000; }
+    .matrix th { background: #000; color: #9a9ac8; position: sticky; top: 0; }
     .matrix th.team-col { text-align: left; min-width: 100px; }
-    .matrix td.team-cell { text-align: left; font-weight: 600; color: #e2e8f0; background: #0f172a; position: sticky; left: 0; z-index: 1; }
-    .matrix td.self { background: #1e293b; color: #334155; }
-    .matrix td.winning { background: #22c55e15; color: #4ade80; }
-    .matrix td.losing { background: #ef444415; color: #f87171; }
-    .matrix td.even { background: #eab30815; color: #fbbf24; }
-    .matrix td.none { color: #475569; }
+    .matrix td.team-cell { text-align: left; color: #f4f4f4; background: #0d0d2b; position: sticky; left: 0; z-index: 1; }
+    .matrix td.self { background: #1f2160; color: #2b2e7a; }
+    .matrix td.winning { background: #2ecc4015; color: #5dff6a; }
+    .matrix td.losing { background: #ff3b3b15; color: #ff6b6b; }
+    .matrix td.even { background: #ffd23f15; color: #ffe066; }
+    .matrix td.none { color: #5c5c94; }
     .matrix .record-line { font-size: 0.95em; }
 
-    .hot-val { color: #4ade80; font-weight: 600; }
-    .close-margin { color: #fbbf24; font-weight: 600; }
+    .hot-val { color: #5dff6a; }
+    .close-margin { color: #ffe066; }
   </style>
 </head>
 <body>
@@ -87,7 +91,7 @@
       <button class="filter-btn" data-year="2009">2009</button>
       <button class="filter-btn" data-year="2008">2008</button>
       <button class="filter-btn" data-year="2007">2007</button>
-      <span style="color:#475569;font-size:0.82em;margin-left:16px">Click Manager or Total header to sort</span>
+      <span class="sort-hint">Click Manager or Total header to sort</span>
     </div>
     <div class="filter-bar">
       <label>View:</label>
@@ -97,7 +101,7 @@
     </div>
 
     <div class="matrix-wrap">
-      <table class="matrix" id="h2hMatrix">
+      <table class="matrix" id="h2hMatrix" data-nosort>
         <thead id="matrixHead"></thead>
         <tbody id="matrixBody"></tbody>
       </table>
@@ -131,7 +135,7 @@
   </div>
 
   <script>
-    const teams = [{"id": 0, "mgr": "Austin", "team": "Moniebol \ud83d\udc33", "color": "#ef4444"}, {"id": 1, "mgr": "Bryant", "team": "Football Szn", "color": "#f97316"}, {"id": 2, "mgr": "Eric", "team": "Ian Cumsler", "color": "#eab308"}, {"id": 3, "mgr": "Greg", "team": "OG9\ufe0f\u20e3", "color": "#22c55e"}, {"id": 4, "mgr": "James", "team": "Tegridy", "color": "#14b8a6"}, {"id": 5, "mgr": "Josh", "team": "Grand Salami Time", "color": "#3b82f6"}, {"id": 6, "mgr": "Kevin", "team": "The Rosterbation Station", "color": "#8b5cf6"}, {"id": 7, "mgr": "Kurtis", "team": "Getting Plowed Again.", "color": "#ec4899"}, {"id": 8, "mgr": "Mark", "team": "Hatfield Hurlers", "color": "#06b6d4"}, {"id": 9, "mgr": "Mike", "team": "\u00af\\\\_(\u30c4)_/\u00af", "color": "#f59e0b"}, {"id": 10, "mgr": "Mikey", "team": "@DoodlesAnalytics", "color": "#10b981"}, {"id": 11, "mgr": "Taylor", "team": "Serafini Hit Squad", "color": "#a855f7"}];
+    const teams = [{"id": 0, "mgr": "Austin", "team": "Moniebol \ud83d\udc33", "color": "#ff3b3b"}, {"id": 1, "mgr": "Bryant", "team": "Football Szn", "color": "#ff8c1a"}, {"id": 2, "mgr": "Eric", "team": "Ian Cumsler", "color": "#ffd23f"}, {"id": 3, "mgr": "Greg", "team": "OG9\ufe0f\u20e3", "color": "#2ecc40"}, {"id": 4, "mgr": "James", "team": "Tegridy", "color": "#1ee8b0"}, {"id": 5, "mgr": "Josh", "team": "Grand Salami Time", "color": "#3b6bff"}, {"id": 6, "mgr": "Kevin", "team": "The Rosterbation Station", "color": "#8a5cff"}, {"id": 7, "mgr": "Kurtis", "team": "Getting Plowed Again.", "color": "#ff5ec8"}, {"id": 8, "mgr": "Mark", "team": "Hatfield Hurlers", "color": "#3bd6ff"}, {"id": 9, "mgr": "Mike", "team": "\u00af\\\\_(\u30c4)_/\u00af", "color": "#ffa41b"}, {"id": 10, "mgr": "Mikey", "team": "@DoodlesAnalytics", "color": "#19d27f"}, {"id": 11, "mgr": "Taylor", "team": "Serafini Hit Squad", "color": "#c45cff"}];
     const yearNames = {"2007": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2008": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2009": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2010": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2011": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2012": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2013": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2014": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2015": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2016": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2017": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2018": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2019": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2021": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2022": {"0": "Austin", "1": "Bryant", "2": "Eric", "3": "Greg", "4": "James", "5": "Josh", "6": "Kevin", "7": "Kurtis", "8": "Mark", "9": "Mike", "10": "Mikey", "11": "Taylor"}, "2023": {"0": "Moniebol \ud83d\udc33 (DEFCON 2)", "1": "Bry Bry\u2019s Bible Bonkers", "2": "Ian Cumsler", "3": "[z-ro] i\u2019d really like to\u2026TY!", "4": "Camp Lejeune", "5": "The Dollar General", "6": "The Rosterbation Station", "7": "WanderingAroundTheMiddleSchool", "8": "Mark", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "scoopski potatoes", "11": "McLainBang"}, "2024": {"0": "Moniebol (100gb goal)\ud83d\udc33", "1": "#RyderSources", "2": "Ian Cumsler", "3": "OGglass-z13", "4": "Hmmm", "5": "Grand Salami Time", "6": "The Rosterbation Station", "7": "Ready to Plow", "8": "Hatfield Hurlers", "9": "\u00af\\\\_(\u30c4)_/\u00af\ud83c\udfc6", "10": "BTHO notre dame", "11": "\u00af\\\\_(\u30c4)_/\u00af \u2620\ufe0f"}, "2025": {"0": "Moniebol \ud83d\udc33", "1": "Football Szn", "2": "Ian Cumsler", "3": "OG9\ufe0f\u20e3", "4": "Tegridy", "5": "Grand Salami Time", "6": "The Rosterbation Station", "7": "Getting Plowed Again.", "8": "Hatfield Hurlers", "9": "\u00af\\\\_(\u30c4)_/\u00af", "10": "@DoodlesAnalytics", "11": "Serafini Hit Squad"}};
 
     const D={};
@@ -3086,7 +3090,7 @@ m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
         const a = arrow(vsKey);
         hdr += `<th title="${teamName}" data-msort="${vsKey}" style="cursor:pointer">${t.mgr}${a}</th>`;
       }
-      hdr += `<th data-msort="total" style="border-left:2px solid #3b82f6;cursor:pointer">Total${arrow('total')}</th></tr>`;
+      hdr += `<th data-msort="total" style="border-left:2px solid #3b6bff;cursor:pointer">Total${arrow('total')}</th></tr>`;
       head.innerHTML = hdr;
 
       let rows = '';
@@ -3120,13 +3124,13 @@ m[11][11]={w:"-",l:"-",t:"-",sf:0,sa:0,g:0,c:'self'};
         if (view === 'cumulative') {
           const tsfStr = tA.tsf % 1 === 0 ? tA.tsf.toFixed(0) : tA.tsf.toFixed(1);
           const tsaStr = tA.tsa % 1 === 0 ? tA.tsa.toFixed(0) : tA.tsa.toFixed(1);
-          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tsfStr}-${tsaStr}</td>`;
+          rows += `<td style="border-left:2px solid #3b6bff;color:#f4f4f4">${tsfStr}-${tsaStr}</td>`;
         } else if (view === 'average') {
           const avgF = tA.tg > 0 ? (tA.tsf / tA.tg) : 0;
           const avgA = tA.tg > 0 ? (tA.tsa / tA.tg) : 0;
-          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${avgF.toFixed(1)}-${avgA.toFixed(1)}</td>`;
+          rows += `<td style="border-left:2px solid #3b6bff;color:#f4f4f4">${avgF.toFixed(1)}-${avgA.toFixed(1)}</td>`;
         } else {
-          rows += `<td style="border-left:2px solid #3b82f6;font-weight:600;color:#e2e8f0">${tA.tw}-${tA.tl}${tA.tt > 0 ? '-' + tA.tt : ''} <span style="color:#64748b;font-weight:400">(${(tA.pct * 100).toFixed(0)}%)</span></td>`;
+          rows += `<td style="border-left:2px solid #3b6bff;color:#f4f4f4">${tA.tw}-${tA.tl}${tA.tt > 0 ? '-' + tA.tt : ''} <span style="color:#6e6ea8">(${(tA.pct * 100).toFixed(0)}%)</span></td>`;
         }
         rows += '</tr>';
       }

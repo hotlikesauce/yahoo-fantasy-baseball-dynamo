@@ -6,30 +6,91 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - All-Time Records</title>
+<!-- head-meta -->
+<meta name="description" content="The greatest seasons in league history, champions by year and career averages since 2007.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - All-Time Records">
+<meta property="og:description" content="The greatest seasons in league history, champions by year and career averages since 2007.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/all_time_rankings.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
-  .silver { color: #cbd5e1; }
-  .bronze { color: #d97706; }
-  .year { color: #a78bfa; font-weight: 600; }
-  .manager { color: #94a3b8; }
-  .champ { color: #fbbf24; }
-  .titles-count { font-weight: 700; color: #fbbf24; font-size: 1.1em; }
+  .silver { color: #c8c8e8; }
+  .bronze { color: #e08a00; }
+  .year { color: #a98cff; font-weight: 600; }
+  .manager { color: #9a9ac8; }
+  .champ { color: #ffe066; }
+  .titles-count { font-weight: 700; color: #ffe066; font-size: 1.1em; }
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 32px; }
-  .stat-card { background: #1e293b; border-radius: 12px; padding: 20px; }
-  .stat-card h4 { color: #38bdf8; margin-bottom: 12px; font-size: 1.1em; }
+  .stat-card { background: #1f2160; border-radius: 12px; padding: 20px; }
+  .stat-card h4 { color: #5ce1ff; margin-bottom: 12px; font-size: 1.1em; }
   .bar-container { margin: 6px 0; display: flex; align-items: center; gap: 8px; }
-  .bar-label { width: 90px; font-size: 0.85em; color: #cbd5e1; text-align: right; }
-  .bar { height: 22px; background: linear-gradient(90deg, #3b82f6, #38bdf8); border-radius: 4px; min-width: 2px; }
-  .bar-value { font-size: 0.8em; color: #94a3b8; min-width: 30px; }
+  .bar-label { width: 90px; font-size: 0.85em; color: #c8c8e8; text-align: right; }
+  .bar { height: 22px; background: linear-gradient(90deg, #3b6bff, #5ce1ff); border-radius: 4px; min-width: 2px; }
+  .bar-value { font-size: 0.8em; color: #9a9ac8; min-width: 30px; }
   .mgr-link { color: inherit; text-decoration: none; }
-  .mgr-link:hover { text-decoration: underline; color: #38bdf8; }
+  .mgr-link:hover { text-decoration: underline; color: #5ce1ff; }
+
+  .records-hero { text-align: center; padding: 40px 16px 8px; }
+  .records-hero h1 {
+    font-family: var(--ui);
+    font-size: clamp(18px, 4vw, 40px);
+    color: var(--gold);
+    text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 var(--red), 9px 9px 0 var(--edge);
+    line-height: 1.3;
+  }
+  .records-hero p { margin-top: 18px; font-family: var(--ui); font-size: 10px; color: var(--gray); letter-spacing: 2px; }
+  .records-hero .sprites { display: flex; justify-content: center; gap: 14px; margin-bottom: 22px; }
+  /* The #1 all-time season blinks like a fresh high score. */
+  tr.new-hi td { color: var(--gold); }
+  tr.new-hi .place { animation: blink 0.8s steps(1) infinite; }
+  .tag { font-family: var(--ui); font-size: 7px; color: var(--edge); background: var(--gold); padding: 3px 4px; margin-left: 8px; vertical-align: 3px; }
+  .cup-inline { display: inline-block; vertical-align: -3px; margin-left: 6px; }
+  .mgr-link { color: inherit; text-decoration: none; }
+  .mgr-link:hover { color: var(--gold); text-decoration: underline; }
 </style>
 </head>
 <body>
 <div id="nav"></div>
 <script src="nav.js"></script>
-<div class="container">
-<h1>Summertime Sadness Fantasy Baseball</h1>
-<p class="page-subtitle">All-Time Records (2007-2025)</p>
+<div class="records-hero">
+  <div class="sprites"><i data-sprite="trophy"></i><i data-sprite="ball"></i><i data-sprite="trophy"></i></div>
+  <h1>ALL-TIME RECORDS</h1>
+  <p id="span">2007 &ndash; PRESENT</p>
+</div>
+
+<main class="wrap">
+  <h2 class="lvl-banner" id="scores">HIGH SCORES <span class="sub">TOP 20 SEASONS</span></h2>
+  <section class="px dark">
+    <div class="panel-body scroll" id="top20" style="padding-top:16px"><p class="status loading">LOADING...</p></div>
+  </section>
+
+  <h2 class="lvl-banner" id="hall">HALL OF FAME</h2>
+  <div class="carts" id="carts"><p class="status loading">LOADING...</p></div>
+
+  <h2 class="lvl-banner" id="trophies">TROPHY CASE</h2>
+  <section class="px">
+    <div class="panel-body" id="titles" style="padding-top:16px"><p class="status loading">LOADING...</p></div>
+  </section>
+
+  <h2 class="lvl-banner">CAREER STATS <span class="sub">MIN 3 SEASONS</span></h2>
+  <section class="px dark">
+    <div class="panel-body scroll" id="career" style="padding-top:16px"><p class="status loading">LOADING...</p></div>
+  </section>
+</main>
+
+<!-- The original tables stay in the page, hidden: they are the data source
+     for the arcade layout above AND for the home page (which fetches this
+     file). Edit records here. -->
+<div class="container" id="legacyRecords" hidden>
 <h3>Top 20 Greatest Seasons</h3><table><tr><th>#</th><th>Team</th><th>Manager</th><th>Year</th><th>Score</th><th>Yr Rank</th></tr><tr><td class="rank gold">1</td><td>¯\_(ツ)_/¯</td><td class="manager">Mike</td><td class="year">2024</td><td class="score">1168.1</td><td>1</td></tr><tr><td class="rank silver">2</td><td>esteban <span class="champ">&#x1F3C6;</span></td><td class="manager">Stephen</td><td class="year">2009</td><td class="score">1013.9</td><td>1</td></tr><tr><td class="rank silver">3</td><td>esteban</td><td class="manager">Stephen</td><td class="year">2011</td><td class="score">1013.3</td><td>1</td></tr><tr><td class="rank bronze">4</td><td>Moniebol 🐳 (WE DID IT JOE!) <span class="champ">&#x1F3C6;</span></td><td class="manager">Austin</td><td class="year">2023</td><td class="score">1003.8</td><td>1</td></tr><tr><td class="rank bronze">5</td><td>Goldschmidt’s List <span class="champ">&#x1F3C6;</span></td><td class="manager">Kevin</td><td class="year">2018</td><td class="score">1002.7</td><td>1</td></tr><tr><td class="rank ">6</td><td>esteban</td><td class="manager">Stephen</td><td class="year">2007</td><td class="score">1002.0</td><td>1</td></tr><tr><td class="rank ">7</td><td>¯\_(ツ)_/¯ <span class="champ">&#x1F3C6;</span></td><td class="manager">Mike</td><td class="year">2021</td><td class="score">981.7</td><td>1</td></tr><tr><td class="rank ">8</td><td>Long Live Lima <span class="champ">&#x1F3C6;</span></td><td class="manager">Matt</td><td class="year">2010</td><td class="score">976.1</td><td>1</td></tr><tr><td class="rank ">9</td><td>The Rosterbation Station</td><td class="manager">Kevin</td><td class="year">2025</td><td class="score">957.7</td><td>1</td></tr><tr><td class="rank ">10</td><td>El Jongnifico</td><td class="manager">Jong</td><td class="year">2008</td><td class="score">955.2</td><td>1</td></tr><tr><td class="rank ">11</td><td>Ian Cumsler</td><td class="manager">Eric</td><td class="year">2019</td><td class="score">942.7</td><td>1</td></tr><tr><td class="rank ">12</td><td>The Rosterbation Station <span class="champ">&#x1F3C6;</span></td><td class="manager">Kevin</td><td class="year">2022</td><td class="score">942.4</td><td>1</td></tr><tr><td class="rank ">13</td><td>RIP Jose Lima</td><td class="manager">Jamie</td><td class="year">2014</td><td class="score">940.8</td><td>1</td></tr><tr><td class="rank ">14</td><td>¯\_(ツ)_/¯</td><td class="manager">Mike</td><td class="year">2022</td><td class="score">939.0</td><td>2</td></tr><tr><td class="rank ">15</td><td>esteban</td><td class="manager">Stephen</td><td class="year">2010</td><td class="score">923.8</td><td>2</td></tr><tr><td class="rank ">16</td><td>Sex4Roids</td><td class="manager">Eric</td><td class="year">2010</td><td class="score">898.5</td><td>3</td></tr><tr><td class="rank ">17</td><td>Ragonk</td><td class="manager">Kevin</td><td class="year">2015</td><td class="score">894.2</td><td>1</td></tr><tr><td class="rank ">18</td><td>just jong being jong</td><td class="manager">Jong</td><td class="year">2010</td><td class="score">875.3</td><td>4</td></tr><tr><td class="rank ">19</td><td>Roll Tide <span class="champ">&#x1F3C6;</span></td><td class="manager">Jamie</td><td class="year">2011</td><td class="score">871.1</td><td>2</td></tr><tr><td class="rank ">20</td><td>Moniebol not champ</td><td class="manager">Austin</td><td class="year">2019</td><td class="score">869.5</td><td>2</td></tr></table><h3>Champions by Year</h3><table><tr><th>Year</th><th>Team</th><th>Manager</th><th>Score</th><th>Yr Rank</th></tr><tr><td class="year">2007</td><td>green hat</td><td class="manager">Andrew D</td><td class="score">774.9</td><td>3</td></tr><tr><td class="year">2008</td><td>esteban</td><td class="manager">Stephen</td><td class="score">784.9</td><td>2</td></tr><tr><td class="year">2009</td><td>esteban</td><td class="manager">Stephen</td><td class="score">1013.9</td><td>1</td></tr><tr><td class="year">2010</td><td>Long Live Lima</td><td class="manager">Matt</td><td class="score">976.1</td><td>1</td></tr><tr><td class="year">2011</td><td>Roll Tide</td><td class="manager">Jamie</td><td class="score">871.1</td><td>2</td></tr><tr><td class="year">2012</td><td>Viva La Lima</td><td class="manager">Matt</td><td class="score">706.0</td><td>3</td></tr><tr><td class="year">2013</td><td>Wright Power</td><td class="manager">Mike</td><td class="score">823.7</td><td>2</td></tr><tr><td class="year">2014</td><td>Wright Power</td><td class="manager">Mike</td><td class="score">813.2</td><td>3</td></tr><tr><td class="year">2015</td><td>Sex4Roids</td><td class="manager">Eric</td><td class="score">607.7</td><td>6</td></tr><tr><td class="year">2016</td><td>Carlos Cumspraya</td><td class="manager">Taylor</td><td class="score">806.4</td><td>2</td></tr><tr><td class="year">2017</td><td>WE WANT BAMA</td><td class="manager">Mikey</td><td class="score">571.9</td><td>9</td></tr><tr><td class="year">2018</td><td>Goldschmidt’s List</td><td class="manager">Kevin</td><td class="score">1002.7</td><td>1</td></tr><tr><td class="year">2019</td><td>Goldschmidt's List</td><td class="manager">Kevin</td><td class="score">804.1</td><td>4</td></tr><tr><td class="year">2020</td><td>2020 Champion</td><td class="manager">Taylor</td><td class="score">-</td><td>-</td></tr><tr><td class="year">2021</td><td>¯\_(ツ)_/¯</td><td class="manager">Mike</td><td class="score">981.7</td><td>1</td></tr><tr><td class="year">2022</td><td>The Rosterbation Station</td><td class="manager">Kevin</td><td class="score">942.4</td><td>1</td></tr><tr><td class="year">2023</td><td>Moniebol 🐳 (WE DID IT JOE!)</td><td class="manager">Austin</td><td class="score">1003.8</td><td>1</td></tr><tr><td class="year">2024</td><td>Grand Salami Time</td><td class="manager">Josh</td><td class="score">678.5</td><td>4</td></tr><tr><td class="year">2025</td><td>¯\_(ツ)_/¯</td><td class="manager">Mike</td><td class="score">848.6</td><td>3</td></tr></table><h3>Most Titles</h3><table><tr><th>#</th><th>Manager</th><th>Titles</th><th>Years</th></tr><tr><td class="rank">1</td><td>Mike</td><td class="titles-count">4</td><td class="year">2013, 2014, 2021, 2025</td></tr><tr><td class="rank">2</td><td>Kevin</td><td class="titles-count">3</td><td class="year">2018, 2019, 2022</td></tr><tr><td class="rank">3</td><td>Stephen</td><td class="titles-count">2</td><td class="year">2008, 2009</td></tr><tr><td class="rank">4</td><td>Matt</td><td class="titles-count">2</td><td class="year">2010, 2012</td></tr><tr><td class="rank">5</td><td>Taylor</td><td class="titles-count">2</td><td class="year">2016, 2020</td></tr><tr><td class="rank">6</td><td>Andrew D</td><td class="titles-count">1</td><td class="year">2007</td></tr><tr><td class="rank">7</td><td>Jamie</td><td class="titles-count">1</td><td class="year">2011</td></tr><tr><td class="rank">8</td><td>Eric</td><td class="titles-count">1</td><td class="year">2015</td></tr><tr><td class="rank">9</td><td>Mikey</td><td class="titles-count">1</td><td class="year">2017</td></tr><tr><td class="rank">10</td><td>Austin</td><td class="titles-count">1</td><td class="year">2023</td></tr><tr><td class="rank">11</td><td>Josh</td><td class="titles-count">1</td><td class="year">2024</td></tr></table><h3>Career Averages (min 3 seasons)</h3><table><tr><th>#</th><th>Manager</th><th>Avg Score</th><th>Seasons</th><th>Best</th><th>Titles</th></tr><tr><td class="rank">1</td><td>Stephen</td><td class="score">824.2</td><td>7</td><td>1013.9</td><td><span class="champ">&#x1F3C6; x2</span></td></tr><tr><td class="rank">2</td><td>Mike</td><td class="score">787.2</td><td>12</td><td>1168.1</td><td><span class="champ">&#x1F3C6; x4</span></td></tr><tr><td class="rank">3</td><td>Kevin</td><td class="score">765.6</td><td>10</td><td>1002.7</td><td><span class="champ">&#x1F3C6; x3</span></td></tr><tr><td class="rank">4</td><td>Jong</td><td class="score">688.3</td><td>6</td><td>955.2</td><td>-</td></tr><tr><td class="rank">5</td><td>Matt</td><td class="score">665.2</td><td>7</td><td>976.1</td><td><span class="champ">&#x1F3C6; x2</span></td></tr><tr><td class="rank">6</td><td>Taylor</td><td class="score">658.9</td><td>18</td><td>858.6</td><td><span class="champ">&#x1F3C6; x2</span></td></tr><tr><td class="rank">7</td><td>Kurtis</td><td class="score">640.7</td><td>10</td><td>848.6</td><td>-</td></tr><tr><td class="rank">8</td><td>Eric</td><td class="score">623.1</td><td>18</td><td>942.7</td><td><span class="champ">&#x1F3C6; x1</span></td></tr><tr><td class="rank">9</td><td>Josh</td><td class="score">621.3</td><td>4</td><td>815.8</td><td><span class="champ">&#x1F3C6; x1</span></td></tr><tr><td class="rank">10</td><td>Jamie</td><td class="score">618.6</td><td>14</td><td>940.8</td><td><span class="champ">&#x1F3C6; x1</span></td></tr><tr><td class="rank">11</td><td>Nate</td><td class="score">616.9</td><td>3</td><td>667.5</td><td>-</td></tr><tr><td class="rank">12</td><td>Mikey</td><td class="score">597.0</td><td>11</td><td>822.1</td><td><span class="champ">&#x1F3C6; x1</span></td></tr><tr><td class="rank">13</td><td>Austin</td><td class="score">593.5</td><td>8</td><td>1003.8</td><td><span class="champ">&#x1F3C6; x1</span></td></tr><tr><td class="rank">14</td><td>Bryant</td><td class="score">580.7</td><td>8</td><td>694.0</td><td>-</td></tr><tr><td class="rank">15</td><td>Grayson</td><td class="score">522.7</td><td>6</td><td>709.2</td><td>-</td></tr><tr><td class="rank">16</td><td>Jeremy</td><td class="score">467.9</td><td>6</td><td>861.3</td><td>-</td></tr><tr><td class="rank">17</td><td>Messer</td><td class="score">465.5</td><td>6</td><td>712.8</td><td>-</td></tr><tr><td class="rank">18</td><td>Greg</td><td class="score">449.3</td><td>12</td><td>869.0</td><td>-</td></tr><tr><td class="rank">19</td><td>David</td><td class="score">411.7</td><td>4</td><td>486.8</td><td>-</td></tr><tr><td class="rank">20</td><td>Cameron</td><td class="score">318.5</td><td>4</td><td>550.1</td><td>-</td></tr></table><div class="stat-grid"><div class="stat-card"><h4>Title Count</h4><div class="bar-container"><span class="bar-label">Mike</span><div class="bar" style="width:100%"></div><span class="bar-value">4</span></div><div class="bar-container"><span class="bar-label">Kevin</span><div class="bar" style="width:75%"></div><span class="bar-value">3</span></div><div class="bar-container"><span class="bar-label">Stephen</span><div class="bar" style="width:50%"></div><span class="bar-value">2</span></div><div class="bar-container"><span class="bar-label">Matt</span><div class="bar" style="width:50%"></div><span class="bar-value">2</span></div><div class="bar-container"><span class="bar-label">Taylor</span><div class="bar" style="width:50%"></div><span class="bar-value">2</span></div><div class="bar-container"><span class="bar-label">Andrew D</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div><div class="bar-container"><span class="bar-label">Jamie</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div><div class="bar-container"><span class="bar-label">Eric</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div><div class="bar-container"><span class="bar-label">Mikey</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div><div class="bar-container"><span class="bar-label">Austin</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div><div class="bar-container"><span class="bar-label">Josh</span><div class="bar" style="width:25%"></div><span class="bar-value">1</span></div></div><div class="stat-card"><h4>Career Avg Score (3+ seasons)</h4><div class="bar-container"><span class="bar-label">Stephen</span><div class="bar" style="width:100%"></div><span class="bar-value">824</span></div><div class="bar-container"><span class="bar-label">Mike</span><div class="bar" style="width:95%"></div><span class="bar-value">787</span></div><div class="bar-container"><span class="bar-label">Kevin</span><div class="bar" style="width:92%"></div><span class="bar-value">766</span></div><div class="bar-container"><span class="bar-label">Jong</span><div class="bar" style="width:83%"></div><span class="bar-value">688</span></div><div class="bar-container"><span class="bar-label">Matt</span><div class="bar" style="width:80%"></div><span class="bar-value">665</span></div><div class="bar-container"><span class="bar-label">Taylor</span><div class="bar" style="width:79%"></div><span class="bar-value">659</span></div><div class="bar-container"><span class="bar-label">Kurtis</span><div class="bar" style="width:77%"></div><span class="bar-value">641</span></div><div class="bar-container"><span class="bar-label">Eric</span><div class="bar" style="width:75%"></div><span class="bar-value">623</span></div><div class="bar-container"><span class="bar-label">Josh</span><div class="bar" style="width:75%"></div><span class="bar-value">621</span></div><div class="bar-container"><span class="bar-label">Jamie</span><div class="bar" style="width:75%"></div><span class="bar-value">619</span></div><div class="bar-container"><span class="bar-label">Nate</span><div class="bar" style="width:74%"></div><span class="bar-value">617</span></div><div class="bar-container"><span class="bar-label">Mikey</span><div class="bar" style="width:72%"></div><span class="bar-value">597</span></div><div class="bar-container"><span class="bar-label">Austin</span><div class="bar" style="width:72%"></div><span class="bar-value">593</span></div><div class="bar-container"><span class="bar-label">Bryant</span><div class="bar" style="width:70%"></div><span class="bar-value">581</span></div><div class="bar-container"><span class="bar-label">Grayson</span><div class="bar" style="width:63%"></div><span class="bar-value">523</span></div></div></div></div>
 <script>
 // Auto-link manager names to their profiles
@@ -57,6 +118,70 @@
         }
       });
     }
+  });
+})();
+</script>
+<script src="pixel.js"></script>
+<script>
+(function () {
+  'use strict';
+  const S = window.SSFB8;
+  const E = S.esc;
+  const ids = ['top20', 'carts', 'titles', 'career'];
+
+  Promise.resolve(S.parseRecords(document)).then(function (rec) {
+    const top = rec['Top 20 Greatest Seasons'] || [];
+    const champs = rec['Champions by Year'] || [];
+    const titles = rec['Most Titles'] || [];
+    const career = rec['Career Averages (min 3 seasons)'] || [];
+    const MGR = function (n) { return '<a class="mgr-link" href="manager_profiles.html#' + encodeURIComponent(n) + '">' + E(n) + '</a>'; };
+    const cup = '<span class="cup-inline">' + S.sprite('trophy', 18) + '</span>';
+
+    if (champs.length) document.getElementById('span').textContent = champs[0][0].text + ' – ' + champs[champs.length - 1][0].text;
+
+    // HIGH SCORES: # | team | manager | year | score | year rank
+    if (top.length) {
+      let h = '<table class="scores"><thead><tr><th>RANK</th><th class="num">SCORE</th><th>TEAM</th><th>MGR</th><th class="num">YEAR</th><th class="num">YR RANK</th></tr></thead><tbody>';
+      top.forEach(function (r, i) {
+        h += '<tr' + (i === 0 ? ' class="new-hi"' : '') + '><td>' + S.placeLabel(i + 1) + '</td>' +
+          '<td class="num hl">' + E(r[4].text) + '</td>' +
+          '<td class="team">' + E(r[1].text) + (r[1].champ ? cup : '') + (i === 0 ? '<span class="tag">HI</span>' : '') + '</td>' +
+          '<td class="mgr">' + MGR(r[2].text) + '</td><td class="num">' + E(r[3].text) + '</td><td class="num">' + E(r[5].text) + '</td></tr>';
+      });
+      document.getElementById('top20').innerHTML = h + '</tbody></table>';
+    } else document.getElementById('top20').innerHTML = '<p class="status error">NO DATA</p>';
+
+    // HALL OF FAME: one cartridge per champion, newest first.
+    document.getElementById('carts').innerHTML = champs.slice().reverse().map(function (c) {
+      const noScore = c[3].text === '-' || c[3].text === '';
+      return '<article class="cart px light' + (noScore ? ' covid' : '') + '"><div class="top"></div>' +
+        '<div class="label"><div class="yr">' + E(c[0].text) + '</div><div class="tm">' + E(c[1].text) + '</div></div>' +
+        '<div class="meta"><span>' + MGR(c[2].text) + '</span><span>' + (noScore ? 'NO SCORE' : E(c[3].text) + ' PTS') + '</span></div></article>';
+    }).join('') || '<p class="status error">NO DATA</p>';
+
+    // TROPHY CASE: a pixel cup per title.
+    document.getElementById('titles').innerHTML = titles.map(function (t) {
+      let cups = '';
+      for (let i = 0; i < (+t[2].text || 0); i++) cups += S.sprite('trophy', 26);
+      return '<div class="trophy-row"><span class="nm">' + MGR(t[1].text) + '</span><span class="cups">' + cups + '</span><span class="yrs">' + E(t[3].text) + '</span></div>';
+    }).join('') || '<p class="status error">NO DATA</p>';
+
+    // CAREER STATS with a life-bar meter against the best career average.
+    if (career.length) {
+      const max = parseFloat(career[0][2].text) || 1;
+      let h = '<table class="scores"><thead><tr><th>#</th><th>MGR</th><th>AVG</th><th class="num">PTS</th><th class="num">SEASONS</th><th class="num">BEST</th><th>TITLES</th></tr></thead><tbody>';
+      career.forEach(function (r, i) {
+        const n = (r[5].raw.match(/x(\d+)/) || [])[1];
+        let cups = '';
+        for (let k = 0; k < (+n || 0); k++) cups += S.sprite('trophy', 16);
+        h += '<tr><td>' + S.placeLabel(i + 1) + '</td><td>' + MGR(r[1].text) + '</td><td>' + S.meter(parseFloat(r[2].text) || 0, max) + '</td>' +
+          '<td class="num hl">' + E(r[2].text) + '</td><td class="num">' + E(r[3].text) + '</td><td class="num">' + E(r[4].text) + '</td>' +
+          '<td><span style="display:flex;gap:2px">' + (cups || '<span class="flat">--</span>') + '</span></td></tr>';
+      });
+      document.getElementById('career').innerHTML = h + '</tbody></table>';
+    } else document.getElementById('career').innerHTML = '<p class="status error">NO DATA</p>';
+  }).catch(function () {
+    ids.forEach(function (id) { document.getElementById(id).innerHTML = '<p class="status error">NO SIGNAL &mdash; INSERT COIN</p>'; });
   });
 })();
 </script>

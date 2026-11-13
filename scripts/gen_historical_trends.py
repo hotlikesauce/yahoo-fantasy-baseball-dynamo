@@ -480,7 +480,7 @@ new Chart(document.getElementById('scatterChart').getContext('2d'), {{
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - {year} Season Trends</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
   .toggle-container {{ text-align: center; margin-bottom: 16px; }}
   .toggle-btn {{ background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }}

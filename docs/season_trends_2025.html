@@ -6,29 +6,43 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2025 Season Trends</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="Weekly power scores, rankings and expected category wins for the 2025 season.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2025 Season Trends">
+<meta property="og:description" content="Weekly power scores, rankings and expected category wins for the 2025 season.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/season_trends_2025.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
-  .toggle-container { text-align: center; margin-bottom: 16px; }
-  .toggle-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }
-  .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
-  .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
-  .toggle-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-  .toggle-btn:hover { background: #475569; color: #e2e8f0; }
-  .toggle-btn.active:hover { background: #2563eb; }
-  .year { color: #a78bfa; font-weight: 600; }
-  .hot-val { color: #22c55e; font-weight: 700; }
-  .cold-val { color: #ef4444; font-weight: 700; }
-  .hot-tag { background: #22c55e22; color: #22c55e; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
-  .cold-tag { background: #ef444422; color: #ef4444; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
-  .steady-tag { background: #64748b22; color: #64748b; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
+  .toggle-container { text-align: center; margin-bottom: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .toggle-btn { font-family: var(--ui); font-size: 9px; line-height: 1.4; color: var(--gray); background: var(--panel-2); border: 0; cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 0 0 0 2px #000; padding: 10px 14px; }
+  .toggle-btn.active { background: var(--grass); color: var(--white); box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000; }
+  .toggle-btn:hover { background: var(--blue); color: var(--white); }
+  .toggle-btn.active:hover { background: var(--grass); }
+  .year { color: #a98cff; }
+  .hot-val { color: #2ecc40; }
+  .cold-val { color: #ff3b3b; }
+  .hot-tag { background: #2ecc40; color: #000; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .cold-tag { background: #ff3b3b; color: #fff; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .steady-tag { background: #2b2e7a; color: #9a9ac8; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
   th.sortable { position: relative; padding-right: 18px; }
   th.sortable::after { position: absolute; right: 4px; opacity: 0.3; }
   th.sortable.asc::after { opacity: 0.8; }
   th.sortable.desc::after { opacity: 0.8; }
   .best-table td:first-child { font-size: 1.2em; width: 36px; text-align: center; }
-  .week-filter-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 6px 16px; cursor: pointer; font-size: 0.88em; border-radius: 6px; transition: all 0.2s; }
-  .week-filter-btn:hover { color: #e2e8f0; border-color: #64748b; }
-  .week-filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .week-filter-btn { font-family: var(--ui); font-size: 9px; line-height: 1.4; color: var(--gray); background: var(--panel-2); border: 0; cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 0 0 0 2px #000; padding: 8px 12px; }
+  .week-filter-btn:hover { background: var(--blue); color: var(--white); }
+  .week-filter-btn.active { background: var(--grass); color: var(--white); box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000; }
 </style>
 </head>
 <body>
@@ -73,7 +87,7 @@
 <p class="section-desc">Average expected category wins over the last 2 weeks (Weeks 19-20) vs season average. A team trending above their season average is heating up.</p>
 <table class="sortable-table">
 <tr><th class="sortable" data-type="num">#</th><th class="sortable" data-type="str">Team</th><th class="sortable" data-type="num">Last 2 Wk Avg</th><th class="sortable" data-type="num">Season Avg</th><th class="sortable" data-type="num">Diff</th><th class="sortable" data-type="str">Trend</th></tr>
-<tr><td class="rank">1</td><td><span style="color:#f97316">&#9679;</span> Moniebol 🐳</td><td class="score">8.05</td><td>6.56</td><td class="hot-val">+1.49</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">2</td><td><span style="color:#8b5cf6">&#9679;</span> OG9️⃣</td><td class="score">7.55</td><td>5.57</td><td class="hot-val">+1.98</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">3</td><td><span style="color:#ec4899">&#9679;</span> Tegridy</td><td class="score">7.05</td><td>5.59</td><td class="hot-val">+1.45</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">4</td><td><span style="color:#eab308">&#9679;</span> ¯\_(ツ)_/¯</td><td class="score">6.95</td><td>6.17</td><td class="hot-val">+0.78</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">5</td><td><span style="color:#22c55e">&#9679;</span> Hatfield Hurlers</td><td class="score">6.86</td><td>6.15</td><td class="hot-val">+0.71</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">6</td><td><span style="color:#3b82f6">&#9679;</span> @DoodlesAnalytics</td><td class="score">6.73</td><td>6.20</td><td class="hot-val">+0.52</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">7</td><td><span style="color:#14b8a6">&#9679;</span> Grand Salami Time</td><td class="score">6.36</td><td>6.21</td><td class="hot-val">+0.15</td><td><span class="steady-tag">STEADY</span></td></tr><tr><td class="rank">8</td><td><span style="color:#ef4444">&#9679;</span> The Rosterbation Station</td><td class="score">5.36</td><td>7.00</td><td class="cold-val">-1.63</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">9</td><td><span style="color:#f59e0b">&#9679;</span> Getting Plowed Again.</td><td class="score">5.27</td><td>5.05</td><td class="hot-val">+0.22</td><td><span class="steady-tag">STEADY</span></td></tr><tr><td class="rank">10</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="score">2.73</td><td>5.43</td><td class="cold-val">-2.7</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">11</td><td><span style="color:#10b981">&#9679;</span> Ian Cumsler</td><td class="score">2.68</td><td>4.21</td><td class="cold-val">-1.53</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">12</td><td><span style="color:#a855f7">&#9679;</span> Football Szn</td><td class="score">2.68</td><td>3.96</td><td class="cold-val">-1.28</td><td><span class="cold-tag">COLD</span></td></tr>
+<tr><td class="rank">1</td><td><span style="color:#ff8c1a">&#9679;</span> Moniebol 🐳</td><td class="score">8.05</td><td>6.56</td><td class="hot-val">+1.49</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">2</td><td><span style="color:#8a5cff">&#9679;</span> OG9️⃣</td><td class="score">7.55</td><td>5.57</td><td class="hot-val">+1.98</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">3</td><td><span style="color:#ff5ec8">&#9679;</span> Tegridy</td><td class="score">7.05</td><td>5.59</td><td class="hot-val">+1.45</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">4</td><td><span style="color:#ffd23f">&#9679;</span> ¯\_(ツ)_/¯</td><td class="score">6.95</td><td>6.17</td><td class="hot-val">+0.78</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">5</td><td><span style="color:#2ecc40">&#9679;</span> Hatfield Hurlers</td><td class="score">6.86</td><td>6.15</td><td class="hot-val">+0.71</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">6</td><td><span style="color:#3b6bff">&#9679;</span> @DoodlesAnalytics</td><td class="score">6.73</td><td>6.20</td><td class="hot-val">+0.52</td><td><span class="hot-tag">HOT</span></td></tr><tr><td class="rank">7</td><td><span style="color:#1ee8b0">&#9679;</span> Grand Salami Time</td><td class="score">6.36</td><td>6.21</td><td class="hot-val">+0.15</td><td><span class="steady-tag">STEADY</span></td></tr><tr><td class="rank">8</td><td><span style="color:#ff3b3b">&#9679;</span> The Rosterbation Station</td><td class="score">5.36</td><td>7.00</td><td class="cold-val">-1.63</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">9</td><td><span style="color:#ffa41b">&#9679;</span> Getting Plowed Again.</td><td class="score">5.27</td><td>5.05</td><td class="hot-val">+0.22</td><td><span class="steady-tag">STEADY</span></td></tr><tr><td class="rank">10</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="score">2.73</td><td>5.43</td><td class="cold-val">-2.7</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">11</td><td><span style="color:#19d27f">&#9679;</span> Ian Cumsler</td><td class="score">2.68</td><td>4.21</td><td class="cold-val">-1.53</td><td><span class="cold-tag">COLD</span></td></tr><tr><td class="rank">12</td><td><span style="color:#c45cff">&#9679;</span> Football Szn</td><td class="score">2.68</td><td>3.96</td><td class="cold-val">-1.28</td><td><span class="cold-tag">COLD</span></td></tr>
 </table>
 
 <h3>Season's Best Weekly Performances</h3>
@@ -85,7 +99,7 @@
 </div>
 <table class="best-table">
 <tr><th></th><th>Category</th><th>Value</th><th>Team</th><th>Week</th></tr>
-<tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Runs</td><td class="score">47</td><td><span style="color:#eab308">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Runs</td><td class="score">63</td><td><span style="color:#14b8a6">&#9679;</span> Grand Salami Time</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Hits</td><td class="score">78</td><td><span style="color:#22c55e">&#9679;</span> Hatfield Hurlers</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Hits</td><td class="score">100</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Home Runs</td><td class="score">18</td><td><span style="color:#f97316">&#9679;</span> Moniebol 🐳</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Home Runs</td><td class="score">23</td><td><span style="color:#8b5cf6">&#9679;</span> OG9️⃣</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">RBI</td><td class="score">49</td><td><span style="color:#f97316">&#9679;</span> Moniebol 🐳</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">RBI</td><td class="score">63</td><td><span style="color:#14b8a6">&#9679;</span> Grand Salami Time</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Stolen Bases</td><td class="score">15</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Stolen Bases</td><td class="score">18</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">OPS</td><td class="score">0.999</td><td><span style="color:#22c55e">&#9679;</span> Hatfield Hurlers</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">OPS</td><td class="score">0.933</td><td><span style="color:#a855f7">&#9679;</span> Football Szn</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">K/9</td><td class="score">14.2</td><td><span style="color:#ef4444">&#9679;</span> The Rosterbation Station</td><td class="year">Week 11</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">K/9</td><td class="score">12.2</td><td><span style="color:#eab308">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Quality Starts</td><td class="score">7</td><td><span style="color:#3b82f6">&#9679;</span> @DoodlesAnalytics</td><td class="year">Week 9</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Quality Starts</td><td class="score">7</td><td><span style="color:#f97316">&#9679;</span> Moniebol 🐳</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Saves+Holds</td><td class="score">11</td><td><span style="color:#a855f7">&#9679;</span> Football Szn</td><td class="year">Week 3</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Saves+Holds</td><td class="score">18</td><td><span style="color:#a855f7">&#9679;</span> Football Szn</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">ERA (Lowest)</td><td class="score">0.890</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 16</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">ERA (Lowest)</td><td class="score">1.600</td><td><span style="color:#eab308">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">WHIP (Lowest)</td><td class="score">0.620</td><td><span style="color:#f97316">&#9679;</span> Moniebol 🐳</td><td class="year">Week 20</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">WHIP (Lowest)</td><td class="score">0.870</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Total Bases Allowed (Lowest)</td><td class="score">26</td><td><span style="color:#06b6d4">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 16</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Total Bases Allowed (Lowest)</td><td class="score">46</td><td><span style="color:#eab308">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr>
+<tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Runs</td><td class="score">47</td><td><span style="color:#ffd23f">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Runs</td><td class="score">63</td><td><span style="color:#1ee8b0">&#9679;</span> Grand Salami Time</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Hits</td><td class="score">78</td><td><span style="color:#2ecc40">&#9679;</span> Hatfield Hurlers</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Hits</td><td class="score">100</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Home Runs</td><td class="score">18</td><td><span style="color:#ff8c1a">&#9679;</span> Moniebol 🐳</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Home Runs</td><td class="score">23</td><td><span style="color:#8a5cff">&#9679;</span> OG9️⃣</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">RBI</td><td class="score">49</td><td><span style="color:#ff8c1a">&#9679;</span> Moniebol 🐳</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">RBI</td><td class="score">63</td><td><span style="color:#1ee8b0">&#9679;</span> Grand Salami Time</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">Stolen Bases</td><td class="score">15</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 18</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">Stolen Bases</td><td class="score">18</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x26BE;</td><td class="year">OPS</td><td class="score">0.999</td><td><span style="color:#2ecc40">&#9679;</span> Hatfield Hurlers</td><td class="year">Week 5</td></tr><tr class="best-row" data-week-type="long"><td>&#x26BE;</td><td class="year">OPS</td><td class="score">0.933</td><td><span style="color:#c45cff">&#9679;</span> Football Szn</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">K/9</td><td class="score">14.2</td><td><span style="color:#ff3b3b">&#9679;</span> The Rosterbation Station</td><td class="year">Week 11</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">K/9</td><td class="score">12.2</td><td><span style="color:#ffd23f">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Quality Starts</td><td class="score">7</td><td><span style="color:#3b6bff">&#9679;</span> @DoodlesAnalytics</td><td class="year">Week 9</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Quality Starts</td><td class="score">7</td><td><span style="color:#ff8c1a">&#9679;</span> Moniebol 🐳</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Saves+Holds</td><td class="score">11</td><td><span style="color:#c45cff">&#9679;</span> Football Szn</td><td class="year">Week 3</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Saves+Holds</td><td class="score">18</td><td><span style="color:#c45cff">&#9679;</span> Football Szn</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">ERA (Lowest)</td><td class="score">0.890</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 16</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">ERA (Lowest)</td><td class="score">1.600</td><td><span style="color:#ffd23f">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">WHIP (Lowest)</td><td class="score">0.620</td><td><span style="color:#ff8c1a">&#9679;</span> Moniebol 🐳</td><td class="year">Week 20</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">WHIP (Lowest)</td><td class="score">0.870</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 1</td></tr><tr class="best-row" data-week-type="short"><td>&#x1F3AF;</td><td class="year">Total Bases Allowed (Lowest)</td><td class="score">26</td><td><span style="color:#3bd6ff">&#9679;</span> Serafini Hit Squad</td><td class="year">Week 16</td></tr><tr class="best-row" data-week-type="long"><td>&#x1F3AF;</td><td class="year">Total Bases Allowed (Lowest)</td><td class="score">46</td><td><span style="color:#ffd23f">&#9679;</span> ¯\_(ツ)_/¯</td><td class="year">Week 15</td></tr>
 </table>
 
 </div>
@@ -110,11 +124,11 @@ function filterWeeks(weekType) {
 // ---- Chart options shared ----
 const legendOpts = {
   position: 'bottom',
-  labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
+  labels: { color: '#f4f4f4', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
 };
 const tooltipOpts = {
-  backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-  borderColor: '#475569', borderWidth: 1, padding: 12
+  backgroundColor: '#1f2160', titleColor: '#f4f4f4', bodyColor: '#9a9ac8',
+  borderColor: '#5c5c94', borderWidth: 1, padding: 12
 };
 
 // ---- Power Score Chart ----
@@ -123,73 +137,73 @@ new Chart(document.getElementById('scoreChart').getContext('2d'), {
   data: { labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", "Week 13", "Week 14", "Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"], datasets: [{
       label: 'The Rosterbation Station',
       data: [686.9, 855.9, 837.8, 898.7, 867.3, 909.0, 922.1, 891.1, 872.6, 902.8, 975.4, 1032.2, 1061.9, 1079.2, 1048.4, 1040.8, 1031.1, 997.7, 974.9, 957.7],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Moniebol 🐳',
       data: [624.2, 656.9, 512.8, 584.0, 675.4, 762.0, 825.8, 869.2, 893.7, 944.3, 904.2, 909.9, 884.8, 893.5, 816.4, 789.3, 792.9, 821.0, 834.9, 857.5],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [400.2, 469.2, 436.9, 532.7, 625.1, 647.1, 646.3, 684.1, 672.0, 811.2, 792.5, 729.5, 780.8, 771.0, 809.0, 797.1, 814.6, 825.2, 867.2, 848.6],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Hatfield Hurlers',
       data: [572.0, 560.4, 567.6, 496.6, 675.9, 713.8, 690.4, 731.8, 714.5, 833.1, 851.1, 801.9, 831.4, 849.8, 842.2, 850.5, 868.5, 815.2, 799.8, 838.2],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [718.5, 671.3, 638.8, 715.9, 643.4, 718.4, 714.7, 703.6, 646.8, 756.2, 760.9, 768.7, 754.7, 766.5, 777.6, 811.5, 815.6, 813.6, 780.9, 821.1],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '@DoodlesAnalytics',
       data: [473.1, 558.8, 596.9, 695.0, 701.8, 750.3, 764.5, 723.2, 746.6, 651.5, 672.7, 721.1, 737.3, 750.1, 745.9, 738.2, 776.4, 752.6, 752.1, 771.8],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'OG9️⃣',
       data: [569.9, 556.1, 616.7, 532.4, 526.6, 571.4, 553.2, 534.9, 566.6, 653.5, 537.7, 537.3, 585.6, 602.8, 584.5, 595.6, 590.3, 576.3, 600.1, 628.5],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Tegridy',
       data: [384.4, 385.6, 534.7, 627.3, 608.7, 636.5, 629.9, 594.8, 654.2, 652.1, 619.8, 637.6, 646.5, 621.8, 630.3, 554.7, 596.2, 553.0, 556.7, 609.2],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Serafini Hit Squad',
       data: [801.8, 831.5, 860.3, 815.1, 657.8, 658.2, 689.8, 648.1, 610.0, 668.5, 676.3, 645.5, 642.0, 648.3, 608.9, 666.6, 679.4, 674.2, 619.3, 590.8],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Getting Plowed Again.',
       data: [432.0, 534.5, 417.9, 406.3, 427.3, 489.8, 489.4, 558.7, 565.4, 665.0, 719.2, 705.3, 672.8, 663.3, 586.0, 551.8, 557.9, 558.7, 560.3, 569.9],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [626.4, 520.7, 548.3, 458.3, 358.1, 317.8, 351.8, 363.6, 373.6, 450.1, 467.4, 484.2, 495.4, 462.8, 437.4, 397.3, 408.8, 338.0, 324.2, 329.3],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Football Szn',
       data: [427.1, 411.7, 401.3, 418.5, 367.8, 376.2, 381.0, 332.4, 344.7, 327.0, 294.9, 317.2, 302.0, 237.9, 259.4, 264.1, 320.2, 349.4, 325.4, 329.2],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -198,8 +212,8 @@ new Chart(document.getElementById('scoreChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: { ...tooltipOpts, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Score', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Power Score', color: '#6e6ea8' } }
     }
   }
 });
@@ -210,73 +224,73 @@ new Chart(document.getElementById('rankChart').getContext('2d'), {
   data: { labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", "Week 13", "Week 14", "Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"], datasets: [{
       label: 'The Rosterbation Station',
       data: [4.0, 2.0, 2.0, 3.0, 1.0, 1.0, 1.5, 2.0, 2.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Moniebol 🐳',
       data: [6.0, 4.0, 8.5, 5.0, 5.0, 4.5, 3.0, 1.0, 1.0, 1.0, 3.0, 2.0, 3.0, 3.0, 4.0, 5.0, 5.5, 4.5, 4.0, 3.5],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [9.0, 9.0, 12.0, 9.0, 7.0, 7.0, 7.0, 5.0, 5.0, 4.0, 5.0, 7.0, 4.0, 4.0, 3.0, 4.0, 4.0, 4.5, 2.0, 3.5],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Hatfield Hurlers',
       data: [5.0, 5.0, 5.0, 4.0, 2.0, 3.0, 5.0, 4.0, 3.5, 2.0, 2.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, 2.0],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [2.0, 3.0, 3.0, 2.0, 3.0, 2.0, 1.5, 3.0, 3.5, 5.0, 4.0, 5.0, 6.0, 6.0, 6.0, 3.0, 3.0, 3.0, 6.0, 5.0],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '@DoodlesAnalytics',
       data: [10.0, 10.0, 8.5, 7.0, 8.0, 6.0, 6.0, 8.0, 8.0, 8.0, 7.0, 4.0, 5.0, 5.0, 5.0, 6.0, 5.5, 6.0, 5.0, 6.0],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'OG9️⃣',
       data: [7.0, 8.0, 4.0, 8.0, 9.0, 9.0, 10.0, 10.0, 10.0, 9.0, 10.0, 10.0, 10.0, 10.0, 10.0, 8.0, 9.0, 10.0, 8.0, 9.0],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Tegridy',
       data: [12.0, 12.0, 7.0, 6.0, 6.0, 8.0, 8.0, 9.0, 9.0, 10.0, 9.0, 9.0, 8.0, 9.0, 7.5, 9.0, 8.0, 8.5, 9.0, 7.0],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Serafini Hit Squad',
       data: [1.0, 1.0, 1.0, 1.0, 4.0, 4.5, 4.0, 6.0, 6.0, 7.0, 8.0, 8.0, 9.0, 8.0, 7.5, 7.0, 7.0, 7.0, 7.0, 8.0],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Getting Plowed Again.',
       data: [8.0, 6.0, 11.0, 12.0, 10.0, 10.0, 9.0, 7.0, 7.0, 6.0, 6.0, 6.0, 7.0, 7.0, 9.0, 10.0, 10.0, 8.5, 10.0, 10.0],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [3.0, 7.0, 6.0, 10.0, 12.0, 12.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 12.0, 12.0, 12.0],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Football Szn',
       data: [11.0, 11.0, 10.0, 11.0, 11.0, 11.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 11.0, 11.0, 11.0],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -285,8 +299,8 @@ new Chart(document.getElementById('rankChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: tooltipOpts },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { reverse: true, min: 0, max: 13, ticks: { color: '#94a3b8', stepSize: 1, callback: v => v >= 1 && v <= 12 ? v : '' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Rank', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { reverse: true, min: 0, max: 13, ticks: { color: '#9a9ac8', stepSize: 1, callback: v => v >= 1 && v <= 12 ? v : '' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Power Rank', color: '#6e6ea8' } }
     }
   }
 });
@@ -297,73 +311,73 @@ new Chart(document.getElementById('xwinsChart').getContext('2d'), {
   data: { labels: ["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8", "Wk 9", "Wk 10", "Wk 11", "Wk 12", "Wk 13", "Wk 14", "Wk 15", "Wk 16", "Wk 17", "Wk 18", "Wk 19", "Wk 20"], datasets: [{
       label: 'The Rosterbation Station',
       data: [7.45, 7.73, 5.55, 7.36, 7.09, 8.09, 7.73, 5.73, 6.0, 6.36, 9.09, 10.09, 7.91, 8.82, 6.91, 5.36, 5.27, 6.64, 6.18, 4.55],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Moniebol 🐳',
       data: [5.64, 6.73, 3.64, 7.18, 8.55, 7.27, 8.36, 9.0, 7.73, 6.64, 4.55, 6.91, 5.18, 6.18, 3.18, 4.91, 5.36, 8.09, 8.18, 7.91],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [4.0, 5.73, 3.64, 7.64, 7.64, 4.64, 5.91, 8.73, 5.64, 8.45, 4.55, 2.91, 7.82, 5.45, 7.27, 5.55, 6.27, 7.73, 10.0, 3.91],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Hatfield Hurlers',
       data: [6.73, 6.0, 6.18, 5.0, 8.82, 4.55, 4.36, 7.0, 4.82, 8.55, 6.55, 3.55, 7.18, 7.55, 6.91, 5.91, 5.91, 3.73, 5.64, 8.09],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [8.09, 5.27, 5.55, 7.82, 2.91, 6.91, 5.73, 5.64, 4.91, 5.45, 6.45, 7.0, 4.91, 5.91, 7.91, 8.18, 5.82, 7.09, 4.82, 7.91],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '@DoodlesAnalytics',
       data: [3.82, 6.09, 6.36, 6.73, 5.45, 7.82, 6.64, 2.36, 6.45, 4.73, 6.91, 8.27, 6.91, 6.09, 7.36, 5.82, 7.64, 5.18, 6.0, 7.45],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'OG9️⃣',
       data: [5.36, 5.0, 7.09, 1.64, 5.0, 5.45, 3.45, 5.09, 6.45, 7.09, 0.73, 5.36, 7.45, 7.09, 5.73, 6.73, 5.36, 6.18, 7.73, 7.36],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Tegridy',
       data: [3.82, 3.55, 9.0, 6.64, 6.91, 4.45, 5.55, 5.18, 7.64, 5.0, 4.18, 6.55, 5.73, 4.73, 6.27, 2.0, 6.73, 3.82, 5.55, 8.55],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Serafini Hit Squad',
       data: [9.0, 7.73, 8.09, 5.0, 3.55, 5.82, 5.73, 4.18, 4.0, 3.36, 6.64, 3.64, 4.09, 5.91, 5.45, 10.09, 5.36, 5.55, 2.73, 2.73],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Getting Plowed Again.',
       data: [4.45, 7.91, 2.55, 4.82, 5.09, 5.0, 5.91, 7.18, 7.0, 5.73, 7.64, 4.09, 2.45, 5.09, 2.55, 3.27, 4.0, 5.73, 5.73, 4.82],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [7.45, 2.73, 5.91, 2.36, 3.82, 3.91, 6.09, 4.91, 5.18, 3.45, 6.45, 5.27, 4.91, 2.82, 3.82, 3.73, 3.73, 2.36, 2.64, 2.73],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Football Szn',
       data: [3.73, 3.45, 5.09, 5.73, 3.82, 3.09, 3.0, 1.91, 3.09, 3.73, 3.64, 4.27, 3.09, 1.18, 5.91, 6.91, 6.09, 6.09, 2.36, 3.0],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -372,8 +386,8 @@ new Chart(document.getElementById('xwinsChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: { ...tooltipOpts, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) } } },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { min: 0, max: 12, ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Expected Category Wins', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { min: 0, max: 12, ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Expected Category Wins', color: '#6e6ea8' } }
     }
   }
 });
@@ -384,73 +398,73 @@ new Chart(document.getElementById('cumChart').getContext('2d'), {
   data: { labels: ["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8", "Wk 9", "Wk 10", "Wk 11", "Wk 12", "Wk 13", "Wk 14", "Wk 15", "Wk 16", "Wk 17", "Wk 18", "Wk 19", "Wk 20"], datasets: [{
       label: 'The Rosterbation Station',
       data: [7.5, 15.2, 20.7, 28.1, 35.2, 43.3, 51.0, 56.7, 62.7, 69.1, 78.2, 88.3, 96.2, 105.0, 111.9, 117.3, 122.5, 129.2, 135.4, 139.9],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Moniebol 🐳',
       data: [5.6, 12.4, 16.0, 23.2, 31.7, 39.0, 47.4, 56.4, 64.1, 70.7, 75.3, 82.2, 87.4, 93.5, 96.7, 101.6, 107.0, 115.1, 123.3, 131.2],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [4.0, 9.7, 13.4, 21.0, 28.6, 33.3, 39.2, 47.9, 53.5, 62.0, 66.5, 69.5, 77.3, 82.7, 90.0, 95.5, 101.8, 109.5, 119.5, 123.5],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Hatfield Hurlers',
       data: [6.7, 12.7, 18.9, 23.9, 32.7, 37.3, 41.6, 48.6, 53.5, 62.0, 68.5, 72.1, 79.3, 86.8, 93.7, 99.6, 105.5, 109.3, 114.9, 123.0],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [8.1, 13.4, 18.9, 26.7, 29.6, 36.5, 42.3, 47.9, 52.8, 58.3, 64.7, 71.7, 76.6, 82.5, 90.5, 98.6, 104.5, 111.5, 116.4, 124.3],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '@DoodlesAnalytics',
       data: [3.8, 9.9, 16.3, 23.0, 28.5, 36.3, 42.9, 45.3, 51.7, 56.5, 63.4, 71.6, 78.5, 84.6, 92.0, 97.8, 105.5, 110.6, 116.6, 124.1],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'OG9️⃣',
       data: [5.4, 10.4, 17.5, 19.1, 24.1, 29.5, 33.0, 38.1, 44.5, 51.6, 52.4, 57.7, 65.2, 72.3, 78.0, 84.7, 90.1, 96.3, 104.0, 111.4],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Tegridy',
       data: [3.8, 7.4, 16.4, 23.0, 29.9, 34.4, 39.9, 45.1, 52.7, 57.7, 61.9, 68.5, 74.2, 78.9, 85.2, 87.2, 93.9, 97.7, 103.3, 111.8],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Serafini Hit Squad',
       data: [9.0, 16.7, 24.8, 29.8, 33.4, 39.2, 44.9, 49.1, 53.1, 56.5, 63.1, 66.7, 70.8, 76.7, 82.2, 92.3, 97.6, 103.2, 105.9, 108.6],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Getting Plowed Again.',
       data: [4.5, 12.4, 14.9, 19.7, 24.8, 29.8, 35.7, 42.9, 49.9, 55.6, 63.3, 67.4, 69.8, 74.9, 77.5, 80.7, 84.7, 90.5, 96.2, 101.0],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [7.5, 10.2, 16.1, 18.5, 22.3, 26.2, 32.3, 37.2, 42.4, 45.8, 52.3, 57.5, 62.5, 65.3, 69.1, 72.8, 76.5, 78.9, 81.5, 84.3],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Football Szn',
       data: [3.7, 7.2, 12.3, 18.0, 21.8, 24.9, 27.9, 29.8, 32.9, 36.6, 40.3, 44.5, 47.6, 48.8, 54.7, 61.6, 67.7, 73.8, 76.2, 79.2],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -459,8 +473,8 @@ new Chart(document.getElementById('cumChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: { ...tooltipOpts, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Cumulative Expected Wins', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Cumulative Expected Wins', color: '#6e6ea8' } }
     }
   }
 });
@@ -478,7 +492,7 @@ const quadrantPlugin = {
     ctx.setLineDash([6, 4]);
     ctx.beginPath(); ctx.moveTo(x50, y.top); ctx.lineTo(x50, y.bottom); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x.left, y50); ctx.lineTo(x.right, y50); ctx.stroke();
-    ctx.font = 'bold 13px Segoe UI';
+    ctx.font = '9px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
     const lx = x.getPixelForValue((x.min + 50) / 2);
     const rx = x.getPixelForValue((x.max + 50) / 2);
@@ -495,9 +509,9 @@ const quadrantPlugin = {
       [rx, by + 8, 'Bad Pitching']
     ];
     labels.forEach(([px, py, text]) => {
-      ctx.fillStyle = 'rgba(30, 41, 59, 0.75)';
+      ctx.fillStyle = 'rgba(31,33,96, 0.75)';
       ctx.fillRect(px - 65, py - 12, 130, 24);
-      ctx.fillStyle = '#e2e8f0';
+      ctx.fillStyle = '#f4f4f4';
       ctx.fillText(text, px, py + 4);
     });
     ctx.restore();
@@ -510,8 +524,8 @@ const labelPlugin = {
     chart.data.datasets.forEach((ds, i) => {
       chart.getDatasetMeta(i).data.forEach(pt => {
         ctx.save();
-        ctx.font = '10px Segoe UI';
-        ctx.fillStyle = '#94a3b8';
+        ctx.font = '17px VT323, monospace';
+        ctx.fillStyle = '#9a9ac8';
         ctx.textAlign = 'center';
         ctx.fillText(ds.label, pt.x, pt.y - 14);
         ctx.restore();
@@ -524,73 +538,73 @@ new Chart(document.getElementById('scatterChart').getContext('2d'), {
   data: { datasets: [{
       label: 'The Rosterbation Station',
       data: [{x: 61.5, y: 55.1}],
-      backgroundColor: '#ef4444', borderColor: '#ef4444',
+      backgroundColor: '#ff3b3b', borderColor: '#ff3b3b',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Moniebol 🐳',
       data: [{x: 57.3, y: 52.0}],
-      backgroundColor: '#f97316', borderColor: '#f97316',
+      backgroundColor: '#ff8c1a', borderColor: '#ff8c1a',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [{x: 53.5, y: 49.4}],
-      backgroundColor: '#eab308', borderColor: '#eab308',
+      backgroundColor: '#ffd23f', borderColor: '#ffd23f',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Hatfield Hurlers',
       data: [{x: 56.1, y: 46.4}],
-      backgroundColor: '#22c55e', borderColor: '#22c55e',
+      backgroundColor: '#2ecc40', borderColor: '#2ecc40',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Grand Salami Time',
       data: [{x: 50.5, y: 53.1}],
-      backgroundColor: '#14b8a6', borderColor: '#14b8a6',
+      backgroundColor: '#1ee8b0', borderColor: '#1ee8b0',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: '@DoodlesAnalytics',
       data: [{x: 47.7, y: 55.8}],
-      backgroundColor: '#3b82f6', borderColor: '#3b82f6',
+      backgroundColor: '#3b6bff', borderColor: '#3b6bff',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'OG9️⃣',
       data: [{x: 52.7, y: 40.2}],
-      backgroundColor: '#8b5cf6', borderColor: '#8b5cf6',
+      backgroundColor: '#8a5cff', borderColor: '#8a5cff',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Tegridy',
       data: [{x: 47.0, y: 46.1}],
-      backgroundColor: '#ec4899', borderColor: '#ec4899',
+      backgroundColor: '#ff5ec8', borderColor: '#ff5ec8',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Serafini Hit Squad',
       data: [{x: 40.1, y: 50.5}],
-      backgroundColor: '#06b6d4', borderColor: '#06b6d4',
+      backgroundColor: '#3bd6ff', borderColor: '#3bd6ff',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Getting Plowed Again.',
       data: [{x: 40.0, y: 44.2}],
-      backgroundColor: '#f59e0b', borderColor: '#f59e0b',
+      backgroundColor: '#ffa41b', borderColor: '#ffa41b',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Ian Cumsler',
       data: [{x: 36.3, y: 33.9}],
-      backgroundColor: '#10b981', borderColor: '#10b981',
+      backgroundColor: '#19d27f', borderColor: '#19d27f',
       pointRadius: 8, pointHoverRadius: 11
     },
       {
       label: 'Football Szn',
       data: [{x: 25.4, y: 40.6}],
-      backgroundColor: '#a855f7', borderColor: '#a855f7',
+      backgroundColor: '#c45cff', borderColor: '#c45cff',
       pointRadius: 8, pointHoverRadius: 11
     }] },
   plugins: [quadrantPlugin, labelPlugin],
@@ -607,8 +621,8 @@ new Chart(document.getElementById('scatterChart').getContext('2d'), {
       }
     },
     scales: {
-      x: { title: { display: true, text: 'Batting Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } },
-      y: { title: { display: true, text: 'Pitching Win %', color: '#64748b' }, ticks: { color: '#94a3b8', callback: v => v + '%' }, grid: { color: '#334155' } }
+      x: { title: { display: true, text: 'Batting Win %', color: '#6e6ea8' }, ticks: { color: '#9a9ac8', callback: v => v + '%' }, grid: { color: '#2b2e7a' } },
+      y: { title: { display: true, text: 'Pitching Win %', color: '#6e6ea8' }, ticks: { color: '#9a9ac8', callback: v => v + '%' }, grid: { color: '#2b2e7a' } }
     }
   }
 });

@@ -6,6 +6,22 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Positional Strength</title>
+<!-- head-meta -->
+<meta name="description" content="How every 2026 roster stacks up, position by position.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Positional Strength">
+<meta property="og:description" content="How every 2026 roster stacks up, position by position.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/positional_strength_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
   .controls-row {
     display: flex;
@@ -15,18 +31,16 @@
     margin-bottom: 28px;
   }
   .ss-select {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #e2e8f0;
-    font-size: 0.92em;
-    padding: 10px 16px;
-    outline: none;
+    background: #0d0d2b;
+    border: 0;
+    color: #f4f4f4;
+    font-size: 20px;
+    padding: 8px 14px;
     cursor: pointer;
     min-width: 240px;
-    transition: border-color 0.15s;
+    box-shadow: inset 0 0 0 4px #000, inset 6px 6px 0 rgba(0,0,0,0.35);
   }
-  .ss-select:focus { border-color: #3b82f6; }
+  .ss-select:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
 
   /* ── Diamond section ─────────────────────────────────────────────── */
   .diamond-wrap {
@@ -45,48 +59,54 @@
     width: 100%;
     height: auto;
     display: block;
+    shape-rendering: crispEdges;
   }
+  #diamondSvg text { font-family: var(--ui); }
 
   /* ── Tooltip / player panel ──────────────────────────────────────── */
   .pos-panel {
     display: none;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
+    position: relative;
+    background: #1f2160;
+    border: 0;
+    margin: 4px;
     padding: 16px 20px;
     min-width: 220px;
     flex: 1;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
   }
   .pos-panel.visible { display: block; }
   .pos-panel-title {
-    font-size: 1em;
-    font-weight: 700;
-    color: #e2e8f0;
-    margin-bottom: 12px;
+    font-family: var(--ui);
+    font-size: 12px;
+    line-height: 1.5;
+    color: #f4f4f4;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
     display: flex;
     align-items: center;
     gap: 10px;
   }
   .pos-score-badge {
-    font-size: 0.78em;
-    font-weight: 800;
-    padding: 3px 9px;
-    border-radius: 20px;
+    font-family: var(--ui);
+    font-size: 9px;
+    padding: 5px 8px;
+    box-shadow: 2px 2px 0 #000;
   }
   .player-entry {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 7px 0;
-    border-bottom: 1px solid #0f172a;
-    font-size: 0.88em;
+    border-bottom: 2px dashed rgba(0,0,0,0.45);
+    font-size: 1em;
     gap: 8px;
   }
   .player-entry:last-child { border-bottom: none; }
-  .player-entry-name { color: #e2e8f0; font-weight: 600; flex: 1; }
-  .player-entry-pts  { color: #64748b; font-size: 0.85em; white-space: nowrap; }
-  .starter-dot { color: #22c55e; font-size: 0.7em; margin-right: 4px; }
-  .bench-dot   { color: #475569; font-size: 0.7em; margin-right: 4px; }
+  .player-entry-name { color: #f4f4f4; flex: 1; }
+  .player-entry-pts  { color: #9a9ac8; font-size: 0.9em; white-space: nowrap; }
+  .starter-dot { color: #2ecc40; font-size: 0.7em; margin-right: 4px; }
+  .bench-dot   { color: #5c5c94; font-size: 0.7em; margin-right: 4px; }
 
   /* ── Legend ──────────────────────────────────────────────────────── */
   .legend {
@@ -94,10 +114,10 @@
     gap: 18px;
     flex-wrap: wrap;
     margin-bottom: 32px;
-    font-size: 0.82em;
+    font-size: 0.95em;
   }
-  .legend-item { display: flex; align-items: center; gap: 6px; color: #94a3b8; }
-  .legend-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: #9a9ac8; }
+  .legend-dot  { width: 12px; height: 12px; flex-shrink: 0; box-shadow: 2px 2px 0 #000; }
 
   /* ── Position leaderboard ────────────────────────────────────────── */
   .leaderboard-row {
@@ -105,49 +125,48 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 10px;
-    font-size: 0.88em;
+    font-size: 1em;
   }
   .lb-team {
     width: 210px;
     flex-shrink: 0;
-    color: #e2e8f0;
-    font-weight: 600;
+    color: #f4f4f4;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .lb-bar-wrap {
     flex: 1;
-    background: #1e293b;
-    border-radius: 4px;
+    background: #000;
     height: 22px;
+    padding: 3px;
     overflow: hidden;
   }
   .lb-bar {
     height: 100%;
-    border-radius: 4px;
-    transition: width 0.4s ease;
     display: flex;
     align-items: center;
-    padding-left: 8px;
-    font-size: 0.78em;
-    font-weight: 700;
+    padding-left: 6px;
+    font-family: var(--ui);
+    font-size: 8px;
     color: #fff;
+    text-shadow: 1px 1px 0 #000;
     white-space: nowrap;
     min-width: 28px;
   }
   .lb-score {
     width: 36px;
     text-align: right;
-    color: #64748b;
-    font-size: 0.85em;
+    color: #9a9ac8;
+    font-size: 1em;
     flex-shrink: 0;
   }
 
-  .timestamp { font-size: 0.78em; color: #475569; margin-top: 8px; }
+  .timestamp { font-size: 0.9em; color: #6e6ea8; margin-top: 8px; }
+  .error-msg { color: #ff3b3b; }
 
   @media (max-width: 480px) {
-    .lb-team { width: 130px; font-size: 0.82em; }
+    .lb-team { width: 130px; font-size: 0.9em; }
     .ss-select { min-width: unset; width: 100%; }
   }
 </style>
@@ -165,8 +184,8 @@
   <!-- ── Diamond view ───────────────────────────────────────────────── -->
   <h3>Team Diamond</h3>
   <p class="section-desc">
-    Circle size = organizational strength at that position relative to the rest of the league.
-    Tap any circle to see the players behind the score.
+    Marker size = organizational strength at that position relative to the rest of the league.
+    Tap a marker to list the players behind the score.
   </p>
 
   <div class="controls-row">
@@ -176,10 +195,10 @@
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Strong (top tier)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Average</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Weak (bottom tier)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#334155;border:1px solid #475569"></div> No data</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2ecc40"></div> Strong (top tier)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffa41b"></div> Average</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff3b3b"></div> Weak (bottom tier)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2b2e7a;border:1px solid #5c5c94"></div> No data</div>
   </div>
 
   <div class="diamond-wrap">
@@ -194,7 +213,7 @@
 
   <!-- ── Position leaderboard ───────────────────────────────────────── -->
   <h3>Position Leaderboard</h3>
-  <p class="section-desc">Select a position to rank all 12 teams by organizational strength. Useful for finding trade partners.</p>
+  <p class="section-desc">All 12 teams ranked by organizational strength at the selected position.</p>
 
   <div class="controls-row">
     <select class="ss-select" id="posSelect">
@@ -219,22 +238,22 @@ const API_URL = 'https://gmujeqyxbpgqdde2ltoqdllwwq0wxfoq.lambda-url.us-west-2.o
 
 // Team colors — consistent with rest of site
 const TEAM_COLORS = {
-  'Aces 4 Days':               '#ec4899',
-  'Getting Plowed Again.':     '#22c55e',
-  'Los Basureros':             '#ef4444',
-  'Hatfield Hurlers':          '#14b8a6',
-  'Grab Em by the Tatis':      '#a855f7',
-  'Bob Witt Sex Machine':      '#f97316',
-  'Rickie Flower':             '#eab308',
-  'Moniebol \uD83D\uDC33':     '#10b981',
-  'Ian Cumsler':               '#3b82f6',
-  'OG9\uFE0F\u20E3':           '#8b5cf6',
-  '\u00AF\\_(ツ)_/\u00AF':     '#f59e0b',
-  'The Rosterbation Station':  '#06b6d4',
+  'Aces 4 Days':               '#ff5ec8',
+  'Getting Plowed Again.':     '#2ecc40',
+  'Los Basureros':             '#ff3b3b',
+  'Hatfield Hurlers':          '#1ee8b0',
+  'Grab Em by the Tatis':      '#c45cff',
+  'Bob Witt Sex Machine':      '#ff8c1a',
+  'Rickie Flower':             '#ffd23f',
+  'Moniebol \uD83D\uDC33':     '#19d27f',
+  'Ian Cumsler':               '#3b6bff',
+  'OG9\uFE0F\u20E3':           '#8a5cff',
+  '\u00AF\\_(ツ)_/\u00AF':     '#ffa41b',
+  'The Rosterbation Station':  '#3bd6ff',
 };
 
 function teamColor(name) {
-  return TEAM_COLORS[name] || '#64748b';
+  return TEAM_COLORS[name] || '#6e6ea8';
 }
 
 // ── Diamond layout ────────────────────────────────────────────────────────
@@ -254,9 +273,9 @@ const POSITIONS = [
 
 function scoreToRadius(s) { return 15 + (s / 100) * 27; }
 function scoreToColor(s) {
-  if (s >= 67) return '#22c55e';
-  if (s >= 33) return '#f59e0b';
-  return '#ef4444';
+  if (s >= 67) return '#2ecc40';
+  if (s >= 33) return '#ffa41b';
+  return '#ff3b3b';
 }
 
 function svgEl(tag, attrs) {
@@ -272,25 +291,25 @@ function renderDiamond(teamData) {
   // Outfield arc (visual only)
   svg.appendChild(svgEl('path', {
     d: 'M 30,80 Q 260,-30 490,80',
-    fill: 'none', stroke: '#1e293b', 'stroke-width': '2',
+    fill: 'none', stroke: '#2b2e7a', 'stroke-width': '4', 'stroke-dasharray': '8 4',
   }));
 
   // Base lines
   svg.appendChild(svgEl('polygon', {
     points: '260,470 440,295 260,120 80,295',
-    fill: 'none', stroke: '#1e293b', 'stroke-width': '2',
+    fill: 'none', stroke: '#2b2e7a', 'stroke-width': '4',
   }));
 
   // Home plate lines to catcher
   svg.appendChild(svgEl('line', {
     x1: 260, y1: 470, x2: 260, y2: 530,
-    stroke: '#1e293b', 'stroke-width': '1.5',
+    stroke: '#2b2e7a', 'stroke-width': '4',
   }));
 
   // RP bullpen line hint
   svg.appendChild(svgEl('line', {
     x1: 440, y1: 295, x2: 478, y2: 405,
-    stroke: '#1e293b', 'stroke-width': '1', 'stroke-dasharray': '4 4',
+    stroke: '#2b2e7a', 'stroke-width': '4', 'stroke-dasharray': '4 4',
   }));
 
   // Position circles
@@ -298,12 +317,13 @@ function renderDiamond(teamData) {
     const posData = teamData ? teamData[p.pos] : null;
     const score   = posData ? posData.score : 0;
     const r       = scoreToRadius(posData ? score : 0);
-    const fill    = posData ? scoreToColor(score) : '#334155';
-    const stroke  = posData ? fill : '#475569';
+    const fill    = posData ? scoreToColor(score) : '#2b2e7a';
+    const stroke  = posData ? fill : '#5c5c94';
 
-    const circle = svgEl('circle', {
-      cx: p.cx, cy: p.cy, r,
-      fill, 'fill-opacity': '0.8', stroke, 'stroke-width': '2',
+    // Square 8-bit marker, same footprint as the old circle (side = 2r).
+    const circle = svgEl('rect', {
+      x: p.cx - r, y: p.cy - r, width: 2 * r, height: 2 * r,
+      fill, 'fill-opacity': '0.85', stroke: '#000', 'stroke-width': '4',
     });
     circle.style.cursor = 'pointer';
     circle.addEventListener('click', () => showPanel(p.pos, p.label, posData, score, fill));
@@ -313,7 +333,7 @@ function renderDiamond(teamData) {
     const lbl = svgEl('text', {
       x: p.cx, y: p.cy + 4,
       'text-anchor': 'middle',
-      fill: '#fff', 'font-size': r > 26 ? '11' : '9', 'font-weight': '700',
+      fill: '#fff', 'font-size': r > 26 ? '12' : '9', stroke: '#000', 'stroke-width': '3', 'paint-order': 'stroke',
     });
     lbl.textContent = p.label;
     lbl.style.pointerEvents = 'none';
@@ -322,9 +342,9 @@ function renderDiamond(teamData) {
     // Score below circle (skip if no data)
     if (posData) {
       const scoreLbl = svgEl('text', {
-        x: p.cx, y: p.cy + r + 13,
+        x: p.cx, y: p.cy + r + 16,
         'text-anchor': 'middle',
-        fill: '#64748b', 'font-size': '9', 'font-weight': '600',
+        fill: '#9a9ac8', 'font-size': '9',
       });
       scoreLbl.textContent = Math.round(score);
       scoreLbl.style.pointerEvents = 'none';
@@ -342,13 +362,13 @@ function showPanel(pos, label, posData, score, color) {
   const badgeBg  = color + '22';
   const badgeTxt = color;
   title.innerHTML =
-    `<span style="color:${color};font-size:1.1em">${label === pos ? pos : label + ' / ' + pos}</span>` +
-    `<span class="pos-score-badge" style="background:${badgeBg};color:${badgeTxt};border:1px solid ${color}44">` +
+    `<span style="color:${color}">${label === pos ? pos : label + ' / ' + pos}</span>` +
+    `<span class="pos-score-badge" style="background:${badgeBg};color:${badgeTxt};border:2px solid ${color}">` +
       Math.round(score) + ' / 100' +
     `</span>`;
 
   if (!posData || !posData.players || posData.players.length === 0) {
-    players.innerHTML = '<div style="color:#475569;font-size:0.85em">No rostered players.</div>';
+    players.innerHTML = '<div style="color:#9a9ac8">No rostered players.</div>';
   } else {
     players.innerHTML = posData.players.map(p => `
       <div class="player-entry">
@@ -383,7 +403,7 @@ function renderLeaderboard(pos) {
           <span style="color:${color}">&#9679;</span> ${r.name}
         </div>
         <div class="lb-bar-wrap">
-          <div class="lb-bar" style="width:${width}%;background:${color}88;border:1px solid ${color}">
+          <div class="lb-bar" style="width:${width}%;background:${color}">
             ${r.score >= 12 ? Math.round(r.score) : ''}
           </div>
         </div>

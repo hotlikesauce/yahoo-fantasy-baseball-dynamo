@@ -6,180 +6,163 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Trade Analyzer - Summertime Sadness</title>
+<!-- head-meta -->
+<meta name="description" content="Evaluate trades with player values, category impact and draft pick analysis.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Trade Analyzer - Summertime Sadness">
+<meta property="og:description" content="Evaluate trades with player values, category impact and draft pick analysis.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/trade_analyzer.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
   body { min-height: 100vh; }
-  .subtitle { color: #64748b; font-size: 0.9em; margin-bottom: 24px; }
-  .no-data-banner {
-    background: #1e293b; border: 1px solid #f59e0b; border-radius: 12px;
-    padding: 24px; text-align: center; margin-bottom: 24px;
-  }
-  .no-data-banner h2 { color: #f59e0b; margin-bottom: 8px; }
-  .no-data-banner p { color: #94a3b8; }
+  .subtitle { color: var(--gray); margin-bottom: 24px; text-align: center; }
+  .no-data-banner { padding: 24px; text-align: center; margin: 4px 4px 28px; }
+  .no-data-banner h2 { color: var(--orange); margin: 0 0 12px; background: none; padding: 0; }
+  .no-data-banner p { color: var(--gray); }
 
   /* Trade builder */
   .trade-builder {
-    display: grid; grid-template-columns: 1fr 60px 1fr;
+    display: grid; grid-template-columns: minmax(0,1fr) 60px minmax(0,1fr);
     gap: 0; margin-bottom: 24px;
   }
-  .trade-side {
-    background: #1e293b; border-radius: 12px; padding: 20px;
-    border: 1px solid #334155;
-  }
+  .trade-side { padding: 20px; }
   .trade-arrow {
     display: flex; align-items: center; justify-content: center;
-    font-size: 2em; color: #3b82f6;
+    font-family: var(--ui); font-size: 22px; color: var(--gold); text-shadow: 3px 3px 0 var(--edge);
   }
   .trade-side h3 {
-    font-size: 1em; color: #94a3b8; margin-bottom: 12px;
-    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+    font-size: 11px; color: var(--cyan); margin: 0 0 14px; padding-bottom: 10px;
   }
   .team-select {
-    width: 100%; padding: 10px 14px; border-radius: 8px;
-    background: #0f172a; border: 1px solid #334155; color: #e2e8f0;
-    font-size: 0.95em; margin-bottom: 16px; cursor: pointer;
+    width: 100%; padding: 8px 12px;
+    background: var(--ink); border: 0; color: var(--white);
+    box-shadow: inset 0 0 0 3px var(--edge), inset 5px 5px 0 rgba(0,0,0,.35);
+    font-size: 21px; margin-bottom: 16px; cursor: pointer;
   }
-  .team-select:focus { outline: none; border-color: #3b82f6; }
+  .team-select:focus { outline: var(--px) solid var(--gold); outline-offset: 0; }
 
   /* Player list */
-  .player-list { max-height: 500px; overflow-y: auto; }
+  .player-list { max-height: 500px; overflow-y: auto; background: var(--ink); box-shadow: inset 0 0 0 3px var(--edge); scrollbar-width: thin; scrollbar-color: var(--dim) var(--ink); }
+  .player-list:empty { display: none; }
   .player-row {
     display: grid; grid-template-columns: 28px 1fr 60px 70px;
-    align-items: center; padding: 8px 10px; border-radius: 6px;
-    gap: 8px; cursor: pointer; transition: background 0.1s;
+    align-items: center; padding: 6px 10px;
+    gap: 8px; cursor: pointer;
   }
-  .player-row:hover { background: #334155; }
-  .player-row.selected { background: #1e3a5f; border: 1px solid #3b82f6; }
+  .player-row:hover { background: var(--panel-2); }
+  .player-row.selected { background: var(--panel-2); box-shadow: inset 4px 0 0 var(--gold); }
   .player-row input[type="checkbox"] { cursor: pointer; }
-  .player-name { font-size: 0.88em; }
-  .player-name .pos { color: #64748b; font-size: 0.85em; }
-  .player-value {
-    text-align: right; font-weight: 600; font-size: 0.85em;
-  }
-  .player-value.positive { color: #22c55e; }
-  .player-value.negative { color: #ef4444; }
-  .player-stats-mini { color: #64748b; font-size: 0.78em; text-align: right; }
+  .player-name { font-size: 1em; }
+  .player-name .pos { color: var(--gray-2); font-size: 0.9em; }
+  .player-value { text-align: right; font-size: 1em; }
+  .player-value.positive { color: var(--green); }
+  .player-value.negative { color: var(--red); }
+  .player-stats-mini { color: var(--gray-2); font-size: 0.85em; text-align: right; }
 
   .section-label {
-    font-size: 0.78em; text-transform: uppercase; color: #64748b;
-    letter-spacing: 0.05em; margin: 12px 0 6px; padding-bottom: 4px;
-    border-bottom: 1px solid #334155;
+    font-family: var(--ui); font-size: 8px; text-transform: uppercase; color: var(--gray);
+    margin: 16px 0 6px; padding-bottom: 8px;
+    background: repeating-linear-gradient(90deg, var(--panel-2) 0 4px, transparent 4px 8px) left bottom / 100% 2px no-repeat;
   }
 
   /* Draft picks */
   .draft-picks { margin-top: 12px; }
   .pick-row {
     display: flex; align-items: center; gap: 8px;
-    padding: 6px 10px; border-radius: 6px; cursor: pointer;
-    transition: background 0.1s;
+    padding: 4px 10px; cursor: pointer;
   }
-  .pick-row:hover { background: #334155; }
-  .pick-round { font-size: 0.88em; }
-  .pick-value-label { color: #64748b; font-size: 0.78em; margin-left: auto; }
+  .pick-row:hover { background: var(--panel-2); }
+  .pick-row.selected { background: var(--panel-2); box-shadow: inset 4px 0 0 var(--gold); }
+  .pick-round { font-size: 1em; }
+  .pick-value-label { color: var(--gray-2); font-size: 0.9em; margin-left: auto; }
 
   /* Analyze button */
   .analyze-btn {
-    display: block; width: 100%; padding: 14px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border: none; border-radius: 10px; color: white;
-    font-size: 1.05em; font-weight: 600; cursor: pointer;
-    margin-bottom: 24px; transition: opacity 0.15s;
+    display: block; width: calc(100% - 8px); margin: 4px 4px 28px; padding: 16px;
+    font-family: var(--ui); font-size: 12px; color: var(--edge);
+    background: var(--gold); border: 0; cursor: pointer;
+    box-shadow: 0 0 0 var(--px) var(--edge), inset -4px -4px 0 rgba(0,0,0,.3), inset 4px 4px 0 rgba(255,255,255,.4);
   }
-  .analyze-btn:hover { opacity: 0.9; }
-  .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .analyze-btn:hover { background: var(--orange); }
+  .analyze-btn:active { box-shadow: 0 0 0 var(--px) var(--edge), inset 4px 4px 0 rgba(0,0,0,.3); }
+  .analyze-btn:disabled { background: var(--panel); color: var(--dim); cursor: not-allowed; box-shadow: 0 0 0 var(--px) var(--edge), inset -4px -4px 0 rgba(0,0,0,.3); }
 
   /* Results */
   .results { display: none; }
   .results.show { display: block; }
 
-  .summary-card {
-    background: #1e293b; border-radius: 12px; padding: 24px;
-    border: 1px solid #334155; margin-bottom: 24px;
-  }
-  .summary-card h2 {
-    font-size: 1.1em; margin-bottom: 16px; color: #e2e8f0;
-  }
+  .summary-card { padding: 24px; margin: 4px 4px 28px; }
+  .summary-card h2 { font-size: 12px; margin: 0 0 18px; color: var(--gold); }
 
   /* Value bar */
   .value-comparison {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px;
+    display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 16px;
     align-items: center; margin-bottom: 16px;
   }
   .value-side { text-align: center; }
-  .value-side .team-label { font-size: 0.85em; color: #94a3b8; margin-bottom: 4px; }
-  .value-side .value-num {
-    font-size: 2em; font-weight: 700;
-  }
-  .value-side .value-num.positive { color: #22c55e; }
-  .value-side .value-num.negative { color: #ef4444; }
-  .value-side .value-num.neutral { color: #94a3b8; }
-  .vs-label { color: #64748b; font-size: 1.2em; font-weight: 700; }
+  .value-side .team-label { font-size: 1em; color: var(--gray); margin-bottom: 6px; }
+  .value-side .value-num { font-family: var(--ui); font-size: 26px; margin: 6px 0 8px; text-shadow: 3px 3px 0 var(--edge); }
+  .value-side .value-num.positive { color: var(--green); }
+  .value-side .value-num.negative { color: var(--red); }
+  .value-side .value-num.neutral { color: var(--gray); }
+  .vs-label { font-family: var(--ui); color: var(--gold); font-size: 14px; text-shadow: 2px 2px 0 var(--red); }
 
-  .verdict {
-    text-align: center; padding: 12px; border-radius: 8px;
-    font-weight: 600; font-size: 1em;
-  }
-  .verdict.fair { background: #14532d33; color: #22c55e; border: 1px solid #22c55e44; }
-  .verdict.lopsided { background: #7f1d1d33; color: #ef4444; border: 1px solid #ef444444; }
-  .verdict.slight { background: #78350f33; color: #f59e0b; border: 1px solid #f59e0b44; }
+  .verdict { text-align: center; padding: 12px; font-family: var(--ui); font-size: 10px; line-height: 1.8; background: var(--ink); }
+  .verdict.fair { color: var(--green); box-shadow: inset 0 0 0 3px var(--green); }
+  .verdict.lopsided { color: var(--red); box-shadow: inset 0 0 0 3px var(--red); }
+  .verdict.slight { color: var(--orange); box-shadow: inset 0 0 0 3px var(--orange); }
 
   /* Category impact table */
-  .cat-impact-table {
-    width: 100%; border-collapse: collapse; font-size: 0.88em;
-  }
-  .cat-impact-table th {
-    text-align: left; padding: 8px 12px; color: #64748b;
-    border-bottom: 1px solid #334155; font-weight: 600;
-    text-transform: uppercase; font-size: 0.85em;
-  }
-  .cat-impact-table td {
-    padding: 8px 12px; border-bottom: 1px solid #1e293b;
-  }
-  .cat-impact-table tr:hover td { background: #1e293b; }
-  .cat-improve { color: #22c55e; }
-  .cat-worsen { color: #ef4444; }
-  .cat-neutral { color: #94a3b8; }
-  .rank-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 4px;
-    font-size: 0.85em; font-weight: 600;
-  }
-  .rank-up { background: #14532d; color: #22c55e; }
-  .rank-down { background: #7f1d1d; color: #ef4444; }
-  .rank-same { background: #334155; color: #94a3b8; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #1e293b; }
-  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  .cat-impact-table { width: 100%; border-collapse: collapse; font-size: 1em; }
+  .cat-impact-table th { text-align: left; padding: 8px 12px; }
+  .cat-impact-table td { padding: 6px 12px; }
+  .cat-improve { color: var(--green); }
+  .cat-worsen { color: var(--red); }
+  .cat-neutral { color: var(--gray); }
+  .rank-badge { display: inline-block; padding: 2px 8px; font-size: 0.9em; }
+  .rank-up { background: var(--grass); color: var(--white); }
+  .rank-down { background: #7a1010; color: var(--red); }
+  .rank-same { background: var(--panel-2); color: var(--gray); }
 
   @media (max-width: 900px) {
-    .trade-builder { grid-template-columns: 1fr; }
+    .trade-builder { grid-template-columns: minmax(0,1fr); }
     .trade-arrow { transform: rotate(90deg); padding: 12px 0; }
+  }
+  @media (max-width: 600px) {
+    .value-side .value-num { font-size: 18px; }
+    .verdict { font-size: 9px; }
   }
 
   /* Loading overlay */
   #loading-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.78);
-    z-index: 300; display: flex; align-items: center; justify-content: center;
+    z-index: 1100; display: flex; align-items: center; justify-content: center;
   }
-  #loading-box {
-    background: #1e293b; border: 1px solid #475569; border-radius: 16px;
-    padding: 44px 52px; text-align: center; max-width: 380px; width: 90%;
-  }
-  #loading-box p { color: #e2e8f0; font-size: 1.1em; font-weight: 600; margin-bottom: 8px; }
-  #loading-box .loading-sub { color: #64748b; font-size: 0.88em; font-weight: 400; margin-bottom: 0; }
+  #loading-box { padding: 40px 36px; text-align: center; max-width: 380px; width: 90%; }
+  #loading-box p { color: var(--white); font-family: var(--ui); font-size: 11px; line-height: 1.8; margin-bottom: 10px; }
+  #loading-box .loading-sub { color: var(--gray); font-family: var(--data); font-size: 21px; margin-bottom: 0; }
   .spinner {
-    width: 52px; height: 52px; border: 4px solid #334155; border-top-color: #3b82f6;
-    border-radius: 50%; animation: spin 0.85s linear infinite; margin: 0 auto 24px;
+    width: 48px; height: 12px; margin: 0 auto 24px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0 12px, transparent 12px 18px);
+    animation: px-blink 0.9s steps(1) infinite;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 <div id="loading-overlay">
-  <div id="loading-box">
+  <div id="loading-box" class="px">
     <div class="spinner"></div>
     <p>Loading roster data</p>
-    <p class="loading-sub">Loading rosters from cache — should be quick!</p>
+    <p class="loading-sub">Fetching current rosters and 2027 draft picks.</p>
   </div>
 </div>
 <div id="nav"></div>
@@ -189,14 +172,14 @@
   <p class="page-subtitle">Trade Analyzer</p>
   <p class="subtitle">Evaluate trades with player values, category impact, and draft pick analysis</p>
 
-  <div id="no-data-banner" class="no-data-banner" style="display:none">
+  <div id="no-data-banner" class="no-data-banner px" style="display:none">
     <h2>No Roster Data Available</h2>
     <p>The 2026 season hasn't started yet. Run <code>python scripts/fetch_trade_data.py</code> once the season begins to pull live roster data.</p>
     <p style="margin-top:8px; font-size:0.85em">Team names and draft picks are available for planning.</p>
   </div>
 
   <div class="trade-builder">
-    <div class="trade-side" id="side-a">
+    <div class="trade-side px" id="side-a">
       <h3>Team A Sends</h3>
       <select class="team-select" id="team-a-select">
         <option value="">Select a team...</option>
@@ -206,7 +189,7 @@
       <div id="picks-a" class="draft-picks"></div>
     </div>
     <div class="trade-arrow">&harr;</div>
-    <div class="trade-side" id="side-b">
+    <div class="trade-side px" id="side-b">
       <h3>Team B Sends</h3>
       <select class="team-select" id="team-b-select">
         <option value="">Select a team...</option>
@@ -220,36 +203,36 @@
   <button class="analyze-btn" id="analyze-btn" disabled>Analyze Trade</button>
 
   <div class="results" id="results">
-    <div class="summary-card">
+    <div class="summary-card px">
       <h2>Trade Summary</h2>
       <div class="value-comparison">
         <div class="value-side">
           <div class="team-label" id="summary-team-a-label"></div>
           <div class="value-num" id="summary-value-a"></div>
-          <div style="color:#64748b;font-size:0.85em" id="summary-detail-a"></div>
+          <div style="color:var(--gray-2)" id="summary-detail-a"></div>
         </div>
         <div class="vs-label">VS</div>
         <div class="value-side">
           <div class="team-label" id="summary-team-b-label"></div>
           <div class="value-num" id="summary-value-b"></div>
-          <div style="color:#64748b;font-size:0.85em" id="summary-detail-b"></div>
+          <div style="color:var(--gray-2)" id="summary-detail-b"></div>
         </div>
       </div>
       <div class="verdict" id="verdict"></div>
     </div>
 
-    <div class="summary-card" id="cat-impact-card">
+    <div class="summary-card px" id="cat-impact-card">
       <h2>Category Impact</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px">
         <div>
-          <h3 style="font-size:0.9em;color:#94a3b8;margin-bottom:12px" id="cat-team-a-label"></h3>
+          <h3 style="font-size:10px;margin:0 0 12px" id="cat-team-a-label"></h3>
           <table class="cat-impact-table" id="cat-table-a">
             <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Change</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
         <div>
-          <h3 style="font-size:0.9em;color:#94a3b8;margin-bottom:12px" id="cat-team-b-label"></h3>
+          <h3 style="font-size:10px;margin:0 0 12px" id="cat-team-b-label"></h3>
           <table class="cat-impact-table" id="cat-table-b">
             <thead><tr><th>Category</th><th>Before</th><th>After</th><th>Change</th></tr></thead>
             <tbody></tbody>
@@ -377,7 +360,7 @@
         <div class="player-value ${p.value > 0 ? 'positive' : ''}">${p.value > 0 ? p.value.toFixed(1) : '—'}</div>
         <div class="player-stats-mini">${p.rank ? 'AR #' + p.rank : ''}${p.adp && p.adp < (p.rank || 9999) - 30 ? ' · ADP #' + p.adp : ''}</div>
       </div>`).join('') ||
-      '<div style="color:#64748b;padding:16px;text-align:center;font-size:0.9em">No players found</div>';
+      '<div style="color:#6e6ea8;padding:16px;text-align:center;font-size:0.9em">No players found</div>';
 
     // Picks: use actual owned picks from draft capital (rounds 3+ only, 1-2 are keeper rounds)
     const ownedPicks = PICKS_BY_NAME[teamName];
@@ -398,7 +381,7 @@
         }
       });
       picksDiv.innerHTML = rows.join('') ||
-        '<div style="color:#64748b;padding:12px;font-size:0.85em;text-align:center">No 2027 picks owned (Rd 3+)</div>';
+        '<div style="color:#6e6ea8;padding:12px;font-size:0.85em;text-align:center">No 2027 picks owned (Rd 3+)</div>';
     } else {
       // Fallback: rounds 3-22
       picksDiv.innerHTML = Array.from({length: TOTAL_ROUNDS - 2}, (_, i) => i + 3).map(r => {

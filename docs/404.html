@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- GitHub Pages serves this file for a missing URL at ANY depth
+     (/foo/bar/baz), so every relative link resolves from the site root. -->
+<base href="/">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
+<link rel="stylesheet" href="common.css">
+<title>Page Not Found - Summertime Sadness</title>
+<!-- head-meta -->
+<meta name="description" content="Stats, standings, history and tools for the Summertime Sadness fantasy baseball league, est. 2007.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Page Not Found - Summertime Sadness">
+<meta property="og:description" content="Stats, standings, history and tools for the Summertime Sadness fantasy baseball league, est. 2007.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/404.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<style>
+  .lost {
+    min-height: calc(100dvh - var(--nav-h) - 220px);
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 48px 20px;
+  }
+  .lost .code {
+    font-family: var(--ui);
+    font-size: clamp(48px, 12vw, 96px);
+    line-height: 1;
+    color: var(--gold);
+    text-shadow: 4px 4px 0 var(--orange), 8px 8px 0 var(--red), 12px 12px 0 var(--edge);
+  }
+  .lost h1 { margin: 18px 0 0; font-size: clamp(14px, 2.4vw, 22px); color: var(--white); text-shadow: 3px 3px 0 var(--edge); }
+  .lost p { color: var(--gray); max-width: 42ch; margin: 0 auto; }
+  .lost .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .lost .actions a { text-decoration: none; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<script src="nav.js"></script>
+
+<main class="lost">
+  <div class="code" aria-hidden="true">404</div>
+  <h1>Page not found</h1>
+  <p>This page doesn't exist. It may have been renamed for a new season.</p>
+  <div class="actions">
+    <a class="btn-px active" href="index.html" data-blip>&#9654; HOME</a>
+    <a class="btn-px" href="all_time_rankings.html" data-blip>RECORDS</a>
+    <a class="btn-px" href="manager_profiles.html" data-blip>MANAGERS</a>
+  </div>
+</main>
+</body>
+</html>

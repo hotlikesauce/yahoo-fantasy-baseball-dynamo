@@ -6,45 +6,73 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26BE;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Playoff Hub</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="2026 playoff bracket, title odds and matchup predictions.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Playoff Hub">
+<meta property="og:description" content="2026 playoff bracket, title odds and matchup predictions.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/playoff_hub_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
-  /* Three time windows. Validated against surface #1e293b on all pairs:
+  /* Three time windows. Validated against surface #1f2160 on all pairs:
      lightness band, chroma floor, CVD separation, normal-vision floor and
      contrast all pass. */
   :root {
-    --season: #2f77d6;
-    --l8:     #14a89a;
-    --l4:     #d97706;
-    --good:   #14a89a;
-    --bad:    #d97706;
+    --season: #3a62e8;
+    --l8:     #1cd6a0;
+    --l4:     #e08a00;
+    --good:   #1cd6a0;
+    --bad:    #e08a00;
+    /* Notched pixel frame, same recipe as .px in common.css. */
+    --frame: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000,
+             inset 0 4px 0 0 rgba(255,255,255,.12), inset 0 -4px 0 0 rgba(0,0,0,.35);
   }
+  /* VT323 ships one weight; never let the browser smear a fake bold. */
+  body { font-synthesis: none; }
+  b, strong { font-weight: normal; color: var(--white); }
+  .card b { color: var(--gold); }
 
-  .stamp { text-align: center; color: #64748b; font-size: 0.86em; margin: -14px 0 22px; }
+  .stamp { text-align: center; color: #6e6ea8; font-size: 0.86em; margin: -14px 0 22px; }
 
-  .banner {
-    border-radius: 10px; padding: 12px 16px; margin-bottom: 22px;
-    font-size: 0.9em; line-height: 1.55;
+  /* Status box. Resets the shared .banner (a dashed level heading). */
+  .banner.live, .banner.final {
+    display: block; margin: 4px 4px 26px; padding: 14px 18px;
+    font-size: 0.95em; line-height: 1.3; box-shadow: var(--frame);
   }
-  .banner.live  { background: #d9770618; border: 1px solid #d9770666; color: #fbbf24; }
-  .banner.final { background: #14a89a18; border: 1px solid #14a89a66; color: #5eead4; }
+  .banner.live::before, .banner.live::after,
+  .banner.final::before, .banner.final::after { content: none; }
+  .banner.live  { background: #3a2a10; color: #ffe066; }
+  .banner.final { background: #10332f; color: #6ff5dc; }
+  .banner.live b  { color: var(--gold); }
+  .banner.final b { color: var(--green); }
 
   /* ── Seeding board ───────────────────────────────────────────────────── */
   .seedtbl td, .seedtbl th { font-variant-numeric: tabular-nums; }
-  .seedtbl tr.in td { background: #14a89a10; }
-  .seedtbl td.sd { font-weight: 800; color: #38bdf8; width: 44px; }
-  .seedtbl tr.out td.sd { color: #475569; }
-  .seedtbl td.mgr { font-weight: 700; color: #e2e8f0; }
-  .seedtbl td.tm { color: #64748b; font-size: 0.86em; }
+  .seedtbl tr.in td { background: #1cd6a010; }
+  .seedtbl td.sd { color: #5ce1ff; width: 44px; }
+  .seedtbl tr.out td.sd { color: #5c5c94; }
+  .seedtbl td.mgr { color: #f4f4f4; }
+  .seedtbl td.tm { color: #6e6ea8; font-size: 0.86em; }
   .seedtbl tr.cut td {
-    background: #0f172a; border-bottom: 2px solid var(--bad);
-    color: var(--bad); font-size: 0.68em; font-weight: 800;
-    letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px;
+    background: #0d0d2b; border-bottom: 4px solid var(--bad);
+    color: var(--bad); font-family: var(--ui); font-size: 8px;
+    letter-spacing: 1px; text-transform: uppercase; padding: 8px 12px;
     text-align: center;
   }
-  .seedtbl tr.cut:hover td { background: #0f172a; }
-  .bye { font-size: 0.66em; font-weight: 800; letter-spacing: .06em; padding: 2px 6px;
-         border-radius: 4px; background: #2f77d622; color: #93c5fd;
-         border: 1px solid #2f77d666; text-transform: uppercase; }
+  .seedtbl tr.cut:hover td { background: #0d0d2b; }
+  .bye { font-family: var(--ui); font-size: 7px; padding: 3px 5px; vertical-align: 2px;
+         background: #3a62e844; color: #a8c4ff; box-shadow: 2px 2px 0 #000;
+         text-transform: uppercase; white-space: nowrap; }
 
   /* ── Bracket ─────────────────────────────────────────────────────────── */
   .bracket {
@@ -52,49 +80,48 @@
     gap: 18px; align-items: start; margin-bottom: 8px;
   }
   .rnd-head {
-    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.09em;
-    color: #64748b; font-weight: 800; margin-bottom: 10px;
+    font-family: var(--ui); font-size: 8px; line-height: 1.6; text-transform: uppercase;
+    letter-spacing: 1px; color: #9a9ac8; margin-bottom: 12px;
   }
   .bx {
-    background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-    padding: 10px 12px; margin-bottom: 12px;
+    background: #1f2160; box-shadow: var(--frame);
+    padding: 10px 14px; margin: 4px 4px 16px;
   }
-  .bx.slot { border-style: dashed; color: #64748b; }
+  .bx.slot { background: #16163f; color: #6e6ea8; }
   .bx-side {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 8px; padding: 5px 0; font-size: 0.9em;
+    gap: 8px; padding: 4px 0; font-size: 0.95em;
   }
-  .bx-side + .bx-side { border-top: 1px solid #334155; }
+  .bx-side + .bx-side { border-top: 2px dashed #000; }
   .bx-seed {
-    display: inline-block; width: 20px; text-align: center; font-weight: 800;
-    font-size: 0.78em; color: #64748b;
+    display: inline-block; width: 22px; text-align: center;
+    font-family: var(--ui); font-size: 8px; color: #6e6ea8;
   }
-  .bx-name { flex: 1; color: #e2e8f0; font-weight: 600; overflow-wrap: anywhere; }
+  .bx-name { flex: 1; color: #f4f4f4; overflow-wrap: anywhere; }
   .bx-side.won .bx-name { color: var(--good); }
-  .bx-side.lost .bx-name { color: #64748b; }
+  .bx-side.lost .bx-name { color: #6e6ea8; }
   .bx-odds {
-    font-variant-numeric: tabular-nums; font-weight: 700; color: #93c5fd;
-    font-size: 0.9em;
+    font-variant-numeric: tabular-nums; font-family: var(--ui); font-size: 10px; color: #a8c4ff;
   }
-  .bx-foot { font-size: 0.72em; color: #64748b; margin-top: 6px; }
+  .bx-foot { font-size: 0.8em; color: #9a9ac8; margin-top: 6px; }
 
   /* ── Matchup prediction card ─────────────────────────────────────────── */
   .mucard {
-    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
-    padding: 18px 20px; margin-bottom: 18px;
+    background: #1f2160; box-shadow: var(--frame);
+    padding: 18px 20px; margin: 4px 4px 24px;
   }
   .mu-when {
-    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em;
-    color: #64748b; font-weight: 800; margin-bottom: 12px;
+    font-family: var(--ui); font-size: 8px; text-transform: uppercase; letter-spacing: 1px;
+    color: #9a9ac8; margin-bottom: 14px;
   }
   .mu-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .mu-team { flex: 1 1 150px; min-width: 0; }
   .mu-team.r { text-align: right; }
-  .mu-mgr { font-size: 1.15em; font-weight: 800; color: #e2e8f0; }
-  .mu-tm { font-size: 0.78em; color: #64748b; overflow-wrap: anywhere; }
+  .mu-mgr { font-family: var(--ui); font-size: 12px; line-height: 1.5; color: #f4f4f4; margin-top: 6px; }
+  .mu-tm { font-size: 0.85em; color: #9a9ac8; overflow-wrap: anywhere; }
   .mu-pct {
-    font-size: 1.9em; font-weight: 800; font-variant-numeric: tabular-nums;
-    line-height: 1.1;
+    font-family: var(--ui); font-size: 24px; font-variant-numeric: tabular-nums;
+    line-height: 1.2; text-shadow: 3px 3px 0 #000; margin-bottom: 6px;
   }
   .mu-l .mu-pct { color: var(--season); }
   .mu-r .mu-pct { color: var(--l4); }
@@ -106,82 +133,81 @@
   .mu-ml span { display: flex; flex-direction: column; line-height: 1.15; }
   .mu-r .mu-ml span { align-items: flex-end; }
   .mu-ml i {
-    font-style: normal; font-size: 0.62em; text-transform: uppercase;
-    letter-spacing: 0.08em; color: #64748b; font-weight: 700;
+    font-style: normal; font-family: var(--ui); font-size: 7px; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #6e6ea8; margin-bottom: 3px;
   }
-  .pr-fair  { font-size: 0.9em; font-weight: 700; color: #64748b; }
-  .pr-vegas { font-size: 0.9em; font-weight: 800; color: #cbd5e1; }
-  .ml { font-variant-numeric: tabular-nums; color: #94a3b8; font-weight: 700; }
-  .ml.vegas { color: #e2e8f0; font-weight: 800; }
-  .mu-vs { color: #475569; font-weight: 800; font-size: 0.85em; }
+  .pr-fair  { font-size: 0.9em; color: #9a9ac8; }
+  .pr-vegas { font-size: 0.95em; color: #c8c8e8; }
+  .ml { font-variant-numeric: tabular-nums; color: #9a9ac8; }
+  .ml.vegas { color: #f4f4f4; }
+  .mu-vs { color: #5c5c94; font-family: var(--ui); font-size: 9px; }
 
   .probbar {
-    display: flex; height: 20px; border-radius: 6px; overflow: hidden;
-    margin: 14px 0 6px; background: #0f172a;
+    display: flex; height: 20px; overflow: hidden;
+    margin: 14px 0 6px; background: #0d0d2b; box-shadow: 0 0 0 4px #000;
   }
   .probbar i { display: block; height: 100%; }
-  .probbar i.a { background: var(--season); }
+  .probbar i.a { background: var(--season); border-right: 4px solid #000; }
   .probbar i.b { background: var(--l4); }
   .probfoot {
-    display: flex; justify-content: space-between; font-size: 0.76em;
-    color: #64748b; font-variant-numeric: tabular-nums;
+    display: flex; justify-content: space-between; gap: 8px; font-size: 0.85em;
+    color: #9a9ac8; font-variant-numeric: tabular-nums; margin-top: 8px;
   }
 
-  .windows { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+  .windows { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 4px; }
   .win-chip {
-    border: 1px solid #334155; border-radius: 8px; padding: 7px 11px;
-    font-size: 0.8em; background: #0f172a; flex: 1 1 110px;
+    border: 2px solid #2b2e7a; padding: 8px 11px;
+    font-size: 0.85em; background: #0d0d2b; flex: 1 1 110px;
     font-family: inherit; text-align: left; color: inherit;
-    cursor: pointer; transition: border-color .15s, background .15s;
+    cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45);
   }
-  .win-chip:hover { background: #16233a; }
-  .win-chip:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+  .win-chip:hover { background: #16163f; }
+  .win-chip:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
   /* The selected window drives the category bars below. A tick plus the filled
      background carry that state, so the choice is never signalled by hue alone. */
-  .win-chip.active { background: #16233a; }
+  .win-chip.active { background: #2b2e7a; box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 3px 3px 0 #000; }
   .win-chip.active .v { color: #fff; }
-  .win-chip .k .tick { margin-left: auto; opacity: 0; font-size: 1.05em; line-height: 1; }
+  .win-chip .k .tick { margin-left: auto; opacity: 0; font-size: 1.4em; line-height: 1; }
   .win-chip.active .k .tick { opacity: 1; }
   .win-chip .k {
-    font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.06em;
-    font-weight: 800; display: flex; align-items: center; gap: 6px;
+    font-family: var(--ui); font-size: 7px; line-height: 1.6; text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 6px;
   }
-  .win-chip .k i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .win-chip .k i { width: 8px; height: 8px; display: inline-block; flex: none; }
   .win-chip .v {
-    font-variant-numeric: tabular-nums; color: #e2e8f0; font-weight: 700;
-    margin-top: 4px; font-size: 1.15em;
+    font-variant-numeric: tabular-nums; color: #f4f4f4;
+    margin-top: 6px; font-size: 1.25em;
   }
-  .win-chip .s { color: #64748b; font-size: 0.9em; }
+  .win-chip .s { color: #9a9ac8; font-size: 0.95em; }
 
   .thin-warn {
-    font-size: 0.74em; color: #fbbf24; background: #d9770614;
-    border-left: 2px solid #d9770688; border-radius: 0 6px 6px 0;
-    padding: 6px 9px; margin: 6px 0 8px; line-height: 1.45;
+    font-size: 0.85em; color: #ffe066; background: #e08a0014;
+    border-left: 4px solid #e08a00;
+    padding: 6px 9px; margin: 6px 0 8px; line-height: 1.25;
   }
 
   /* Per-category strip */
   .cats { margin-top: 14px; }
   .catrow {
     display: grid; grid-template-columns: 46px 1fr 46px; gap: 10px;
-    align-items: center; padding: 3px 0; font-size: 0.8em;
+    align-items: center; padding: 3px 0; font-size: 0.9em;
   }
-  .catrow .cn { color: #94a3b8; font-weight: 700; }
+  .catrow .cn { color: #9a9ac8; }
   .catrow .cv {
-    text-align: right; font-variant-numeric: tabular-nums; color: #cbd5e1;
-    font-weight: 600;
+    text-align: right; font-variant-numeric: tabular-nums; color: #c8c8e8;
   }
   .cbar {
-    position: relative; height: 12px; background: #0f172a; border-radius: 3px;
-    overflow: hidden;
+    position: relative; height: 12px; background: #0d0d2b;
+    overflow: hidden; box-shadow: 0 0 0 2px #000;
   }
   .cbar i { position: absolute; top: 0; bottom: 0; display: block; }
-  /* 2px of the card surface between the two fills - without it the boundary
+  /* 2px of black between the two fills - without it the boundary
      that carries the whole value reads as a colour change, not an edge */
-  .cbar i.a { background: var(--season); left: 0; border-right: 2px solid #1e293b; }
+  .cbar i.a { background: var(--season); left: 0; border-right: 2px solid #000; }
   .cbar i.b { background: var(--l4); right: 0; }
   .cbar .mid {
-    position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
-    background: #94a3b8; opacity: .55; z-index: 2;
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+    background: #f4f4f4; opacity: .5; z-index: 2;
   }
 
   .picker {
@@ -189,25 +215,30 @@
     margin-bottom: 16px;
   }
   .picker select {
-    background: #1e293b; color: #e2e8f0; border: 1px solid #334155;
-    border-radius: 8px; padding: 9px 12px; font-family: inherit; font-size: 0.9em;
+    background: #2b2e7a; color: #f4f4f4; border: 0;
+    padding: 9px 12px; font-family: inherit; font-size: 1em;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 3px 3px 0 #000;
   }
-  .picker select:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
-  .picker label { color: #64748b; font-size: 0.82em; font-weight: 700;
-                  text-transform: uppercase; letter-spacing: .07em; }
+  .picker select:focus-visible { outline: 4px solid var(--gold); outline-offset: 2px; }
+  .picker label { color: #9a9ac8; font-family: var(--ui); font-size: 8px;
+                  text-transform: uppercase; letter-spacing: 1px; }
 
-  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 12px; font-size: 0.84em; }
-  .legend span { display: inline-flex; align-items: center; gap: 7px; color: #cbd5e1; }
-  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 12px; font-size: 0.9em; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; color: #c8c8e8; }
+  .legend i { width: 12px; height: 12px; display: inline-block; box-shadow: 2px 2px 0 #000; }
 
-  .loading { text-align: center; color: #64748b; padding: 60px 0; }
+  .loading { text-align: center; color: #9a9ac8; padding: 60px 0; font-family: var(--ui); font-size: 10px; }
   .err {
-    background: #d9770618; border: 1px solid #d9770666; border-radius: 10px;
-    padding: 14px 16px; color: #fbbf24; font-size: 0.9em;
+    background: #3a2a10; box-shadow: var(--frame); margin: 4px;
+    padding: 14px 16px; color: #ffe066; font-size: 0.95em;
   }
 
   @media (max-width: 860px) {
     .bracket { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .mu-pct { font-size: 18px; }
+    .mu-mgr { font-size: 10px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -268,12 +299,9 @@
   <h3 id="roundHead">This Round</h3>
   <p class="section-desc" style="max-width:900px;">
     Each matchup predicted three ways &mdash; the whole season, the last eight weeks, and the last four
-    &mdash; plus a blend that weights them <span id="blendTxt"></span>. When the three disagree, that
-    disagreement <em>is</em> the story: a team that is much better over four weeks than over twenty is
-    either genuinely transformed or on a heater about to end.
-    <strong>Click any of the four boxes</strong> to switch the whole card to that window &mdash; the
-    headline odds, the win/loss bar and every category bar all move together &mdash; and watch
-    which categories are actually doing the work.</p>
+    &mdash; plus a blend that weights them <span id="blendTxt"></span>.
+    <strong>Click a box</strong> to switch the card's odds, win/loss bar and category bars to that
+    window.</p>
   <p class="section-desc" style="max-width:900px;">
   </p>
   <div id="round"></div>
@@ -293,23 +321,23 @@
 
   <h3>How the Prediction Works</h3>
   <div class="card" style="max-width:900px;">
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+    <p style="line-height:1.7;color:#c8c8e8;font-size:0.92em;margin-bottom:12px;">
       <b>A week is drawn whole.</b> To play one matchup, the model picks a week each team actually
       had and scores its twelve categories against the other's. Drawing the whole week matters: a
       team's ERA, WHIP and K/9 all move together with how its starters went, and a model that drew
       each category on its own would happily deal a team its best ERA of the year alongside its
       fewest strikeouts &mdash; a week that has never happened and never will.
     </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+    <p style="line-height:1.7;color:#c8c8e8;font-size:0.92em;margin-bottom:12px;">
       <b>The innings rule is simulated, not smoothed over.</b> A drawn week under 50 IP forfeits all
       five pitching categories, exactly as Yahoo scores it. Managers who habitually run short carry
       that risk into their odds rather than getting credit for tidy rate stats posted on 35 innings.
     </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+    <p style="line-height:1.7;color:#c8c8e8;font-size:0.92em;margin-bottom:12px;">
       <b>Ties go to the better seed</b>, which is the league's rule. A 6&ndash;6 week is not rare here,
       so it is worth knowing which way it falls before it happens.
     </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin-bottom:12px;">
+    <p style="line-height:1.7;color:#c8c8e8;font-size:0.92em;margin-bottom:12px;">
       <b>Odds are American moneyline.</b> Negative is the favourite &mdash; <b>&minus;150</b> means
       risk 150 to win 100; positive is the dog &mdash; <b>+200</b> means 100 returns 200. A matchup
       is priced two ways, because somebody advances. A 6&ndash;6 week is a real result, but it is
@@ -318,7 +346,7 @@
       team wins it &mdash; the caption under the bar says how much of the favourite's number arrived
       that way.
     </p>
-    <p style="line-height:1.7;color:#cbd5e1;font-size:0.92em;margin:0;">
+    <p style="line-height:1.7;color:#c8c8e8;font-size:0.92em;margin:0;">
       <b>What it does not know.</b> Injuries, call-ups, who is actually setting a lineup in September,
       and the two-start weeks that decide most pitching categories. A two-week window is eleven weeks
       of noise short of meaning anything on its own, which is why it is shown next to the season
@@ -328,7 +356,7 @@
 
   <p class="section-desc" style="margin-top:24px;">
     The regular-season race that produced this bracket is preserved on the
-    <a href="playoff_scenarios_2026.html" style="color:#38bdf8">week 22 scenarios page</a>.
+    <a href="playoff_scenarios_2026.html" style="color:#5ce1ff">week 22 scenarios page</a>.
   </p>
 </div>
 
@@ -342,8 +370,8 @@
 var JSON_PATH = 'data/playoff_hub_2026.json';
 var D = null;
 var C = {
-  ink: '#e2e8f0', mute: '#94a3b8', dim: '#64748b', grid: '#33415566',
-  season: '#2f77d6', l8: '#14a89a', l4: '#d97706', surface: '#1e293b'
+  ink: '#f4f4f4', mute: '#9a9ac8', dim: '#6e6ea8', grid: '#2b2e7a66',
+  season: '#3a62e8', l8: '#1cd6a0', l4: '#e08a00', surface: '#1f2160'
 };
 /**
  * Blue and orange are RESERVED for the two teams - every bar on the card means
@@ -365,9 +393,9 @@ var C = {
 var WINDOW_COLOR = {
   blend:  '#facc15',   // yellow      - the default composite
   season: '#a5b4fc',   // periwinkle  - light, so it cannot read as team blue
-  live:   '#a855f7',   // violet      - only present while a week is running
-  last8:  '#14a89a',   // teal
-  last4:  '#f472b6'    // pink        - the hot, most recent window
+  live:   '#c45cff',   // violet      - only present while a week is running
+  last8:  '#1cd6a0',   // teal
+  last4:  '#ff86d8'    // pink        - the hot, most recent window
 };
 var WINDOW_LABEL = { live: 'Live', season: 'Season', last8: 'Last 8', last4: 'Last 4', blend: 'Blended' };
 // Chip order. 'blend' is included so the default view is reachable again
@@ -746,11 +774,11 @@ function renderOdds(d) {
 
   document.getElementById('oddsBody').innerHTML = rows.map(function (r) {
     return '<tr>' +
-      '<td style="font-weight:800;color:#38bdf8">' + r.s.seed + '</td>' +
-      '<td style="font-weight:700">' + esc(r.s.manager) + '</td>' +
+      '<td style="color:#5ce1ff">' + r.s.seed + '</td>' +
+      '<td>' + esc(r.s.manager) + '</td>' +
       '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.semi) + '</td>' +
       '<td style="text-align:right;font-variant-numeric:tabular-nums">' + pct(r.o.final) + '</td>' +
-      '<td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:800;color:#5eead4">' +
+      '<td style="text-align:right;font-variant-numeric:tabular-nums;color:#6ff5dc">' +
         pct(r.o.title) + '</td>' +
       '<td style="text-align:right" class="ml vegas">' + r.vegas + '</td>' +
     '</tr>';
@@ -776,7 +804,7 @@ function renderOdds(d) {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0f172a', borderColor: '#334155', borderWidth: 1,
+          backgroundColor: '#0d0d2b', borderColor: '#2b2e7a', borderWidth: 1,
           titleColor: C.ink, bodyColor: C.mute, padding: 10,
           callbacks: {
             label: function (i) { return 'Wins it ' + vals[i.dataIndex].toFixed(1) + '%'; },
@@ -804,7 +832,7 @@ function renderOdds(d) {
       afterDatasetsDraw: function (chart) {
         var ctx = chart.ctx;
         ctx.save();
-        ctx.font = '700 12px "Segoe UI", system-ui, sans-serif';
+        ctx.font = '18px VT323, "Courier New", monospace';
         ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         chart.getDatasetMeta(0).data.forEach(function (bar, i) {
           ctx.fillText(vals[i].toFixed(1) + '%', bar.x + 8, bar.y);
@@ -847,7 +875,7 @@ function matchupCard(a, b, when, res) {
     var on = win === lead;
     return '<button type="button" class="win-chip' + (on ? ' active' : '') + '"' +
       ' data-win="' + win + '" aria-pressed="' + on + '"' +
-      ' style="border-color:' + (on ? WINDOW_COLOR[win] : '#334155') + '">' +
+      ' style="border-color:' + (on ? WINDOW_COLOR[win] : '#2b2e7a') + '">' +
       '<div class="k" style="color:' + WINDOW_COLOR[win] + '">' +
         '<i style="background:' + WINDOW_COLOR[win] + '"></i>' + WINDOW_LABEL[win] +
         (D.window_weeks[win] ? ' (' + D.window_weeks[win].length + 'w)' : '') +
@@ -886,7 +914,7 @@ function matchupCard(a, b, when, res) {
       // The tie is a priceable outcome, not a footnote - it is the third leg of
       // the market, and at 8% it is worth more than most people assume.
       '<span>' + pct(v.ties) + ' of that is a 6&ndash;6 week &rarr; ' +
-        esc(tb.who.manager) + ' <span style="color:#475569">(' + tb.why + ')</span></span>' +
+        esc(tb.who.manager) + ' <span style="color:#5c5c94">(' + tb.why + ')</span></span>' +
       '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span></div>' +
     '<div class="windows" role="group" aria-label="Choose the window this card is predicted on">' +
       chips + '</div>' +
@@ -936,7 +964,7 @@ function applyWindow(card, win) {
   if (foot) {
     foot.innerHTML = '<span>' + esc(A.manager) + ' ' + pct(v.a) + '</span>' +
       '<span>' + pct(v.ties) + ' of that is a 6&ndash;6 week &rarr; ' +
-        esc(tb.who.manager) + ' <span style="color:#475569">(' + tb.why + ')</span></span>' +
+        esc(tb.who.manager) + ' <span style="color:#5c5c94">(' + tb.why + ')</span></span>' +
       '<span>' + pct(v.b) + ' ' + esc(B.manager) + '</span>';
   }
 
@@ -956,7 +984,7 @@ function catStrip(a, b, win) {
     var p = v.cats[c];
     var low = D.lower_is_better.indexOf(c) >= 0;
     return '<div class="catrow">' +
-      '<span class="cn">' + c + (low ? '<span style="color:#475569">&darr;</span>' : '') + '</span>' +
+      '<span class="cn">' + c + (low ? '<span style="color:#5c5c94">&darr;</span>' : '') + '</span>' +
       '<span class="cbar">' +
         '<i class="a" style="width:' + (p * 100).toFixed(1) + '%"></i>' +
         '<i class="b" style="width:' + ((1 - p) * 100).toFixed(1) + '%"></i>' +
@@ -1002,7 +1030,7 @@ document.addEventListener('click', function (e) {
     var on = el === chip;
     el.classList.toggle('active', on);
     el.setAttribute('aria-pressed', String(on));
-    el.style.borderColor = on ? WINDOW_COLOR[el.dataset.win] : '#334155';
+    el.style.borderColor = on ? WINDOW_COLOR[el.dataset.win] : '#2b2e7a';
   });
   applyWindow(card, chip.dataset.win);
 });

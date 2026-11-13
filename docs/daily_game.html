@@ -6,6 +6,22 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Daily Game ⚾ — Summertime Sadness</title>
+<!-- head-meta -->
+<meta name="description" content="Guess the MLB team behind last night&#x27;s top fantasy stat line.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Daily Game ⚾ — Summertime Sadness">
+<meta property="og:description" content="Guess the MLB team behind last night&#x27;s top fantasy stat line.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/daily_game.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
   .game-wrap {
     max-width: 600px;
@@ -15,50 +31,47 @@
 
   .game-header {
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   .game-header h1 {
-    font-size: 1.8em;
-    margin-bottom: 4px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: clamp(18px, 5vw, 26px);
+    margin: 10px 0 14px;
   }
+  .game-header h1 .h1-ico { text-shadow: none; }
   .game-header .date-badge {
     display: inline-block;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 20px;
-    padding: 4px 14px;
-    font-size: 0.82em;
-    color: #64748b;
+    background: var(--edge);
+    padding: 6px 10px;
+    font-family: var(--ui);
+    font-size: 8px;
+    line-height: 1.6;
+    color: var(--gold);
     margin-bottom: 8px;
+    box-shadow: 3px 3px 0 var(--panel-2);
   }
   .game-header .subtitle {
-    color: #64748b;
-    font-size: 0.9em;
+    color: var(--gray);
+    font-size: 1em;
   }
 
   /* Streak bar */
   .streak-row {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 8px 20px;
     margin-bottom: 20px;
-    font-size: 0.82em;
-    color: #64748b;
+    padding: 0;
+    color: var(--gray);
   }
-  .streak-row span { color: #e2e8f0; font-weight: 700; }
+  .streak-row span { color: var(--gold); font-family: var(--ui); font-size: 11px; }
 
   /* Stat line card */
   .stat-card {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    border: 1px solid #334155;
-    border-radius: 16px;
+    background: var(--ink);
     padding: 28px 24px;
     text-align: center;
-    margin-bottom: 20px;
-    position: relative;
+    margin: 4px 4px 20px;
     overflow: hidden;
   }
   .stat-card::before {
@@ -66,51 +79,47 @@
     position: absolute;
     top: -10px; right: -10px;
     font-size: 80px;
-    opacity: 0.04;
+    opacity: 0.06;
   }
   .stat-card .label {
-    color: #64748b;
-    font-size: 0.75em;
+    color: var(--gray);
+    font-family: var(--ui);
+    font-size: 8px;
+    line-height: 1.6;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
   .stat-card .stat-line {
     font-size: 1.6em;
-    font-weight: 800;
-    color: #f1f5f9;
-    letter-spacing: 0.01em;
-    line-height: 1.2;
+    color: var(--white);
+    line-height: 1.15;
   }
   .stat-card .pitcher-badge {
     display: inline-block;
-    background: #3b82f620;
-    border: 1px solid #3b82f640;
-    color: #60a5fa;
-    font-size: 0.7em;
-    font-weight: 600;
-    padding: 2px 10px;
-    border-radius: 12px;
-    margin-top: 10px;
+    background: var(--blue);
+    color: var(--white);
+    font-family: var(--ui);
+    font-size: 8px;
+    padding: 5px 8px;
+    margin-top: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    box-shadow: 2px 2px 0 var(--edge);
   }
 
-  /* Guess tracker dots */
+  /* Guess tracker: life-bar squares */
   .guess-dots {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 16px;
   }
   .guess-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #334155;
-    transition: background 0.3s;
+    width: 14px; height: 14px;
+    background: var(--panel-2);
+    box-shadow: 2px 2px 0 var(--edge);
   }
-  .guess-dot.used   { background: #ef4444; }
-  .guess-dot.won    { background: #22c55e; }
+  .guess-dot.used   { background: var(--red); }
+  .guess-dot.won    { background: var(--green); }
 
   /* Hints */
   .hints-area {
@@ -122,61 +131,56 @@
     justify-content: center;
   }
   .hint-pill {
-    background: #1e293b;
-    border: 1px solid #fbbf2440;
-    color: #fbbf24;
-    font-size: 0.8em;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 20px;
-    animation: fadeIn 0.4s ease;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 2px var(--gold), 3px 3px 0 var(--edge);
+    color: var(--gold);
+    font-size: 1em;
+    padding: 4px 12px;
+    animation: fadeIn 0.4s steps(3);
   }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   /* MLB team grid */
   .team-section { margin-bottom: 12px; }
   .division-label {
-    font-size: 0.7em;
-    font-weight: 700;
+    font-family: var(--ui);
+    font-size: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #475569;
-    margin-bottom: 6px;
+    color: var(--gray);
+    margin-bottom: 8px;
   }
   .team-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
     margin-bottom: 14px;
   }
   .team-btn {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 7px;
-    color: #94a3b8;
-    font-size: 0.72em;
-    font-weight: 700;
-    padding: 7px 4px;
+    background: var(--panel);
+    border: 0;
+    color: var(--white);
+    font-family: var(--ui);
+    font-size: 10px;
+    padding: 10px 2px;
     cursor: pointer;
-    transition: all 0.15s;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.14), 2px 2px 0 var(--edge);
   }
   .team-btn:hover:not(:disabled) {
-    background: #2d3f55;
-    border-color: #475569;
-    color: #e2e8f0;
+    background: var(--blue);
+    color: var(--white);
   }
+  .team-btn:active:not(:disabled) { box-shadow: inset 3px 3px 0 rgba(0,0,0,.45); }
   .team-btn:disabled { cursor: default; }
 
   /* Guess result colors */
-  .team-btn.result-correct  { background: #14532d; border-color: #22c55e; color: #86efac; }
-  .team-btn.result-division { background: #7c2d12; border-color: #f97316; color: #fdba74; }
-  .team-btn.result-league   { background: #713f12; border-color: #eab308; color: #fde047; }
-  .team-btn.result-wrong    { background: #0f172a; border-color: #1e293b; color: #334155; }
+  .team-btn.result-correct  { background: var(--grass); color: var(--white); box-shadow: inset 0 0 0 2px var(--green), 2px 2px 0 var(--edge); }
+  .team-btn.result-division { background: #7a3a00; color: #ffc27a; box-shadow: inset 0 0 0 2px var(--orange), 2px 2px 0 var(--edge); }
+  .team-btn.result-league   { background: #6b5200; color: var(--gold); box-shadow: inset 0 0 0 2px var(--gold), 2px 2px 0 var(--edge); }
+  .team-btn.result-wrong    { background: var(--ink); color: var(--dim); box-shadow: 2px 2px 0 var(--edge); }
 
   /* Guess history */
   .guess-history {
@@ -186,31 +190,29 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 12px;
-    border-radius: 8px;
+    padding: 6px 12px;
     margin-bottom: 6px;
-    font-size: 0.88em;
-    animation: slideIn 0.3s ease;
+    animation: slideIn 0.3s steps(3);
+    box-shadow: 3px 3px 0 var(--edge);
   }
   @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
-  .guess-row.correct  { background: #14532d40; border: 1px solid #22c55e30; }
-  .guess-row.division { background: #7c2d1240; border: 1px solid #f9731630; }
-  .guess-row.league   { background: #71400040; border: 1px solid #eab30830; }
-  .guess-row.wrong    { background: #1e293b; border: 1px solid #334155; color: #475569; }
+  .guess-row.correct  { background: #0f4a1a; box-shadow: inset 4px 0 0 var(--green), 3px 3px 0 var(--edge); }
+  .guess-row.division { background: #4a2400; box-shadow: inset 4px 0 0 var(--orange), 3px 3px 0 var(--edge); }
+  .guess-row.league   { background: #3f3200; box-shadow: inset 4px 0 0 var(--gold), 3px 3px 0 var(--edge); }
+  .guess-row.wrong    { background: var(--panel); color: var(--dim); }
   .guess-color-dot {
     width: 12px; height: 12px;
-    border-radius: 50%;
     flex-shrink: 0;
   }
-  .correct  .guess-color-dot  { background: #22c55e; }
-  .division .guess-color-dot  { background: #f97316; }
-  .league   .guess-color-dot  { background: #eab308; }
-  .wrong    .guess-color-dot  { background: #334155; }
+  .correct  .guess-color-dot  { background: var(--green); }
+  .division .guess-color-dot  { background: var(--orange); }
+  .league   .guess-color-dot  { background: var(--gold); }
+  .wrong    .guess-color-dot  { background: var(--panel-2); }
 
   /* Legend */
   .legend {
     display: flex;
-    gap: 14px;
+    gap: 6px 14px;
     justify-content: center;
     margin-bottom: 20px;
     flex-wrap: wrap;
@@ -218,70 +220,65 @@
   .legend-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.75em;
-    color: #64748b;
+    gap: 6px;
+    font-size: 0.95em;
+    color: var(--gray);
   }
   .legend-dot {
     width: 10px; height: 10px;
-    border-radius: 50%;
+    box-shadow: 2px 2px 0 var(--edge);
   }
 
   /* Result card */
   .result-card {
     display: none;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 16px;
     padding: 24px;
     text-align: center;
-    margin-top: 16px;
-    animation: fadeIn 0.5s ease;
+    margin: 20px 4px 4px;
+    animation: fadeIn 0.5s steps(4);
   }
   .result-card.show { display: block; }
-  .result-card.win  { border-color: #22c55e40; background: #14532d20; }
-  .result-card.lose { border-color: #ef444440; }
+  .result-card.win  { background: #0f4a1a; }
+  .result-card.lose { background: #3a1020; }
   .result-card .result-emoji { font-size: 2.5em; margin-bottom: 8px; }
-  .result-card .result-title { font-size: 1.1em; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
-  .result-card .player-name  { font-size: 1.5em; font-weight: 800; color: #f1f5f9; margin: 8px 0 4px; }
-  .result-card .mlb-team     { color: #60a5fa; font-size: 0.95em; margin-bottom: 12px; }
+  .result-card .result-title { font-family: var(--ui); font-size: 12px; line-height: 1.6; color: var(--gold); text-shadow: 2px 2px 0 var(--edge); margin-bottom: 8px; }
+  .result-card .player-name  { font-size: 1.6em; color: var(--white); margin: 8px 0 4px; }
+  .result-card .mlb-team     { color: var(--cyan); font-size: 1em; margin-bottom: 12px; }
   .result-card .owner-line   {
     display: inline-block;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 0.9em;
-    color: #94a3b8;
+    background: var(--ink);
+    box-shadow: inset 0 0 0 2px var(--edge);
+    padding: 6px 14px;
+    color: var(--gray);
   }
-  .result-card .owner-line strong { color: #e2e8f0; }
+  .result-card .owner-line strong { color: var(--white); font-weight: normal; }
   .result-card .rank-badge {
     display: inline-block;
-    background: #7c3aed20;
-    border: 1px solid #7c3aed40;
-    color: #a78bfa;
-    font-size: 0.78em;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 12px;
+    background: var(--purple);
+    color: var(--white);
+    font-family: var(--ui);
+    font-size: 8px;
+    padding: 4px 6px;
     margin-left: 8px;
+    vertical-align: 2px;
   }
 
   /* Share / next */
-  .result-actions { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .result-actions { margin-top: 18px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .btn-share, .btn-next {
-    padding: 9px 20px;
-    border-radius: 8px;
-    font-size: 0.88em;
-    font-weight: 600;
+    padding: 10px 14px;
+    font-family: var(--ui);
+    font-size: 9px;
+    line-height: 1.6;
     cursor: pointer;
-    border: none;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    transition: opacity 0.15s;
+    border: 0;
+    text-decoration: none;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 3px 3px 0 var(--edge);
   }
-  .btn-share { background: #3b82f6; color: white; }
-  .btn-next  { background: #1e293b; border: 1px solid #334155; color: #94a3b8; }
-  .btn-share:hover, .btn-next:hover { opacity: 0.85; }
+  .btn-share { background: var(--gold); color: var(--edge); }
+  .btn-next  { background: var(--panel-2); color: var(--white); }
+  .btn-share:hover { background: var(--orange); }
+  .btn-next:hover { background: var(--blue); }
 
   /* Shake animation */
   @keyframes shake {
@@ -291,7 +288,7 @@
     60%      { transform: translateX(-3px); }
     80%      { transform: translateX(3px); }
   }
-  .shake { animation: shake 0.4s ease; }
+  .shake { animation: shake 0.4s steps(5); }
 
   /* Confetti */
   .confetti-container {
@@ -304,7 +301,6 @@
     width: 10px; height: 10px;
     top: -20px;
     animation: confettiFall linear forwards;
-    border-radius: 2px;
   }
   @keyframes confettiFall {
     to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
@@ -314,71 +310,65 @@
   .bonus-section {
     margin-top: 20px;
     padding-top: 18px;
-    border-top: 1px solid #334155;
+    background: repeating-linear-gradient(90deg, var(--dim) 0 8px, transparent 8px 12px) left top / 100% 4px no-repeat;
   }
   .bonus-title {
-    font-size: 0.8em;
-    font-weight: 800;
-    color: #fbbf24;
+    font-family: var(--ui);
+    font-size: 10px;
+    line-height: 1.6;
+    color: var(--gold);
     text-transform: uppercase;
-    letter-spacing: 0.09em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   .bonus-question {
-    color: #94a3b8;
-    font-size: 0.84em;
+    color: var(--gray);
     margin-bottom: 12px;
   }
   .bonus-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
     margin-bottom: 10px;
   }
   .bonus-btn {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #94a3b8;
-    font-size: 0.72em;
-    font-weight: 600;
-    padding: 8px 4px;
+    background: var(--ink);
+    border: 0;
+    color: var(--white);
+    font-size: 0.95em;
+    padding: 6px 4px;
     cursor: pointer;
-    transition: all 0.15s;
     text-align: center;
-    font-family: 'Segoe UI', system-ui, sans-serif;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.12), 2px 2px 0 var(--edge);
   }
-  .bonus-btn:hover:not(:disabled) {
-    background: #1e293b;
-    border-color: #475569;
-    color: #e2e8f0;
-  }
+  .bonus-btn:hover:not(:disabled) { background: var(--blue); }
   .bonus-btn:disabled { cursor: default; }
-  .bonus-btn.b-correct { background: #14532d; border-color: #22c55e; color: #86efac; }
-  .bonus-btn.b-wrong   { background: #1e293b;  border-color: #334155; color: #475569; }
+  .bonus-btn.b-correct { background: var(--grass); color: var(--white); }
+  .bonus-btn.b-wrong   { background: var(--panel); color: var(--dim); }
   .bonus-result {
-    font-size: 0.9em;
-    font-weight: 700;
+    font-family: var(--ui);
+    font-size: 9px;
+    line-height: 1.8;
     padding: 6px 0 2px;
-    animation: fadeIn 0.4s ease;
+    animation: fadeIn 0.4s steps(3);
   }
-  .bonus-result.won  { color: #22c55e; }
-  .bonus-result.lost { color: #ef4444; }
+  .bonus-result.won  { color: var(--green); }
+  .bonus-result.lost { color: var(--red); }
 
   /* No data state */
   .no-data {
     text-align: center;
-    padding: 60px 20px;
-    color: #475569;
+    padding: 36px 20px;
+    margin: 20px 4px;
+    color: var(--gray);
   }
   .no-data .emoji { font-size: 3em; margin-bottom: 16px; }
 
   @media (max-width: 480px) {
-    .team-grid { grid-template-columns: repeat(5, 1fr); gap: 3px; }
-    .team-btn { font-size: 0.65em; padding: 6px 2px; }
+    .team-grid { gap: 4px; }
+    .team-btn { font-size: 8px; padding: 9px 1px; }
     .stat-card .stat-line { font-size: 1.3em; }
   }
 </style>
@@ -391,7 +381,7 @@
 
   <div class="game-header">
     <div class="date-badge" id="dateBadge">Loading…</div>
-    <h1>⚾ Stat Line Guesser</h1>
+    <h1><span class="h1-ico">⚾</span> Stat Line Guesser</h1>
     <p class="subtitle">Guess the MLB team behind last night's top fantasy stat line.</p>
   </div>
 
@@ -403,7 +393,7 @@
 
   <div id="gameArea" style="display:none">
 
-    <div class="stat-card">
+    <div class="stat-card px">
       <div class="label" id="statLabel">Last night's top performance</div>
       <div class="stat-line" id="statLine">—</div>
       <div id="pitcherBadge" class="pitcher-badge" style="display:none">Pitcher</div>
@@ -414,17 +404,17 @@
     <div class="hints-area" id="hintsArea"></div>
 
     <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Correct team</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Same division</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div> Same league</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#334155"></div> Different league</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2ecc40"></div> Correct team</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff8c1a"></div> Same division</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffd23f"></div> Same league</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2b2e7a"></div> Different league</div>
     </div>
 
     <div class="guess-history" id="guessHistory"></div>
 
     <div id="teamGridWrap"></div>
 
-    <div class="result-card" id="resultCard">
+    <div class="result-card px" id="resultCard">
       <div class="result-emoji" id="resultEmoji"></div>
       <div class="result-title" id="resultTitle"></div>
       <div class="player-name" id="resultPlayer"></div>
@@ -444,7 +434,7 @@
 
   </div>
 
-  <div id="noData" style="display:none" class="no-data">
+  <div id="noData" style="display:none" class="no-data px">
     <div class="emoji">⚾</div>
     <p>No puzzle available yet — check back after 4:30am MST when last night's data is loaded.</p>
   </div>
@@ -613,8 +603,8 @@ function renderGuessHistory() {
     row.className = `guess-row ${g.result}`;
     row.innerHTML = `
       <div class="guess-color-dot"></div>
-      <div style="flex:1;font-weight:600;color:#e2e8f0">${g.team}</div>
-      <div style="color:#64748b;font-size:0.85em">${RESULT_LABEL[g.result]}</div>`;
+      <div style="flex:1;color:var(--white)">${g.team}</div>
+      <div style="color:var(--gray);font-size:0.9em">${RESULT_LABEL[g.result]}</div>`;
     el.appendChild(row);
   });
 }
@@ -710,7 +700,7 @@ function makeGuess(teamName) {
 // ── Result card ───────────────────────────────────────────────────────────────
 function showResult() {
   const card = document.getElementById('resultCard');
-  card.className = 'result-card show ' + (state.won ? 'win' : 'lose');
+  card.className = 'result-card px show ' + (state.won ? 'win' : 'lose');
 
   document.getElementById('resultEmoji').textContent  = state.won ? '🎉' : '😔';
   document.getElementById('resultTitle').textContent  = state.won
@@ -801,7 +791,7 @@ function shareResult() {
 
 // ── Confetti ──────────────────────────────────────────────────────────────────
 function spawnConfetti() {
-  const colors = ['#22c55e','#3b82f6','#f59e0b','#a855f7','#ef4444','#06b6d4'];
+  const colors = ['#2ecc40','#3b6bff','#ffa41b','#c45cff','#ff3b3b','#3bd6ff'];
   const cont   = document.getElementById('confettiContainer');
   for (let i = 0; i < 60; i++) {
     const p = document.createElement('div');

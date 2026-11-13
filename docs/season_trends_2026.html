@@ -6,41 +6,55 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Season Trends</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="Weekly power scores, power rankings, expected category wins and hot/cold streaks for 2026.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Season Trends">
+<meta property="og:description" content="Weekly power scores, power rankings, expected category wins and hot/cold streaks for 2026.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/season_trends_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
-  .toggle-container { text-align: center; margin-bottom: 16px; }
-  .toggle-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }
-  .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
-  .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
-  .toggle-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-  .toggle-btn:hover { background: #475569; color: #e2e8f0; }
-  .toggle-btn.active:hover { background: #2563eb; }
-  .year { color: #a78bfa; font-weight: 600; }
-  .hot-val { color: #22c55e; font-weight: 700; }
-  .cold-val { color: #ef4444; font-weight: 700; }
-  .hot-tag { background: #22c55e22; color: #22c55e; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
-  .cold-tag { background: #ef444422; color: #ef4444; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
-  .steady-tag { background: #64748b22; color: #64748b; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; }
+  .toggle-container { text-align: center; margin-bottom: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .toggle-btn { font-family: var(--ui); font-size: 9px; line-height: 1.4; color: var(--gray); background: var(--panel-2); border: 0; cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 0 0 0 2px #000; padding: 10px 14px; }
+  .toggle-btn.active { background: var(--grass); color: var(--white); box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000; }
+  .toggle-btn:hover { background: var(--blue); color: var(--white); }
+  .toggle-btn.active:hover { background: var(--grass); }
+  .year { color: #a98cff; }
+  .hot-val { color: #2ecc40; }
+  .cold-val { color: #ff3b3b; }
+  .hot-tag { background: #2ecc40; color: #000; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .cold-tag { background: #ff3b3b; color: #fff; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .steady-tag { background: #2b2e7a; color: #9a9ac8; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
   .best-table td:first-child { font-size: 1.2em; width: 36px; text-align: center; }
-  .week-filter-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 6px 16px; cursor: pointer; font-size: 0.88em; border-radius: 6px; transition: all 0.2s; }
-  .week-filter-btn:hover { color: #e2e8f0; border-color: #64748b; }
-  .week-filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-  .loading-msg { text-align: center; color: #64748b; padding: 60px 0; font-size: 1.1em; }
-  .error-msg { text-align: center; color: #ef4444; padding: 40px; background: #1e293b; border-radius: 12px; margin: 20px 0; }
-  #last-updated { color: #475569; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
-  .info-btn { background: none; border: 1px solid #475569; color: #64748b; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75em; cursor: pointer; line-height: 18px; text-align: center; margin-left: 8px; vertical-align: middle; transition: border-color 0.2s, color 0.2s; }
-  .info-btn:hover { border-color: #3b82f6; color: #3b82f6; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; }
+  .week-filter-btn { font-family: var(--ui); font-size: 9px; line-height: 1.4; color: var(--gray); background: var(--panel-2); border: 0; cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 0 0 0 2px #000; padding: 8px 12px; }
+  .week-filter-btn:hover { background: var(--blue); color: var(--white); }
+  .week-filter-btn.active { background: var(--grass); color: var(--white); box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000; }
+  .loading-msg { text-align: center; color: #6e6ea8; padding: 60px 0; font-size: 1.1em; }
+  .error-msg { text-align: center; color: #ff3b3b; padding: 40px; background: #1f2160; margin: 20px 0; font-family: var(--ui); font-size: 10px; line-height: 1.8; box-shadow: 0 0 0 4px #000; }
+  #last-updated { color: #5c5c94; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
+  .info-btn { background: var(--panel-2); border: 0; color: var(--gold); width: 22px; height: 22px; font-family: var(--ui); font-size: 9px; cursor: pointer; line-height: 22px; padding: 0; text-align: center; margin-left: 8px; vertical-align: middle; box-shadow: 0 0 0 2px #000, inset -2px -2px 0 rgba(0,0,0,.45); }
+  .info-btn:hover { background: var(--blue); color: var(--white); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(7,7,26,0.85); z-index: 1100; align-items: center; justify-content: center; }
   .modal-overlay.show { display: flex; }
-  .modal-box { background: #1e293b; border: 1px solid #475569; border-radius: 14px; padding: 28px; max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
-  .modal-box h3 { color: #e2e8f0; margin-bottom: 12px; }
-  .modal-box p, .modal-box li { color: #94a3b8; font-size: 0.9em; line-height: 1.6; }
+  .modal-box { background: #1f2160; border: 0; padding: 28px; max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; box-shadow: 0 0 0 4px #000, 8px 8px 0 4px #000; }
+  .modal-box h3 { color: var(--gold); margin-bottom: 12px; padding-right: 28px; }
+  .modal-box p, .modal-box li { color: #9a9ac8; font-size: 0.9em; line-height: 1.6; }
   .modal-box ul { padding-left: 20px; }
-  .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #64748b; font-size: 1.4em; cursor: pointer; }
-  .modal-close:hover { color: #e2e8f0; }
-  .xcum-label { font-size: 0.65em; font-weight: 400; color: #64748b; margin-left: 8px; vertical-align: middle; }
+  .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: #6e6ea8; font-family: var(--ui); font-size: 14px; cursor: pointer; }
+  .modal-close:hover { color: #f4f4f4; }
+  .xcum-label { font-size: 8px; color: #6e6ea8; margin-left: 8px; vertical-align: middle; }
   .cat-dot-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  #catTooltip { position: fixed; display: none; background: #1e293b; border: 1px solid #475569; border-radius: 8px; padding: 8px 12px; font-size: 0.85em; color: #e2e8f0; pointer-events: none; z-index: 100; }
+  #catTooltip { position: fixed; display: none; background: #000; border: 2px solid var(--gold); padding: 8px 12px; font-size: 0.9em; color: #f4f4f4; pointer-events: none; z-index: 1100; box-shadow: 4px 4px 0 #000; }
 </style>
 </head>
 <body>
@@ -65,14 +79,14 @@ const API_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.o
 const legendOpts = {
   position: 'bottom',
   labels: {
-    color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle',
+    color: '#f4f4f4', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle',
     generateLabels(chart) {
       const items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
       items.forEach(item => {
         const visible = chart.isDatasetVisible(item.datasetIndex);
-        item.fontColor = visible ? '#e2e8f0' : '#475569';
+        item.fontColor = visible ? '#f4f4f4' : '#5c5c94';
         item.hidden = false; // prevent Chart.js from applying globalAlpha dimming to text
-        if (!visible) { item.fillStyle = '#1e293b'; item.strokeStyle = '#334155'; item.lineWidth = 1; }
+        if (!visible) { item.fillStyle = '#1f2160'; item.strokeStyle = '#2b2e7a'; item.lineWidth = 1; }
       });
       return items;
     }
@@ -84,8 +98,8 @@ const legendOpts = {
   }
 };
 const tooltipBase = {
-  backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-  borderColor: '#475569', borderWidth: 1, padding: 12
+  backgroundColor: '#1f2160', titleColor: '#f4f4f4', bodyColor: '#9a9ac8',
+  borderColor: '#5c5c94', borderWidth: 1, padding: 12
 };
 
 // =====================================================
@@ -247,8 +261,8 @@ function render(d) {
         interaction: { mode: 'index', intersect: false },
         plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-          y: { min: 0, max: 1200, ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Power Score (0–1200)', color: '#64748b' } }
+          x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+          y: { min: 0, max: 1200, ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Power Score (0–1200)', color: '#6e6ea8' } }
         }
       }
     });
@@ -279,8 +293,8 @@ function render(d) {
         interaction: { mode: 'index', intersect: false },
         plugins: { legend: legendOpts, tooltip: tooltipBase },
         scales: {
-          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-          y: { reverse: true, min: 0, max: 13, ticks: { color: '#94a3b8', stepSize: 1, callback: v => (v >= 1 && v <= 12 ? v : '') }, grid: { color: '#334155' }, title: { display: true, text: 'Power Rank', color: '#64748b' } }
+          x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+          y: { reverse: true, min: 0, max: 13, ticks: { color: '#9a9ac8', stepSize: 1, callback: v => (v >= 1 && v <= 12 ? v : '') }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Power Rank', color: '#6e6ea8' } }
         }
       }
     });
@@ -297,8 +311,8 @@ function render(d) {
       interaction: { mode: 'index', intersect: false },
       plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) } } },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-        y: { min: 0, max: 12, ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Expected Category Wins', color: '#64748b' } }
+        x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+        y: { min: 0, max: 12, ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Expected Category Wins', color: '#6e6ea8' } }
       }
     }
   });
@@ -314,8 +328,8 @@ function render(d) {
       interaction: { mode: 'index', intersect: false },
       plugins: { legend: legendOpts, tooltip: { ...tooltipBase, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Cumulative Expected Wins', color: '#64748b' } }
+        x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+        y: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Cumulative Expected Wins', color: '#6e6ea8' } }
       }
     }
   });
@@ -363,8 +377,8 @@ function render(d) {
       const { ctx, chartArea: ca } = chart;
       const pad = 10;
       ctx.save();
-      ctx.font = '10px Segoe UI, sans-serif';
-      ctx.fillStyle = 'rgba(148,163,184,0.5)';
+      ctx.font = '8px "Press Start 2P", monospace';
+      ctx.fillStyle = 'rgba(154,154,200,0.5)';
       ctx.textAlign = 'right';  ctx.textBaseline = 'top';    ctx.fillText('Elite (Both)',   ca.right - pad, ca.top + pad);
       ctx.textAlign = 'left';   ctx.textBaseline = 'top';    ctx.fillText('Pitching Only',  ca.left + pad,  ca.top + pad);
       ctx.textAlign = 'left';   ctx.textBaseline = 'bottom'; ctx.fillText('Struggling',     ca.left + pad,  ca.bottom - pad);
@@ -389,13 +403,13 @@ function render(d) {
             px: meta.data[0].x,
             py: meta.data[0].y,
             label: shortLabel(ds.label),
-            color: typeof ds.borderColor === 'string' ? ds.borderColor : '#94a3b8',
+            color: typeof ds.borderColor === 'string' ? ds.borderColor : '#9a9ac8',
           });
         }
       });
 
       // Set font before measuring
-      ctx.font = 'bold 10px Segoe UI, sans-serif';
+      ctx.font = '17px VT323, monospace';
 
       // Initial label placement: right of dot, shift left only if near right edge
       pts.forEach(pt => {
@@ -434,12 +448,12 @@ function render(d) {
       // Draw labels with dark background for readability
       ctx.save();
       pts.forEach(pt => {
-        ctx.font = 'bold 10px Segoe UI, sans-serif';
+        ctx.font = '17px VT323, monospace';
         ctx.textAlign = pt.align;
         ctx.textBaseline = 'alphabetic';
         const tw = ctx.measureText(pt.label).width;
         const bgX = pt.align === 'right' ? pt.lx - tw - 3 : pt.lx - 2;
-        ctx.fillStyle = 'rgba(15,23,42,0.88)';
+        ctx.fillStyle = 'rgba(13,13,43,0.88)';
         ctx.fillRect(bgX, pt.ly - TH + 1, tw + 5, TH + 2);
         ctx.fillStyle = pt.color;
         ctx.fillText(pt.label, pt.lx, pt.ly);
@@ -477,14 +491,14 @@ function render(d) {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Batting Win %', color: '#64748b' },
-          ticks: { color: '#94a3b8', callback: v => v + '%' },
-          grid: { color: '#334155' }
+          title: { display: true, text: 'Batting Win %', color: '#6e6ea8' },
+          ticks: { color: '#9a9ac8', callback: v => v + '%' },
+          grid: { color: '#2b2e7a' }
         },
         y: {
-          title: { display: true, text: 'Pitching Win %', color: '#64748b' },
-          ticks: { color: '#94a3b8', callback: v => v + '%' },
-          grid: { color: '#334155' }
+          title: { display: true, text: 'Pitching Win %', color: '#6e6ea8' },
+          ticks: { color: '#9a9ac8', callback: v => v + '%' },
+          grid: { color: '#2b2e7a' }
         }
       }
     }
@@ -553,17 +567,17 @@ function renderCatDotChart(d) {
   // Y-axis guides
   [0, 25, 50, 75, 100].forEach(v => {
     const y = MT + (1 - v / 100) * iH;
-    s += `<line x1="${ML}" y1="${y}" x2="${W - MR}" y2="${y}" stroke="#334155" stroke-width="${v === 50 ? 1.5 : 1}"/>`;
-    s += `<text x="${ML - 5}" y="${y + 4}" text-anchor="end" fill="#64748b" font-size="11">${v}</text>`;
+    s += `<line x1="${ML}" y1="${y}" x2="${W - MR}" y2="${y}" stroke="#2b2e7a" stroke-width="${v === 50 ? 1.5 : 1}"/>`;
+    s += `<text x="${ML - 5}" y="${y + 4}" text-anchor="end" fill="#6e6ea8" font-size="15">${v}</text>`;
   });
 
   // Column verticals + category labels
   catOrder.forEach((cat, i) => {
     const cx = ML + (i + 0.5) * colW;
-    s += `<line x1="${cx}" y1="${MT}" x2="${cx}" y2="${MT + iH}" stroke="#1e293b80" stroke-width="1"/>`;
-    s += `<text x="${cx}" y="${MT + iH + 18}" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">${cat}</text>`;
+    s += `<line x1="${cx}" y1="${MT}" x2="${cx}" y2="${MT + iH}" stroke="#1f216080" stroke-width="1"/>`;
+    s += `<text x="${cx}" y="${MT + iH + 18}" text-anchor="middle" fill="#9a9ac8" font-size="16">${cat}</text>`;
     const isLow = ['ERA','WHIP','TB'].includes(cat);
-    if (isLow) s += `<text x="${cx}" y="${MT + iH + 32}" text-anchor="middle" fill="#475569" font-size="9">&#x2193;</text>`;
+    if (isLow) s += `<text x="${cx}" y="${MT + iH + 32}" text-anchor="middle" fill="#5c5c94" font-size="9">&#x2193;</text>`;
   });
 
   // Per-team groups: line + dots together so opacity/blur apply as one unit
@@ -589,7 +603,7 @@ function renderCatDotChart(d) {
       const cy = MT + (1 - score / 100) * iH;
       const rawStr = raw != null ? raw : '';
       const esc = t.name.replace(/'/g, '&#39;').replace(/\\/g, '\\\\');
-      s += `<circle cx="${cx}" cy="${cy}" r="7" fill="${t.color}" opacity="0.85" stroke="#0f172a" stroke-width="1.5"
+      s += `<circle cx="${cx}" cy="${cy}" r="7" fill="${t.color}" opacity="0.85" stroke="#0d0d2b" stroke-width="1.5"
         onmouseover="showCatTip(event,'${esc}','${cat}',${score},'${rawStr}')"
         onmouseout="hideCatTip()"/>`;
     });
@@ -607,13 +621,13 @@ function renderCatDotChart(d) {
   // Build team filter bar
   const filterBar = document.getElementById('catTeamFilter');
   if (filterBar) {
-    let fb = `<span style="font-size:0.8em;color:#64748b;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-right:4px;line-height:30px;">Filter:</span>`;
-    fb += `<button id="catBtn_all" onclick="selectCatTeam(null)" style="padding:5px 13px;border-radius:20px;border:2px solid #334155;background:#1e293b;color:#e2e8f0;font-size:0.82em;font-weight:600;cursor:pointer;transition:all 0.15s;" class="cat-team-btn active">All Teams</button>`;
+    let fb = `<span style="font-family:var(--ui);font-size:8px;color:#6e6ea8;margin-right:4px;line-height:30px;">FILTER:</span>`;
+    fb += `<button id="catBtn_all" onclick="selectCatTeam(null)" style="padding:4px 10px;border:2px solid #000;background:#2b2e7a;color:#f4f4f4;font-family:var(--data);font-size:19px;cursor:pointer;" class="cat-team-btn active">All Teams</button>`;
     teams.forEach(t => {
       const esc = t.name.replace(/'/g, '&#39;');
       const tn  = t.tn.replace(/'/g, '');
       fb += `<button id="catBtn_${tn}" onclick="selectCatTeam('${tn}')" data-tn="${t.tn}" data-color="${t.color}"
-        style="padding:5px 13px;border-radius:20px;border:2px solid ${t.color};background:transparent;color:${t.color};font-size:0.82em;font-weight:600;cursor:pointer;transition:all 0.15s;"
+        style="padding:4px 10px;border:2px solid ${t.color};background:transparent;color:${t.color};font-family:var(--data);font-size:19px;cursor:pointer;box-shadow:2px 2px 0 #000;"
         class="cat-team-btn">${esc}</button>`;
     });
     filterBar.innerHTML = fb;
@@ -634,13 +648,13 @@ window.selectCatTeam = function(tn) {
       b.classList.remove('active');
     });
     const allBtn = document.getElementById('catBtn_all');
-    if (allBtn) { allBtn.classList.add('active'); allBtn.style.background = '#334155'; allBtn.style.color = '#fff'; }
+    if (allBtn) { allBtn.classList.add('active'); allBtn.style.background = '#2b2e7a'; allBtn.style.color = '#fff'; }
   } else {
     _selectedCatTn = tn;
     groups.forEach(g => {
       const active = g.dataset.tn === tn;
       g.style.opacity = active ? '1' : '0.08';
-      g.style.filter  = active ? '' : 'blur(1.5px)';
+      g.style.filter  = '';
     });
     // Sync button states
     document.querySelectorAll('.cat-team-btn').forEach(b => {
@@ -650,22 +664,22 @@ window.selectCatTeam = function(tn) {
       if (b.dataset.color) b.style.color = b.dataset.color;
     });
     const allBtn = document.getElementById('catBtn_all');
-    if (allBtn) { allBtn.style.background = '#1e293b'; allBtn.style.color = '#e2e8f0'; }
+    if (allBtn) { allBtn.style.background = '#1f2160'; allBtn.style.color = '#f4f4f4'; }
     const activeBtn = document.getElementById('catBtn_' + tn);
     if (activeBtn) {
       activeBtn.classList.add('active');
       activeBtn.style.opacity = '1';
       const col = activeBtn.style.color;
       activeBtn.style.background = col;
-      activeBtn.style.color = '#0f172a';
+      activeBtn.style.color = '#0d0d2b';
     }
   }
 };
 
 window.showCatTip = function(e, team, cat, score, raw) {
   const tip = document.getElementById('catTooltip');
-  const rawStr = raw !== '' ? `<br><span style="color:#64748b">${cat}: ${raw}</span>` : '';
-  tip.innerHTML = `<strong>${team}</strong> — ${cat} score: <span style="color:#3b82f6">${parseFloat(score).toFixed(1)}</span>/100${rawStr}`;
+  const rawStr = raw !== '' ? `<br><span style="color:#6e6ea8">${cat}: ${raw}</span>` : '';
+  tip.innerHTML = `<strong>${team}</strong> — ${cat} score: <span style="color:#3b6bff">${parseFloat(score).toFixed(1)}</span>/100${rawStr}`;
   tip.style.display = 'block';
   tip.style.left = (e.clientX + 14) + 'px';
   tip.style.top = (e.clientY - 12) + 'px';

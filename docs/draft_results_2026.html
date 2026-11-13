@@ -6,7 +6,27 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Draft Results</title>
+<!-- head-meta -->
+<meta name="description" content="The full 2026 draft board, round by round.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Draft Results">
+<meta property="og:description" content="The full 2026 draft board, round by round.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/draft_results_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
+  /* VT323 ships one weight; never let the browser smear a fake bold. */
+  body { font-synthesis: none; }
+  b, strong { font-weight: normal; }
+
   /* Controls bar */
   .controls-bar {
     display: flex;
@@ -18,33 +38,31 @@
   .search-input {
     flex: 1;
     min-width: 200px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #e2e8f0;
-    font-size: 0.9em;
+    background: #0d0d2b;
+    border: 0;
+    box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000;
+    color: #f4f4f4;
+    font-size: 1em;
     padding: 9px 14px;
     outline: none;
-    transition: border-color 0.15s;
   }
-  .search-input::placeholder { color: #475569; }
-  .search-input:focus { border-color: #3b82f6; }
+  .search-input::placeholder { color: #6e6ea8; }
+  .search-input:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
   .team-select {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #e2e8f0;
-    font-size: 0.9em;
+    background: #2b2e7a;
+    border: 0;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 3px 3px 0 #000;
+    color: #f4f4f4;
+    font-size: 1em;
     padding: 9px 14px;
     outline: none;
     cursor: pointer;
     min-width: 220px;
-    transition: border-color 0.15s;
   }
-  .team-select:focus { border-color: #3b82f6; }
+  .team-select:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
   .results-count {
-    color: #475569;
-    font-size: 0.82em;
+    color: #9a9ac8;
+    font-size: 0.95em;
     white-space: nowrap;
   }
 
@@ -56,15 +74,14 @@
     margin-bottom: 32px;
   }
   .summary-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 10px;
+    background: #1f2160;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,.12), inset 0 -4px 0 0 rgba(0,0,0,.35);
+    margin: 4px;
     padding: 14px 16px;
   }
   .summary-team {
-    font-size: 0.88em;
-    font-weight: 700;
-    color: #e2e8f0;
+    font-size: 1em;
+    color: #f4f4f4;
     margin-bottom: 10px;
     white-space: nowrap;
     overflow: hidden;
@@ -73,53 +90,52 @@
   }
   .summary-stats {
     display: flex;
-    gap: 12px;
-    font-size: 0.8em;
+    gap: 14px;
+    font-size: 0.9em;
   }
   .summary-stat { display: flex; flex-direction: column; align-items: center; }
-  .summary-stat-val { font-size: 1.3em; font-weight: 800; }
-  .summary-stat-lbl { color: #64748b; font-size: 0.85em; margin-top: 1px; }
-  .stat-keeper { color: #f59e0b; }
-  .stat-drafted { color: #3b82f6; }
-  .stat-total { color: #e2e8f0; }
+  .summary-stat-val { font-family: var(--ui); font-size: 12px; margin-bottom: 4px; text-shadow: 2px 2px 0 #000; }
+  .summary-stat-lbl { color: #9a9ac8; font-size: 0.95em; margin-top: 1px; }
+  .stat-keeper { color: #ffa41b; }
+  .stat-drafted { color: #3b6bff; }
+  .stat-total { color: #f4f4f4; }
 
   /* Draft table */
   .badge-keeper {
-    background: #f59e0b22;
-    color: #f59e0b;
-    border: 1px solid #f59e0b44;
-    border-radius: 4px;
-    padding: 2px 7px;
-    font-size: 0.75em;
-    font-weight: 700;
+    background: #ffa41b33;
+    color: #ffa41b;
+    box-shadow: 2px 2px 0 #000;
+    padding: 3px 5px;
+    font-family: var(--ui);
+    font-size: 7px;
+    vertical-align: 2px;
+    white-space: nowrap;
   }
   .badge-drafted {
-    background: #3b82f622;
-    color: #3b82f6;
-    border: 1px solid #3b82f644;
-    border-radius: 4px;
-    padding: 2px 7px;
-    font-size: 0.75em;
-    font-weight: 700;
+    background: #3b6bff33;
+    color: #3b6bff;
+    box-shadow: 2px 2px 0 #000;
+    padding: 3px 5px;
+    font-family: var(--ui);
+    font-size: 7px;
+    vertical-align: 2px;
+    white-space: nowrap;
   }
   .pos-badge {
-    font-size: 0.78em;
-    color: #64748b;
-    font-weight: 600;
+    font-size: 0.95em;
+    color: #9a9ac8;
   }
   .overall-num {
-    color: #475569;
-    font-size: 0.85em;
-    font-weight: 700;
+    color: #6e6ea8;
+    font-size: 0.95em;
   }
   .player-name-cell {
-    font-weight: 600;
-    color: #e2e8f0;
+    color: #f4f4f4;
   }
   td.team-dot { white-space: nowrap; }
 
   th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 16px; }
-  th.sortable:hover { color: #e2e8f0; }
+  th.sortable:hover { color: #f4f4f4; }
   th.sortable::after { content: '\2195'; position: absolute; right: 4px; opacity: 0.3; font-size: 0.8em; }
   th.sortable.asc::after { content: '\2191'; opacity: 0.9; }
   th.sortable.desc::after { content: '\2193'; opacity: 0.9; }
@@ -128,7 +144,7 @@
 
   .round-keeper-row td { opacity: 0.65; }
 
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: #5c5c94 #0d0d2b; }
 
   /* ── Tablet (≤768px) ───────────────────────────────────────────────── */
   @media (max-width: 768px) {
@@ -144,23 +160,21 @@
     }
     .results-count { text-align: right; }
 
-    table th, table td { padding: 8px 6px; font-size: 0.83em; }
+    table th { padding: 10px 6px; }
+    table td { padding: 8px 6px; font-size: 0.85em; }
     .player-name-cell { font-size: 0.9em; }
     td.team-dot { font-size: 0.8em; }
   }
 
   /* ── Phone (≤480px) ────────────────────────────────────────────────── */
   @media (max-width: 480px) {
-    h1 { font-size: 1.2em; }
-    .page-subtitle { font-size: 0.9em; }
-    h3 { font-size: 1em; }
-
     /* Hide less critical columns to keep the table scannable */
     .col-pick { display: none; }
     .col-overall { display: none; }
 
-    table th, table td { padding: 7px 5px; font-size: 0.8em; }
-    .badge-keeper, .badge-drafted { font-size: 0.7em; padding: 2px 5px; }
+    table th { padding: 10px 5px; }
+    table td { padding: 7px 5px; font-size: 0.85em; }
+    .badge-keeper, .badge-drafted { font-size: 6px; padding: 3px 4px; }
   }
 </style>
 </head>
@@ -200,18 +214,18 @@
 
 <script>
 const TEAMS = {
-  'A4D': { name: 'Aces 4 Days',               color: '#ec4899' },
-  'GPA': { name: 'Getting Plowed Again.',      color: '#22c55e' },
-  'LB':  { name: 'Los Basureros',              color: '#ef4444' },
-  'HH':  { name: 'Hatfield Hurlers',           color: '#14b8a6' },
-  'TAT': { name: 'Grab Em by the Tatis',       color: '#a855f7' },
-  'BWS': { name: 'Bob Witt Sex Machine',       color: '#f97316' },
-  'RF':  { name: 'Rickie Flower',              color: '#eab308' },
-  'MON': { name: 'Moniebol \uD83D\uDC33',      color: '#10b981' },
-  'IC':  { name: 'Ian Cumsler',                color: '#3b82f6' },
-  'OG9': { name: 'OG9\uFE0F\u20E3',            color: '#8b5cf6' },
-  'SHR': { name: '\u00AF\\_(ツ)_/\u00AF',      color: '#f59e0b' },
-  'TRS': { name: 'The Rosterbation Station',   color: '#06b6d4' },
+  'A4D': { name: 'Aces 4 Days',               color: '#ff5ec8' },
+  'GPA': { name: 'Getting Plowed Again.',      color: '#2ecc40' },
+  'LB':  { name: 'Los Basureros',              color: '#ff3b3b' },
+  'HH':  { name: 'Hatfield Hurlers',           color: '#1ee8b0' },
+  'TAT': { name: 'Grab Em by the Tatis',       color: '#c45cff' },
+  'BWS': { name: 'Bob Witt Sex Machine',       color: '#ff8c1a' },
+  'RF':  { name: 'Rickie Flower',              color: '#ffd23f' },
+  'MON': { name: 'Moniebol \uD83D\uDC33',      color: '#19d27f' },
+  'IC':  { name: 'Ian Cumsler',                color: '#3b6bff' },
+  'OG9': { name: 'OG9\uFE0F\u20E3',            color: '#8a5cff' },
+  'SHR': { name: '\u00AF\\_(ツ)_/\u00AF',      color: '#ffa41b' },
+  'TRS': { name: 'The Rosterbation Station',   color: '#3bd6ff' },
 };
 
 // [overall, round, pick, team_key, player, position, isKeeper(0=Drafted,1=Keeper)]
@@ -560,7 +574,7 @@ function renderTable() {
     if (query && stripAccents(d.player.toLowerCase()).includes(query)) {
       const idx = stripAccents(d.player.toLowerCase()).indexOf(query);
       playerDisplay = d.player.slice(0, idx) +
-        '<mark style="background:#f59e0b33;color:#f59e0b;border-radius:2px;">' +
+        '<mark style="background:#ffa41b33;color:#ffa41b;border-radius:2px;">' +
         d.player.slice(idx, idx + query.length) + '</mark>' +
         d.player.slice(idx + query.length);
     }

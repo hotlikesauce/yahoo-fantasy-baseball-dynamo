@@ -5,26 +5,46 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Luck & Matchup Analysis</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="Luck scores, all-play records, schedule strength and what-if standings for 2026.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Luck &amp; Matchup Analysis">
+<meta property="og:description" content="Luck scores, all-play records, schedule strength and what-if standings for 2026.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/luck_analysis_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
-  .year { color: #a78bfa; font-weight: 600; }
-  .lucky { color: #22c55e; font-weight: 700; }
-  .unlucky { color: #ef4444; font-weight: 700; }
-  .close-margin { color: #f59e0b; font-weight: 700; }
-  .lucky-highlight td { background: #22c55e15; }
-  .unlucky-highlight td { background: #ef444415; }
-  .upset-highlight td { background: #f59e0b12; }
-  .upset-tag { background: #f59e0b; color: #0f172a; font-size: 0.7em; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.05em; }
-  .score { color: #e2e8f0; font-weight: 600; }
-  .forfeit-star { color: #ef4444; font-weight: 900; cursor: help; }
-  .forfeit-highlight td { background: #ef444422; }
-  .forfeit-count { color: #ef4444; font-weight: 800; }
-  .weekly-table { max-height: 700px; overflow-y: auto; margin-bottom: 24px; }
+  /* VT323 ships one weight; never let the browser smear a fake bold. */
+  body { font-synthesis: none; }
+  b, strong { font-weight: normal; color: #f4f4f4; }
+  .year { color: #a98cff; }
+  .lucky { color: #2ecc40; }
+  .unlucky { color: #ff3b3b; }
+  .close-margin { color: #ffa41b; }
+  .lucky-highlight td { background: #2ecc4015; }
+  .unlucky-highlight td { background: #ff3b3b15; }
+  .upset-highlight td { background: #ffa41b12; }
+  .upset-tag { background: #ffa41b; color: #0d0d2b; font-family: var(--ui); font-size: 7px; padding: 3px 5px; vertical-align: 2px; box-shadow: 2px 2px 0 #000; white-space: nowrap; }
+  .score { color: #f4f4f4; }
+  .forfeit-star { color: #ff3b3b; cursor: help; }
+  .forfeit-highlight td { background: #ff3b3b22; }
+  .forfeit-count { color: #ff3b3b; }
+  .weekly-table { max-height: 700px; overflow-y: auto; margin: 4px 4px 28px; box-shadow: 0 0 0 4px #000; scrollbar-width: thin; scrollbar-color: #5c5c94 #0d0d2b; }
   .weekly-table table { margin-bottom: 0; }
-  .weekly-table th { position: sticky; top: 0; background: #0f172a; z-index: 1; }
-  .loading-msg { text-align: center; color: #64748b; padding: 60px 0; font-size: 1.1em; }
-  .error-msg { text-align: center; color: #ef4444; padding: 40px; background: #1e293b; border-radius: 12px; margin: 20px 0; }
-  #last-updated { color: #475569; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
+  .weekly-table th { position: sticky; top: 0; background: #000; z-index: 1; }
+  .loading-msg { text-align: center; color: #9a9ac8; padding: 60px 0; font-family: var(--ui); font-size: 10px; }
+  .error-msg { text-align: center; color: #ff3b3b; padding: 40px; background: #1f2160; margin: 20px 4px;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000; }
+  #last-updated { color: #5c5c94; font-size: 0.8em; text-align: center; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -136,7 +156,7 @@ function render(d) {
   // Recent form predictor
   html += `
 <h3>Recent Form</h3>
-<p class="section-desc">Ranked by last week's xWins — a leading indicator for this week's matchup. <strong>Trend</strong> = last week vs season average. Teams running hot are likely to carry that into the current week.</p>
+<p class="section-desc">Ranked by last week's xWins. <strong>Trend</strong> = last week vs season average.</p>
 <table id="formTable">
 <thead><tr>
   ${th('#','0','num')}${th('Team','1','str')}${th('Last Wk xWins','2','num')}${th('Season Avg','3','num')}${th('Trend','4','num')}${th('Last Wk Result','5','str')}
@@ -147,7 +167,7 @@ function render(d) {
   // Weekly breakdown
   html += `
 <h3>Weekly Breakdown</h3>
-<p class="section-desc">Every matchup by week. <span style="background:#22c55e15;padding:2px 6px;border-radius:4px;">Green</span> = lucky win (won despite lower xWins). <span style="background:#ef444415;padding:2px 6px;border-radius:4px;">Red</span> = unlucky loss (lost despite higher xWins). <span class="forfeit-star">&#42;</span> = missed the 50 IP minimum and forfeited all six pitching categories.</p>
+<p class="section-desc">Every matchup by week. <span style="background:#2ecc4015;padding:2px 6px;">Green</span> = lucky win (won despite lower xWins). <span style="background:#ff3b3b15;padding:2px 6px;">Red</span> = unlucky loss (lost despite higher xWins). <span class="forfeit-star">&#42;</span> = missed the 50 IP minimum and forfeited all six pitching categories.</p>
 <div class="weekly-table">
 <table id="weeklyTable">
 <thead><tr>${th('Week','0','num')}${th('Team','1','str')}${th('xWins','2','num')}${th('Opp xWins','3','num')}${th('Result','4','wlt')}${th('Opponent','5','str')}<th></th></tr></thead>
@@ -189,13 +209,13 @@ function render(d) {
   const mqCols = `${th('#','0','num')}${th('Week','1','num')}${th('Winner','2','str')}${th('Loser','3','str')}${th('Score','4','wlt')}${th('W xWins','5','num')}${th('L xWins','6','num')}`;
   html += `
 <h3>Best Matchups of the Year</h3>
-<p class="section-desc">Combined xWins = sum of both teams' xWins that week. Higher = two strong teams going at it.</p>
+<p class="section-desc">Combined xWins = sum of both teams' xWins that week. Highest first.</p>
 <table id="bestMqTable">
 <thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
 <tbody id="bestMqBody"></tbody>
 </table>
 <h3>Worst Matchups of the Year</h3>
-<p class="section-desc">The toilet bowl games — lowest combined xWins.</p>
+<p class="section-desc">Lowest combined xWins first.</p>
 <table id="worstMqTable">
 <thead><tr>${mqCols}${th('Combined','7','num')}</tr></thead>
 <tbody id="worstMqBody"></tbody>
@@ -237,12 +257,12 @@ function render(d) {
   const formBody = document.getElementById('formBody');
   formRows.forEach((row, i) => {
     const { lastEntry, seasonAvg, trend } = row;
-    const color = colorMap && colorMap[row.tn] ? colorMap[row.tn] : '#94a3b8';
-    const trendStr = trend > 0 ? `<span class="lucky">▲ +${trend.toFixed(1)}</span>` : trend < 0 ? `<span class="unlucky">▼ ${trend.toFixed(1)}</span>` : '<span style="color:#64748b">— 0.0</span>';
+    const color = colorMap && colorMap[row.tn] ? colorMap[row.tn] : '#9a9ac8';
+    const trendStr = trend > 0 ? `<span class="lucky">▲ +${trend.toFixed(1)}</span>` : trend < 0 ? `<span class="unlucky">▼ ${trend.toFixed(1)}</span>` : '<span style="color:#6e6ea8">— 0.0</span>';
     const resultStr = lastEntry.won ? `<span class="lucky">W ${lastEntry.cats_w}-${lastEntry.cats_l}</span>` : `<span class="unlucky">L ${lastEntry.cats_w}-${lastEntry.cats_l}</span>`;
     const luckIcon = lastEntry.luck_tag === 'lucky_win' ? ' <span class="lucky" title="Lucky Win">↑</span>' : lastEntry.luck_tag === 'unlucky_loss' ? ' <span class="unlucky" title="Unlucky Loss">↓</span>' : '';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${color}">&#9679;</span> ${lastEntry.name}</td><td class="lucky">${(lastEntry.xw_cats||0).toFixed(1)}</td><td style="color:#94a3b8">${seasonAvg.toFixed(1)}</td><td>${trendStr}</td><td>${resultStr}${luckIcon} vs ${lastEntry.opp_name}</td>`;
+    tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${color}">&#9679;</span> ${lastEntry.name}</td><td class="lucky">${(lastEntry.xw_cats||0).toFixed(1)}</td><td style="color:#9a9ac8">${seasonAvg.toFixed(1)}</td><td>${trendStr}</td><td>${resultStr}${luckIcon} vs ${lastEntry.opp_name}</td>`;
     formBody.appendChild(tr);
   });
   initSortable(document.getElementById('formTable'));
@@ -255,7 +275,7 @@ function render(d) {
     const lw = luckyWins[s.tn] || 0;
     const ul = unluckyL[s.tn] || 0;
     const ff = s.forfeits || 0;
-    const ffCell = ff ? `<span class="forfeit-count" title="${MIN_IP_NOTE}">${ff}&#42;</span>` : '<span style="color:#475569">0</span>';
+    const ffCell = ff ? `<span class="forfeit-count" title="${MIN_IP_NOTE}">${ff}&#42;</span>` : '<span style="color:#5c5c94">0</span>';
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="rank">${i+1}</td><td><span style="color:${s.color}">&#9679;</span> ${s.name}</td><td>${mRecord}</td><td>${s.actual_cats}</td><td>${s.xwins_cats != null ? s.xwins_cats.toFixed(1) : '—'}</td><td class="${luckClass}">${luckStr}</td><td class="lucky">${lw}</td><td class="unlucky">${ul}</td><td>${ffCell}</td>`;
     luckBody.appendChild(tr);
@@ -271,7 +291,7 @@ function render(d) {
     if (entry.luck_tag === 'lucky_win') { rowClass = 'lucky-highlight'; luckIcon = '<span class="lucky">&#x2191;</span>'; }
     else if (entry.luck_tag === 'unlucky_loss') { rowClass = 'unlucky-highlight'; luckIcon = '<span class="unlucky">&#x2193;</span>'; }
     if (entry.forfeit) { rowClass = 'forfeit-highlight'; luckIcon += star(true); }
-    const color = colorMap && colorMap[entry.tn] ? colorMap[entry.tn] : '#94a3b8';
+    const color = colorMap && colorMap[entry.tn] ? colorMap[entry.tn] : '#9a9ac8';
     const opp = entry.opp_name.length > 22 ? entry.opp_name.slice(0, 22) : entry.opp_name;
     const tr = document.createElement('tr');
     if (rowClass) tr.className = rowClass;
@@ -283,8 +303,8 @@ function render(d) {
   if (matchupXwins && matchupXwins.length) {
     const mxBody = document.getElementById('matchupXwBody');
     matchupXwins.forEach(m => {
-      const wc = colorMap && colorMap[m.winner_tn] ? colorMap[m.winner_tn] : '#94a3b8';
-      const lc = colorMap && colorMap[m.loser_tn] ? colorMap[m.loser_tn] : '#94a3b8';
+      const wc = colorMap && colorMap[m.winner_tn] ? colorMap[m.winner_tn] : '#9a9ac8';
+      const lc = colorMap && colorMap[m.loser_tn] ? colorMap[m.loser_tn] : '#9a9ac8';
       const upsetTag = m.upset ? '<span class="upset-tag">UPSET</span>' : '';
       const tr = document.createElement('tr');
       if (m.upset) tr.className = 'upset-highlight';
@@ -328,7 +348,7 @@ function render(d) {
   // Luck bar chart
   const luckLabels = teamSummary.map(s => s.name);
   const luckValues = teamSummary.map(s => s.cum_luck);
-  const luckColors = teamSummary.map(s => s.cum_luck > 0 ? '#22c55e' : '#ef4444');
+  const luckColors = teamSummary.map(s => s.cum_luck > 0 ? '#2ecc40' : '#ff3b3b');
   new Chart(document.getElementById('luckChart'), {
     type: 'bar',
     data: { labels: luckLabels, datasets: [{ label: 'Luck Score', data: luckValues, backgroundColor: luckColors, borderRadius: 4 }] },
@@ -336,12 +356,12 @@ function render(d) {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: {
         legend: { display: false },
-        tooltip: { backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8', borderColor: '#475569', borderWidth: 1,
+        tooltip: { backgroundColor: '#1f2160', titleColor: '#f4f4f4', bodyColor: '#9a9ac8', borderColor: '#5c5c94', borderWidth: 1,
           callbacks: { label: ctx => 'Luck Score: ' + (ctx.parsed.x > 0 ? '+' : '') + ctx.parsed.x.toFixed(1) } }
       },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Luck Score (Actual Cat Wins − xWins)', color: '#64748b' } },
-        y: { ticks: { color: '#e2e8f0', font: { size: 11 } }, grid: { display: false } }
+        x: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Luck Score (Actual Cat Wins − xWins)', color: '#6e6ea8' } },
+        y: { ticks: { color: '#f4f4f4', font: { size: 11 } }, grid: { display: false } }
       }
     }
   });

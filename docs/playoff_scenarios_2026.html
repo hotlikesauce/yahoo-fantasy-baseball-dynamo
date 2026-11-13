@@ -6,119 +6,139 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2026 Playoff Scenarios</title>
+<!-- head-meta -->
+<meta name="description" content="Set remaining matchup results to see where the 2026 playoff cut line falls.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2026 Playoff Scenarios">
+<meta property="og:description" content="Set remaining matchup results to see where the 2026 playoff cut line falls.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/playoff_scenarios_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
 <style>
   .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
   .board-col { position: sticky; top: 68px; }
 
   /* Cut-line summary bar */
   .cutbar {
-    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
-    padding: 14px 18px; margin-bottom: 16px;
+    background: #0d0d2b; border: 0; margin: 4px 4px 20px;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
+    padding: 14px 18px;
     display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
   }
   .cutbar .lbl {
-    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em;
-    color: #64748b; font-weight: 700;
+    font-family: var(--ui); font-size: 9px; line-height: 1.6; text-transform: uppercase;
+    color: #ffd23f;
   }
-  .cutbar .slot { color: #e2e8f0; font-weight: 600; font-size: 0.95em; }
-  .cutbar .slot .seed { color: #22c55e; font-weight: 800; margin-right: 5px; }
+  .cutbar .slot { color: #f4f4f4; font-size: 1.05em; }
+  .cutbar .slot .seed { font-family: var(--ui); font-size: 10px; color: #2ecc40; margin-right: 8px; }
 
   /* Matchup cards */
   .mu {
-    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
-    padding: 16px 18px 18px; margin-bottom: 14px;
+    position: relative; background: #1f2160; border: 0;
+    padding: 16px 18px 18px; margin: 4px 4px 20px;
+    box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
   }
-  .mu.keygame { border-color: #3b82f6; }
+  .mu.keygame { background: #2b2e7a; }
   .mu-stakes {
-    font-size: 0.74em; text-transform: uppercase; letter-spacing: 0.06em;
-    color: #64748b; font-weight: 700; margin-bottom: 10px;
+    font-family: var(--ui); font-size: 8px; line-height: 1.7; text-transform: uppercase;
+    color: #9a9ac8; margin-bottom: 12px;
   }
-  .mu.keygame .mu-stakes { color: #60a5fa; }
+  .mu.keygame .mu-stakes { color: #ffd23f; }
   .mu-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
   .mu-side { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
   .mu-side.r { align-items: flex-end; text-align: right; }
-  .mu-name { font-weight: 600; font-size: 0.92em; color: #e2e8f0; overflow-wrap: anywhere; }
+  .mu-name { font-size: 1em; color: #f4f4f4; overflow-wrap: anywhere; }
   .mu-pts {
-    font-size: 1.45em; font-weight: 800; font-variant-numeric: tabular-nums;
-    line-height: 1.1;
+    font-family: var(--ui); font-size: 18px;
+    line-height: 1.3;
   }
-  .mu-side.l .mu-pts { color: #60a5fa; }
-  .mu-side.r .mu-pts { color: #c4b5fd; }
-  .mu-final { font-size: 0.76em; color: #64748b; font-variant-numeric: tabular-nums; }
+  .mu-side.l .mu-pts { color: #6b9bff; }
+  .mu-side.r .mu-pts { color: #cbb8ff; }
+  .mu-final { font-size: 0.85em; color: #9a9ac8; font-variant-numeric: tabular-nums; }
 
   /* Tug-of-war bar doubles as the slider track */
   .tug {
-    position: relative; height: 22px; margin: 14px 0 2px;
-    border-radius: 6px; background: #8b5cf6;
+    position: relative; height: 22px; margin: 14px 0 4px;
+    background: #8a5cff; box-shadow: 0 0 0 4px #000;
   }
   .tug-fill {
-    position: absolute; top: 0; bottom: 0; left: 0; background: #3b82f6;
-    border-radius: 6px 0 0 6px;
+    position: absolute; top: 0; bottom: 0; left: 0; background: #3b6bff;
   }
   .tug-handle {
     position: absolute; top: -5px; width: 12px; height: 32px; margin-left: -6px;
-    background: #e2e8f0; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.5);
+    background: #f4f4f4; box-shadow: 0 0 0 3px #000, inset -3px -3px 0 #9a9ac8;
     pointer-events: none;
   }
-  .tug:focus-within .tug-handle { box-shadow: 0 0 0 3px #38bdf8; }
+  .tug:focus-within .tug-handle { background: #ffd23f; box-shadow: 0 0 0 3px #000, inset -3px -3px 0 #ff8c1a; }
   .tug-input {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y;
   }
   .tug-ticks {
     display: flex; justify-content: space-between;
-    font-size: 0.68em; color: #475569; font-variant-numeric: tabular-nums;
+    margin-top: 4px; font-size: 0.8em; color: #6e6ea8; font-variant-numeric: tabular-nums;
   }
 
   /* Status chips */
   .chip {
-    display: inline-block; font-size: 0.66em; font-weight: 800;
-    letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px;
+    display: inline-block; font-family: var(--ui); font-size: 7px; line-height: 1.4;
+    padding: 4px 6px 3px;
     text-transform: uppercase; white-space: nowrap;
   }
-  .chip.in     { background: #22c55e22; color: #4ade80; border: 1px solid #22c55e55; }
-  .chip.out    { background: #ef444422; color: #f87171; border: 1px solid #ef444455; }
-  .chip.locked { background: #fbbf2422; color: #fbbf24; border: 1px solid #fbbf2455; }
-  .chip.dead   { background: #47556922; color: #64748b; border: 1px solid #47556955; }
-  .chip.tie    { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b66; }
+  .chip.in     { background: #2ecc4022; color: #5dff6a; border: 2px solid #2ecc40; }
+  .chip.out    { background: #ff3b3b22; color: #ff6b6b; border: 2px solid #ff3b3b; }
+  .chip.locked { background: #ffe06622; color: #ffe066; border: 2px solid #ffd23f; }
+  .chip.dead   { background: #5c5c9422; color: #9a9ac8; border: 2px solid #5c5c94; }
+  .chip.tie    { background: #ffa41b22; color: #ffe066; border: 2px solid #ffa41b; }
 
   /* Standings board */
-  .board { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 6px 0 0; }
+  .board { position: relative; background: #1f2160; border: 0; margin: 4px; padding: 0; box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35); }
   .board table { margin-bottom: 0; }
-  .board th { background: transparent; border-bottom: 1px solid #334155; }
-  .board td { border-bottom: 1px solid #0f172a55; font-variant-numeric: tabular-nums; }
-  .board tr.playoff td { background: #22c55e0f; }
+  .board td { font-variant-numeric: tabular-nums; }
+  .board tr.playoff td { background: #2ecc400f; }
   .board tr.cutrow td {
-    background: #0f172a; border-bottom: 2px solid #ef4444;
-    color: #f87171; font-size: 0.68em; font-weight: 800;
-    letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px;
+    background: #0d0d2b; border-bottom: 2px solid #ff3b3b;
+    color: #ff6b6b; font-family: var(--ui); font-size: 8px; line-height: 1.6;
+    text-transform: uppercase; padding: 6px 12px;
     text-align: center;
   }
-  .board tr.cutrow:hover td { background: #0f172a; }
-  .board .tm { font-weight: 600; color: #e2e8f0; }
-  .board .pts { font-weight: 800; color: #34d399; }
-  .mv-up { color: #4ade80; font-weight: 700; }
-  .mv-dn { color: #f87171; font-weight: 700; }
-  .mv-none { color: #475569; }
+  .board tr.cutrow:hover td { background: #0d0d2b; }
+  .board .tm { color: #f4f4f4; }
+  .board .pts { color: #3bf09a; }
+  .mv-up { color: #5dff6a; }
+  .mv-dn { color: #ff6b6b; }
+  .mv-none { color: #5c5c94; }
 
   .warn {
-    background: #f59e0b18; border: 1px solid #f59e0b66; border-radius: 10px;
-    padding: 11px 14px; margin-bottom: 14px; color: #fbbf24; font-size: 0.87em;
+    background: #ffa41b18; border: 0; box-shadow: inset 0 0 0 4px #ffa41b;
+    padding: 12px 16px; margin-bottom: 16px; color: #ffe066; font-size: 1em;
   }
   .warn.hidden { display: none; }
 
   .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
   .btn {
-    background: #1e293b; color: #cbd5e1; border: 1px solid #334155;
-    border-radius: 8px; padding: 8px 14px; font-size: 0.85em; font-weight: 600;
-    cursor: pointer; font-family: inherit; transition: all .15s;
+    background: #2b2e7a; color: #f4f4f4; border: 0;
+    padding: 10px 14px; font-family: var(--ui); font-size: 9px; line-height: 1.4;
+    cursor: pointer;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18);
   }
-  .btn:hover { background: #334155; color: #e2e8f0; }
-  .btn:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+  .btn:hover { background: #3b6bff; }
+  .btn:active { background: #1f9e33; box-shadow: inset 3px 3px 0 rgba(0,0,0,.45); }
+  .btn:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
 
-  .magic td:first-child { font-weight: 600; color: #e2e8f0; }
-  .magic .num { font-weight: 800; color: #fbbf24; font-variant-numeric: tabular-nums; }
-  .magic .none { color: #64748b; }
+  .magic td:first-child { color: #f4f4f4; }
+  .magic .num { color: #ffe066; font-variant-numeric: tabular-nums; }
+  /* VT323 has one weight; emphasis is colour, not synthetic bold. */
+  .container strong, .container em { font-weight: normal; font-style: normal; color: #ffd23f; }
+  .magic .none { color: #6e6ea8; }
 
   .intro { text-align: center; max-width: 780px; margin: 0 auto 22px; }
 
@@ -141,10 +161,10 @@
 
     .mu { padding: 13px 14px 15px; }
     .mu-head { gap: 8px; }
-    .mu-name { font-size: 0.85em; }
-    .mu-pts { font-size: 1.25em; }
-    .mu-final { font-size: 0.71em; }
-    .mu-stakes { font-size: 0.68em; }
+    .mu-name { font-size: 0.95em; }
+    .mu-pts { font-size: 15px; }
+    .mu-final { font-size: 0.8em; }
+    .mu-stakes { font-size: 8px; }
 
     /* Thumb-sized hit area without fattening the bar itself */
     .tug { height: 26px; margin: 16px 0 2px; }
@@ -154,8 +174,8 @@
     /* Pct and the rank-move arrow are the first things to go */
     .board th:nth-child(4), .board td:nth-child(4),
     .board th:nth-child(5), .board td:nth-child(5) { display: none; }
-    .board td { padding: 7px 8px; font-size: 0.86em; }
-    .board th { padding: 8px 8px; font-size: 0.72em; }
+    .board td { padding: 7px 8px; font-size: 0.95em; }
+    .board th { padding: 8px 8px; font-size: 7px; }
     .board .tm { font-size: 0.95em; }
 
     .btn { flex: 1 1 auto; text-align: center; }
@@ -176,7 +196,7 @@
 <p class="section-desc intro">
 Standings are final through week 21. One week remains &mdash; 12 categories per matchup.
 Drag any matchup to split those 12 categories and the board re-sorts live.
-Spots <strong>1&ndash;4 are already clinched</strong>; you are playing for the last two.
+Spots <strong>1&ndash;4 are already clinched</strong>; seeds 5 and 6 are still open.
 </p>
 
 <div id="tiewarn" class="warn hidden"></div>
@@ -235,7 +255,7 @@ that still leaves a path.
 Teams finishing level on points are separated by the <strong>categories they won head-to-head</strong>
 &mdash; add up the categories each took in the weeks those two actually played, week 22 included if they
 meet in it. This is not the same as who won more of those matchups: two meetings of 7&ndash;5 and
-4&ndash;8 look like a 1&ndash;1 split, but on categories they are 11&ndash;13. The categories decide it.
+4&ndash;8 look like a 1&ndash;1 split, but on categories they are 11&ndash;13, so the team with 13 wins the tiebreak.
 </p>
 <div class="table-scroll">
 <table class="magic" style="max-width:660px;">
@@ -256,11 +276,10 @@ meet in it. This is not the same as who won more of those matchups: two meetings
 two teams end level on points and level on head-to-head categories.
 </p>
 <p class="section-desc" style="max-width:900px;">
-<strong>Rickie Flower is why the clinch numbers are what they are.</strong> Rickie split the season series
+<strong>Rickie Flower sets the clinch numbers for SCOOPSKI and OG.</strong> Rickie split the season series
 with both SCOOPSKI and OG as matchups, but wins both on categories &mdash; 12&ndash;11 and 14&ndash;10.
 So SCOOPSKI taking 6.0 in week 22 leaves them level with Rickie's ceiling of 133.5 and <em>losing</em> the
-tiebreak, and OG taking 11.0 does the same. Half a category more and the tie never happens, which is
-exactly why the numbers are 6.5 and 11.5.
+tiebreak, and OG taking 11.0 does the same. Half a category more avoids the tie, so the clinch numbers are 6.5 and 11.5.
 </p>
 
 <h3>Who Is Already Out</h3>
@@ -270,8 +289,7 @@ Hatfield is the close one, and the reason is the coupling between matchups. Thei
 and SCOOPSKI's floor of 127.5 already sits above it &mdash; that is one team. For a second, note that OG
 and Cumsler play each other, so their point gains must add to exactly 12: if OG stalls at 122.5 then
 Cumsler necessarily lands on 125. <strong>At least one of those two finishes above 122.5 no matter what</strong>,
-which is the second team above Hatfield's ceiling. Drag every slider to its extreme and you will find no
-arrangement that puts them in.
+which is the second team above Hatfield's ceiling. No combination of slider positions puts them in.
 </p>
 
 </div>
@@ -486,7 +504,7 @@ function render() {
       '<td class="rank">' + rank + '</td>' +
       '<td class="tm">' + TEAMS[row.k].name + '</td>' +
       '<td class="pts" style="text-align:right;">' + fmt(row.pts) + '</td>' +
-      '<td style="text-align:right;color:#94a3b8;">' +
+      '<td style="text-align:right;color:#9a9ac8;">' +
         (row.pts / GAMES_AFTER).toFixed(3).replace(/^0/, '') + '</td>' +
       '<td style="text-align:center;">' + mvHtml + '</td>' +
       '<td style="text-align:right;"><span class="chip ' + st.cls + '">' + st.txt + '</span></td>';
@@ -554,9 +572,9 @@ Object.keys(MAGIC)
       : '<span class="num">' + fmt(m.alive) + '</span>';
     var tr = document.createElement('tr');
     tr.innerHTML = '<td>' + TEAMS[k].name + '</td>' +
-      '<td style="font-variant-numeric:tabular-nums;color:#94a3b8;">' + fmt(TEAMS[k].pts) + '</td>' +
+      '<td style="font-variant-numeric:tabular-nums;color:#9a9ac8;">' + fmt(TEAMS[k].pts) + '</td>' +
       '<td>' + clinch + '</td><td>' + alive + '</td>' +
-      '<td style="color:#94a3b8;">' + TEAMS[oppOf[k]].name + '</td>';
+      '<td style="color:#9a9ac8;">' + TEAMS[oppOf[k]].name + '</td>';
     magicBody.appendChild(tr);
   });
 

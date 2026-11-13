@@ -6,27 +6,41 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2022 Season Trends</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="Weekly power scores and rankings for the 2022 season.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2022 Season Trends">
+<meta property="og:description" content="Weekly power scores and rankings for the 2022 season.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/season_trends_2022.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
-  .toggle-container { text-align: center; margin-bottom: 16px; }
-  .toggle-btn { background: #334155; color: #94a3b8; border: 1px solid #475569; padding: 8px 20px; cursor: pointer; font-size: 0.95em; transition: all 0.2s; }
-  .toggle-btn:first-child { border-radius: 8px 0 0 8px; }
-  .toggle-btn:last-child { border-radius: 0 8px 8px 0; }
-  .toggle-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-  .toggle-btn:hover { background: #475569; color: #e2e8f0; }
-  .toggle-btn.active:hover { background: #2563eb; }
-  .year { color: #a78bfa; font-weight: 600; }
-  .hot-val { color: #22c55e; font-weight: 700; }
-  .cold-val { color: #ef4444; font-weight: 700; }
-  .hot-tag { background: #22c55e22; color: #22c55e; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; }
-  .cold-tag { background: #ef444422; color: #ef4444; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; }
-  .steady-tag { background: #64748b22; color: #64748b; padding: 2px 12px; border-radius: 12px; font-size: 0.8em; font-weight: 700; }
+  .toggle-container { text-align: center; margin-bottom: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .toggle-btn { font-family: var(--ui); font-size: 9px; line-height: 1.4; color: var(--gray); background: var(--panel-2); border: 0; cursor: pointer; box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 0 0 0 2px #000; padding: 10px 14px; }
+  .toggle-btn.active { background: var(--grass); color: var(--white); box-shadow: inset 3px 3px 0 rgba(0,0,0,.45), 0 0 0 2px #000; }
+  .toggle-btn:hover { background: var(--blue); color: var(--white); }
+  .toggle-btn.active:hover { background: var(--grass); }
+  .year { color: #a98cff; }
+  .hot-val { color: #2ecc40; }
+  .cold-val { color: #ff3b3b; }
+  .hot-tag { background: #2ecc40; color: #000; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .cold-tag { background: #ff3b3b; color: #fff; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
+  .steady-tag { background: #2b2e7a; color: #9a9ac8; padding: 3px 7px; font-family: var(--ui); font-size: 8px; line-height: 1.4; box-shadow: 0 0 0 2px #000; display: inline-block; }
   th.sortable { position: relative; padding-right: 18px; }
   th.sortable::after { position: absolute; right: 4px; opacity: 0.3; }
   th.sortable.asc::after { opacity: 0.8; }
   th.sortable.desc::after { opacity: 0.8; }
   .best-table td:first-child { font-size: 1.2em; width: 36px; text-align: center; }
-  .archive-badge { display: inline-block; background: #334155; color: #94a3b8; padding: 4px 16px; border-radius: 20px; font-size: 0.85em; margin-bottom: 8px; }
+  .archive-badge { display: inline-block; background: #000; color: var(--gold); padding: 6px 12px; font-family: var(--ui); font-size: 8px; line-height: 1.4; margin-bottom: 8px; box-shadow: 0 0 0 2px var(--gold); }
 </style>
 </head>
 <body>
@@ -56,11 +70,11 @@
 <script>
 const legendOpts = {
   position: 'bottom',
-  labels: { color: '#e2e8f0', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
+  labels: { color: '#f4f4f4', padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
 };
 const tooltipOpts = {
-  backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-  borderColor: '#475569', borderWidth: 1, padding: 12
+  backgroundColor: '#1f2160', titleColor: '#f4f4f4', bodyColor: '#9a9ac8',
+  borderColor: '#5c5c94', borderWidth: 1, padding: 12
 };
 
 // ---- Power Score ----
@@ -69,73 +83,73 @@ new Chart(document.getElementById('scoreChart').getContext('2d'), {
   data: { labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", "Week 13", "Week 14", "Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"], datasets: [{
       label: 'Dookie Butts',
       data: [5.3, 4.8, 5.6, 6.1, 6.8, 5.8, 5.9, 6.1, 6.5, 7.6, 8.2, 8.9, 8.6, 8.9, 8.9, 8.7, 8.7, 8.5, 8.9, 8.5],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Rich Homie Kwan',
       data: [5.8, 5.9, 6.0, 5.3, 6.7, 7.3, 7.5, 8.5, 8.7, 8.4, 9.0, 8.5, 8.7, 9.0, 9.0, 8.7, 8.7, 8.6, 8.5, 8.5],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Cruz me baby',
       data: [6.5, 5.4, 6.1, 7.0, 7.0, 7.9, 7.3, 7.5, 8.0, 8.3, 8.0, 7.3, 7.6, 7.9, 7.9, 7.5, 7.5, 7.5, 7.8, 8.4],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Former 2A High School Athlete',
       data: [5.5, 6.4, 6.1, 7.0, 6.9, 7.1, 8.2, 8.2, 7.7, 7.6, 7.3, 7.9, 7.5, 7.4, 7.4, 8.2, 8.2, 8.1, 8.2, 8.3],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '$LZ to $15 $HUBG to $100',
       data: [6.5, 9.6, 8.8, 7.5, 7.4, 7.5, 6.3, 6.5, 6.9, 7.0, 6.8, 8.4, 8.3, 8.2, 8.2, 8.2, 8.2, 8.2, 8.0, 8.3],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Midas Well',
       data: [6.5, 6.8, 7.5, 7.4, 8.4, 7.7, 8.0, 7.2, 7.3, 6.8, 6.9, 6.5, 7.3, 7.3, 7.3, 7.2, 7.2, 7.8, 8.0, 8.1],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [8.2, 8.5, 8.2, 7.7, 7.0, 7.2, 7.2, 7.0, 6.5, 6.0, 5.9, 6.0, 6.2, 6.1, 6.1, 6.3, 6.3, 6.9, 6.9, 7.7],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'The Bryant Special',
       data: [5.6, 5.2, 5.0, 5.2, 5.2, 4.8, 4.9, 4.7, 4.7, 4.4, 4.9, 4.8, 4.9, 5.4, 5.4, 5.5, 5.5, 5.3, 5.3, 5.2],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'When yer sliding into home',
       data: [6.5, 8.0, 7.5, 6.9, 5.2, 5.8, 6.0, 5.9, 5.7, 5.8, 5.9, 6.0, 5.5, 5.1, 5.1, 5.1, 5.1, 5.3, 5.2, 4.5],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [6.1, 6.8, 6.9, 6.0, 7.3, 6.9, 6.5, 6.4, 6.2, 6.4, 5.8, 5.3, 4.8, 5.2, 5.2, 5.4, 5.4, 4.5, 4.2, 4.0],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'The Rosterbation Station',
       data: [7.0, 5.9, 6.3, 6.3, 5.7, 6.0, 5.4, 5.0, 5.1, 4.9, 5.0, 4.6, 4.7, 4.0, 4.0, 3.8, 3.8, 3.8, 3.8, 3.5],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [6.5, 4.8, 4.0, 5.6, 4.4, 4.2, 4.5, 4.9, 4.8, 4.8, 4.3, 3.8, 4.0, 3.4, 3.4, 3.5, 3.5, 3.5, 3.2, 3.1],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -144,8 +158,8 @@ new Chart(document.getElementById('scoreChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: { ...tooltipOpts, callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) } } },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, text: 'Normalized Score', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Normalized Score', color: '#6e6ea8' } }
     }
   }
 });
@@ -156,73 +170,73 @@ new Chart(document.getElementById('rankChart').getContext('2d'), {
   data: { labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", "Week 13", "Week 14", "Week 15", "Week 16", "Week 17", "Week 18", "Week 19", "Week 20"], datasets: [{
       label: 'Dookie Butts',
       data: [2.0, 2.0, 3.0, 5.0, 6.0, 3.0, 4.0, 5.0, 7.0, 9.5, 11.0, 12.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 12.0, 12.0],
-      borderColor: '#ef4444', backgroundColor: '#ef444422',
+      borderColor: '#ff3b3b', backgroundColor: '#ff3b3b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Rich Homie Kwan',
       data: [5.5, 5.5, 4.0, 2.0, 5.0, 9.0, 10.0, 12.0, 12.0, 12.0, 12.0, 11.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 11.0, 11.0],
-      borderColor: '#f97316', backgroundColor: '#f9731622',
+      borderColor: '#ff8c1a', backgroundColor: '#ff8c1a22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Cruz me baby',
       data: [6.5, 4.0, 5.5, 9.0, 9.0, 12.0, 9.0, 10.0, 11.0, 11.0, 10.0, 8.0, 9.0, 9.0, 9.0, 8.0, 8.0, 7.0, 7.0, 10.0],
-      borderColor: '#eab308', backgroundColor: '#eab30822',
+      borderColor: '#ffd23f', backgroundColor: '#ffd23f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Former 2A High School Athlete',
       data: [3.0, 7.0, 5.5, 8.0, 7.0, 7.0, 12.0, 11.0, 10.0, 9.5, 9.0, 9.0, 8.0, 8.0, 8.0, 9.0, 9.0, 9.0, 10.0, 9.0],
-      borderColor: '#22c55e', backgroundColor: '#22c55e22',
+      borderColor: '#2ecc40', backgroundColor: '#2ecc4022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '$LZ to $15 $HUBG to $100',
       data: [6.5, 12.0, 12.0, 11.0, 11.0, 10.0, 6.0, 7.0, 8.0, 8.0, 7.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 8.5, 8.0],
-      borderColor: '#14b8a6', backgroundColor: '#14b8a622',
+      borderColor: '#1ee8b0', backgroundColor: '#1ee8b022',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Midas Well',
       data: [6.5, 8.0, 10.0, 10.0, 12.0, 11.0, 11.0, 9.0, 9.0, 7.0, 8.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 8.0, 8.5, 7.0],
-      borderColor: '#3b82f6', backgroundColor: '#3b82f622',
+      borderColor: '#3b6bff', backgroundColor: '#3b6bff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Ian Cumsler',
       data: [11.0, 11.0, 11.0, 12.0, 8.0, 8.0, 8.0, 8.0, 6.0, 5.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0],
-      borderColor: '#8b5cf6', backgroundColor: '#8b5cf622',
+      borderColor: '#8a5cff', backgroundColor: '#8a5cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'The Bryant Special',
       data: [4.0, 3.0, 2.0, 1.0, 2.5, 2.0, 2.0, 1.0, 1.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0, 4.5, 5.0, 5.0],
-      borderColor: '#ec4899', backgroundColor: '#ec489922',
+      borderColor: '#ff5ec8', backgroundColor: '#ff5ec822',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'When yer sliding into home',
       data: [6.5, 10.0, 9.0, 7.0, 2.5, 4.0, 5.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 3.0, 3.0, 3.0, 3.0, 4.5, 4.0, 4.0],
-      borderColor: '#06b6d4', backgroundColor: '#06b6d422',
+      borderColor: '#3bd6ff', backgroundColor: '#3bd6ff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'Grand Salami Time',
       data: [7.0, 9.0, 8.0, 4.0, 10.0, 6.0, 7.0, 6.0, 5.0, 6.0, 4.0, 4.0, 3.0, 4.0, 4.0, 4.0, 4.0, 3.0, 3.0, 3.0],
-      borderColor: '#f59e0b', backgroundColor: '#f59e0b22',
+      borderColor: '#ffa41b', backgroundColor: '#ffa41b22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: 'The Rosterbation Station',
       data: [8.0, 5.5, 7.0, 6.0, 4.0, 5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
-      borderColor: '#10b981', backgroundColor: '#10b98122',
+      borderColor: '#19d27f', backgroundColor: '#19d27f22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     },
       {
       label: '¯\\_(ツ)_/¯',
       data: [6.5, 1.0, 1.0, 3.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-      borderColor: '#a855f7', backgroundColor: '#a855f722',
+      borderColor: '#c45cff', backgroundColor: '#c45cff22',
       borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 6, tension: 0.3, fill: false
     }] },
   options: {
@@ -231,8 +245,8 @@ new Chart(document.getElementById('rankChart').getContext('2d'), {
     interaction: { mode: 'index', intersect: false },
     plugins: { legend: legendOpts, tooltip: tooltipOpts },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b33' } },
-      y: { reverse: true, min: 1, max: 12, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#334155' }, title: { display: true, text: 'Power Rank', color: '#64748b' } }
+      x: { ticks: { color: '#9a9ac8' }, grid: { color: '#1f216033' } },
+      y: { reverse: true, min: 1, max: 12, ticks: { color: '#9a9ac8', stepSize: 1 }, grid: { color: '#2b2e7a' }, title: { display: true, text: 'Power Rank', color: '#6e6ea8' } }
     }
   }
 });

@@ -5,79 +5,98 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
 <link rel="stylesheet" href="common.css">
 <title>Summertime Sadness - 2027 Draft Capital</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- head-meta -->
+<meta name="description" content="Who owns which picks in the 2027 draft, and how much draft capital each team holds.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+<meta property="og:title" content="Summertime Sadness - 2027 Draft Capital">
+<meta property="og:description" content="Who owns which picks in the 2027 draft, and how much draft capital each team holds.">
+<meta property="og:url" content="https://summertimesadnessfantasy.com/draft_picks_2026.html">
+<meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+<meta name="twitter:card" content="summary">
+<!-- /head-meta -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
 <style>
+  /* VT323 ships one weight; never let the browser smear a fake bold. */
+  body { font-synthesis: none; }
+  b, strong { font-weight: normal; color: #f4f4f4; }
   .chart-box { height: 450px; }
 
   .grid-table { overflow-x: auto; margin-bottom: 24px; }
   .grid-table table { min-width: 900px; }
-  .grid-table th { font-size: 0.72em; padding: 8px 4px; text-align: center; min-width: 32px; }
+  .grid-table th { font-size: 8px; padding: 10px 4px; text-align: center; min-width: 32px; }
   .grid-table th:first-child { text-align: left; min-width: 180px; }
-  .grid-table th.keeper { color: #475569; font-style: italic; }
-  .grid-table td { text-align: center; padding: 6px 4px; font-size: 0.85em; font-weight: 600; }
-  .team-cell { text-align: left !important; white-space: nowrap; font-weight: 500 !important; }
-  .cell-zero  { background: #ef444422; color: #ef4444; }
-  .cell-one   { color: #64748b; }
-  .cell-two   { background: #4ade8018; color: #4ade80; }
-  .cell-three { background: #22c55e44; color: #4ade80; font-weight: 800; text-shadow: 0 0 6px #22c55e66; }
-  .total-cell   { font-weight: 700; color: #e2e8f0; }
-  .capital-cell { font-weight: 700; color: #34d399; }
-  .pos  { color: #22c55e; font-weight: 700; }
-  .neg  { color: #ef4444; font-weight: 700; }
-  .even { color: #64748b; }
+  .grid-table th.keeper { color: #5c5c94; font-style: italic; }
+  .grid-table td { text-align: center; padding: 6px 4px; font-size: 0.95em; }
+  .team-cell { text-align: left !important; white-space: nowrap; }
+  .cell-zero  { background: #ff3b3b22; color: #ff3b3b; }
+  .cell-one   { color: #6e6ea8; }
+  .cell-two   { background: #5dff6a18; color: #5dff6a; }
+  .cell-three { background: #2ecc4044; color: #5dff6a; text-shadow: 2px 2px 0 #000; }
+  .total-cell   { color: #f4f4f4; }
+  .capital-cell { color: #3bf09a; }
+  .pos  { color: #2ecc40; }
+  .neg  { color: #ff3b3b; }
+  .even { color: #6e6ea8; }
   .notes { font-size: 0.82em; }
-  .note-extra   { color: #22c55e; }
-  .note-missing { color: #ef4444; opacity: 0.7; }
+  .note-extra   { color: #2ecc40; }
+  .note-missing { color: #ff3b3b; opacity: 0.7; }
 
   th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 14px; }
-  th.sortable:hover { color: #e2e8f0; }
+  th.sortable:hover { color: #f4f4f4; }
   th.sortable::after { content: '\2195'; position: absolute; right: 2px; opacity: 0.3; font-size: 0.8em; }
   th.sortable.asc::after  { content: '\2191'; opacity: 0.8; }
   th.sortable.desc::after { content: '\2193'; opacity: 0.8; }
 
-  .loading { text-align: center; color: #64748b; padding: 60px 0; }
-  #generated-at { text-align: center; color: #475569; font-size: 0.8em; margin-bottom: 16px; }
+  .loading { text-align: center; color: #9a9ac8; padding: 60px 0; font-family: var(--ui); font-size: 10px; }
+  #generated-at { text-align: center; color: #5c5c94; font-size: 0.8em; margin-bottom: 16px; }
 
   /* Trade Grades */
   .trades-header { margin-top: 48px; margin-bottom: 4px; }
   .trades-filter { margin-bottom: 20px; }
   .trades-filter select {
-    padding: 8px 14px; border-radius: 8px; background: #1e293b;
-    border: 1px solid #334155; color: #e2e8f0; font-size: 0.9em; cursor: pointer;
+    padding: 9px 14px; background: #2b2e7a; border: 0;
+    color: #f4f4f4; font-size: 1em; cursor: pointer;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 3px 3px 0 #000;
   }
-  .trades-filter select:focus { outline: none; border-color: #3b82f6; }
+  .trades-filter select:focus-visible { outline: 4px solid #ffd23f; outline-offset: 2px; }
   .trade-card {
-    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
-    padding: 20px; margin-bottom: 16px;
+    background: #1f2160; box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,.12), inset 0 -4px 0 0 rgba(0,0,0,.35);
+    padding: 20px; margin: 4px 4px 24px;
   }
-  .trade-date { font-size: 0.78em; color: #475569; margin-bottom: 14px; }
+  .trade-date { font-family: var(--ui); font-size: 8px; color: #9a9ac8; margin-bottom: 16px; }
   .trade-sides {
     display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0; align-items: stretch;
   }
   .trade-side { min-width: 0; }
   .trade-side-label {
-    font-size: 0.78em; color: #64748b; text-transform: uppercase;
-    letter-spacing: 0.06em; margin-bottom: 6px;
+    font-family: var(--ui); font-size: 7px; color: #6e6ea8; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
   }
   .trade-team-row {
     display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
   }
-  .trade-team-name { font-size: 0.95em; font-weight: 600; color: #e2e8f0; }
+  .trade-team-name { font-size: 1.05em; color: #f4f4f4; }
   .grade-badge {
-    font-size: 1.1em; font-weight: 800; padding: 2px 10px;
-    border-radius: 6px; letter-spacing: 0.02em; flex-shrink: 0;
+    font-family: var(--ui); font-size: 12px; padding: 6px 8px;
+    flex-shrink: 0; border-width: 2px !important; box-shadow: 3px 3px 0 #000;
   }
-  .trade-value { font-size: 0.78em; color: #64748b; margin-left: auto; }
-  .trade-asset { padding: 4px 0; font-size: 0.85em; color: #cbd5e1; }
-  .trade-asset .asset-name { font-weight: 500; }
-  .trade-asset .asset-meta { color: #64748b; font-size: 0.82em; margin-left: 4px; }
-  .trade-asset .asset-rank { color: #94a3b8; }
-  .trade-asset .asset-adp  { color: #64748b; }
+  .trade-value { font-size: 0.9em; color: #9a9ac8; margin-left: auto; }
+  .trade-asset { padding: 3px 0; font-size: 0.95em; color: #c8c8e8; }
+  .trade-asset .asset-meta { color: #6e6ea8; font-size: 0.82em; margin-left: 4px; }
+  .trade-asset .asset-rank { color: #9a9ac8; }
+  .trade-asset .asset-adp  { color: #6e6ea8; }
   .trade-arrow-col {
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.4em; color: #334155;
+    font-size: 1.4em; color: #5c5c94;
   }
-  .no-trades { color: #64748b; text-align: center; padding: 40px 0; font-size: 0.9em; }
+  .no-trades { color: #6e6ea8; text-align: center; padding: 40px 0; font-size: 0.9em; }
   @media (max-width: 700px) {
     .trade-sides { grid-template-columns: 1fr; }
     .trade-arrow-col { transform: rotate(90deg); padding: 8px 0; }
@@ -87,28 +106,28 @@
   #magic-overlay {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(2, 6, 23, 0.86); backdrop-filter: blur(6px);
+    background: rgba(7,7,26, 0.92);
     padding: 20px;
   }
   #magic-overlay.hidden { display: none; }
   .magic-card {
-    background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+    background: #1f2160; box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, inset 0 4px 0 0 rgba(255,255,255,.12), inset 0 -4px 0 0 rgba(0,0,0,.35), 8px 8px 0 4px rgba(0,0,0,.6);
     padding: 32px 28px; max-width: 520px; width: 100%; text-align: center;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
   }
-  .magic-card h2 { margin: 0 0 8px; font-size: 1.45em; color: #e2e8f0; }
-  .magic-card p { color: #94a3b8; margin: 0 0 22px; font-size: 0.95em; }
+  .magic-card h2 { margin: 0 0 16px; font-size: 14px; line-height: 1.7; color: #f4f4f4; }
+  .magic-card p { color: #9a9ac8; margin: 0 0 24px; font-size: 1em; }
   .magic-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
   .magic-btn {
-    border: none; border-radius: 10px; padding: 12px 22px;
-    font-size: 1em; font-weight: 700; cursor: pointer; transition: transform 0.1s, filter 0.15s;
+    border: 0; padding: 12px 18px;
+    font-family: var(--ui); font-size: 10px; cursor: pointer;
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18), 3px 3px 0 #000;
   }
-  .magic-btn:hover { filter: brightness(1.12); }
-  .magic-btn:active { transform: scale(0.97); }
-  .magic-btn.yes { background: #334155; color: #cbd5e1; }
-  .magic-btn.please { background: #22c55e; color: #052e16; }
-  .magic-gif { max-width: 100%; border-radius: 12px; margin: 0 auto 20px; display: block; }
-  .magic-deny h2 { color: #f87171; }
+  .magic-btn:hover { filter: brightness(1.15); }
+  .magic-btn:active { box-shadow: inset 3px 3px 0 rgba(0,0,0,.45); transform: translate(2px, 2px); }
+  .magic-btn.yes { background: #2b2e7a; color: #f4f4f4; }
+  .magic-btn.please { background: #2ecc40; color: #000; }
+  .magic-gif { max-width: 100%; margin: 0 auto 20px; display: block; box-shadow: 0 0 0 4px #000; }
+  .magic-deny h2 { color: #ff6b6b; }
 </style>
 </head>
 <body>
@@ -168,14 +187,14 @@
 <div class="container">
 <h1>Summertime Sadness Fantasy Baseball</h1>
 <p class="page-subtitle">2027 Draft Capital</p>
-<p class="section-desc" style="color:#64748b;margin-bottom:8px;">Current pick ownership. Pick value uses exponential decay &mdash; picks within a round are distributed equally since draft order is not yet set.</p>
+<p class="section-desc" style="color:#6e6ea8;margin-bottom:8px;">Current pick ownership. Pick value uses exponential decay &mdash; picks within a round are distributed equally since draft order is not yet set.</p>
 <div id="generated-at"></div>
 <div id="content"><div class="loading">Loading draft capital data&hellip;</div></div>
 
   <h3 class="trades-header">Trade Grades</h3>
-  <p class="section-desc" style="color:#64748b;margin-bottom:12px;">
+  <p class="section-desc" style="color:#6e6ea8;margin-bottom:12px;">
     All completed trades graded using current player rankings + draft pick values (same exponential decay as the pick grid above).
-    Grades: <span style="color:#22c55e">A+</span> = you cleaned up &nbsp;&bull;&nbsp; <span style="color:#fbbf24">C</span> = even &nbsp;&bull;&nbsp; <span style="color:#ef4444">F</span> = you got robbed.
+    Grades: <span style="color:#2ecc40">A+</span> = received far more value than given &nbsp;&bull;&nbsp; <span style="color:#ffe066">C</span> = even &nbsp;&bull;&nbsp; <span style="color:#ff3b3b">F</span> = gave far more value than received.
   </p>
   <div class="trades-filter">
     <select id="trade-team-filter">
@@ -197,7 +216,7 @@ async function load() {
     d = await resp.json();
   } catch (e) {
     document.getElementById('content').innerHTML =
-      '<p style="color:#ef4444;text-align:center">Failed to load draft capital data: ' + e.message + '</p>';
+      '<p style="color:#ff3b3b;text-align:center">Failed to load draft capital data: ' + e.message + '</p>';
     return;
   }
 
@@ -269,10 +288,10 @@ async function load() {
     '<th' + (i < KR ? ' class="keeper"' : '') + '>R' + (i+1) + '</th>').join('');
   html += `<h3>Pick Grid</h3>
 <p class="section-desc">Number of picks each team holds per round. R1-R${KR} are keeper rounds (not tradeable).
-<span class="cell-zero" style="padding:2px 6px;border-radius:4px">0 = traded away</span> &nbsp;
-<span style="color:#64748b">1 = standard</span> &nbsp;
-<span class="cell-two" style="padding:2px 6px;border-radius:4px">2 = extra</span> &nbsp;
-<span class="cell-three" style="padding:2px 6px;border-radius:4px">3+ = stockpiled</span></p>
+<span class="cell-zero" style="padding:2px 6px">0 = traded away</span> &nbsp;
+<span style="color:#6e6ea8">1 = standard</span> &nbsp;
+<span class="cell-two" style="padding:2px 6px">2 = extra</span> &nbsp;
+<span class="cell-three" style="padding:2px 6px">3+ = stockpiled</span></p>
 <div class="grid-table"><table id="gridTable">
 <thead><tr><th>Team</th>${roundHeaders}<th>Total</th><th>Capital</th><th>+/-</th></tr></thead>
 <tbody>`;
@@ -315,8 +334,8 @@ async function load() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8',
-          borderColor: '#475569', borderWidth: 1,
+          backgroundColor: '#1f2160', titleColor: '#f4f4f4', bodyColor: '#9a9ac8',
+          borderColor: '#5c5c94', borderWidth: 1,
           callbacks: {
             label: ctx => {
               const val = ctx.parsed.x;
@@ -327,9 +346,9 @@ async function load() {
         }
       },
       scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' },
-             title: { display: true, text: 'Draft Capital Points', color: '#64748b' } },
-        y: { ticks: { color: '#e2e8f0', font: { size: 11 } }, grid: { display: false } }
+        x: { ticks: { color: '#9a9ac8' }, grid: { color: '#2b2e7a' },
+             title: { display: true, text: 'Draft Capital Points', color: '#6e6ea8' } },
+        y: { ticks: { color: '#f4f4f4', font: { size: 11 } }, grid: { display: false } }
       }
     },
     plugins: [{
@@ -338,9 +357,9 @@ async function load() {
         const { ctx, scales: { x, y } } = chart;
         const px = x.getPixelForValue(STD);
         ctx.save();
-        ctx.strokeStyle = '#94a3b866'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = '#9a9ac866'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
         ctx.beginPath(); ctx.moveTo(px, y.top); ctx.lineTo(px, y.bottom); ctx.stroke();
-        ctx.fillStyle = '#94a3b8'; ctx.font = '10px Segoe UI';
+        ctx.fillStyle = '#9a9ac8'; ctx.font = '16px VT323, "Courier New", monospace';
         ctx.textAlign = 'center'; ctx.fillText('Avg (' + STD + ')', px, y.top - 6);
         ctx.restore();
       }
@@ -389,7 +408,7 @@ async function loadTradeGrades() {
     buildTeamFilter(ALL_TRADES);
     renderTrades(ALL_TRADES);
   } catch (e) {
-    container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:32px 0">Failed to load trade data: ' + e.message + '</p>';
+    container.innerHTML = '<p style="color:#ff3b3b;text-align:center;padding:32px 0">Failed to load trade data: ' + e.message + '</p>';
   }
 }
 

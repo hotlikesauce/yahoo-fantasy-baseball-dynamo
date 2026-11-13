@@ -6,8 +6,24 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
   <link rel="stylesheet" href="common.css">
   <title>Summertime Sadness - Manager Profiles</title>
+  <!-- head-meta -->
+  <meta name="description" content="Career stats, season history and head-to-head records for every manager in league history.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#000000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+  <link rel="manifest" href="manifest.json">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Summertime Sadness Fantasy Baseball">
+  <meta property="og:title" content="Summertime Sadness - Manager Profiles">
+  <meta property="og:description" content="Career stats, season history and head-to-head records for every manager in league history.">
+  <meta property="og:url" content="https://summertimesadnessfantasy.com/manager_profiles.html">
+  <meta property="og:image" content="https://summertimesadnessfantasy.com/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <!-- /head-meta -->
   <style>
-    .subtitle { color: #94a3b8; font-size: 0.95em; margin-bottom: 24px; }
+    .subtitle { color: #9a9ac8; font-size: 0.95em; margin-bottom: 24px; }
 
     .mgr-grid {
       display: grid;
@@ -16,46 +32,50 @@
       margin-bottom: 20px;
     }
     .mgr-card {
-      background: #1e293b;
-      border: 2px solid #334155;
-      border-radius: 12px;
-      padding: 16px 14px;
+      position: relative;
+      background: #1f2160;
+      border: 0;
+      margin: 4px;
+      padding: 16px 12px 14px;
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s;
+      box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000,
+                  inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
     }
-    .mgr-card:hover { border-color: #475569; transform: translateY(-2px); }
-    .mgr-card.active { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59,130,246,0.15); }
-    .mgr-card .mgr-name { font-size: 1.1em; font-weight: 700; margin-bottom: 4px; }
-    .mgr-card .mgr-titles { color: #fbbf24; font-size: 0.9em; min-height: 20px; }
-    .mgr-card .mgr-sub { color: #64748b; font-size: 0.78em; margin-top: 4px; }
+    .mgr-card:hover { background: #2b2e7a; }
+    .mgr-card:hover .mgr-name { color: #ffd23f; }
+    .mgr-card.active { background: #2b2e7a; outline: 4px solid #ffd23f; outline-offset: 4px; }
+    .mgr-card.active .mgr-name { color: #ffd23f; }
+    .mgr-card .mgr-name { font-family: var(--ui); font-size: 11px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; }
+    .mgr-card .mgr-titles { color: #ffe066; font-size: 0.9em; min-height: 20px; }
+    .mgr-card .mgr-sub { color: #9a9ac8; font-size: 0.85em; margin-top: 4px; }
 
     .hist-toggle {
-      color: #64748b; font-size: 0.85em; cursor: pointer;
-      margin-bottom: 16px; display: inline-block;
+      color: #9a9ac8; font-family: var(--ui); font-size: 9px; cursor: pointer;
+      margin-bottom: 16px; display: inline-block; text-transform: uppercase;
     }
-    .hist-toggle:hover { color: #94a3b8; }
+    .hist-toggle:hover { color: #ffd23f; }
 
     #profile { display: none; }
     #profile.visible { display: block; }
 
     .profile-header {
       display: flex; align-items: center; gap: 20px;
-      margin-bottom: 24px; flex-wrap: wrap;
+      margin: 12px 0 28px; flex-wrap: wrap;
     }
     .profile-name {
-      font-size: 2.2em; font-weight: 800;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      font-family: var(--ui); font-size: 24px; line-height: 1.3; text-transform: uppercase;
+      color: #3bd6ff; text-shadow: 3px 3px 0 #3b6bff, 6px 6px 0 #000;
     }
     .trophy-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .trophy {
       display: inline-flex; flex-direction: column; align-items: center;
-      background: linear-gradient(135deg, #fbbf24, #f59e0b);
-      color: #0f172a; font-weight: 800; font-size: 0.75em;
-      padding: 6px 12px; border-radius: 8px;
-      box-shadow: 0 0 12px rgba(251,191,36,0.3);
+      background: #ffd23f;
+      color: #0d0d2b; font-family: var(--ui); font-size: 9px; line-height: 1.6;
+      padding: 6px 10px;
+      box-shadow: inset -3px -3px 0 #ff8c1a, 3px 3px 0 #000;
     }
+    .trophy .cup { font-size: 16px; vertical-align: -2px; }
 
     .stat-cards {
       display: grid;
@@ -63,40 +83,50 @@
       gap: 14px; margin-bottom: 28px;
     }
     .stat-card {
-      background: #1e293b; border-radius: 10px; padding: 18px;
-      border: 1px solid #334155; text-align: center;
+      position: relative; margin: 4px;
+      background: #0d0d2b; padding: 16px 12px; text-align: center; border: 0;
+      box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000,
+                  inset 0 4px 0 0 rgba(255,255,255,0.08), inset 0 -4px 0 0 rgba(0,0,0,0.35);
     }
-    .stat-card .label { color: #64748b; font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-    .stat-card .value { font-size: 1.6em; font-weight: 700; }
-    .stat-card .sub { color: #94a3b8; font-size: 0.82em; margin-top: 3px; }
+    .stat-card .label { color: #9a9ac8; font-family: var(--ui); font-size: 8px; line-height: 1.6; text-transform: uppercase; margin-bottom: 10px; }
+    .stat-card .value { font-family: var(--ui); font-size: 18px; line-height: 1.3; }
+    .stat-card .sub { color: #9a9ac8; font-size: 0.85em; margin-top: 6px; }
     .table-wrap { overflow-x: auto; }
-    .champ-marker { color: #fbbf24; }
-    .winning { color: #4ade80; }
-    .losing { color: #f87171; }
-    .even-rec { color: #fbbf24; }
+    .champ-marker { color: #ffe066; }
+    .winning { color: #5dff6a; }
+    .losing { color: #ff6b6b; }
+    .even-rec { color: #ffe066; }
 
     .section {
-      background: #1e293b; border-radius: 12px; padding: 20px 24px;
-      border: 1px solid #334155; margin-bottom: 24px;
+      position: relative; margin: 4px 4px 28px;
+      background: #1f2160; padding: 20px 24px; border: 0;
+      box-shadow: 0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000,
+                  inset 0 4px 0 0 rgba(255,255,255,0.12), inset 0 -4px 0 0 rgba(0,0,0,0.35);
     }
-    .section h3 { color: #e2e8f0; font-size: 1.05em; margin: 0 0 16px; border-bottom: none; padding-bottom: 0; }
+    .section h3 { color: #3bd6ff; font-size: 11px; margin: 0 0 16px; border-bottom: none; padding-bottom: 0; background: none; }
+    .section-note { color: #9a9ac8; font-size: 0.9em; margin-bottom: 14px; }
 
     .h2h-year-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .h2h-yr-btn {
-      background: #0f172a; color: #94a3b8; border: 1px solid #334155;
-      padding: 4px 14px; border-radius: 6px; cursor: pointer; font-size: 0.82em;
+      font-family: var(--ui); font-size: 9px; line-height: 1.4;
+      background: #2b2e7a; color: #f4f4f4; border: 0;
+      padding: 8px 10px; cursor: pointer;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18);
     }
-    .h2h-yr-btn:hover { color: #e2e8f0; border-color: #475569; }
-    .h2h-yr-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+    .h2h-yr-btn:hover { background: #3b6bff; }
+    .h2h-yr-btn.active { background: #1f9e33; color: #fff; box-shadow: inset 3px 3px 0 rgba(0,0,0,.45); }
 
     @media (max-width: 768px) {
       .profile-header { flex-direction: column; align-items: flex-start; }
-      .stat-cards { grid-template-columns: repeat(3, 1fr); }
+      .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .stat-card .value { font-size: 14px; }
+      .profile-name { font-size: 18px; }
+      .section { padding: 16px 14px; }
     }
   </style>
 </head>
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
   <div id="nav"></div>
   <script src="nav.js"></script>
 
@@ -120,7 +150,7 @@
 
       <div class="section">
         <h3>Power Score Over Time</h3>
-        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">End-of-season power score by year (higher is better, max 1200)</p>
+        <p class="section-note">End-of-season power score by year (higher is better, max 1200)</p>
         <div style="height:300px;position:relative">
           <canvas id="scoreChart"></canvas>
         </div>
@@ -146,7 +176,7 @@
 
       <div class="section" id="h2hSection">
         <h3>Head-to-Head Records</h3>
-        <p style="color:#94a3b8;font-size:0.88em;margin-bottom:14px">Record against each opponent (2007&ndash;2025 H2H data available, excl. 2020)</p>
+        <p class="section-note">Record against each opponent (2007&ndash;2025 H2H data available, excl. 2020)</p>
         <div class="h2h-year-filter" id="h2hFilter"></div>
         <div class="table-wrap">
           <table id="h2hTable">
@@ -247,7 +277,7 @@
 
       // Trophies
       const tr = document.getElementById('trophyRow');
-      tr.innerHTML = p.titles.map(t => '<div class="trophy">🏆 ' + t.year + '</div>').join('');
+      tr.innerHTML = p.titles.map(t => '<div class="trophy"><span><span class="cup">🏆</span> ' + t.year + '</span></div>').join('');
 
       // Compute stats
       const scored = p.seasons.filter(s => s.score !== null);
@@ -301,7 +331,7 @@
       const labels = scored.map(s => s.year);
       const values = scored.map(s => s.score);
       const champYears = new Set(p.titles.map(t => t.year));
-      const pointColors = scored.map(s => champYears.has(s.year) ? '#fbbf24' : '#3b82f6');
+      const pointColors = scored.map(s => champYears.has(s.year) ? '#ffe066' : '#3b6bff');
       const pointRadii = scored.map(s => champYears.has(s.year) ? 7 : 4);
 
       if (scoreChartInstance) scoreChartInstance.destroy();
@@ -314,8 +344,8 @@
           datasets: [{
             label: 'Power Score',
             data: values,
-            borderColor: '#3b82f6',
-            backgroundColor: '#3b82f622',
+            borderColor: '#3b6bff',
+            backgroundColor: '#3b6bff22',
             borderWidth: 2.5,
             pointBackgroundColor: pointColors,
             pointBorderColor: pointColors,
@@ -343,14 +373,14 @@
           },
           scales: {
             x: {
-              ticks: { color: '#94a3b8', font: { size: 11 } },
-              grid: { color: '#1e293b' }
+              ticks: { color: '#9a9ac8', font: { size: 11 } },
+              grid: { color: '#1f2160' }
             },
             y: {
               min: 0,
               max: 1200,
-              ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 200 },
-              grid: { color: '#1e293b' }
+              ticks: { color: '#9a9ac8', font: { size: 11 }, stepSize: 200 },
+              grid: { color: '#1f2160' }
             }
           }
         }
@@ -364,8 +394,8 @@
         '<tr>' +
         '<td>' + s.year + '</td>' +
         '<td>' + s.team + '</td>' +
-        '<td>' + (s.score !== null ? s.score.toFixed(1) : '<span style="color:#475569">N/A</span>') + '</td>' +
-        '<td>' + (s.rank !== null ? s.rank + ' / ' + s.of : '<span style="color:#475569">N/A</span>') + '</td>' +
+        '<td>' + (s.score !== null ? s.score.toFixed(1) : '<span style="color:#5c5c94">N/A</span>') + '</td>' +
+        '<td>' + (s.rank !== null ? s.rank + ' / ' + s.of : '<span style="color:#5c5c94">N/A</span>') + '</td>' +
         '<td>' + (s.champ ? '<span class="champ-marker">🏆 Champion</span>' : '') + '</td>' +
         '</tr>'
       ).join('');
@@ -411,8 +441,8 @@
         if (r.t > 0) record += '-' + r.t;
         return '<tr>' +
           '<td>' + r.opp + '</td>' +
-          '<td class="' + r.cls + '" style="font-weight:600">' + (r.total > 0 ? record : '<span style="color:#475569">0-0</span>') + '</td>' +
-          '<td>' + (r.total > 0 ? (r.pct * 100).toFixed(0) + '%' : '<span style="color:#475569">&mdash;</span>') + '</td>' +
+          '<td class="' + r.cls + '">' + (r.total > 0 ? record : '<span style="color:#5c5c94">0-0</span>') + '</td>' +
+          '<td>' + (r.total > 0 ? (r.pct * 100).toFixed(0) + '%' : '<span style="color:#5c5c94">&mdash;</span>') + '</td>' +
           '<td>' + r.w + '</td>' +
           '<td>' + r.l + '</td>' +
           '<td>' + r.total + '</td>' +
