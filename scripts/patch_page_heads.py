@@ -21,7 +21,14 @@ Idempotent - safe to run any number of times. It does three things:
    (hex, hex+alpha, rgb/rgba) is swapped for its replacement from the PALETTE
    block in docs/nav.js, and the old Segoe UI font stack becomes `inherit`.
    No replacement colour is also a source colour, so re-running is a no-op.
+
+4. Cache-busts the shared assets: every reference to common.css, nav.js and
+   pixel.js gets ?v=<hash of that file's contents>. GitHub Pages lets browsers
+   cache these for 10 minutes, so without this a visitor gets a new page with
+   an old stylesheet after every deploy. Re-run this script after editing any
+   of those three files.
 """
+import hashlib
 import json
 import time
 import html
@@ -46,6 +53,15 @@ def repalette(s: str) -> str:
     s = HEX_RE.sub(lambda m: PALETTE.get("#" + m.group(1).lower(), m.group(0)), s)
     s = RGB_RE.sub(lambda m: (m.group(1) + RGB[k]) if (k := f"{m.group(2)},{m.group(3)},{m.group(4)}") in RGB else m.group(0), s)
     return OLD_FONT_RE.sub("font-family: inherit", s)
+
+
+ASSETS = ("common.css", "nav.js", "pixel.js")
+VERSION = {a: hashlib.sha1((DOCS / a).read_bytes()).hexdigest()[:8] for a in ASSETS if (DOCS / a).exists()}
+ASSET_RE = re.compile(r"""((?:href|src)=["'])(common\.css|nav\.js|pixel\.js)(?:\?v=[0-9a-f]*)?(["'])""")
+
+
+def bust(s: str) -> str:
+    return ASSET_RE.sub(lambda m: f"{m.group(1)}{m.group(2)}?v={VERSION[m.group(2)]}{m.group(3)}", s)
 
 
 CHART_JS = "https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"
@@ -122,7 +138,7 @@ def patch(path: Path) -> list[str]:
     out = CHART_RE.sub(CHART_JS, src)
     changes = ["chart.js pinned"] if out != src else []
     before = out
-    out = repalette(out)
+    out = bust(repalette(out))
     if out != before:
         changes.append("palette")
 

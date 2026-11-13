@@ -1,167 +1,222 @@
 /* Summertime Sadness - 8-bit pixel helpers (home + records pages).
-   Pixel-art sprites, the title-screen stadium, arrow-key menus, and a loader that reads the real league records
+   Shaded pixel-art sprites, the title-screen ballpark, arrow-key menus, and a loader that reads the real league records
    straight out of all_time_rankings.html so there is one source of data. */
 (function () {
   'use strict';
 
-  // ── Palette for sprite maps ──────────────────────────────────────────────
-  const PAL = {
-    K: '#000000', W: '#f4f4f4', S: '#9a9ac8', D: '#5c5c94', Y: '#ffd23f',
-    O: '#ff8c1a', R: '#ff3b3b', G: '#2ecc40', g: '#1f9e33', C: '#3bd6ff',
-    B: '#3b6bff', P: '#8a5cff', p: '#ff5ec8', N: '#c8763c', n: '#7a4320',
+  // ── Sprites ──────────────────────────────────────────────────────────────
+  // Icons are the system's shaded colour emoji, drawn into a tiny canvas at
+  // half the display size and scaled back up with hard pixel edges. That gives
+  // detailed, softly shaded pixel art (2px pixels) instead of flat 12x12 maps.
+  const EMOJI = {
+    trophy: '\u{1F3C6}', ball: '⚾', chart: '\u{1F4C8}', dice: '\u{1F3B2}', swap: '\u{1F504}',
+    star: '⭐', bracket: '\u{1F3DF}️', fire: '\u{1F525}', ice: '\u{1F9CA}', cap: '\u{1F9E2}',
+    bats: '\u{1F94A}', book: '\u{1F4DC}', coin: '\u{1FA99}', diamond: '\u{1F48E}',
   };
-
-  // 12x12 sprites. '.' is transparent.
-  const SPRITES = {
-    trophy: [
-      '..YYYYYYYY..', 'YYYWYYYYYYYY', 'Y.YWYYYYYO.Y', 'Y.YWYYYYYO.Y',
-      '.YYWYYYYYOY.', '..YYYYYYOO..', '...YYYYYO...', '.....YO.....',
-      '.....YO.....', '....OOOO....', '...nnnnnn...', '...nnnnnn...',
-    ],
-    ball: [
-      '....WWWW....', '..WWWWWWWW..', '.WRWWWWWWRW.', '.WWRWWWWRWW.',
-      'WWRWWWWWWRWS', 'WWWRWWWWRWWS', 'WWRWWWWWWRWS', 'WWWRWWWWRWWS',
-      '.WRWWWWWWRS.', '.WWRWWWWRSS.', '..WWWWSSSS..', '....SSSS....',
-    ],
-    chart: [
-      'W...........', 'W.........GG', 'W.........Gg', 'W......CC.Gg',
-      'W......CB.Gg', 'W...YY.CB.Gg', 'W...YO.CB.Gg', 'W.ppYO.CB.Gg',
-      'W.pPYO.CB.Gg', 'W.pPYO.CB.Gg', 'WWWWWWWWWWWW', '............',
-    ],
-    dice: [
-      '.WWWWWWWWWW.', 'WWWWWWWWWWWS', 'WWKKWWWWKKWS', 'WWKKWWWWKKWS',
-      'WWWWWWWWWWWS', 'WWWWWKKWWWWS', 'WWWWWKKWWWWS', 'WWWWWWWWWWWS',
-      'WWKKWWWWKKWS', 'WWKKWWWWKKWS', 'WSSSSSSSSSSS', '.SSSSSSSSSS.',
-    ],
-    swap: [
-      '........C...', '........CC..', 'CCCCCCCCCCC.', 'CCCCCCCCCCCC',
-      '........CC..', '........C...', '...O........', '..OO........',
-      '.OOOOOOOOOOO', 'OOOOOOOOOOOO', '..OO........', '...O........',
-    ],
-    star: [
-      '.....YY.....', '.....YY.....', '....YYYY....', 'YYYYYWYYYYYY',
-      '.YYYYWYYYYY.', '..YYYYYYYO..', '...YYYYYO...', '..YYYYYYYO..',
-      '..YYO..YYO..', '.YYO....YYO.', '.YO......YO.', '............',
-    ],
-    bracket: [
-      'WWWW........', '...W........', '...WWWW.....', '...W..W.....',
-      'WWWW..W.....', '......WWWYYY', 'WWWW..W..YYY', '...W..W.....',
-      '...WWWW.....', '...W........', 'WWWW........', '............',
-    ],
-    fire: [
-      '.....R......', '....RR......', '....RRR..R..', '...RRRR.RR..',
-      '..RRORRRRR..', '..RROORRRR..', '.RROOOORRRR.', '.RROOYOORRR.',
-      '.RROYYYOORR.', '..ROYYYYOR..', '..RROYYORR..', '...RRRRRR...',
-    ],
-    ice: [
-      '.....C......', '...C.C.C....', '....CCC.....', '.C...C...C..',
-      '..C..C..C...', 'CCCCCWCCCCC.', '..C..C..C...', '.C...C...C..',
-      '....CCC.....', '...C.C.C....', '.....C......', '............',
-    ],
-    cap: [
-      '...BBBBB....', '..BBBBBBB...', '..BBBBBBBBB.', '...NNNNN....',
-      '...NKNKN....', '...NNNNN....', '....NNN.....', '..RRRRRRR...',
-      '.RRRRRRRRR..', '.RRRWRRRRR..', '.NRRRRRRRN..', '..WW...WW...',
-    ],
-    bats: [
-      'nn........nn', 'nnn......nnn', '.nnn....nnn.', '..nNn..nNn..',
-      '...nNnnNn...', '....NNNN....', '....NNNN....', '...N.NN.N...',
-      '..N......N..', '.W........W.', 'WW........WW', 'W..........W',
-    ],
-    book: [
-      '.PPPPPPPPP..', '.PWWWWWWWPK.', '.PWKKKKKWPK.', '.PWWWWWWWPK.',
-      '.PWKKKKWWPK.', '.PWWWWWWWPK.', '.PWKKKKKWPK.', '.PWWWWWWWPK.',
-      '.PPPPPPPPPK.', '..KKKKKKKKK.', '............', '............',
-    ],
-    diamond: [
-      '.....WW.....', '....NNNN....', '...NNggNN...', '..NNggggNN..',
-      '.NNggggggNN.', 'WNggggNgggNW', 'WNgggNNgggNW', '.NNggggggNN.',
-      '..NNggggNN..', '...NNggNN...', '....NNNN....', '.....WW.....',
-    ],
-    coin: [
-      '....YYYY....', '..YYYYYYYY..', '.YYWWYYYYOY.', '.YWYYYYYYOY.',
-      'YYWYYOOYYYOY', 'YYWYYOYYYYOY', 'YYYYYOYYYYOY', 'YYYYYOOYYYOY',
-      '.YYYYYYYYOY.', '.YOYYYYYOOY.', '..YYOOOOYY..', '....YYYY....',
-    ],
-  };
-
+  const EMOJI_FONT = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+  const spriteCache = {};
   function sprite(name, size) {
-    const map = SPRITES[name];
-    if (!map) return '';
-    const h = map.length, w = map[0].length, s = size || 48;
-    let rects = '';
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const c = PAL[map[y][x]];
-        if (c) rects += '<rect x="' + x + '" y="' + y + '" width="1" height="1" fill="' + c + '"/>';
-      }
-    }
-    return '<svg class="pix" viewBox="0 0 ' + w + ' ' + h + '" width="' + s + '" height="' + s +
-      '" aria-hidden="true">' + rects + '</svg>';
+    size = size || 48;
+    const key = name + ':' + size;
+    if (spriteCache[key]) return spriteCache[key];
+    const res = Math.max(10, Math.round(size / 2));
+    const c = document.createElement('canvas');
+    c.width = c.height = res;
+    const g = c.getContext('2d');
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = Math.round(res * 0.86) + 'px ' + EMOJI_FONT;
+    g.fillText(EMOJI[name] || EMOJI.ball, res / 2, res / 2 + res * 0.06);
+    // Hard-edge the alpha so the silhouette reads as crisp pixels.
+    const id = g.getImageData(0, 0, res, res), p = id.data;
+    for (let i = 3; i < p.length; i += 4) p[i] = p[i] > 100 ? 255 : 0;
+    g.putImageData(id, 0, 0);
+    const html = '<img class="pix sprite" src="' + c.toDataURL() + '" width="' + size + '" height="' + size + '" alt="" aria-hidden="true">';
+    spriteCache[key] = html;
+    return html;
   }
 
-  // Replace every <i data-sprite="name" data-size="32"></i> with its SVG.
+  // Replace every <i data-sprite="name" data-size="32"></i> with its image.
   function paintSprites(root) {
     (root || document).querySelectorAll('[data-sprite]').forEach(function (el) {
       el.outerHTML = sprite(el.getAttribute('data-sprite'), +el.getAttribute('data-size') || 48);
     });
   }
 
-  // ── Title-screen stadium, drawn on a 160x60 pixel grid ───────────────────
-  function stadium() {
-    const W = 160, H = 60;
-    const out = [];
-    const r = function (x, y, w, h, c) { out.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + c + '"/>'); };
-    // Deterministic pseudo-random so the crowd is the same on every load.
+  // ── Title-screen ballpark ────────────────────────────────────────────────
+  // Painted pixel by pixel at 480x180 and shown scaled up with hard edges, so
+  // each pixel is ~3px on a desktop screen. Lighting (tower floodlights, moon,
+  // field glow) is computed as real falloff, then the whole frame is reduced
+  // to a limited colour depth with an ordered (Bayer) dither: smooth shading,
+  // still visibly pixel art.
+  function stadium(host) {
+    const W = 480, H = 180;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    c.className = 'pix title-scene';
+    c.setAttribute('role', 'img');
+    c.setAttribute('aria-label', 'A pixel-art ballpark at night under floodlights');
+    const R = new Float32Array(W * H), G = new Float32Array(W * H), B = new Float32Array(W * H);
     let seed = 2007;
     const rnd = function () { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    const clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
+    const mix = function (a, b, t) { return a + (b - a) * t; };
+    const put = function (x, y, r, g, b, a) {
+      x |= 0; y |= 0;
+      if (x < 0 || y < 0 || x >= W || y >= H) return;
+      const i = y * W + x; a = a == null ? 1 : a;
+      R[i] = mix(R[i], r, a); G[i] = mix(G[i], g, a); B[i] = mix(B[i], b, a);
+    };
+    const glow = function (cx, cy, rad, r, g, b, k) {
+      for (let y = Math.max(0, (cy - rad) | 0); y < Math.min(H, cy + rad); y++) {
+        for (let x = Math.max(0, (cx - rad) | 0); x < Math.min(W, cx + rad); x++) {
+          const d = Math.hypot(x - cx, (y - cy) * 1.15) / rad;
+          if (d >= 1) continue;
+          const f = Math.pow(1 - d, 2.2) * k, i = y * W + x;
+          R[i] += r * f; G[i] += g * f; B[i] += b * f;
+        }
+      }
+    };
+    const standsTop = function (x) { const t = (x - W / 2) / (W / 2); return 76 - 20 * t * t; };
+    const WALL = 120, FIELD = 128;
 
-    // Night sky in stepped bands.
-    [['#07071a', 0, 10], ['#0d0d2b', 10, 7], ['#16163f', 17, 5], ['#22184a', 22, 4], ['#3a1f5c', 26, 3]]
-      .forEach(function (b) { r(0, b[1], W, b[2], b[0]); });
-    // Stars.
-    for (let i = 0; i < 46; i++) {
-      const x = Math.floor(rnd() * W), y = Math.floor(rnd() * 24);
-      r(x, y, 1, 1, rnd() > 0.82 ? '#ffd23f' : '#9a9ac8');
+    // Night sky: deep blue overhead, warming to violet at the horizon.
+    const sky = [[0, [6, 6, 26]], [40, [16, 14, 52]], [70, [44, 24, 84]], [96, [86, 40, 104]]];
+    for (let y = 0; y < FIELD; y++) {
+      let a = sky[0], b = sky[sky.length - 1];
+      for (let k = 0; k < sky.length - 1; k++) if (y >= sky[k][0] && y <= sky[k + 1][0]) { a = sky[k]; b = sky[k + 1]; }
+      const t = b[0] === a[0] ? 0 : clamp((y - a[0]) / (b[0] - a[0]), 0, 1);
+      for (let x = 0; x < W; x++) put(x, y, mix(a[1][0], b[1][0], t), mix(a[1][1], b[1][1], t), mix(a[1][2], b[1][2], t));
     }
-    // Moon with a crater.
-    r(134, 5, 6, 6, '#f4f4d0'); r(133, 6, 8, 4, '#f4f4d0'); r(136, 7, 2, 2, '#c8c8a8');
-    // Light towers.
-    [[10, '#ffd23f'], [146, '#ffd23f']].forEach(function (t) {
-      r(t[0] + 2, 8, 2, 22, '#5c5c94');
-      r(t[0] - 1, 4, 8, 5, '#000000');
-      for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) r(t[0] + i * 2, 5 + j * 2, 1, 1, t[1]);
-      r(t[0] - 3, 9, 12, 1, 'rgba(255,210,63,0.25)');
-    });
-    // Stands with crowd.
-    r(0, 29, W, 11, '#16163f');
-    for (let y = 30; y < 39; y += 2) {
-      for (let x = (y % 4 === 0 ? 0 : 1); x < W; x += 2) {
-        const v = rnd();
-        r(x, y, 1, 1, v > 0.9 ? '#ff3b3b' : v > 0.8 ? '#3bd6ff' : v > 0.7 ? '#ffd23f' : v > 0.55 ? '#f4f4f4' : '#2b2e7a');
+    // Stars, a few with a soft halo and a twinkle cross.
+    for (let s = 0; s < 220; s++) {
+      const x = rnd() * W, y = rnd() * 62, v = 120 + rnd() * 135, warm = rnd() > 0.85;
+      put(x, y, v, v * (warm ? 0.9 : 0.95), warm ? v * 0.6 : v);
+      if (rnd() > 0.93) {
+        glow(x, y, 4, 120, 120, 160, 0.6);
+        [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(function (o) { put(x + o[0], y + o[1], v * 0.5, v * 0.5, v * 0.6); });
       }
     }
-    // Outfield wall with yellow top line.
-    r(0, 40, W, 3, '#1f6f3a'); r(0, 40, W, 1, '#ffd23f');
-    // Grass with mowing stripes.
-    for (let y = 43, i = 0; y < H; y += 3, i++) r(0, y, W, 3, i % 2 ? '#2ecc40' : '#27b337');
-    // Infield dirt diamond (home at bottom centre).
-    const cx = 80, top = 44, bot = 59, mid = (top + bot) / 2;
-    for (let y = top; y <= bot; y++) {
-      const half = Math.round((7.5 - Math.abs(y - mid)) * 2.6);
-      if (half > 0) r(cx - half, y, half * 2, 1, '#c8763c');
-      const inner = Math.round((5.5 - Math.abs(y - mid)) * 2.6);
-      if (inner > 0) r(cx - inner, y, inner * 2, 1, (y % 3 ? '#2ecc40' : '#27b337'));
+    // Moon with a halo and shaded craters.
+    glow(410, 22, 46, 70, 70, 110, 0.9);
+    for (let y = -9; y <= 9; y++) for (let x = -9; x <= 9; x++) {
+      if (Math.hypot(x, y) > 9) continue;
+      const shade = 0.78 + 0.22 * clamp((-x - y) / 12, -1, 1);
+      put(410 + x, 22 + y, 236 * shade, 232 * shade, 206 * shade);
     }
-    // Bases and mound.
-    r(cx - 1, top, 2, 2, '#f4f4f4'); r(cx - 20, mid, 2, 2, '#f4f4f4'); r(cx + 18, mid, 2, 2, '#f4f4f4');
-    r(cx - 1, bot - 1, 2, 2, '#f4f4f4'); r(cx - 2, mid, 4, 2, '#d9935a');
-    // A home run ball arcing over the wall, with its trail.
-    [[96, 50], [104, 42], [112, 35], [120, 30], [128, 27]].forEach(function (p, i) { r(p[0], p[1], 1, 1, 'rgba(244,244,244,' + (0.2 + i * 0.15) + ')'); });
-    r(133, 24, 2, 2, '#f4f4f4');
+    [[407, 19, 2.2], [413, 25, 1.6], [411, 18, 1.1], [406, 26, 1.3]].forEach(function (cr) {
+      for (let y = -3; y <= 3; y++) for (let x = -3; x <= 3; x++) if (Math.hypot(x, y) <= cr[2]) put(cr[0] + x, cr[1] + y, 190, 186, 166, 0.7);
+    });
+    // Home run ball in flight with a fading trail.
+    for (let i = 0; i < 26; i++) {
+      const t = i / 25, x = mix(300, 368, t), y = 104 - Math.sin(t * Math.PI * 0.62) * 70;
+      put(x, y, 230, 230, 240, 0.15 + t * 0.5);
+    }
+    glow(369, 40, 7, 140, 140, 150, 0.8);
+    for (let y = -1; y <= 1; y++) for (let x = -1; x <= 1; x++) if (Math.abs(x) + Math.abs(y) < 2) put(369 + x, 40 + y, 250, 250, 250);
+    put(370, 40, 220, 60, 60, 0.6);
 
-    return '<svg class="pix title-scene" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid slice" role="img" ' +
-      'aria-label="A pixel-art ballpark at night">' + out.join('') + '</svg>';
+    // Grandstand: a shaded bowl packed with crowd pixels, lit from above.
+    for (let x = 0; x < W; x++) {
+      const top = standsTop(x) | 0;
+      for (let y = top; y < WALL; y++) {
+        const depth = (y - top) / (WALL - top);
+        const base = 14 + 22 * depth;
+        put(x, y, base * 0.9, base * 0.9, base * 1.5);
+        if ((y - top) % 3 !== 2 && rnd() > 0.18) {
+          const v = rnd(), lit = 0.45 + 0.55 * depth;
+          const col = v > 0.92 ? [230, 60, 60] : v > 0.85 ? [70, 150, 240] : v > 0.78 ? [240, 200, 70] : v > 0.6 ? [220, 214, 200] : [120, 110, 150];
+          put(x, y, col[0] * lit, col[1] * lit, col[2] * lit, 0.75);
+        }
+      }
+      put(x, top - 1, 70, 70, 110); put(x, top - 2, 30, 30, 58);   // roof lip
+    }
+    // Light towers with floodlight banks, and the glow they throw.
+    [70, 410, 168, 312].forEach(function (tx, n) {
+      const top = standsTop(tx) | 0, big = n < 2, bankY = top - (big ? 34 : 20);
+      for (let y = bankY + 4; y < top; y++) { put(tx, y, 90, 90, 120); put(tx + 1, y, 54, 54, 80); }
+      const bw = big ? 16 : 10;
+      for (let y = 0; y < 6; y++) for (let x = -bw / 2; x < bw / 2; x++) {
+        const on = (x + bw) % 3 !== 0 && y % 2 === 1;
+        put(tx + x, bankY + y, on ? 255 : 30, on ? 248 : 30, on ? 214 : 44);
+      }
+      glow(tx, bankY + 3, big ? 120 : 70, 255, 236, 180, big ? 0.55 : 0.32);
+      glow(tx, bankY + 3, big ? 26 : 16, 255, 250, 230, 0.9);
+    });
+
+    // Outfield wall: padded green panels, a yellow home-run line, ad boards.
+    for (let y = WALL; y < FIELD; y++) for (let x = 0; x < W; x++) {
+      const panel = Math.floor(x / 24) % 2;
+      if (y === WALL) put(x, y, 250, 210, 70);
+      else put(x, y, 18 + panel * 4, 70 + panel * 6 + (y - WALL) * 2, 44 + panel * 4);
+    }
+    [[40, [200, 50, 60]], [150, [40, 90, 200]], [290, [210, 150, 30]], [400, [120, 60, 190]]].forEach(function (ad) {
+      for (let y = WALL + 2; y < FIELD - 2; y++) for (let x = ad[0]; x < ad[0] + 38; x++) put(x, y, ad[1][0], ad[1][1], ad[1][2], 0.7);
+      for (let x = ad[0] + 4; x < ad[0] + 34; x += 2) if (rnd() > 0.35) put(x, WALL + 4, 240, 240, 240, 0.8);
+    });
+
+    // Grass: mowing checkerboard in perspective.
+    const home = [W / 2, H - 4];
+    for (let y = FIELD; y < H; y++) {
+      const p = (y - FIELD) / (H - FIELD);
+      for (let x = 0; x < W; x++) {
+        const u = (x - W / 2) / (0.6 + p * 1.4);
+        const stripe = (Math.floor(u / 18) + Math.floor((y - FIELD) / (4 + p * 6))) % 2 === 0;
+        put(x, y, 26 + p * 8, (stripe ? 118 : 100) + p * 26, 40 + p * 6);
+      }
+    }
+    // Infield dirt arc around a grass diamond, plus the home-plate circle.
+    const icx = W / 2, icy = 160;
+    for (let y = FIELD; y < H; y++) for (let x = 0; x < W; x++) {
+      const dx = (x - icx) / 74, dy = (y - icy) / 24;
+      const dirt = dx * dx + dy * dy <= 1 && y > 142;
+      const inner = Math.abs(x - icx) / 40 + Math.abs(y - (icy - 2)) / 14 <= 1;
+      const circle = Math.hypot((x - home[0]) / 1.8, y - home[1]) < 9;
+      if ((dirt && !inner) || circle) {
+        const n = rnd() * 14;
+        put(x, y, 168 + n, 104 + n * 0.7, 62 + n * 0.4);
+      }
+    }
+    // Foul lines toward the corners.
+    for (let t = 0; t <= 1; t += 0.0015) {
+      put(mix(home[0], 10, t), mix(home[1], FIELD + 1, t), 240, 240, 230, 0.9);
+      put(mix(home[0], W - 10, t), mix(home[1], FIELD + 1, t), 240, 240, 230, 0.9);
+    }
+    // Mound and rubber, bases, plate.
+    for (let y = -3; y <= 3; y++) for (let x = -6; x <= 6; x++) if ((x * x) / 36 + (y * y) / 9 <= 1) put(icx + x, icy - 2 + y, 190, 124, 76);
+    put(icx, icy - 3, 250, 250, 245); put(icx - 1, icy - 3, 250, 250, 245);
+    [[icx, icy - 16], [icx - 40, icy - 2], [icx + 39, icy - 2]].forEach(function (b) {
+      for (let y = 0; y < 2; y++) for (let x = 0; x < 3; x++) put(b[0] + x - 1, b[1] + y, 250, 250, 245);
+    });
+    for (let x = -2; x <= 2; x++) put(home[0] + x, home[1] - 1, 250, 250, 245);
+    for (let x = -1; x <= 1; x++) put(home[0] + x, home[1], 250, 250, 245);
+
+    // Floodlight wash on the field, haze above the stands, and a vignette.
+    glow(W / 2, 150, 190, 60, 64, 36, 0.55);
+    for (let x = 0; x < W; x++) {
+      const t = standsTop(x) | 0;
+      for (let y = t - 10; y < t; y++) { const i = y * W + x, f = (y - (t - 10)) / 10 * 0.12; R[i] += 60 * f; G[i] += 50 * f; B[i] += 70 * f; }
+    }
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const d = Math.hypot((x - W / 2) / (W / 2), (y - H / 2) / (H / 1.6));
+      const f = 1 - clamp((d - 0.7) * 0.6, 0, 0.45), i = y * W + x;
+      R[i] *= f; G[i] *= f; B[i] *= f;
+    }
+
+    // Reduce to a limited colour depth with a 4x4 ordered dither.
+    const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+    const STEP = 14;
+    const g2 = c.getContext('2d'), img = g2.createImageData(W, H), px = img.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x, o = i * 4, t = (BAYER[(y & 3) * 4 + (x & 3)] / 16 - 0.5) * STEP;
+      px[o] = clamp(Math.round((R[i] + t) / STEP) * STEP, 0, 255);
+      px[o + 1] = clamp(Math.round((G[i] + t) / STEP) * STEP, 0, 255);
+      px[o + 2] = clamp(Math.round((B[i] + t) / STEP) * STEP, 0, 255);
+      px[o + 3] = 255;
+    }
+    g2.putImageData(img, 0, 0);
+    if (host) { host.innerHTML = ''; host.appendChild(c); }
+    return c;
   }
 
   // Sound lives in nav.js (it owns the HUD SOUND toggle); delegate to it.

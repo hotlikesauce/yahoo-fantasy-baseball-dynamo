@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26be;</text></svg>">
-<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="common.css?v=3dc7a57a">
 <title>Summertime Sadness Fantasy Baseball</title>
 <!-- head-meta -->
 <meta name="description" content="Standings, power rankings, champions and title leaders for the Summertime Sadness fantasy baseball league, est. 2007.">
@@ -25,7 +25,7 @@
 </head>
 <body>
 <div id="nav"></div>
-<script src="nav.js"></script>
+<script src="nav.js?v=20ccbccf"></script>
 
 <section class="title-screen" id="title">
   <div id="scene"></div>
@@ -122,7 +122,7 @@
   </div>
 </main>
 
-<script src="pixel.js"></script>
+<script src="pixel.js?v=c3ace5d0"></script>
 <script>
 (function () {
   'use strict';
@@ -130,7 +130,7 @@
   const SND = window.SSFB_sound || { coin: function () {} };
   const TRENDS_URL = 'https://gm2rzjyfympxxazymzzf4esehi0udsga.lambda-url.us-west-2.on.aws/';
 
-  document.getElementById('scene').innerHTML = S.stadium();
+  S.stadium(document.getElementById('scene'));
   S.gridNav(document.getElementById('stageGrid'));
 
   // PRESS START (button or Enter on the title screen) jumps to stage select.

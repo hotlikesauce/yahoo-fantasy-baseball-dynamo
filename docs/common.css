@@ -50,7 +50,7 @@
   --radius:    0px;
   --nav-h:     52px;
 
-  --px: 4px;                                    /* one "game pixel" */
+  --px: 2px;                                    /* one "game pixel": small, fine pixels */
   --ui:   'Press Start 2P', 'Courier New', monospace;
   --data: 'VT323', 'Courier New', monospace;
   --font: var(--data);
@@ -97,7 +97,7 @@ body { font-synthesis: none; }
 b, strong, th, h1, h2, h3, h4, h5, h6 { font-weight: normal; }
 b, strong { color: var(--gold); }
 img, video { max-width: 100%; }
-svg.pix, img.pix { image-rendering: pixelated; shape-rendering: crispEdges; display: block; }
+svg.pix, img.pix, canvas.pix { image-rendering: pixelated; shape-rendering: crispEdges; display: block; }
 ::selection { background: var(--gold); color: var(--edge); }
 
 :focus-visible { outline: var(--px) solid var(--gold); outline-offset: 2px; }
@@ -294,7 +294,7 @@ canvas { image-rendering: auto; }
 
 /* Title screen */
 .title-screen { position: relative; overflow: hidden; background: var(--edge); border-bottom: var(--px) solid var(--panel-2); }
-.title-scene { width: 100%; height: auto; display: block; max-height: 64vh; }
+.title-scene { width: 100%; height: auto; display: block; max-height: 64vh; object-fit: cover; }
 .title-copy {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
